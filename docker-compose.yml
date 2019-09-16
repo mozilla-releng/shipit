@@ -1,0 +1,11 @@
+version: '3'
+services:
+  api:
+    build: api
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./api:/app
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8151

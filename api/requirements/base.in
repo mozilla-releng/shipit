@@ -1,0 +1,10 @@
+aiohttp
+arrow
+backoff
+json-e
+mohawk
+mozilla-version
+
+# deployment
+gunicorn
+psycopg2

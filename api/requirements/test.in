@@ -1,0 +1,9 @@
+-r base.in
+
+pytest
+pytest-cov
+black
+check-manifest
+pip-compile-multi
+isort
+coverage

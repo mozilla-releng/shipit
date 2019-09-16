@@ -1,0 +1,98 @@
+version: 1
+policy:
+  pullRequests: public
+tasks:
+  $let:
+    # Github events have this stuff in different places...
+    repo_url: {
+      $if: 'tasks_for == "github-push"',
+      then: '${event.repository.clone_url}',
+      else: {
+        $if: 'tasks_for == "github-pull-request"',
+        then: '${event.pull_request.head.repo.clone_url}',
+        # Assume release event
+        else: '${event.repository.clone_url}',
+      }
+    }
+    head_sha: {
+      $if: 'tasks_for == "github-push"',
+      then: '${event.after}',
+      else: {
+        $if: 'tasks_for == "github-pull-request"',
+        then: '${event.pull_request.head.sha}',
+        # Assume release event
+        else: '${event.release.tag_name}',
+      }
+    }
+    owner_email: {
+      $if: 'tasks_for == "github-push"',
+      then: '${event.pusher.email}',
+      else: {
+        $if: 'tasks_for == "github-pull-request"',
+        then: '${event.pull_request.user.login}@users.noreply.github.com',
+        # Assume release event
+        else: '${event.sender.login}@users.noreply.github.com',
+      }
+    }
+    docker_tags: {
+      $if: 'tasks_for == "github-push"',
+      then: 'latest ${event.after}',
+      else: {
+        $if: 'tasks_for == "github-release"',
+        then: '${event.release.tag_name}',
+        # Unused
+        else: ''
+      }
+    }
+  in:
+    $flattenDeep:
+      - $if: '(tasks_for == "github-pull-request" && event["action"] in ["edited", "opened", "reopened", "synchronize"]) || tasks_for == "github-push"'
+        then:
+          $map: [['py36', 'python:3.6'], ['py37', 'python:3.7'], ['check', 'python:3.7']]
+          each(py):
+            taskId: "{$eval: as_slugid(py[0])}"
+            created: {$fromNow: ''}
+            deadline: {$fromNow: '2 hours'}
+            provisionerId: aws-provisioner-v1
+            workerType: github-worker
+            payload:
+              maxRunTime: 1200
+              image: "{$eval: 'py[1]'}"
+              env:
+                TOX_ENV: ${py[0]}
+              command:
+                - "/bin/bash"
+                - "-c"
+                - "git clone ${repo_url} shipit_api && cd shipit_api && git checkout ${head_sha} && tox"
+              features:
+                dind: true
+            metadata:
+              name: Ship It API ${py[0]} tests
+              description: Ship It API ${py[0]} tests
+              owner: ${owner_email}
+              source: ${repo_url}
+
+      # TODO: Need to add pushing the image
+      - $if: 'tasks_for == "github-release"'
+        then:
+          - taskId: {$eval: as_slugid("docker-image")}
+            created: {$fromNow: ''}
+            deadline: {$fromNow: '2 hours'}
+            provisionerId: aws-provisioner-v1
+            workerType: github-worker
+            routes: []
+            payload:
+              maxRunTime: 3600
+              image: "taskcluster/image_builder:0.1.3"
+              command:
+                - "/bin/bash"
+                - "-c"
+                - "git clone ${repo_url} shipit_api && cd shipit_api && git checkout ${head_sha} && docker build -f Dockerfile -t shipit_api_stage"
+              features:
+                dind: true
+                taskclusterProxy: true
+            metadata:
+              name: Ship It API docker build
+              description: Ship It API docker build
+              owner: ${owner_email}
+              source: ${repo_url}
