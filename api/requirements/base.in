@@ -1,9 +1,16 @@
 aiohttp
 arrow
 backoff
+# to support signals in Flask
+blinker
+flask
 json-e
 mohawk
 mozilla-version
+
+# cli_common, may be able to remove in the future?
+logbook
+structlog
 
 # deployment
 gunicorn
