@@ -1,12 +1,27 @@
+aioamqp
 aiohttp
 arrow
 backoff
 # to support signals in Flask
 blinker
+connexion[swagger-ui]
 flask
+flask_cors
+flask_login
+flask_migrate
+flask_oidc
+flask_talisman
 json-e
+kombu
 mohawk
 mozilla-version
+mypy
+mypy_extensions
+pytz
+pyyaml
+sqlalchemy
+# Pinned for now because ship it reaches into internlas that are no longer there
+taskcluster==7.0.0
 
 # cli_common, may be able to remove in the future?
 logbook
