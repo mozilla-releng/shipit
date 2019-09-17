@@ -15,6 +15,8 @@ DEBUG = bool(os.environ.get('DEBUG', False))
 # -- LOAD SECRETS -------------------------------------------------------------
 
 required = [
+    'APP_CHANNEL',
+    'APP_URL',
     'AUTH_AUDIENCE',
     'AUTH_CLIENT_ID',
     'AUTH_CLIENT_SECRET',
@@ -23,15 +25,22 @@ required = [
     'DATABASE_URL',
     'SECRET_KEY_BASE64',
 ]
+optional = [
+    'DISABLE_NOTIFY',
+]
 
-secrets = cli_common.taskcluster.get_secrets(
-    os.environ.get('TASKCLUSTER_SECRET'),
-    shipit_api.config.PROJECT_NAME,
-    required=required,
-    existing={x: os.environ.get(x) for x in required if x in os.environ},
-    taskcluster_client_id=os.environ.get('TASKCLUSTER_CLIENT_ID'),
-    taskcluster_access_token=os.environ.get('TASKCLUSTER_ACCESS_TOKEN'),
-)
+if os.environ['APP_CHANNEL'] == 'development':
+    secrets = {k: os.environ[k] for k in required}
+    secrets.update({k: os.environ[k] for k in optional if k in os.environ})
+else:
+    secrets = cli_common.taskcluster.get_secrets(
+        os.environ.get('TASKCLUSTER_SECRET'),
+        shipit_api.config.PROJECT_NAME,
+        required=required,
+        existing={x: os.environ.get(x) for x in required if x in os.environ},
+        taskcluster_client_id=os.environ.get('TASKCLUSTER_CLIENT_ID'),
+        taskcluster_access_token=os.environ.get('TASKCLUSTER_ACCESS_TOKEN'),
+    )
 
 locals().update(secrets)
 

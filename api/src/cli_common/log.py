@@ -10,6 +10,7 @@ import structlog
 import structlog.exceptions
 
 CHANNELS = [
+    'development',
     'master',
     'testing',
     'staging',

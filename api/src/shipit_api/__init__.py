@@ -29,11 +29,12 @@ def create_app(config=None):
         ],
     )
 
-    app.notify = cli_common.taskcluster.get_service(
-        'notify',
-        os.environ.get('TASKCLUSTER_CLIENT_ID', app.config.get('TASKCLUSTER_CLIENT_ID')),
-        os.environ.get('TASKCLUSTER_ACCESS_TOKEN', app.config.get('TASKCLUSTER_ACCESS_TOKEN')),
-    )
+    if not app.config.get("DISABLE_NOTIFY", False):
+        app.notify = cli_common.taskcluster.get_service(
+            'notify',
+            os.environ.get('TASKCLUSTER_CLIENT_ID', app.config.get('TASKCLUSTER_CLIENT_ID')),
+            os.environ.get('TASKCLUSTER_ACCESS_TOKEN', app.config.get('TASKCLUSTER_ACCESS_TOKEN')),
+        )
 
     app.api.register(os.path.join(os.path.dirname(__file__), 'api.yml'))
     app.cli.add_command(shipit_api.worker.cmd, 'worker')

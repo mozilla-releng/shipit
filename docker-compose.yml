@@ -3,9 +3,42 @@ services:
   api:
     build: api
     ports:
-      - "5000:5000"
+      - "8151:8151"
     volumes:
+      # This doesn't quite work because the app has to be installed
+      # Maybe we should drop the volume mount and rely on rebuilding?
       - ./api:/app
     environment:
       - HOST=0.0.0.0
       - PORT=8151
+      - APP_URL=https://localhost:8151
+      - APP_SETTINGS=/app/settings.py
+      - APP_CHANNEL=development
+      - DATABASE_URL=postgres://shipituser:shipitpassword@db/shipitdb
+      - AUTH_AUDIENCE=todo
+      - AUTH_CLIENT_ID=todo
+      - AUTH_CLIENT_SECRET=todo
+      - AUTH_DOMAIN=todo
+      - AUTH_REDIRECT_URI=todo
+      - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
+      - DISABLE_NOTIFY=1
+    depends_on:
+      - db
+
+  db:
+    image: postgres:11
+    volumes:
+      - dbstore:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=shipituser
+      - POSTGRES_PASSWORD=shipitpassword
+      - POSTGRES_DB=shipitdb
+    healthcheck:
+      test: ["CMD-SHELL", "-c", "pg_isready -U shipituser -d shipitdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+# TODO: worker, maybe pulse?
+
+volumes:
+  dbstore:
