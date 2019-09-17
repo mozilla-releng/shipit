@@ -3,15 +3,16 @@ services:
   api:
     build: api
     ports:
-      - "8151:8151"
+      - "8150:8150"
     volumes:
       # This doesn't quite work because the app has to be installed
       # Maybe we should drop the volume mount and rely on rebuilding?
       - ./api:/app
     environment:
       - HOST=0.0.0.0
-      - PORT=8151
-      - APP_URL=https://localhost:8151
+      - PORT=8150
+      # TODO: https
+      - APP_URL=http://localhost:8150
       - APP_SETTINGS=/app/settings.py
       - APP_CHANNEL=development
       - DATABASE_URL=postgres://shipituser:shipitpassword@db/shipitdb
@@ -38,7 +39,29 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  ui:
+    # SSL doesn't work with node:current
+    image: node:10
+    ports:
+      - "8151:8151"
+    volumes:
+      - ./frontend:/app
+      - node_modules:/app/node_modules
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8151
+      - SHIPIT_API_URL=http://localhost:8150
+      - RELEASE_CHANNEL=development
+      - RELEASE_VERSION=61
+    entrypoint:
+      - /bin/bash
+      - --login
+      - -c
+      - cd /app && yarn install && yarn start
+
 # TODO: worker, maybe pulse?
 
 volumes:
   dbstore:
+  node_modules:
