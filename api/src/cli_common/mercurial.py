@@ -6,9 +6,8 @@ import fcntl
 import os
 import time
 
-import hglib
-
 import cli_common.log
+import hglib
 
 log = cli_common.log.get_logger(__name__)
 

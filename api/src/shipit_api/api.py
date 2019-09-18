@@ -5,32 +5,19 @@
 
 import datetime
 
-from flask import abort
-from flask import current_app
-from flask import jsonify
+from flask import abort, current_app, jsonify
 from flask_login import current_user
-from mozilla_version.gecko import DeveditionVersion
-from mozilla_version.gecko import FennecVersion
-from mozilla_version.gecko import FirefoxVersion
-from mozilla_version.gecko import ThunderbirdVersion
+from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import auth
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
-from shipit_api.config import PROJECT_NAME
-from shipit_api.config import PULSE_ROUTE_REBUILD_PRODUCT_DETAILS
-from shipit_api.config import SCOPE_PREFIX
-from shipit_api.models import Phase
-from shipit_api.models import Release
-from shipit_api.models import Signoff
+from shipit_api.config import PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
+from shipit_api.models import Phase, Release, Signoff
 from shipit_api.release import Product
-from shipit_api.tasks import ArtifactNotFound
-from shipit_api.tasks import UnsupportedFlavor
-from shipit_api.tasks import fetch_artifact
-from shipit_api.tasks import generate_action_hook
-from shipit_api.tasks import render_action_hook
+from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact, generate_action_hook, render_action_hook
 
 logger = get_logger(__name__)
 

@@ -14,15 +14,8 @@ import sqlalchemy.orm
 
 import shipit_api.config
 from backend_common.db import db
-from shipit_api.release import bump_version
-from shipit_api.release import is_eme_free_enabled
-from shipit_api.release import is_partner_enabled
-from shipit_api.tasks import extract_our_flavors
-from shipit_api.tasks import fetch_artifact
-from shipit_api.tasks import find_action
-from shipit_api.tasks import find_decision_task_id
-from shipit_api.tasks import generate_action_hook
-from shipit_api.tasks import render_action_hook
+from shipit_api.release import bump_version, is_eme_free_enabled, is_partner_enabled
+from shipit_api.tasks import extract_our_flavors, fetch_artifact, find_action, find_decision_task_id, generate_action_hook, render_action_hook
 
 
 class Signoff(db.Model):

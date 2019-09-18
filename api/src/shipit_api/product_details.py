@@ -30,8 +30,7 @@ import cli_common.log
 import cli_common.utils
 import shipit_api.config
 import shipit_api.models
-from shipit_api.release import Product
-from shipit_api.release import ProductCategory
+from shipit_api.release import Product, ProductCategory
 
 logger = cli_common.log.get_logger(__name__)
 

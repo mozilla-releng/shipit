@@ -19,3 +19,6 @@ exclude = '''
   | ui
 )/
 '''
+
+[tool.isort]
+line_length=160
