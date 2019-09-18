@@ -3,17 +3,13 @@ policy:
   pullRequests: public
 tasks:
   $let:
+    python_version: 'py37'
+
     # Github events have this stuff in different places...
-    repo_url: {
-      $if: 'tasks_for == "github-push"',
-      then: '${event.repository.clone_url}',
-      else: {
-        $if: 'tasks_for == "github-pull-request"',
-        then: '${event.pull_request.head.repo.clone_url}',
-        # Assume release event
-        else: '${event.repository.clone_url}',
-      }
-    }
+    repo_url:
+      $if: 'tasks_for == "github-pull-request"'
+      then: '${event.pull_request.head.repo.html_url}'
+      else: '${event.repository.html_url}'
     head_sha: {
       $if: 'tasks_for == "github-push"',
       then: '${event.after}',
@@ -34,60 +30,102 @@ tasks:
         else: '${event.sender.login}@users.noreply.github.com',
       }
     }
-    docker_tags: {
-      $if: 'tasks_for == "github-push"',
-      then: 'latest ${event.after}',
-      else: {
-        $if: 'tasks_for == "github-release"',
-        then: '${event.release.tag_name}',
-        # Unused
-        else: ''
-      }
-    }
+    docker_tag:
+      $if: 'tasks_for == "github-pull-request"'
+      then: 'pull-request'
+      else:
+        $if: 'tasks_for == "github-push" && event.ref[0:11] == "refs/heads/"'
+        then: 'shipit_api_dockerflow_${event.ref[11:]}'
+        else: 'unknown'
+    push_docker_image:
+      $if: 'tasks_for == "github-pull-request"'
+      then: '0'
+      else:
+        $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev", "refs/heads/testing", "refs/heads/staging", "refs/heads/production"]'
+        then: '1'
+        else: '0'
   in:
     $flattenDeep:
       - $if: '(tasks_for == "github-pull-request" && event["action"] in ["edited", "opened", "reopened", "synchronize"]) || tasks_for == "github-push"'
         then:
-          $map: [['py37', 'python:3.7'], ['check', 'python:3.7']]
-          each(py):
-            taskId: "${as_slugid(py[0])}"
-            created: {$fromNow: ''}
-            deadline: {$fromNow: '2 hours'}
-            provisionerId: aws-provisioner-v1
-            workerType: github-worker
-            payload:
-              maxRunTime: 1200
-              image: {$eval: 'py[1]'}
-              command:
-                - "/bin/bash"
-                - "-c"
-                - "git clone ${repo_url} shipit && cd shipit/api && git checkout ${head_sha} && pip install tox && tox -e ${py[0]}"
-            metadata:
-              name: Ship It ${py[0]} tests
-              description: Ship It ${py[0]} tests
-              owner: ${owner_email}
-              source: ${repo_url}
+          - $map: [['py37', 'python:3.7'], ['check', 'python:3.7']]
+            each(py):
+              taskId: "${as_slugid(py[0])}"
+              created: {$fromNow: ''}
+              deadline: {$fromNow: '2 hours'}
+              provisionerId: aws-provisioner-v1
+              workerType: github-worker
+              payload:
+                maxRunTime: 1200
+                image: {$eval: 'py[1]'}
+                command:
+                  - /bin/bash
+                  - -c
+                  - >-
+                    git clone ${repo_url} shipit_api &&
+                    cd shipit_api/api &&
+                    git checkout ${head_sha} &&
+                    pip install tox &&
+                    tox -e ${py[0]}
+              metadata:
+                name: Ship It ${py[0]} tests
+                description: Ship It ${py[0]} tests
+                owner: ${owner_email}
+                source: ${repo_url}
 
-      - $if: 'tasks_for == "github-release"'
-        then:
-          - taskId: {$eval: as_slugid("docker-image")}
+          - taskId: {$eval: as_slugid("docker-build-and-push")}
+            dependencies:
+              - '${as_slugid(python_version)}'
             created: {$fromNow: ''}
-            deadline: {$fromNow: '2 hours'}
+            deadline: {$fromNow: '24 hours'}
             provisionerId: aws-provisioner-v1
             workerType: github-worker
             routes: []
             payload:
               maxRunTime: 3600
-              image: "taskcluster/image_builder:0.1.3"
+              # we need to run really old docker version because taskcluster is using
+              # really old version in their setup
+              # image: docker:stable
+              image: 'docker:1.6.2'
+              env:
+                # TODO: some of these need updates
+                DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
+                DOCKERHUB_USER: 'mozillarelengservices'
+                DOCKER_REPO: 'mozilla/release-services'
+                DOCKER_TAG: '${docker_tag}'
+                GIT_HEAD_REV: '${head_sha}'
+                PROJECT_NAME: 'shipit_api'
+                PUSH_DOCKER_IMAGE: '${push_docker_image}'
+                REPO_URL: '${repo_url}'
+                SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
               command:
-                - "/bin/bash"
-                - "-c"
-                - "git clone ${repo_url} shipit && cd shipit && git checkout ${head_sha} && docker build -f Dockerfile -t shipit_stage"
+                - sh
+                - -lxce
+                - >-
+                  cd /tmp &&
+                  wget ${repo_url}/archive/${head_sha}.tar.gz &&
+                  tar zxf ${head_sha}.tar.gz &&
+                  find . &&
+                  mv shipit-${head_sha} /src &&
+                  cd /src/api &&
+                  ./docker.d/generate_version_json.sh &&
+                  ./docker.d/build_image.sh /tmp/image.tar &&
+                  ./docker.d/push_image.sh
               features:
                 dind: true
                 taskclusterProxy: true
+              artifacts:
+                public/image.tar:
+                  expires: {$fromNow: '8 weeks'}
+                  path: '/tmp/image.tar'
+                  type: 'file'
+            scopes:
+              $if: 'push_docker_image == "0"'
+              then: []
+              else:
+                - 'secrets:get:project/releng/shipit/deploy'
             metadata:
-              name: Ship It docker build
-              description: Ship It docker build
+              name: Ship It API docker build
+              description: Ship It API docker build
               owner: ${owner_email}
               source: ${repo_url}
