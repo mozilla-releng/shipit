@@ -68,10 +68,33 @@ tasks:
                     pip install tox &&
                     tox -e ${py[0]}
               metadata:
-                name: Ship It ${py[0]} tests
-                description: Ship It ${py[0]} tests
+                name: Ship It API ${py[0]} tests
+                description: Ship It API ${py[0]} tests
                 owner: ${owner_email}
                 source: ${repo_url}
+
+          - taskId: {$eval: as_slugid("ui tests")}
+            created: {$fromNow: ''}
+            deadline: {$fromNow: '2 hours'}
+            provisionerId: aws-provisioner-v1
+            workerType: github-worker
+            payload:
+              maxRunTime: 1200
+              image: node:10
+              command:
+                - /bin/bash
+                - -c
+                - >-
+                  git clone ${repo_url} shipit_api &&
+                  cd shipit_api/frontend &&
+                  git checkout ${head_sha} &&
+                  yarn install &&
+                  yarn test
+            metadata:
+              name: Ship It Frontend tests
+              description: Ship It Frontend tests
+              owner: ${owner_email}
+              source: ${repo_url}
 
           - taskId: {$eval: as_slugid("docker-build-and-push")}
             dependencies:
