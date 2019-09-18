@@ -11,8 +11,7 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8015
-      # TODO: https
-      - APP_URL=http://localhost:8015
+      - APP_URL=https://localhost:8015
       - APP_SETTINGS=/app/settings.py
       - APP_CHANNEL=development
       - DATABASE_URL=postgres://shipituser:shipitpassword@db/shipitdb
@@ -51,7 +50,7 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8010
-      - SHIPIT_API_URL=http://localhost:8015
+      - SHIPIT_API_URL=https://localhost:8015
       - RELEASE_CHANNEL=development
       - RELEASE_VERSION=61
     entrypoint:
