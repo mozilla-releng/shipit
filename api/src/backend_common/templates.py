@@ -7,7 +7,7 @@ import jinja2
 
 
 def init_app(app):
-    app.jinja_loader = jinja2.loaders.FileSystemLoader(app.config['APP_TEMPLATES_FOLDER'])
+    app.jinja_loader = jinja2.loaders.FileSystemLoader(app.config["APP_TEMPLATES_FOLDER"])
 
 
 def app_heartbeat():

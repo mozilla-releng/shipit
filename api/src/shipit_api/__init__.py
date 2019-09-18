@@ -18,25 +18,17 @@ def create_app(config=None):
         project_name=shipit_api.config.PROJECT_NAME,
         app_name=shipit_api.config.APP_NAME,
         config=config,
-        extensions=[
-            'log',
-            'security',
-            'cors',
-            'api',
-            'auth',
-            'db',
-            'pulse',
-        ],
+        extensions=["log", "security", "cors", "api", "auth", "db", "pulse"],
     )
 
     if not app.config.get("DISABLE_NOTIFY", False):
         app.notify = cli_common.taskcluster.get_service(
-            'notify',
-            os.environ.get('TASKCLUSTER_CLIENT_ID', app.config.get('TASKCLUSTER_CLIENT_ID')),
-            os.environ.get('TASKCLUSTER_ACCESS_TOKEN', app.config.get('TASKCLUSTER_ACCESS_TOKEN')),
+            "notify",
+            os.environ.get("TASKCLUSTER_CLIENT_ID", app.config.get("TASKCLUSTER_CLIENT_ID")),
+            os.environ.get("TASKCLUSTER_ACCESS_TOKEN", app.config.get("TASKCLUSTER_ACCESS_TOKEN")),
         )
 
-    app.api.register(os.path.join(os.path.dirname(__file__), 'api.yml'))
-    app.cli.add_command(shipit_api.worker.cmd, 'worker')
+    app.api.register(os.path.join(os.path.dirname(__file__), "api.yml"))
+    app.cli.add_command(shipit_api.worker.cmd, "worker")
 
     return app

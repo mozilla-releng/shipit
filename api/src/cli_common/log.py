@@ -9,69 +9,53 @@ import logbook
 import structlog
 import structlog.exceptions
 
-CHANNELS = [
-    'development',
-    'master',
-    'testing',
-    'staging',
-    'production',
-]
+CHANNELS = ["development", "master", "testing", "staging", "production"]
 
 
 class UnstructuredRenderer(structlog.processors.KeyValueRenderer):
-
     def __call__(self, logger, method_name, event_dict):
         event = None
-        if 'event' in event_dict:
-            event = event_dict.pop('event')
+        if "event" in event_dict:
+            event = event_dict.pop("event")
         if event_dict or event is None:
             # if there are other keys, use the parent class to render them
             # and append to the event
-            rendered = super(UnstructuredRenderer, self).__call__(
-                logger, method_name, event_dict)
-            return '%s (%s)' % (event, rendered)
+            rendered = super(UnstructuredRenderer, self).__call__(logger, method_name, event_dict)
+            return "%s (%s)" % (event, rendered)
         else:
             return event
 
 
 def setup_mozdef(project_name, channel, MOZDEF):
-    '''
+    """
     Setup mozdef using taskcluster secrets
-    '''
+    """
 
     import mozdef_client
 
     sevirity_map = {
-        'critical': mozdef_client.MozDefEvent.SEVERITY_CRITICAL,
-        'error': mozdef_client.MozDefEvent.SEVERITY_ERROR,
-        'warning': mozdef_client.MozDefEvent.SEVERITY_WARNING,
-        'info': mozdef_client.MozDefEvent.SEVERITY_INFO,
-        'debug': mozdef_client.MozDefEvent.SEVERITY_DEBUG,
+        "critical": mozdef_client.MozDefEvent.SEVERITY_CRITICAL,
+        "error": mozdef_client.MozDefEvent.SEVERITY_ERROR,
+        "warning": mozdef_client.MozDefEvent.SEVERITY_WARNING,
+        "info": mozdef_client.MozDefEvent.SEVERITY_INFO,
+        "debug": mozdef_client.MozDefEvent.SEVERITY_DEBUG,
     }
 
     def send(logger, method_name, event_dict):
 
         # only send to mozdef if `mozdef` is set
-        if event_dict.pop('mozdef', False):
+        if event_dict.pop("mozdef", False):
             msg = mozdef_client.MozDefEvent(MOZDEF)
 
-            msg.summary = event_dict.get('event', '')
-            msg.tags = [
-                'mozilla/release-services/' + channel,
-                project_name,
-            ]
+            msg.summary = event_dict.get("event", "")
+            msg.tags = ["mozilla/release-services/" + channel, project_name]
 
-            if set(event_dict) - {'event'}:
+            if set(event_dict) - {"event"}:
                 msg.details = event_dict.copy()
-                msg.details.pop('event', None)
+                msg.details.pop("event", None)
 
             msg.source = logger.name
-            msg.set_severity(
-                sevirity_map.get(
-                    method_name,
-                    mozdef_client.MozDefEvent.SEVERITY_INFO,
-                ),
-            )
+            msg.set_severity(sevirity_map.get(method_name, mozdef_client.MozDefEvent.SEVERITY_INFO))
             msg.send()
 
         return event_dict
@@ -80,25 +64,25 @@ def setup_mozdef(project_name, channel, MOZDEF):
 
 
 def setup_papertrail(project_name, channel, PAPERTRAIL_HOST, PAPERTRAIL_PORT):
-    '''
+    """
     Setup papertrail account using taskcluster secrets
-    '''
+    """
 
     # Setup papertrail
     papertrail = logbook.SyslogHandler(
-        application_name=f'mozilla/release-services/{channel}/{project_name}',
+        application_name=f"mozilla/release-services/{channel}/{project_name}",
         address=(PAPERTRAIL_HOST, int(PAPERTRAIL_PORT)),
         level=logbook.INFO,
-        format_string='{record.time} {record.channel}: {record.message}',
+        format_string="{record.time} {record.channel}: {record.message}",
         bubble=True,
     )
     papertrail.push_application()
 
 
 def setup_sentry(project_name, channel, SENTRY_DSN, flask_app=None):
-    '''
+    """
     Setup sentry account using taskcluster secrets
-    '''
+    """
 
     import raven
     import raven.handlers.logbook
@@ -106,7 +90,7 @@ def setup_sentry(project_name, channel, SENTRY_DSN, flask_app=None):
     sentry_client = raven.Client(
         dsn=SENTRY_DSN,
         site=project_name,
-        name='mozilla/release-services',
+        name="mozilla/release-services",
         environment=channel,
         # TODO:
         # release=read(VERSION) we need to promote that as well via secrets
@@ -116,37 +100,35 @@ def setup_sentry(project_name, channel, SENTRY_DSN, flask_app=None):
 
     if flask_app:
         import raven.contrib.flask
+
         raven.contrib.flask.Sentry(flask_app, client=sentry_client)
 
-    sentry_handler = raven.handlers.logbook.SentryHandler(
-        sentry_client,
-        level=logbook.WARNING,
-        bubble=True,
-    )
+    sentry_handler = raven.handlers.logbook.SentryHandler(sentry_client, level=logbook.WARNING, bubble=True)
     sentry_handler.push_application()
 
 
-def init_logger(project_name,
-                channel=None,
-                level=logbook.INFO,
-                handler=None,
-                PAPERTRAIL_HOST=None,
-                PAPERTRAIL_PORT=None,
-                SENTRY_DSN=None,
-                MOZDEF=None,
-                flask_app=None,
-                timestamp=False,
-                ):
+def init_logger(
+    project_name,
+    channel=None,
+    level=logbook.INFO,
+    handler=None,
+    PAPERTRAIL_HOST=None,
+    PAPERTRAIL_PORT=None,
+    SENTRY_DSN=None,
+    MOZDEF=None,
+    flask_app=None,
+    timestamp=False,
+):
 
     if not channel:
-        channel = os.environ.get('APP_CHANNEL')
+        channel = os.environ.get("APP_CHANNEL")
 
     if channel and channel not in CHANNELS:
-        raise Exception('Initializing logging with channel `{}`. It should be one of: {}'.format(channel, ', '.join(CHANNELS)))
+        raise Exception("Initializing logging with channel `{}`. It should be one of: {}".format(channel, ", ".join(CHANNELS)))
 
     # By default output logs on stderr
     if handler is None:
-        fmt = '{record.channel}: {record.message}'
+        fmt = "{record.channel}: {record.message}"
         handler = logbook.StderrHandler(level=level, format_string=fmt)
 
     handler.push_application()
@@ -165,13 +147,9 @@ def init_logger(project_name,
         return logbook.Logger(level=level, *args, **kwargs)
 
     # Setup structlog over logbook
-    processors = [
-        structlog.stdlib.PositionalArgumentsFormatter(),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-    ]
+    processors = [structlog.stdlib.PositionalArgumentsFormatter(), structlog.processors.StackInfoRenderer(), structlog.processors.format_exc_info]
     if timestamp is True:
-        processors.append(structlog.processors.TimeStamper(fmt='%Y-%m-%d %H:%M:%S'))
+        processors.append(structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"))
 
     # send to mozdef before formatting into a string
     if channel and MOZDEF:

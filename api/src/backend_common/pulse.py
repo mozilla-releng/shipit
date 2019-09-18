@@ -15,22 +15,15 @@ logger = cli_common.log.get_logger(__name__)
 
 
 class Pulse(object):
-    ''' Documentation about Pulse
+    """ Documentation about Pulse
 
         https://wiki.mozilla.org/Auto-tools/Projects/Pulse
         https://wiki.mozilla.org/Auto-tools/Projects/Pulse/Exchanges
-    '''
+    """
 
-    def __init__(self, host, port, user, password, virtual_host='/', ssl=True,
-                 connect_timeout=5):
+    def __init__(self, host, port, user, password, virtual_host="/", ssl=True, connect_timeout=5):
         self.connection = kombu.Connection(
-            hostname=host,
-            port=port,
-            userid=user,
-            password=password,
-            virtual_host=virtual_host,
-            ssl=ssl,
-            connect_timeout=connect_timeout,
+            hostname=host, port=port, userid=user, password=password, virtual_host=virtual_host, ssl=ssl, connect_timeout=connect_timeout
         )
 
     def ping(self):
@@ -47,34 +40,26 @@ class Pulse(object):
             if not connection.connected:
                 connection.connect()
 
-            exchange = kombu.Exchange(exchange_name, type='topic')
+            exchange = kombu.Exchange(exchange_name, type="topic")
             message = {
-                'payload': payload,
-                '_meta': {
-                    'exchange': exchange_name,
-                    'routing_key': routing_key,
-                    'serializer': 'json',
-                    'sent': datetime.datetime.utcnow().isoformat()},
+                "payload": payload,
+                "_meta": {"exchange": exchange_name, "routing_key": routing_key, "serializer": "json", "sent": datetime.datetime.utcnow().isoformat()},
             }
 
-            producer = connection.Producer(
-                exchange=exchange,
-                routing_key=routing_key,
-                serializer='json',
-            )
+            producer = connection.Producer(exchange=exchange, routing_key=routing_key, serializer="json")
             producer.publish(message)
             connection.close()
 
 
 def init_app(app):
     return Pulse(
-        app.config.get('PULSE_HOST'),
-        app.config.get('PULSE_PORT'),
-        app.config.get('PULSE_USER'),
-        app.config.get('PULSE_PASSWORD'),
-        app.config.get('PULSE_VIRTUAL_HOST'),
-        app.config.get('PULSE_USE_SSL'),
-        app.config.get('PULSE_CONNECTION_TIMEOUT'),
+        app.config.get("PULSE_HOST"),
+        app.config.get("PULSE_PORT"),
+        app.config.get("PULSE_USER"),
+        app.config.get("PULSE_PASSWORD"),
+        app.config.get("PULSE_VIRTUAL_HOST"),
+        app.config.get("PULSE_USE_SSL"),
+        app.config.get("PULSE_CONNECTION_TIMEOUT"),
     )
 
 
@@ -83,4 +68,4 @@ def app_heartbeat():
         flask.current_app.pulse.ping()
     except Exception as e:
         logger.exception(e)
-        raise backend_common.dockerflow.HeartbeatException('Cannot connect to pulse the service.')
+        raise backend_common.dockerflow.HeartbeatException("Cannot connect to pulse the service.")

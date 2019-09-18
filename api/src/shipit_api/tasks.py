@@ -27,22 +27,22 @@ class ArtifactNotFound(Exception):
 
 
 def get_trust_domain(project):
-    if 'comm' in project:
-        return 'comm'
+    if "comm" in project:
+        return "comm"
     else:
-        return 'gecko'
+        return "gecko"
 
 
 def find_decision_task_id(project, revision):
-    decision_task_route = f'{get_trust_domain(project)}.v2.{project}.revision.{revision}.taskgraph.decision'
-    index = get_service('index')
-    return index.findTask(decision_task_route)['taskId']
+    decision_task_route = f"{get_trust_domain(project)}.v2.{project}.revision.{revision}.taskgraph.decision"
+    index = get_service("index")
+    return index.findTask(decision_task_route)["taskId"]
 
 
 def fetch_artifact(task_id, artifact):
     try:
-        queue = get_service('queue')
-        url = queue.buildUrl('getLatestArtifact', task_id, artifact)
+        queue = get_service("queue")
+        url = queue.buildUrl("getLatestArtifact", task_id, artifact)
         q = requests.get(url)
         q.raise_for_status()
         return yaml.safe_load(q.text)
@@ -53,8 +53,8 @@ def fetch_artifact(task_id, artifact):
 
 
 def find_action(name, actions):
-    for action in actions['actions']:
-        if action['name'] == name:
+    for action in actions["actions"]:
+        if action["name"] == name:
             return copy.deepcopy(action)
     else:
         return None
@@ -65,31 +65,21 @@ def extract_our_flavors(avail_flavors, product, version, partial_updates, produc
         product_key = product
 
     if is_rc(product_key, version, partial_updates):
-        product_key = f'{product_key}_rc'
+        product_key = f"{product_key}_rc"
 
     # sanity check
-    all_flavors = set([fl['name'] for fl in SUPPORTED_FLAVORS[product_key]])
+    all_flavors = set([fl["name"] for fl in SUPPORTED_FLAVORS[product_key]])
     if not set(avail_flavors).issuperset(all_flavors):
-        description = f'Some flavors are not in actions.json: {all_flavors.difference(set(avail_flavors))}.'
+        description = f"Some flavors are not in actions.json: {all_flavors.difference(set(avail_flavors))}."
         raise UnsupportedFlavor(description=description)
     return SUPPORTED_FLAVORS[product_key]
 
 
 def generate_action_hook(task_group_id, action_name, actions, parameters, input_):
     target_action = find_action(action_name, actions)
-    context = copy.deepcopy({'parameters': parameters})
-    context.update({
-        'taskGroupId': task_group_id,
-        'taskId': None,
-        'task': None,
-        'input': input_,
-    })
-    return dict(
-        hook_group_id=target_action['hookGroupId'],
-        hook_id=target_action['hookId'],
-        hook_payload=target_action['hookPayload'],
-        context=context,
-    )
+    context = copy.deepcopy({"parameters": parameters})
+    context.update({"taskGroupId": task_group_id, "taskId": None, "task": None, "input": input_})
+    return dict(hook_group_id=target_action["hookGroupId"], hook_id=target_action["hookId"], hook_payload=target_action["hookPayload"], context=context)
 
 
 def render_action_hook(payload, context, delete_params=[]):
@@ -97,7 +87,7 @@ def render_action_hook(payload, context, delete_params=[]):
     # some parameters contain a lot of entries, so we hit the payload
     # size limit. We don't use this parameter in any case, safe to
     # remove
-    if 'parameters' in rendered_payload['decision']:
+    if "parameters" in rendered_payload["decision"]:
         for param in delete_params:
-            del rendered_payload['decision']['parameters'][param]
+            del rendered_payload["decision"]["parameters"][param]
     return rendered_payload

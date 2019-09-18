@@ -124,14 +124,14 @@ Example response:
 
 # Map platforms in repack.cfg into their equivalents in taskcluster
 TC_PLATFORM_PER_FTP = {
-    'linux-i686': 'linux-nightly',
-    'linux-x86_64': 'linux64-nightly',
-    'mac': 'macosx64-nightly',
-    'win32': 'win32-nightly',
-    'win64': 'win64-nightly',
+    "linux-i686": "linux-nightly",
+    "linux-x86_64": "linux64-nightly",
+    "mac": "macosx64-nightly",
+    "win32": "win32-nightly",
+    "win64": "win64-nightly",
 }
 
-TASKCLUSTER_PROXY_SECRET_ROOT = 'http://taskcluster/secrets/v1/secret/'
+TASKCLUSTER_PROXY_SECRET_ROOT = "http://taskcluster/secrets/v1/secret/"
 
 # cache data at the module level
 partner_configs = {}
@@ -139,13 +139,13 @@ partner_configs = {}
 
 def query_api(query, token):
     """ Make a query with a Github auth header, returning the json """
-    headers = {'Authorization': 'bearer %s' % token}
-    r = requests.post(GITHUB_API_ENDPOINT, json={'query': query}, headers=headers)
+    headers = {"Authorization": "bearer %s" % token}
+    r = requests.post(GITHUB_API_ENDPOINT, json={"query": query}, headers=headers)
     r.raise_for_status()
 
     j = r.json()
-    if 'errors' in j:
-        raise RuntimeError("Github query error - %s", j['errors'])
+    if "errors" in j:
+        raise RuntimeError("Github query error - %s", j["errors"])
     return j
 
 
@@ -156,13 +156,13 @@ def check_login(token):
 
 def get_repo_params(repo):
     """ Parse the organisation and repo name from an https or git url for a repo """
-    if repo.startswith('https'):
+    if repo.startswith("https"):
         # eg https://github.com/mozilla-partners/mozilla-EME-free
-        return repo.rsplit('/', 2)[-2:]
-    elif repo.startswith('git@'):
+        return repo.rsplit("/", 2)[-2:]
+    elif repo.startswith("git@"):
         # eg git@github.com:mozilla-partners/mailru.git
-        repo = repo.replace('.git', '')
-        return repo.split(':')[-1].split('/')
+        repo = repo.replace(".git", "")
+        return repo.split(":")[-1].split("/")
 
 
 def get_partners(manifestRepo, token):
@@ -171,31 +171,27 @@ def get_partners(manifestRepo, token):
     """
     log.debug("Querying for manifest in %s", manifestRepo)
     owner, repo = get_repo_params(manifestRepo)
-    query = MANIFEST_QUERY % {'owner': owner, 'repo': repo}
+    query = MANIFEST_QUERY % {"owner": owner, "repo": repo}
     raw_manifest = query_api(query, token)
     log.debug("Raw manifest: %s", raw_manifest)
-    if not raw_manifest['data']['repository']:
-        raise RuntimeError(
-            "Couldn't load partner manifest at %s, insufficient permissions ?" %
-            manifestRepo
-        )
-    e = ET.fromstring(raw_manifest['data']['repository']['object']['text'])
+    if not raw_manifest["data"]["repository"]:
+        raise RuntimeError("Couldn't load partner manifest at %s, insufficient permissions ?" % manifestRepo)
+    e = ET.fromstring(raw_manifest["data"]["repository"]["object"]["text"])
 
     remotes = {}
     partners = {}
     for child in e:
-        if child.tag == 'remote':
-            name = child.attrib['name']
-            url = child.attrib['fetch']
+        if child.tag == "remote":
+            name = child.attrib["name"]
+            url = child.attrib["fetch"]
             remotes[name] = url
-            log.debug('Added remote %s from %s', name, url)
-        elif child.tag == 'project':
+            log.debug("Added remote %s from %s", name, url)
+        elif child.tag == "project":
             # we don't need to check any code repos
-            if 'scripts' in child.attrib['path']:
+            if "scripts" in child.attrib["path"]:
                 continue
-            partner_url = "%s%s" % (remotes[child.attrib['remote']],
-                                    child.attrib['name'])
-            partners[child.attrib['name']] = partner_url
+            partner_url = "%s%s" % (remotes[child.attrib["remote"]], child.attrib["name"])
+            partners[child.attrib["name"]] = partner_url
             log.debug("Added partner %s" % partner_url)
     return partners
 
@@ -205,17 +201,17 @@ def parse_config(data):
     data is contents of the file, in "foo=bar\nbaz=buzz" style. We do some translation on
     locales and platforms data, otherewise passthrough
     """
-    config = {'platforms': []}
+    config = {"platforms": []}
     for l in data.splitlines():
-        if '=' in l:
+        if "=" in l:
             l = str(l)
-            key, value = l.split('=', 2)
-            value = value.strip('\'"').rstrip('\'"')
-            if key in ('linux-i686', 'linux-x86_64', 'mac', 'win32', 'win64'):
-                if value.lower() == 'true':
-                    config['platforms'].append(TC_PLATFORM_PER_FTP[key])
+            key, value = l.split("=", 2)
+            value = value.strip("'\"").rstrip("'\"")
+            if key in ("linux-i686", "linux-x86_64", "mac", "win32", "win64"):
+                if value.lower() == "true":
+                    config["platforms"].append(TC_PLATFORM_PER_FTP[key])
                 continue
-            if key == 'locales':
+            if key == "locales":
                 # a list please
                 value = value.split(" ")
             config[key] = value
@@ -226,22 +222,22 @@ def get_repack_configs(repackRepo, token):
     """ For a partner repository, retrieve all the repack.cfg files and parse them into a dict """
     log.debug("Querying for configs in %s", repackRepo)
     owner, repo = get_repo_params(repackRepo)
-    query = REPACK_CFG_QUERY % {'owner': owner, 'repo': repo}
+    query = REPACK_CFG_QUERY % {"owner": owner, "repo": repo}
     raw_configs = query_api(query, token)
-    raw_configs = raw_configs['data']['repository']['object']['entries']
+    raw_configs = raw_configs["data"]["repository"]["object"]["entries"]
 
     configs = {}
     for sub_config in raw_configs:
-        name = sub_config['name']
-        for file in sub_config['object'].get('entries', []):
-            if file['name'] != 'repack.cfg':
+        name = sub_config["name"]
+        for file in sub_config["object"].get("entries", []):
+            if file["name"] != "repack.cfg":
                 continue
-            configs[name] = parse_config(file['object']['text'])
-    ALLOWED_KEYS = ('locales', 'upload_to_candidates', 'platforms')
+            configs[name] = parse_config(file["object"]["text"])
+    ALLOWED_KEYS = ("locales", "upload_to_candidates", "platforms")
     for subpartner, sub_config in configs.items():
         for key in list(sub_config.keys()):
             if key not in ALLOWED_KEYS:
-                del(sub_config[key])
+                del sub_config[key]
     return configs
 
 
@@ -256,7 +252,7 @@ def get_partner_config_by_url(manifest_url, kind, token, partner_subset=None):
     partner repacking, signing, repackage, repackage signing all having the same kind prefix.
     """
     if kind not in partner_configs:
-        log.info('Looking up data for %s from %s', kind, manifest_url)
+        log.info("Looking up data for %s from %s", kind, manifest_url)
         check_login(token)
         partners = get_partners(manifest_url, token)
 
@@ -270,7 +266,7 @@ def get_partner_config_by_url(manifest_url, kind, token, partner_subset=None):
             for partner in partner_subset:
                 if partner not in partner_configs[kind]:
                     # TODO - should be fatal ?
-                    log.warning('Partner config for %s not found, skipping', partner)
+                    log.warning("Partner config for %s not found, skipping", partner)
                     partner_subset.remove(partner)
                 else:
                     new_config[partner] = partner_configs[kind][partner]

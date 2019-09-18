@@ -20,15 +20,15 @@ migrate = flask_migrate.Migrate(db=db)
 def _unique(session, cls, hashfunc, queryfunc, constructor, arg, kw, _test_hook=None):
     # Based on
     # https://bitbucket.org/zzzeek/sqlalchemy/wiki/UsageRecipes/UniqueObject
-    cache = session.info.get('_unique_cache', None)
+    cache = session.info.get("_unique_cache", None)
     if cache is None:
-        session.info['_unique_cache'] = cache = {}
+        session.info["_unique_cache"] = cache = {}
 
         # Setup to clear session cache on rollback
-        @db.event.listens_for(session, 'after_rollback', once=True)
+        @db.event.listens_for(session, "after_rollback", once=True)
         def _clear_session_cache(s):
-            if s.info.get('_unique_cache', None):
-                del s.info['_unique_cache']
+            if s.info.get("_unique_cache", None):
+                del s.info["_unique_cache"]
 
     key = (cls, hashfunc(*arg, **kw))
     if key in cache:
@@ -62,48 +62,36 @@ class UniqueMixin(object):
 
     @classmethod
     def as_unique(cls, session, *arg, **kw):
-        return _unique(
-            session,
-            cls,
-            cls.unique_hash,
-            cls.unique_filter,
-            cls,
-            arg, kw
-        )
+        return _unique(session, cls, cls.unique_hash, cls.unique_filter, cls, arg, kw)
 
 
 def init_database(app):
-    '''
+    """
     Run Migrations through Alembic
-    '''
-    migrations_dir = os.path.abspath(
-        os.path.join(app.root_path, '..', 'migrations'))
+    """
+    migrations_dir = os.path.abspath(os.path.join(app.root_path, "..", "migrations"))
 
     with app.app_context():
 
         # Needed to init potential migrations later on
         # Use a separate alembic_version table per app
-        options = {
-            f'version_table': '{app.import_name}_alembic_version',
-        }
+        options = {f"version_table": "{app.import_name}_alembic_version"}
         migrate.init_app(app, directory=migrations_dir, **options)
 
         if os.path.isdir(migrations_dir):
-            logger.info('Starting migrations', app=app.name)
+            logger.info("Starting migrations", app=app.name)
             try:
                 flask_migrate.upgrade()
-                logger.info('Completed migrations', app=app.name)
+                logger.info("Completed migrations", app=app.name)
             except Exception as e:
-                logger.error('Migrations failure', app=app.name, error=e)
+                logger.error("Migrations failure", app=app.name, error=e)
 
         else:
-            logger.info('No migrations: creating full DB', app=app.name)
+            logger.info("No migrations: creating full DB", app=app.name)
             db.create_all()
 
 
-ALLOWED_TABLES = [
-    'relengapi_auth_tokens',
-]
+ALLOWED_TABLES = ["relengapi_auth_tokens"]
 
 
 def init_app(app):
@@ -123,7 +111,7 @@ def init_app(app):
 def app_heartbeat():
     try:
         db = flask.current_app.db
-        db.session.execute('SELECT 1').fetchall()
+        db.session.execute("SELECT 1").fetchall()
     except Exception as e:
         logger.exception(e)
-        raise backend_common.dockerflow.HeartbeatException('Cannot connect to the database.')
+        raise backend_common.dockerflow.HeartbeatException("Cannot connect to the database.")

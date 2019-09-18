@@ -10,24 +10,26 @@ import pytest
 import backend_common
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def app():
-    '''Load shipit_api in test mode
-    '''
+    """Load shipit_api in test mode
+    """
     import shipit_api
 
-    config = backend_common.testing.get_app_config({
-        'SQLALCHEMY_DATABASE_URI': 'sqlite://',
-        'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-        'AUTH_CLIENT_ID': 'dummy_id',
-        'AUTH_CLIENT_SECRET': 'dummy_secret',
-        'AUTH_DOMAIN': 'auth.localhost',
-        'AUTH_REDIRECT_URI': 'http://localhost/login',
-        'OIDC_USER_INFO_ENABLED': True,
-        'OIDC_CLIENT_SECRETS': os.path.join(os.path.dirname(__file__), 'client_secrets.json'),
-        'TASKCLUSTER_CLIENT_ID': 'something',
-        'TASKCLUSTER_ACCESS_TOKEN': 'something',
-    })
+    config = backend_common.testing.get_app_config(
+        {
+            "SQLALCHEMY_DATABASE_URI": "sqlite://",
+            "SQLALCHEMY_TRACK_MODIFICATIONS": False,
+            "AUTH_CLIENT_ID": "dummy_id",
+            "AUTH_CLIENT_SECRET": "dummy_secret",
+            "AUTH_DOMAIN": "auth.localhost",
+            "AUTH_REDIRECT_URI": "http://localhost/login",
+            "OIDC_USER_INFO_ENABLED": True,
+            "OIDC_CLIENT_SECRETS": os.path.join(os.path.dirname(__file__), "client_secrets.json"),
+            "TASKCLUSTER_CLIENT_ID": "something",
+            "TASKCLUSTER_ACCESS_TOKEN": "something",
+        }
+    )
     app = shipit_api.create_app(config)
 
     with app.app_context():

@@ -9,11 +9,7 @@ import time
 import click
 
 
-def retry(operation,
-          retries=5,
-          wait_between_retries=30,
-          exception_to_break=click.ClickException,
-          ):
+def retry(operation, retries=5, wait_between_retries=30, exception_to_break=click.ClickException):
     while True:
         try:
             return operation()

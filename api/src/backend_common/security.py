@@ -10,11 +10,11 @@ import flask_talisman.talisman
 
 # TODO: we need to remove unsafe-inline
 DEFAULT_CSP_POLICY = {
-    'default-src': '\'none\'',
-    'script-src': '\'self\' \'unsafe-inline\'',
-    'style-src': '\'self\' \'unsafe-inline\'',
-    'img-src': '\'self\'',
-    'connect-src': '\'self\'',
+    "default-src": "'none'",
+    "script-src": "'self' 'unsafe-inline'",
+    "style-src": "'self' 'unsafe-inline'",
+    "img-src": "'self'",
+    "connect-src": "'self'",
 }
 
 
@@ -36,14 +36,14 @@ DEFAULT_CONFIG = dict(
 )
 
 # on heroku force https redirect
-if 'DYNO' in os.environ:
-    DEFAULT_CONFIG['force_https'] = True
+if "DYNO" in os.environ:
+    DEFAULT_CONFIG["force_https"] = True
 
 security = flask_talisman.Talisman()
 
 
 def init_app(app):
-    config = app.config.get('SECURITY', DEFAULT_CONFIG)
+    config = app.config.get("SECURITY", DEFAULT_CONFIG)
     security.init_app(app, **config)
     return security
 

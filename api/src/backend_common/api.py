@@ -15,65 +15,62 @@ logger = cli_common.log.get_logger(__name__)
 
 
 def common_error_handler(exception):
-    '''TODO: add description
+    """TODO: add description
 
     :param extension:  TODO
     :type exception: Exception
 
     :rtype: TODO:
-    '''
+    """
 
     if not isinstance(exception, werkzeug.exceptions.HTTPException):
         exception = werkzeug.exceptions.InternalServerError()
 
-    return connexion.problem(
-        title=exception.name,
-        detail=exception.description,
-        status=exception.code,
-    )
+    return connexion.problem(title=exception.name, detail=exception.description, status=exception.code)
 
 
 class Api:
-    '''TODO: add description
+    """TODO: add description
        TODO: annotate class
-    '''
+    """
 
     def __init__(self, app):
-        '''
+        """
         TODO: add description
         TODO: annotate function
-        '''
+        """
         self.__app = app
 
-        logger.debug('Setting JSON encoder.')
+        logger.debug("Setting JSON encoder.")
 
         app.json_encoder = connexion.apps.flask_app.FlaskJSONEncoder
 
-        logger.debug('Setting common error handler for all error codes.')
+        logger.debug("Setting common error handler for all error codes.")
         for error_code in werkzeug.exceptions.default_exceptions:
             app.register_error_handler(error_code, common_error_handler)
 
-    def register(self,
-                 specification,
-                 base_path=None,
-                 arguments=None,
-                 validate_responses=True,
-                 strict_validation=True,
-                 resolver=None,
-                 auth_all_paths=False,
-                 debug=False,
-                 resolver_error_handler=None,
-                 validator_map=None,
-                 pythonic_params=False,
-                 pass_context_arg_name=None,
-                 options=None
-                 ):
-        '''Adds an API to the application based on a swagger file
-        '''
+    def register(
+        self,
+        specification,
+        base_path=None,
+        arguments=None,
+        validate_responses=True,
+        strict_validation=True,
+        resolver=None,
+        auth_all_paths=False,
+        debug=False,
+        resolver_error_handler=None,
+        validator_map=None,
+        pythonic_params=False,
+        pass_context_arg_name=None,
+        options=None,
+    ):
+        """Adds an API to the application based on a swagger file
+        """
 
         app = self.__app
 
-        logger.debug(f'Adding API: {specification}')
+        logger.debug(f"Adding API: {specification}")
 
         self.__api = api = connexion.apis.flask_api.FlaskApi(
             specification=pathlib.Path(specification),
@@ -100,20 +97,14 @@ class Api:
 
 
 def handle_default_exceptions_raw(e):
-    code = getattr(e, 'code', 500)
-    description = getattr(e, 'description', str(e))
-    return {
-        'type': 'about:blank',
-        'title': str(e),
-        'status': code,
-        'detail': description,
-        'instance': 'about:blank',
-    }
+    code = getattr(e, "code", 500)
+    description = getattr(e, "description", str(e))
+    return {"type": "about:blank", "title": str(e), "status": code, "detail": description, "instance": "about:blank"}
 
 
 def handle_default_exceptions(e):
     error = handle_default_exceptions_raw(e)
-    return flask.jsonify(error), error['status']
+    return flask.jsonify(error), error["status"]
 
 
 def init_app(app):

@@ -10,41 +10,41 @@ from shipit_api.config import SUPPORTED_FLAVORS
 
 # If version has two parts with no trailing specifiers like "rc", we
 # consider it a 'final' release for which we only create a _RELEASE tag.
-FINAL_RELEASE_REGEX = r'^\d+\.\d+$'
+FINAL_RELEASE_REGEX = r"^\d+\.\d+$"
 
 
 VERSION_REGEX = re.compile(
-    r'^'
-    r'(?P<major_minor>[0-9]+\.[0-9]+)'  # Major and minor version
-    r'(?:'  # Patch or beta version is optional
-    r'(?P<point>[.ba])'  # Separator from patch or beta version
-    r'(?P<patch>[0-9]+)'  # Patch or beta version
-    r')?'
-    r'(?P<esr>(?:esr)?)'  # ESR indicator
-    r'$'
+    r"^"
+    r"(?P<major_minor>[0-9]+\.[0-9]+)"  # Major and minor version
+    r"(?:"  # Patch or beta version is optional
+    r"(?P<point>[.ba])"  # Separator from patch or beta version
+    r"(?P<patch>[0-9]+)"  # Patch or beta version
+    r")?"
+    r"(?P<esr>(?:esr)?)"  # ESR indicator
+    r"$"
 )
 
 
 @enum.unique
 class Product(enum.Enum):
-    DEVEDITION = 'devedition'
-    FIREFOX = 'firefox'
-    FENNEC = 'fennec'
-    THUNDERBIRD = 'thunderbird'
+    DEVEDITION = "devedition"
+    FIREFOX = "firefox"
+    FENNEC = "fennec"
+    THUNDERBIRD = "thunderbird"
 
 
 @enum.unique
 class ProductCategory(enum.Enum):
-    MAJOR = 'major'
-    DEVELOPMENT = 'dev'
-    STABILITY = 'stability'
-    ESR = 'esr'
+    MAJOR = "major"
+    DEVELOPMENT = "dev"
+    STABILITY = "stability"
+    ESR = "esr"
 
 
 def parse_version(version):
     match = VERSION_REGEX.match(version)
     if not match:
-        raise Exception('Unknown version format.')
+        raise Exception("Unknown version format.")
     return match.groupdict()
 
 
@@ -53,11 +53,11 @@ def is_final_release(version):
 
 
 def is_beta(version):
-    return parse_version(version)['point'] == 'b'
+    return parse_version(version)["point"] == "b"
 
 
 def is_esr(version):
-    return parse_version(version)['esr'] == 'esr'
+    return parse_version(version)["esr"] == "esr"
 
 
 def is_rc(product, version, partial_updates):
@@ -65,7 +65,7 @@ def is_rc(product, version, partial_updates):
         if is_final_release(version):
             # version supports rc flavor
             # now validate that the product itself supports rc flavor
-            if SUPPORTED_FLAVORS.get(f'{product}_rc'):
+            if SUPPORTED_FLAVORS.get(f"{product}_rc"):
                 # could hard code "Thunderbird" condition here but
                 # suspect it's better to use SUPPORTED_FLAVORS for a
                 # configuration driven decision.
@@ -84,26 +84,26 @@ def is_rc(product, version, partial_updates):
 
 
 def bump_version(version):
-    '''Bump last digit'''
+    """Bump last digit"""
     parts = parse_version(version)
-    if parts['patch']:
-        parts['patch'] = int(parts['patch']) + 1
+    if parts["patch"]:
+        parts["patch"] = int(parts["patch"]) + 1
     else:
-        parts['patch'] = 1
-    if not parts['point']:
-        parts['point'] = '.'
+        parts["patch"] = 1
+    if not parts["point"]:
+        parts["point"] = "."
     return f'{parts["major_minor"]}{parts["point"]}{parts["patch"]}{parts["esr"]}'
 
 
 def get_beta_num(version):
     if is_beta(version):
-        parts = version.split('b')
+        parts = version.split("b")
         return int(parts[-1])
 
 
 def is_partner_enabled(product, version, min_version=60):
-    major_version = int(version.split('.')[0])
-    if product == 'firefox' and major_version >= min_version:
+    major_version = int(version.split(".")[0])
+    if product == "firefox" and major_version >= min_version:
         if is_beta(version):
             if get_beta_num(version) >= 8:
                 return True
@@ -115,7 +115,7 @@ def is_partner_enabled(product, version, min_version=60):
 
 
 def is_eme_free_enabled(product, version):
-    if product == 'firefox':
+    if product == "firefox":
         if is_beta(version):
             if get_beta_num(version) >= 8:
                 return True

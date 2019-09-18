@@ -16,7 +16,7 @@ cache = flask_caching.Cache()
 
 
 def init_app(app):
-    cache_config = app.config.get('CACHE', {'CACHE_TYPE': 'simple'})
+    cache_config = app.config.get("CACHE", {"CACHE_TYPE": "simple"})
     cache.init_app(app, config=cache_config)
     return cache
 
@@ -33,4 +33,4 @@ def app_heartbeat():
         assert cache.cache.get(cache_key)
     except Exception as e:
         logger.exception(e)
-        raise backend_common.dockerflow.HeartbeatException('Cannot get/set/delete items to the cache.')
+        raise backend_common.dockerflow.HeartbeatException("Cannot get/set/delete items to the cache.")
