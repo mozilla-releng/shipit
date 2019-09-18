@@ -3,16 +3,16 @@ services:
   api:
     build: api
     ports:
-      - "8150:8150"
+      - "8015:8015"
     volumes:
       # This doesn't quite work because the app has to be installed
       # Maybe we should drop the volume mount and rely on rebuilding?
       - ./api:/app
     environment:
       - HOST=0.0.0.0
-      - PORT=8150
+      - PORT=8015
       # TODO: https
-      - APP_URL=http://localhost:8150
+      - APP_URL=http://localhost:8015
       - APP_SETTINGS=/app/settings.py
       - APP_CHANNEL=development
       - DATABASE_URL=postgres://shipituser:shipitpassword@db/shipitdb
@@ -44,14 +44,14 @@ services:
     # SSL doesn't work with node:current
     image: node:10
     ports:
-      - "8151:8151"
+      - "8010:8010"
     volumes:
       - ./frontend:/app
       - node_modules:/app/node_modules
     environment:
       - HOST=0.0.0.0
-      - PORT=8151
-      - SHIPIT_API_URL=http://localhost:8150
+      - PORT=8010
+      - SHIPIT_API_URL=http://localhost:8015
       - RELEASE_CHANNEL=development
       - RELEASE_VERSION=61
     entrypoint:
