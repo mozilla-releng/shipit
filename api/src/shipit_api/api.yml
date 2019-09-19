@@ -14,7 +14,7 @@ paths:
 
   /product-details:
     post:
-      summary: Trigger rebuild of product details
+      summary: Trigger a rebuild of product details
       operationId: shipit_api.api.rebuild_product_details
       consumes:
       - "application/json"
