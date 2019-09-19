@@ -27,9 +27,11 @@ required = [
 ]
 optional = ["DISABLE_NOTIFY"]
 
-if os.environ["APP_CHANNEL"] == "development":
+# In local development, these come directly from the environment.
+if os.environ.get("APP_CHANNEL") == "development":
     secrets = {k: os.environ[k] for k in required}
     secrets.update({k: os.environ[k] for k in optional if k in os.environ})
+# For deployed environments, they come from Taskcluster.
 else:
     secrets = cli_common.taskcluster.get_secrets(
         os.environ.get("TASKCLUSTER_SECRET"),
