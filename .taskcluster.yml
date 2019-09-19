@@ -111,16 +111,16 @@ tasks:
               # image: docker:stable
               image: 'docker:1.6.2'
               env:
-                # TODO: some of these need updates
-                DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
-                DOCKERHUB_USER: 'mozillarelengservices'
-                DOCKER_REPO: 'mozilla/release-services'
+                # TODO: update these when we're to push to the real repos
+                DOCKERHUB_EMAIL: 'bhearsum+shipittest@mozilla.com'
+                DOCKERHUB_USER: 'bhearsumshipittest'
+                DOCKER_REPO: 'mozbhearsum/shipit-test'
                 DOCKER_TAG: '${docker_tag}'
                 GIT_HEAD_REV: '${head_sha}'
                 PROJECT_NAME: 'shipit_api'
                 PUSH_DOCKER_IMAGE: '${push_docker_image}'
                 REPO_URL: '${repo_url}'
-                SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
+                SECRET_URL: 'http://taskcluster/secrets/v1/secret/repo:github.com/mozbhearsum/shipit:deploy'
               command:
                 - sh
                 - -lxce
@@ -146,7 +146,7 @@ tasks:
               $if: 'push_docker_image == "0"'
               then: []
               else:
-                - 'secrets:get:project/releng/shipit/deploy'
+                - 'secrets:get:repo:github.com/mozbhearsum/shipit:deploy'
             metadata:
               name: Ship It API docker build
               description: Ship It API docker build
