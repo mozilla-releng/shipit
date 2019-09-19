@@ -19,6 +19,7 @@ mypy
 mypy_extensions
 pytz
 pyyaml
+raven[flask]
 sqlalchemy
 # Pinned for now because ship it reaches into internlas that are no longer there
 taskcluster==7.0.0
