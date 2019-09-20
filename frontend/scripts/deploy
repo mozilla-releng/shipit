@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -o errexit -o pipefail
+set -e
+
+export AWS_ACCESS_KEY_ID=$(curl ${DEPLOY_SECRET} | python3 -c "import json, sys; a = json.load(sys.stdin); print(a['secret']['frontend_config']['${RELEASE_CHANNEL}']['aws']['access_key'])")
+export AWS_SECRET_ACCESS_KEY=$(curl ${DEPLOY_SECRET} | python3 -c "import json, sys; a = json.load(sys.stdin); print(a['secret']['frontend_config']['${RELEASE_CHANNEL}']['aws']['secret_key'])")
+
+# Grab app config and convert it to shell format
+curl "${DEPLOY_SECRET}" | python3 -c "import json, sys; a = json.load(sys.stdin); [print('{}=\'{}\''.format(k, v)) for k,v in a['secret']['frontend_config']['${RELEASE_CHANNEL}']['env'].items()]" > .env
+
+source .env
+
+export SHIPIT_API_URL
+
+HEADERS=$(cat <<EOF
+{ \
+    "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'; img-src 'self' *.gravatar.com data:; script-src 'self' 'unsafe-inline' https://cdn.auth0.com; style-src 'self'; font-src 'self'; connect-src https://hg.mozilla.org https://queue.taskcluster.net https://auth.mozilla.auth0.com $SHIPIT_API_URL; frame-src 'self' https://auth.mozilla.auth0.com;", \
+    "Strict-Transport-Security": "max-age=63072000", \
+    "X-Content-Type-Options": "nosniff", \
+    "X-Frame-Options": "SAMEORIGIN", \
+    "X-Content-Type-Options": "nosniff", \
+    "X-XSS-Protection": "1; mode=block", \
+    "Referrer-Policy": "no-referrer", \
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains; always;" \
+}
+EOF
+)
+
+yarn build
+
+cp scripts/404.html build/404.html
+
+SYNC_OPTIONS=(
+    --metadata "$HEADERS"
+    --metadata-directive "REPLACE"
+    --cache-control "max-age=300"
+    --delete
+)
+aws s3 sync \
+    "${SYNC_OPTIONS[@]}" \
+    ./build/ "s3://${WEBSITE_BUCKET}/"

@@ -5,8 +5,8 @@ const envs = {
     RELEASE_CHANNEL: process.env.RELEASE_CHANNEL,
     RELEASE_VERSION: process.env.RELEASE_VERSION,
     SENTRY_DSN: process.env.SENTRY_DSN || null,
-    HOST: process.env.HOST,
-    PORT: process.env.PORT,
+    HOST: process.env.HOST || '0.0.0.0',
+    PORT: process.env.PORT || '8010',
 };
 
 // Set environment variables to their default values if not defined

@@ -533,7 +533,7 @@ class TaskLabel extends React.PureComponent {
           <Button bsStyle="primary" onClick={this.open}>{name}</Button>
           <Modal show={this.state.showModal} onHide={this.close}>
             <Modal.Header closeButton>
-              <Modal.Title>Do eet</Modal.Title>
+              <Modal.Title>Do eeet</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {this.renderBody()}
