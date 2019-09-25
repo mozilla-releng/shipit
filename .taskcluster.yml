@@ -184,7 +184,7 @@ tasks:
                     env:
                       DEPLOY_SECRET: http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy
                       RELEASE_CHANNEL: ${release_channel}
-                      RELEASE_VERSION: 9999999
+                      RELEASE_VERSION: 62
                       WEBSITE_BUCKET: '${ui_bucket}'
                     maxRunTime: 3600
                     image: "node:current"
