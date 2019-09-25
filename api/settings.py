@@ -16,12 +16,10 @@ DEBUG = bool(os.environ.get("DEBUG", False))
 
 required = [
     "APP_CHANNEL",
+    # Unused, but required by flask-oidc
     "APP_URL",
-    "AUTH_AUDIENCE",
     "AUTH_CLIENT_ID",
     "AUTH_CLIENT_SECRET",
-    "AUTH_DOMAIN",
-    "AUTH_REDIRECT_URI",
     "DATABASE_URL",
     "SECRET_KEY_BASE64",
 ]

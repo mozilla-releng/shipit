@@ -22,8 +22,6 @@ def app():
             "SQLALCHEMY_TRACK_MODIFICATIONS": False,
             "AUTH_CLIENT_ID": "dummy_id",
             "AUTH_CLIENT_SECRET": "dummy_secret",
-            "AUTH_DOMAIN": "auth.localhost",
-            "AUTH_REDIRECT_URI": "http://localhost/login",
             "OIDC_USER_INFO_ENABLED": True,
             "OIDC_CLIENT_SECRETS": os.path.join(os.path.dirname(__file__), "client_secrets.json"),
             "TASKCLUSTER_CLIENT_ID": "something",
