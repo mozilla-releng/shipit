@@ -20,7 +20,7 @@ Ship It API
 Ship It API
 
 * Free software: MPL2
-* Documentation: https://shipit-api.readthedocs.io.
+* Documentation: https://shipit-api.readthedocs.io
 
 Features
 --------
