@@ -491,7 +491,7 @@ export default class NewRelease extends React.Component {
                         bsStyle="danger"
                         disabled={!this.context.authController.userSession || this.state.inProgress}
                       >
-                        Do eet!
+                        Do eeet!
                       </Button>
                       <Button onClick={this.close} bsStyle="primary">Close</Button>
                     </div>
