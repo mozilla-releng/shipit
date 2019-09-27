@@ -167,7 +167,7 @@ tasks:
                 owner: ${owner_email}
                 source: ${repo_url}
   
-            - $if: 'ui_bucket != "none"'
+            - $if: 'ui_bucket != "relengstatic-none-shipitfrontend-static-website"'
               then:
                 - taskId: {$eval: as_slugid("ui-deploy")}
                   created: {$fromNow: ''}
