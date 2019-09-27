@@ -32,7 +32,7 @@ Staging
 * Frontend URL: https://shipit.staging.mozilla-releng.net/
 * Frontend S3 bucket: relengstatic-staging-shipitfrontend-static-website
 * Frontend Deploys: In response to pushes to the `staging` branch
-* Product Details URL: https://product-details.staging.mozilla-releng.net/
+* Product Details URL: https://product-details.staging.mozilla-releng.net
 
 Testing
 -------
