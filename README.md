@@ -42,7 +42,7 @@ Testing
 * Frontend URL: https://shipit.testing.mozilla-releng.net/
 * Frontend S3 bucket: relengstatic-testing-shipitfrontend-static-website
 * Frontend Deploys: In response to pushes to the `testing` branch
-* Product Details URL: https://product-details.testing.mozilla-releng.net/
+* Product Details URL: https://product-details.testing.mozilla-releng.net
 
 Dev
 ---
