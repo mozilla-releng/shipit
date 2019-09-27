@@ -1,4 +1,3 @@
-========================
 Ship It API and Frontend
 ========================
 
@@ -17,38 +16,38 @@ We have a number of deployed Ship It environments. All of the backends respond t
 
 Production
 ----------
-Backend URL: https://shipit-api.mozilla-releng.net
-Backend Dockerhub Tag: shipit_api_dockerflow_production
-Backend Deploys: In response to pushes to the `production` branch
-Frontend URL: https://shipit.mozilla-releng.net/
-Frontend Deploys: In response to pushes to the `production` branch
-Frontend S3 bucket: relengstatic-prod-shipitfrontend-static-website
-Product Details URL: https://product-details.mozilla.org
+* Backend URL: https://shipit-api.mozilla-releng.net
+* Backend Dockerhub Tag: shipit_api_dockerflow_production
+* Backend Deploys: In response to pushes to the `production` branch
+* Frontend URL: https://shipit.mozilla-releng.net/
+* Frontend Deploys: In response to pushes to the `production` branch
+* Frontend S3 bucket: relengstatic-prod-shipitfrontend-static-website
+* Product Details URL: https://product-details.mozilla.org
 
 Staging
 -------
-Backend URL: https://stage.shipitapi.nonprod.cloudops.mozgcp.net
-Backend Dockerhub Tag: shipit_api_dockerflow_production
-Backend Deploys: In response to pushes to the `production` branch
-Frontend URL: https://shipit.staging.mozilla-releng.net/
-Frontend S3 bucket: relengstatic-staging-shipitfrontend-static-website
-Frontend Deploys: In response to pushes to the `staging` branch
-Product Details URL: https://product-details.staging.mozilla-releng.net/
+* Backend URL: https://stage.shipitapi.nonprod.cloudops.mozgcp.net
+* Backend Dockerhub Tag: shipit_api_dockerflow_production
+* Backend Deploys: In response to pushes to the `production` branch
+* Frontend URL: https://shipit.staging.mozilla-releng.net/
+* Frontend S3 bucket: relengstatic-staging-shipitfrontend-static-website
+* Frontend Deploys: In response to pushes to the `staging` branch
+* Product Details URL: https://product-details.staging.mozilla-releng.net/
 
 Testing
 -------
-Backend URL: https://testing.shipitapi.nonprod.cloudops.mozgcp.net
-Backend Dockerhub Tag: shipit_api_dockerflow_testing
-Backend Deploys: In response to pushes to the `testing` branch
-Frontend URL: https://shipit.testing.mozilla-releng.net/
-Frontend S3 bucket: relengstatic-testing-shipitfrontend-static-website
-Frontend Deploys: In response to pushes to the `testing` branch
-Product Details URL: https://product-details.testing.mozilla-releng.net/
+* Backend URL: https://testing.shipitapi.nonprod.cloudops.mozgcp.net
+* Backend Dockerhub Tag: shipit_api_dockerflow_testing
+* Backend Deploys: In response to pushes to the `testing` branch
+* Frontend URL: https://shipit.testing.mozilla-releng.net/
+* Frontend S3 bucket: relengstatic-testing-shipitfrontend-static-website
+* Frontend Deploys: In response to pushes to the `testing` branch
+* Product Details URL: https://product-details.testing.mozilla-releng.net/
 
 Dev
 ---
-Backend URL: https://dev.shipitapi.nonprod.cloudops.mozgcp.net
-Backend Dockerhub Tag: shipit_api_dockerflow_dev
-Backend Deploys: In response to pushes to the `dev` branch
+* Backend URL: https://dev.shipitapi.nonprod.cloudops.mozgcp.net
+* Backend Dockerhub Tag: shipit_api_dockerflow_dev
+* Backend Deploys: In response to pushes to the `dev` branch
 
 Dev does not have a frontend nor product details equivalent.
