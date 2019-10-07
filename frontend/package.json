@@ -37,7 +37,7 @@
     "react-interval": "^2.0.2",
     "react-router-bootstrap": "^0.24.4",
     "react-router-dom": "^4.2.2",
-    "taskcluster-client-web": "^5.0.1",
+    "taskcluster-client-web": "^19.0.0",
     "webpack-merge": "^4.1.3"
   }
 }
