@@ -31,7 +31,7 @@
     "raven-js": "^3.26.4",
     "react": "^16.2.0",
     "react-bootstrap": "^0.31.5",
-    "react-dom": "^16.2.0",
+    "react-dom": "^16.10.2",
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.0.0",
     "react-interval": "^2.0.2",
