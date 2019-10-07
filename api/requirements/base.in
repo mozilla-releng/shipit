@@ -22,7 +22,7 @@ pyyaml
 raven[flask]
 sqlalchemy
 # Pinned for now because ship it reaches into internlas that are no longer there
-taskcluster==7.0.0
+taskcluster==19.0.0
 
 # cli_common, may be able to remove in the future?
 logbook
