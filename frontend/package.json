@@ -35,7 +35,7 @@
     "react-helmet": "^5.2.0",
     "react-hot-loader": "^4.0.0",
     "react-interval": "^2.0.2",
-    "react-router-bootstrap": "^0.24.4",
+    "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^4.2.2",
     "taskcluster-client-web": "^5.0.1",
     "webpack-merge": "^4.1.3"
