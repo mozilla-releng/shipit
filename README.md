@@ -16,27 +16,28 @@ We have a number of deployed Ship It environments. All of the backends respond t
 
 Production
 ----------
+Deploys in response to pushes to the `production` branch, if the `CloudOps Stage` deployment in successful (see below).
+
 * Backend URL: https://shipit-api.mozilla-releng.net
 * Backend Dockerhub Tag: `shipit_api_dockerflow_production`
-* Backend Deploys: In response to pushes to the `production` branch
 * Taskcluster Secret: project/releng/shipit/config:production
 * Taskcluster Client ID: project/releng/shipit/production
 * Frontend URL: https://shipit.mozilla-releng.net/
-* Frontend Deploys: In response to pushes to the `production` branch
 * Frontend S3 bucket: `relengstatic-prod-shipitfrontend-static-website`
 * Product Details URL: https://product-details.mozilla.org
 
+There is also a "CloudOps Stage" environment (which is different than the "Staging" environment below) that is deployment as part of the production pipeline. When a production deployment begins, Jenkins first deploys to this environment. If that deployment succeeds, the deployment proceeds. If it fails, the deployment is aborted. The URL for this backend is https://stage.shipitapi.nonprod.cloudops.mozgcp.net.
 
 Staging
 -------
+Deploys in response to pushes to the `staging` branch.
+
 * Backend URL: https://api.shipit.staging.mozilla-releng.net
 * Backend Dockerhub Tag: `shipit_api_dockerflow_staging`
-* Backend Deploys: In response to pushes to the `staging` branch
 * Taskcluster Secret: project/releng/shipit/config:staging
 * Taskcluster Client ID: project/releng/shipit/production (yes, the same as production)
 * Frontend URL: https://shipit.staging.mozilla-releng.net/
 * Frontend S3 bucket: `relengstatic-staging-shipitfrontend-static-website`
-* Frontend Deploys: In response to pushes to the `staging` branch
 * Product Details URL: https://product-details.staging.mozilla-releng.net
 
 Two important notes about staging:
@@ -46,21 +47,12 @@ Two important notes about staging:
 
 Testing
 -------
+Deploys in response to pushes to the `testing` branch.
+
 * Backend URL: https://testing.shipitapi.nonprod.cloudops.mozgcp.net
 * Backend Dockerhub Tag: `shipit_api_dockerflow_testing`
-* Backend Deploys: In response to pushes to the `testing` branch
 * Taskcluster Secret: project/releng/shipit/config:testing
 * Taskcluster Client ID: project/releng/shipit/dev
 * Frontend URL: https://shipit.testing.mozilla-releng.net/
 * Frontend S3 bucket: `relengstatic-testing-shipitfrontend-static-website`
-* Frontend Deploys: In response to pushes to the `testing` branch
 * Product Details URL: https://product-details.testing.mozilla-releng.net
-
-
-CloudOps Stage
---------------
-* Backend URL: https://stage.shipitapi.nonprod.cloudops.mozgcp.net
-* Backend Dockerhub Tag: `shipit_api_dockerflow_production`
-* Backend Deploys: In response to pushes to the `production` branch
-
-This environment solely exists as part of the CloudOps deployment pipeline for the production backend. When the `shipit_api_dockerflow_production` tag is updated on Dockerhub, their pipeline first deploys to this staging environment. If that deployment is successful, it deploys to production. If that deployment fails, the deploy is aborted.
