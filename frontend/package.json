@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "auth0-js": "9.3.0",
-    "bootstrap": "^4.1.2",
+    "bootstrap": "^3.3.7",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "json-e": "^2.3.5",
