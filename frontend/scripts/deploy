@@ -15,10 +15,9 @@ export SHIPIT_API_URL
 
 HEADERS=$(cat <<EOF
 { \
-    "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'; img-src 'self' *.gravatar.com data:; script-src 'self' 'unsafe-inline' https://cdn.auth0.com; style-src 'self'; font-src 'self'; connect-src https://hg.mozilla.org https://queue.taskcluster.net https://auth.mozilla.auth0.com $SHIPIT_API_URL; frame-src 'self' https://auth.mozilla.auth0.com;", \
+    "Content-Security-Policy": "default-src 'none'; frame-ancestors 'self'; img-src 'self' *.gravatar.com data:; script-src 'self' 'unsafe-inline' https://cdn.auth0.com; style-src 'self'; font-src 'self'; connect-src https://hg.mozilla.org https://queue.taskcluster.net https://auth.mozilla.auth0.com $SHIPIT_API_URL; frame-src 'self' https://auth.mozilla.auth0.com;", \
     "Strict-Transport-Security": "max-age=63072000", \
     "X-Content-Type-Options": "nosniff", \
-    "X-Frame-Options": "SAMEORIGIN", \
     "X-Content-Type-Options": "nosniff", \
     "X-XSS-Protection": "1; mode=block", \
     "Referrer-Policy": "no-referrer", \
