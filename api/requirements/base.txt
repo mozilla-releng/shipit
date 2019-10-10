@@ -83,8 +83,8 @@ flask-talisman==0.7.0 \
 flask==1.1.1 \
     --hash=sha256:13f9f196f330c7c2c5d7a5cf91af894110ca0215ac051b5844701f2bfd934d52 \
     --hash=sha256:45eb5a6fd193d6cf7e0cf5d8a5b31f83d5faae0293695626f539a823e93b13f6
-future==0.17.1 \
-    --hash=sha256:67045236dcfd6816dc439556d009594abf643e5eb48992e36beac09c2ca659b8 \
+future==0.18.0 \
+    --hash=sha256:6142ef79e2416e432931d527452a1cab3aa4a754a0a53d25b2589f79e1106f34 \
     # via mozilla-version
 gunicorn==19.9.0 \
     --hash=sha256:aa8e0b40b4157b36a5df5e599f45c9c76d6af43845ba3b3b0efe2c70473c2471 \
