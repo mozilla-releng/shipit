@@ -6,7 +6,7 @@ COPY requirements/ /app/requirements/
 RUN pip install -r requirements/base.txt
 
 COPY . /app
-RUN python setup.py install
+RUN pip install -e .
 
 ENV APP_NAME shipit_api
 ENV APP_SETTINGS /app/settings.py

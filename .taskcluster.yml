@@ -23,7 +23,7 @@ tasks:
         $if: 'release_channel == "production"'
         then: 'relengstatic-prod-shipitfrontend-static-website'
         else: 'relengstatic-${release_channel}-shipitfrontend-static-website'
-  
+
       # Github events have this stuff in different places...
       repo_url:
         $if: 'tasks_for == "github-pull-request"'
@@ -81,7 +81,7 @@ tasks:
                   description: Ship It API ${py[0]} tests
                   owner: ${owner_email}
                   source: ${repo_url}
-  
+
             - taskId: {$eval: as_slugid("ui tests")}
               created: {$fromNow: ''}
               deadline: {$fromNow: '2 hours'}
@@ -104,7 +104,7 @@ tasks:
                 description: Ship It Frontend tests
                 owner: ${owner_email}
                 source: ${repo_url}
-  
+
             - taskId: {$eval: as_slugid("docker-build-and-push")}
               dependencies:
                 - '${as_slugid(python_version)}'
@@ -160,7 +160,7 @@ tasks:
                 description: Ship It API docker build
                 owner: ${owner_email}
                 source: ${repo_url}
-  
+
             - $if: 'ui_bucket != "relengstatic-none-shipitfrontend-static-website"'
               then:
                 - taskId: {$eval: as_slugid("ui-deploy")}
