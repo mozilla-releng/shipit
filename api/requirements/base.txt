@@ -299,9 +299,9 @@ slugid==2.0.0 \
     # via taskcluster
 sqlalchemy==1.3.10 \
     --hash=sha256:0f0768b5db594517e1f5e1572c73d14cf295140756431270d89496dc13d5e46c
-structlog==19.1.0 \
-    --hash=sha256:5feae03167620824d3ae3e8915ea8589fc28d1ad6f3edf3cc90ed7c7cb33fab5 \
-    --hash=sha256:db441b81c65b0f104a7ce5d86c5432be099956b98b8a2c8be0b3fb3a7a0b1536
+structlog==19.2.0 \
+    --hash=sha256:4287058cf4ce1a59bc5dea290d6386d37f29a37529c9a51cdf7387e51710152b \
+    --hash=sha256:6640e6690fc31d5949bc614c1a630464d3aaa625284aeb7c6e486c3010d73e12
 swagger-ui-bundle==0.0.5 \
     --hash=sha256:01ae8fdb1fa4e034933e0874afdda0d433dcb94476fccb231b66fd5f49dac96c \
     --hash=sha256:802f160dd6fe1d6b8fa92c6a40f593ef52f87ad0f507b1170ad2067f03de4c01 \
