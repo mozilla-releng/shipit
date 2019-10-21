@@ -5,8 +5,6 @@ services:
     ports:
       - "8015:8015"
     volumes:
-      # This doesn't quite work because the app has to be installed
-      # Maybe we should drop the volume mount and rely on rebuilding?
       - ./api:/app
     environment:
       - HOST=0.0.0.0
@@ -22,6 +20,9 @@ services:
       - AUTH_REDIRECT_URI=todo
       - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
       - DISABLE_NOTIFY=1
+      - TASKCLUSTER_CLIENT_ID
+      - TASKCLUSTER_ACCESS_TOKEN
+      - TASKCLUSTER_SECRET
     depends_on:
       - db
 
