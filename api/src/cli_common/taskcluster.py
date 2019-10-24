@@ -5,67 +5,35 @@
 
 import copy
 import os
-import re
 
 import click
 import taskcluster
 
-from cli_common.log import get_logger
 
-logger = get_logger(__name__)
-
-TASKCLUSTER_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-
-with open(taskcluster._client_importer.__file__) as f:
-    TASKCLUSTER_SERVICES = [line.split(" ")[1][1:] for line in f.read().split("\n") if line]
-
-
-def read_hosts():
-    """
-    Read /etc/hosts to get hostnames
-    on a Nix env (used for taskclusterProxy)
-    Only reads ipv4 entries to avoid duplicates
-    """
-    out = {}
-    regex = re.compile(r"([\w:\-\.]+)")
-    for line in open("/etc/hosts").readlines():
-        if ":" in line:  # only ipv4
-            continue
-        x = regex.findall(line)
-        if not x:
-            continue
-        ip, names = x[0], x[1:]
-        out.update(dict(zip(names, [ip] * len(names))))
-
-    return out
-
-
-def get_options(client_id=None, access_token=None):
+def get_options(root_url, client_id, access_token):
     """
     Build Taskcluster credentials options
     """
 
-    if client_id is not None and access_token is not None:
-        # Use provided credentials
-        tc_options = {"credentials": {"clientId": client_id, "accessToken": access_token}, "rootUrl": "https://taskcluster.net"}
-
-    else:
-        # Get taskcluster proxy host
-        # as /etc/hosts is not used in the Nix image (?)
-        hosts = read_hosts()
-        if "taskcluster" not in hosts:
-            raise Exception("Missing taskcluster in /etc/hosts")
-
-        # Load secrets from TC task context
-        # with taskclusterProxy
-        root_url = f"http://{hosts['taskcluster']}"
-
-        logger.info("Taskcluster Proxy enabled", url=root_url)
-        tc_options = {"rootUrl": root_url}
-
-    tc_options["maxRetries"] = 12
+    tc_options = {"credentials": {"clientId": client_id, "accessToken": access_token}, "rootUrl": root_url, "maxRetries": 12}
 
     return tc_options
+
+
+def get_root_url():
+    """Return Taskcluster Root URL specified by command line or environment
+       variable."""
+    root_url = None
+    try:
+        ctx = click.get_current_context()
+        root_url = ctx.params.get("taskcluster_root_url")
+    except RuntimeError:
+        pass  # no active context
+
+    if not root_url:
+        root_url = os.environ.get("TASKCLUSTER_ROOT_URL")
+
+    return root_url
 
 
 def get_service(service_name, client_id=None, access_token=None):
@@ -75,11 +43,7 @@ def get_service(service_name, client_id=None, access_token=None):
      * directly provided credentials
      * credentials from click
      * credentials from environment variables
-     * taskclusterProxy
     """
-    if service_name not in TASKCLUSTER_SERVICES:
-        raise Exception(f"Service `{service_name}` does not exists.")
-
     # Credentials preference: Use click variables
     if client_id is None and access_token is None:
         try:
@@ -95,7 +59,7 @@ def get_service(service_name, client_id=None, access_token=None):
         access_token = os.environ.get("TASKCLUSTER_ACCESS_TOKEN")
 
     # Instanciate service
-    options = get_options(client_id, access_token)
+    options = get_options(get_root_url(), client_id, access_token)
     return getattr(taskcluster, service_name.capitalize())(options)
 
 
@@ -132,33 +96,3 @@ def get_secrets(name, project_name, required=[], existing=dict(), taskcluster_cl
             raise Exception(f"Missing value {required_secret} in secrets.")
 
     return secrets
-
-
-def get_hook_artifact(hook_group_id, hook_id, artifact_name, client_id=None, access_token=None):
-    """
-    Load an artifact from the last execution of an hook
-    """
-
-    # Get last run from hook
-    hooks = get_service("hooks", client_id, access_token)
-    hook_status = hooks.getHookStatus(hook_group_id, hook_id)
-    last_fire = hook_status.get("lastFire")
-    if last_fire is None:
-        raise Exception("Hook did not fire")
-    task_id = last_fire["taskId"]
-
-    # Get successful run for this task
-    queue = get_service("queue", client_id, access_token)
-    task_status = queue.status(task_id)
-    if task_status["status"]["state"] != "completed":
-        raise Exception(f"Task {task_id} is not completed")
-    run_id = None
-    for run in task_status["status"]["runs"]:
-        if run["state"] == "completed":
-            run_id = run["runId"]
-            break
-    if run_id is None:
-        raise Exception("No completed run found")
-
-    # Load artifact from task run
-    return queue.getArtifact(task_id, run_id, artifact_name)

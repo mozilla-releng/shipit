@@ -140,16 +140,11 @@ tasks:
                     mv shipit-${head_sha} /src &&
                     cd /src/api &&
                     ./docker.d/generate_version_json.sh &&
-                    ./docker.d/build_image.sh /tmp/image.tar &&
+                    ./docker.d/build_image.sh &&
                     ./docker.d/push_image.sh
                 features:
                   dind: true
                   taskclusterProxy: true
-                artifacts:
-                  public/image.tar:
-                    expires: {$fromNow: '8 weeks'}
-                    path: '/tmp/image.tar'
-                    type: 'file'
               scopes:
                 $if: 'push_docker_image == "0"'
                 then: []

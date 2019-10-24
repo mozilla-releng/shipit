@@ -39,6 +39,7 @@ export default class UserSession {
       this.credentialAgent = new OIDCCredentialAgent({
         accessToken: this.accessToken,
         oidcProvider: this.oidcProvider,
+        url: this.url,
       });
     }
   }

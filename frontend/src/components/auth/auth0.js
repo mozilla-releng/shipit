@@ -1,7 +1,8 @@
 import { fromNow } from 'taskcluster-client-web';
 import { WebAuth } from 'auth0-js';
+import libUrls from 'taskcluster-lib-urls';
 import UserSession from './UserSession';
-import config from '../../config';
+import config, { TASKCLUSTER_ROOT_URL } from '../../config';
 
 export const webAuth = new WebAuth({
   domain: config.AUTH0.domain,
@@ -13,8 +14,9 @@ export const webAuth = new WebAuth({
 });
 
 export function userSessionFromAuthResult(authResult) {
+  const oidcProvider = 'mozilla-auth0';
   return UserSession.fromOIDC({
-    oidcProvider: 'mozilla-auth0',
+    oidcProvider,
     accessToken: authResult.accessToken,
     fullName: authResult.idTokenPayload.name,
     email: authResult.idTokenPayload.email,
@@ -22,6 +24,7 @@ export function userSessionFromAuthResult(authResult) {
     oidcSubject: authResult.idTokenPayload.sub,
     // per https://wiki.mozilla.org/Security/Guidelines/OpenID_connect#Session_handling
     renewAfter: fromNow('15 minutes'),
+    url: libUrls.api(TASKCLUSTER_ROOT_URL, 'login', 'v1', `/oidc-credentials/${oidcProvider}`),
   });
 }
 
