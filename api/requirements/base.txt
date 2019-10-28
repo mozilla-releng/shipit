@@ -114,10 +114,9 @@ jinja2==2.10.3 \
     # via flask, swagger-ui-bundle
 json-e==3.0.0 \
     --hash=sha256:d2914f785d93ecc4f0b2ad6e3f2791f33327eaa740a3c4917d68a9a485dd282d
-jsonschema==2.6.0 \
-    --hash=sha256:000e68abd33c972a5248544925a0cae7d1125f9bf6c58280d37546b946769a08 \
-    --hash=sha256:6ff5f3180870836cae40f06fa10419f557208175f13ad7bc26caa77beb1f6e02 \
-    # via connexion, openapi-spec-validator
+jsonschema==3.1.1 \
+    --hash=sha256:2fa0684276b6333ff3c0b1b27081f4b2305f0a36cf702a23db50edb141893c3f \
+    --hash=sha256:94c0a13b4a0616458b42529091624e66700a17f847453e52279e35509a5b7631    # via connexion, openapi-spec-validator
 kombu==4.6.5 \
     --hash=sha256:31edb84947996fdda065b6560c128d5673bb913ff34aa19e7b84755217a24deb \
     --hash=sha256:c9078124ce2616b29cf6607f0ac3db894c59154252dee6392cdbbe15e5c4b566
