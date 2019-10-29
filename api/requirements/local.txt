@@ -15,4 +15,7 @@ tox==3.14.0 \
     --hash=sha256:c4f6b319c20ba4913dbfe71ebfd14ff95d1853c4231493608182f66e566ecfe1
 virtualenv==16.7.7 \
     --hash=sha256:11cb4608930d5fd3afb545ecf8db83fa50e1f96fc4fca80c94b07d2c83146589 \
-    --hash=sha256:d257bb3773e48cac60e475a19b608996c73f4d333b3ba2e4e57d5ac6134e0136    # via tox
+    --hash=sha256:d257bb3773e48cac60e475a19b608996c73f4d333b3ba2e4e57d5ac6134e0136 \
+    # via tox
+
+# The following packages are considered to be unsafe in a requirements file:
