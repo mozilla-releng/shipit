@@ -188,7 +188,7 @@ tasks:
                       RELEASE_CHANNEL: ${release_channel}
                       RELEASE_VERSION: 62
                       WEBSITE_BUCKET: '${ui_bucket}'
-                      SHIPIT_API_URL: '{shipit_api_url}'
+                      SHIPIT_API_URL: '${shipit_api_url}'
                       # To avoid env conditions with TASKCLUSTER_ROOT_URL
                       FRONTEND_TASKCLUSTER_ROOT_URL: '${taskcluster_root_url}'
                     maxRunTime: 3600
