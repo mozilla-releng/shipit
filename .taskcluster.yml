@@ -23,7 +23,20 @@ tasks:
         $if: 'release_channel == "production"'
         then: 'relengstatic-prod-shipitfrontend-static-website'
         else: 'relengstatic-${release_channel}-shipitfrontend-static-website'
-
+      taskcluster_root_url:
+        $if: 'release_channel == "production"'
+        then: 'https://taskcluster.net'
+        else: 'https://firefox-ci-tc.services.mozilla.com'
+      shipit_api_url:
+        $if: 'release_channel == "production"'
+        then: 'https://shipit-api.mozilla-releng.net'
+        else:
+          $if: 'release_channel == "staging"'
+          then: 'https://api.shipit.staging.mozilla-releng.net'
+          else:
+            $if: 'release_channel == "testing"'
+            then: 'https://api.shipit.testing.mozilla-releng.net'
+            else: ''
       # Github events have this stuff in different places...
       repo_url:
         $if: 'tasks_for == "github-pull-request"'
@@ -175,6 +188,9 @@ tasks:
                       RELEASE_CHANNEL: ${release_channel}
                       RELEASE_VERSION: 62
                       WEBSITE_BUCKET: '${ui_bucket}'
+                      SHIPIT_API_URL: '{shipit_api_url}'
+                      # To avoid env conditions with TASKCLUSTER_ROOT_URL
+                      FRONTEND_TASKCLUSTER_ROOT_URL: '${taskcluster_root_url}'
                     maxRunTime: 3600
                     image: "node:current"
                     command:
