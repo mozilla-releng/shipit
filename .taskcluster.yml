@@ -186,7 +186,6 @@ tasks:
                     env:
                       DEPLOY_SECRET: http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy
                       RELEASE_CHANNEL: ${release_channel}
-                      RELEASE_VERSION: 62
                       WEBSITE_BUCKET: '${ui_bucket}'
                       SHIPIT_API_URL: '${shipit_api_url}'
                       # To avoid env conditions with TASKCLUSTER_ROOT_URL
