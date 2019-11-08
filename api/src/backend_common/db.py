@@ -91,9 +91,6 @@ def init_database(app):
             db.create_all()
 
 
-ALLOWED_TABLES = ["relengapi_auth_tokens"]
-
-
 def init_app(app):
     db.init_app(app)
 

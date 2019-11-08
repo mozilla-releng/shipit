@@ -3,7 +3,7 @@ import { ProgressBar, Button, Modal, Collapse, FormGroup, Radio, ControlLabel, T
 import { object } from 'prop-types';
 import ReactInterval from 'react-interval';
 import { Queue } from 'taskcluster-client-web';
-import config, { SHIPIT_API_URL } from '../../config';
+import config, { SHIPIT_API_URL, TASKCLUSTER_ROOT_URL } from '../../config';
 import { getShippedReleases } from '../../components/api';
 
 const statusStyles = {
@@ -20,7 +20,7 @@ const statusStyles = {
 };
 
 const taskStatus = async (taskId) => {
-  const status = await (new Queue()).status(taskId);
+  const status = await (new Queue({ rootUrl: TASKCLUSTER_ROOT_URL })).status(taskId);
   return status;
 };
 
@@ -345,6 +345,11 @@ class TaskProgress extends React.Component {
     const { phasesWithStatus } = this.state;
     const { releaseName } = this.props;
     const width = 100 / phasesWithStatus.length;
+    // TODO: use the urls library after the migration
+    const taskGroupUrlPrefix = TASKCLUSTER_ROOT_URL === 'https://taskcluster.net' ?
+      `${config.TASKCLUSTER_TOOLS_URL}/groups` :
+      `${TASKCLUSTER_ROOT_URL}/tasks/groups`;
+
     return (
       <ProgressBar style={{ height: '40px', padding: '3px' }}>
         {phasesWithStatus.map(({
@@ -362,7 +367,7 @@ class TaskProgress extends React.Component {
               status={status}
               signoffs={signoffs}
               releaseName={releaseName}
-              taskGroupUrl={`${config.TASKCLUSTER_TOOLS_URL}/groups/${actionTaskId}`}
+              taskGroupUrl={`${taskGroupUrlPrefix}/${actionTaskId}`}
             />}
           />
         ))}

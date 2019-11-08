@@ -175,12 +175,15 @@ def schedule_phase(name, phase):
         phase.release.completed = completed
     session.commit()
 
+    root_url = hooks.options["rootUrl"]
+    url = f"{root_url}/tasks/groups/{phase.task_id}"
+    # TODO: Remove the condition after migration
+    if root_url == "https://taskcluster.net":
+        url = "https://tools.taskcluster.net/groups/{phase.task_id}"
+
     notify_via_irc(
         phase.release.product,
-        f"Phase {phase.name} was just scheduled "
-        f"for release {phase.release.product} {phase.release.version} "
-        f"build{phase.release.build_number} - "
-        f"(https://tools.taskcluster.net/groups/{phase.task_id})",
+        f"Phase {phase.name} was just scheduled for release {phase.release.product} {phase.release.version} build{phase.release.build_number} - {url}",
     )
 
     return phase.json
