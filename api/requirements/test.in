@@ -4,6 +4,7 @@ pytest
 pytest-cov
 black
 check-manifest
+flake8
 pip-compile-multi
 isort
 coverage

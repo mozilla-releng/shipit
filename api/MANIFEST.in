@@ -5,6 +5,7 @@ include README.rst
 include CODE_OF_CONDUCT.md
 include pyproject.toml
 include settings.py
+include setup.py
 include tox.ini
 include version.txt
 
@@ -12,12 +13,12 @@ recursive-include src *.py *.yml
 recursive-include docs *.rst conf.py
 recursive-include requirements *.in
 recursive-include requirements *.txt
-recursive-include tests *
 
 exclude .taskcluster.yml
 exclude Dockerfile*
 exclude docker.d
 
 recursive-exclude docker.d *.sh *.pem
+recursive-exclude tests *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
