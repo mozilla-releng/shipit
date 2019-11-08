@@ -66,6 +66,13 @@ tasks:
           $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev", "refs/heads/testing", "refs/heads/staging", "refs/heads/production"]'
           then: '1'
           else: '0'
+      worker_level:
+        $if: 'tasks_for == "github-pull-request"'
+        then: 't'
+        else:
+          $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev", "refs/heads/testing", "refs/heads/staging", "refs/heads/production"]'
+          then: '3'
+          else: 't'
     in:
       $flattenDeep:
         - $if: '(tasks_for == "github-pull-request" && event["action"] in ["edited", "opened", "reopened", "synchronize"]) || tasks_for == "github-push"'
@@ -75,8 +82,8 @@ tasks:
                 taskId: "${as_slugid(py[0])}"
                 created: {$fromNow: ''}
                 deadline: {$fromNow: '2 hours'}
-                provisionerId: aws-provisioner-v1
-                workerType: github-worker
+                provisionerId: releng-t
+                workerType: linux
                 payload:
                   maxRunTime: 1200
                   image: {$eval: 'py[1]'}
@@ -98,8 +105,8 @@ tasks:
             - taskId: {$eval: as_slugid("ui tests")}
               created: {$fromNow: ''}
               deadline: {$fromNow: '2 hours'}
-              provisionerId: aws-provisioner-v1
-              workerType: github-worker
+              provisionerId: releng-t
+              workerType: linux
               payload:
                 maxRunTime: 1200
                 image: node:10
@@ -123,8 +130,8 @@ tasks:
                 - '${as_slugid(python_version)}'
               created: {$fromNow: ''}
               deadline: {$fromNow: '24 hours'}
-              provisionerId: aws-provisioner-v1
-              workerType: github-worker
+              provisionerId: 'releng-${worker_level}'
+              workerType: linux
               routes: []
               payload:
                 maxRunTime: 3600
@@ -174,8 +181,8 @@ tasks:
                 - taskId: {$eval: as_slugid("ui-deploy")}
                   created: {$fromNow: ''}
                   deadline: {$fromNow: '2 hours'}
-                  provisionerId: aws-provisioner-v1
-                  workerType: github-worker
+                  provisionerId: 'releng-${worker_level}'
+                  workerType: linux
                   scopes:
                     $if: 'push_docker_image == "0"'
                     then: []
