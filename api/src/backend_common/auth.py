@@ -3,19 +3,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import datetime
 import functools
 import json
 import os
-import time
 
 import flask
 import flask_login
 import flask_oidc
-import itsdangerous
-import pytz
 import requests
-import sqlalchemy as sa
 import taskcluster.utils
 
 import backend_common.db
