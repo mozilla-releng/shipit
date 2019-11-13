@@ -59,6 +59,7 @@ def auth0_login():
     API Endpoint: Build Url to login on Auth0 server
     """
     params = {
+        # TODO: Revisit this value
         "audience": "login.taskcluster.net",
         "scope": "taskcluster-credentials openid",
         "response_type": "code",

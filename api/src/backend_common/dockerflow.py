@@ -31,7 +31,7 @@ class HeartbeatException(Exception):
 
 
 def get_version():
-    version_json = {"source": "https://github.com/mozilla-releng/services", "version": "unknown", "commit": "unknown", "build": "unknown"}
+    version_json = {"source": "https://github.com/mozilla-releng/shipit", "version": "unknown", "commit": "unknown", "build": "unknown"}
     try:
         version_json_path = "/app/version.json"
         with open(version_json_path) as f:

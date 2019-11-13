@@ -23,6 +23,7 @@ services:
       - TASKCLUSTER_CLIENT_ID
       - TASKCLUSTER_ACCESS_TOKEN
       - TASKCLUSTER_SECRET
+      - TASKCLUSTER_ROOT_URL=https://firefox-ci-tc.services.mozilla.com
     depends_on:
       - db
 
@@ -53,7 +54,7 @@ services:
       - PORT=8010
       - SHIPIT_API_URL=https://localhost:8015
       - RELEASE_CHANNEL=development
-      - RELEASE_VERSION=61
+      - TASKCLUSTER_ROOT_URL=https://firefox-ci-tc.services.mozilla.com
     entrypoint:
       - /bin/bash
       - --login

@@ -24,6 +24,7 @@ def app():
             "AUTH_CLIENT_SECRET": "dummy_secret",
             "OIDC_USER_INFO_ENABLED": True,
             "OIDC_CLIENT_SECRETS": os.path.join(os.path.dirname(__file__), "client_secrets.json"),
+            "TASKCLUSTER_ROOT_URL": "https://something",
             "TASKCLUSTER_CLIENT_ID": "something",
             "TASKCLUSTER_ACCESS_TOKEN": "something",
         }
