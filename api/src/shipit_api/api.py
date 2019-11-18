@@ -3,8 +3,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from collections import defaultdict
 import datetime
+from collections import defaultdict
 
 from flask import abort, current_app, jsonify
 from flask_login import current_user
@@ -16,7 +16,7 @@ from backend_common.auth import auth
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
 from shipit_api.config import PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
-from shipit_api.models import Phase, Release, Signoff, DisabledProduct
+from shipit_api.models import DisabledProduct, Phase, Release, Signoff
 from shipit_api.release import Product
 from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact, generate_action_hook, render_action_hook
 
