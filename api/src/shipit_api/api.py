@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+from collections import defaultdict
 import datetime
 
 from flask import abort, current_app, jsonify
@@ -15,7 +16,7 @@ from backend_common.auth import auth
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
 from shipit_api.config import PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
-from shipit_api.models import Phase, Release, Signoff
+from shipit_api.models import Phase, Release, Signoff, DisabledProducts
 from shipit_api.release import Product
 from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact, generate_action_hook, render_action_hook
 
@@ -323,7 +324,11 @@ def phase_signoff(name, phase, uid):
 
 
 def get_disabled_products():
-    return {}
+    session = current_app.db.session
+    ret = defaultdict(list)
+    for row in session.query(DisabledProducts).all():
+        ret[row.product].append(row.branch)
+    return ret
 
 
 def disable_product(product, branch):
