@@ -231,7 +231,7 @@ class Release(db.Model):
         }
 
 
-class DisabledProducts(db.Model):
+class DisabledProduct(db.Model):
     __tablename__ = "shipit_api_disabled_products"
 
     product = sa.Column(sa.String, nullable=False, primary_key=True)

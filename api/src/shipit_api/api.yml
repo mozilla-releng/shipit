@@ -258,7 +258,7 @@ paths:
       operationId: shipit_api.api.enable_product
       parameters:
       - name: product
-        in: path
+        in: query
         required: true
         type: string
         enum:
@@ -267,7 +267,7 @@ paths:
         - devedition
         - thunderbird
       - name: branch
-        in: path
+        in: query
         required: true
         type: string
       responses:

@@ -16,7 +16,7 @@ from backend_common.auth import auth
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
 from shipit_api.config import PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
-from shipit_api.models import Phase, Release, Signoff, DisabledProducts
+from shipit_api.models import Phase, Release, Signoff, DisabledProduct
 from shipit_api.release import Product
 from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact, generate_action_hook, render_action_hook
 
@@ -326,14 +326,28 @@ def phase_signoff(name, phase, uid):
 def get_disabled_products():
     session = current_app.db.session
     ret = defaultdict(list)
-    for row in session.query(DisabledProducts).all():
+    for row in session.query(DisabledProduct).all():
         ret[row.product].append(row.branch)
     return ret
 
 
-def disable_product(product, branch):
-    return {}
+def disable_product(body):
+    session = current_app.db.session
+
+    dp = DisabledProduct(product=body["product"], branch=body["branch"])
+    session.add(dp)
+    session.commit()
+
+    return 200
 
 
 def enable_product(product, branch):
-    return {}
+    session = current_app.db.session
+
+    try:
+        dp = session.query(DisabledProduct).filter(DisabledProduct.product == product).filter(DisabledProduct.branch == branch).one()
+        session.delete(dp)
+        session.commit()
+        return 200
+    except NoResultFound:
+        abort(404)
