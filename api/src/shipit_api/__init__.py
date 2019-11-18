@@ -28,7 +28,7 @@ def create_app(config=None):
             os.environ.get("TASKCLUSTER_ACCESS_TOKEN", app.config.get("TASKCLUSTER_ACCESS_TOKEN")),
         )
 
-    app.api.register(os.path.join(os.path.dirname(__file__), "api.yml"))
+    app.api.register(os.path.join(os.path.dirname(__file__), "api.yml"), arguments={"read_only": app.config.get("READ_ONLY", False)})
     app.cli.add_command(shipit_api.worker.cmd, "worker")
 
     return app

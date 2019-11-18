@@ -23,7 +23,7 @@ required = [
     "DATABASE_URL",
     "SECRET_KEY_BASE64",
 ]
-optional = ["DISABLE_NOTIFY"]
+optional = ["DISABLE_NOTIFY", "READ_ONLY"]
 
 # In local development, these come directly from the environment.
 if os.environ.get("APP_CHANNEL") == "development":

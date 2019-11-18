@@ -4,6 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
+import functools
 
 from flask import abort, current_app, jsonify
 from flask_login import current_user
@@ -64,6 +65,17 @@ def notify_via_irc(product, message):
             current_app.notify.irc({"channel": channel, "message": f"{owners}: {message}"})
 
 
+def read_write(f):
+    @functools.wraps(f)
+    def check_read_only(*args, **kwargs):
+        if current_app.config.get("READ_ONLY", False):
+            abort(401, f"public api does not support modification")
+        return f(*args, **kwargs)
+
+    return check_read_only
+
+
+@read_write
 def add_release(body):
     # we must require scope which depends on product
     required_permission = f'{SCOPE_PREFIX}/add_release/{body["product"]}'
@@ -135,6 +147,7 @@ def get_phase(name, phase):
         abort(404)
 
 
+@read_write
 def schedule_phase(name, phase):
     session = current_app.db.session
     try:
@@ -189,6 +202,7 @@ def schedule_phase(name, phase):
     return phase.json
 
 
+@read_write
 def abandon_release(name):
     session = current_app.db.session
     try:
@@ -232,6 +246,7 @@ def abandon_release(name):
 
 
 @auth.require_permissions([SCOPE_PREFIX + "/rebuild_product_details"])
+@read_write
 def rebuild_product_details(options):
     pulse_user = current_app.config["PULSE_USER"]
     exchange = f"exchange/{pulse_user}/{PROJECT_NAME}"
@@ -250,6 +265,7 @@ def rebuild_product_details(options):
 
 
 @auth.require_permissions([SCOPE_PREFIX + "/update_release_status"])
+@read_write
 def update_release_status(name, body):
     session = current_app.db.session
     try:
@@ -279,6 +295,7 @@ def get_phase_signoff(name, phase):
         abort(404)
 
 
+@read_write
 def phase_signoff(name, phase, uid):
     session = current_app.db.session
     try:
