@@ -229,6 +229,53 @@ paths:
           schema:
             $ref: '#/definitions/Signoffs'
 
+  /disabled-products:
+    get:
+      summary: Get the list of product/branches which are currently disabled. Disabled products/branches will not have automated releases created
+      operationId: shipit_api.api.get_disabled_products
+      responses:
+        200:
+          description: Disabled product/branches
+          schema:
+            type: object
+    post:
+      summary: Disable a product+branch
+      operationId: shipit_api.api.disable_product
+      parameters:
+      - in: body
+        name: body
+        description: Disable Product object
+        required: true
+        schema:
+          $ref: '#/definitions/DisableProduct'
+      responses:
+        200:
+          description: OK
+        405:
+          description: Invalid input
+    delete:
+      summary: Enable a product+branch
+      operationId: shipit_api.api.enable_product
+      parameters:
+      - name: product
+        in: path
+        required: true
+        type: string
+        enum:
+        - firefox
+        - fennec
+        - devedition
+        - thunderbird
+      - name: branch
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK
+        405:
+          description: Invalid input
+
 definitions:
   ReleaseInput:
     type: object
@@ -416,3 +463,21 @@ definitions:
         type: string
         format: datetime
         description: Timestamp of the signoff
+
+  DisableProduct:
+    type: object
+    required:
+    - product
+    - branch
+    properties:
+      product:
+        type: string
+        example: firefox
+        enum:
+        - firefox
+        - fennec
+        - devedition
+        - thunderbird
+      branch:
+        type: string
+        example: projects/maple

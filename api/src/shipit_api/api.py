@@ -320,3 +320,15 @@ def phase_signoff(name, phase, uid):
     notify_via_irc(r.product, f"{phase} of {r.product} {r.version} build{r.build_number} signed off by {who}.")
 
     return dict(signoffs=signoffs)
+
+
+def get_disabled_products():
+    return {}
+
+
+def disable_product(product, branch):
+    return {}
+
+
+def enable_product(product, branch):
+    return {}
