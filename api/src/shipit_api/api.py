@@ -332,9 +332,17 @@ def get_disabled_products():
 
 
 def disable_product(body):
+    product = body["product"]
+    branch = body["branch"]
+
+    required_permission = f"{SCOPE_PREFIX}/disable_product/{product}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+
     session = current_app.db.session
 
-    dp = DisabledProduct(product=body["product"], branch=body["branch"])
+    dp = DisabledProduct(product=product, branch=branch)
     session.add(dp)
     session.commit()
 
@@ -343,6 +351,11 @@ def disable_product(body):
 
 def enable_product(product, branch):
     session = current_app.db.session
+
+    required_permission = f"{SCOPE_PREFIX}/disable_product/{product}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     try:
         dp = session.query(DisabledProduct).filter(DisabledProduct.product == product).filter(DisabledProduct.branch == branch).one()
