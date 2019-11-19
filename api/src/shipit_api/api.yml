@@ -263,13 +263,14 @@ paths:
         type: string
         enum:
         - firefox
-        - fennec
         - devedition
-        - thunderbird
       - name: branch
         in: query
         required: true
         type: string
+        enum:
+        - releases/mozilla-beta
+        - try
       responses:
         200:
           description: OK
@@ -475,9 +476,10 @@ definitions:
         example: firefox
         enum:
         - firefox
-        - fennec
         - devedition
-        - thunderbird
       branch:
         type: string
-        example: projects/maple
+        example: releases/mozilla-beta
+        enum:
+        - releases/mozilla-beta
+        - try
