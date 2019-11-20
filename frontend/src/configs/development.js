@@ -1,6 +1,5 @@
 module.exports = {
   TREEHERDER_URL: 'https://treeherder.mozilla.org',
-  TASKCLUSTER_TOOLS_URL: 'https://tools.taskcluster.net',
   AUTH0: {
     domain: 'auth.mozilla.auth0.com',
     clientID: 'FK1mJkHhwjulTYBGklxn8W4Fhd1pgT4t',
@@ -19,6 +18,13 @@ module.exports = {
           branch: 'projects/maple',
           repo: 'https://hg.mozilla.org/projects/maple',
           enableReleaseEta: true,
+        },
+        {
+          prettyName: 'Try',
+          project: 'try',
+          branch: 'try',
+          repo: 'https://hg.mozilla.org/try',
+          enableReleaseEta: false,
         },
       ],
       enablePartials: true,

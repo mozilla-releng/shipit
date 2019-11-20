@@ -54,7 +54,7 @@ services:
       - PORT=8010
       - SHIPIT_API_URL=https://localhost:8015
       - RELEASE_CHANNEL=development
-      - TASKCLUSTER_ROOT_URL=https://firefox-ci-tc.services.mozilla.com
+      - FRONTEND_TASKCLUSTER_ROOT_URL=https://firefox-ci-tc.services.mozilla.com
     entrypoint:
       - /bin/bash
       - --login

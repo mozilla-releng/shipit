@@ -3,6 +3,7 @@ import { ProgressBar, Button, Modal, Collapse, FormGroup, Radio, ControlLabel, T
 import { object } from 'prop-types';
 import ReactInterval from 'react-interval';
 import { Queue } from 'taskcluster-client-web';
+import libUrls from 'taskcluster-lib-urls';
 import config, { SHIPIT_API_URL, TASKCLUSTER_ROOT_URL } from '../../config';
 import { getShippedReleases } from '../../components/api';
 
@@ -345,10 +346,7 @@ class TaskProgress extends React.Component {
     const { phasesWithStatus } = this.state;
     const { releaseName } = this.props;
     const width = 100 / phasesWithStatus.length;
-    // TODO: use the urls library after the migration
-    const taskGroupUrlPrefix = TASKCLUSTER_ROOT_URL === 'https://taskcluster.net' ?
-      `${config.TASKCLUSTER_TOOLS_URL}/groups` :
-      `${TASKCLUSTER_ROOT_URL}/tasks/groups`;
+    const taskGroupUrlPrefix = libUrls.ui(TASKCLUSTER_ROOT_URL, '/tasks/groups');
 
     return (
       <ProgressBar style={{ height: '40px', padding: '3px' }}>
