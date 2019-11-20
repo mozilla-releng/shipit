@@ -229,3 +229,10 @@ class Release(db.Model):
             "completed": self.completed or "",
             "phases": [p.json for p in self.phases],
         }
+
+
+class DisabledProduct(db.Model):
+    __tablename__ = "shipit_api_disabled_products"
+
+    product = sa.Column(sa.String, nullable=False, primary_key=True)
+    branch = sa.Column(sa.String, nullable=False, primary_key=True)

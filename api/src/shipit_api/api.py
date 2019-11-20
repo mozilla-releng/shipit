@@ -4,6 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
+from collections import defaultdict
 
 import taskcluster_urls
 from flask import abort, current_app, jsonify
@@ -16,7 +17,7 @@ from backend_common.auth import auth
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
 from shipit_api.config import PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
-from shipit_api.models import Phase, Release, Signoff
+from shipit_api.models import DisabledProduct, Phase, Release, Signoff
 from shipit_api.release import Product
 from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact, generate_action_hook, render_action_hook
 
@@ -318,3 +319,46 @@ def phase_signoff(name, phase, uid):
     notify_via_irc(r.product, f"{phase} of {r.product} {r.version} build{r.build_number} signed off by {who}.")
 
     return dict(signoffs=signoffs)
+
+
+def get_disabled_products():
+    session = current_app.db.session
+    ret = defaultdict(list)
+    for row in session.query(DisabledProduct).all():
+        ret[row.product].append(row.branch)
+    return ret
+
+
+def disable_product(body):
+    product = body["product"]
+    branch = body["branch"]
+
+    required_permission = f"{SCOPE_PREFIX}/disable_product/{product}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+
+    session = current_app.db.session
+
+    dp = DisabledProduct(product=product, branch=branch)
+    session.add(dp)
+    session.commit()
+
+    return 200
+
+
+def enable_product(product, branch):
+    session = current_app.db.session
+
+    required_permission = f"{SCOPE_PREFIX}/enable_product/{product}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+
+    try:
+        dp = session.query(DisabledProduct).filter(DisabledProduct.product == product).filter(DisabledProduct.branch == branch).one()
+        session.delete(dp)
+        session.commit()
+        return 200
+    except NoResultFound:
+        abort(404)

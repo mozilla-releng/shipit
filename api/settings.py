@@ -114,6 +114,16 @@ for product in ["firefox", "fennec", "devedition"]:
         scopes.update({f"schedule_phase/{product}/{phase}": GROUPS["firefox-signoff"], f"phase_signoff/{product}/{phase}": GROUPS["firefox-signoff"]})
     AUTH0_AUTH_SCOPES.update(scopes)
 
+# Add scopes for enabling/disabling products
+AUTH0_AUTH_SCOPES.update(
+    {
+        "disable_product/firefox": GROUPS["firefox-signoff"],
+        "disable_product/devedition": GROUPS["firefox-signoff"],
+        "enable_product/firefox": GROUPS["firefox-signoff"],
+        "enable_product/devedition": GROUPS["firefox-signoff"],
+    }
+)
+
 # thunderbird signoff scopes
 scopes = {"add_release/thunderbird": GROUPS["thunderbird-signoff"], "abandon_release/thunderbird": GROUPS["thunderbird-signoff"]}
 phases = []

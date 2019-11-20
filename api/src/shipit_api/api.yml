@@ -266,6 +266,56 @@ paths:
         409:
           description: Already submitted
           content: {}
+  /disabled-products:
+    get:
+      summary: Get the list of product/branches which are currently disabled. Disabled products/branches will not have automated releases created
+      operationId: shipit_api.api.get_disabled_products
+      responses:
+        200:
+          description: Disabled product/branches
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: Disable a product+branch
+      operationId: shipit_api.api.disable_product
+      requestBody:
+        description: Disable Product object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisableProduct'
+      responses:
+        200:
+          description: OK
+        405:
+          description: Invalid input
+    delete:
+      summary: Enable a product+branch
+      operationId: shipit_api.api.enable_product
+      parameters:
+      - name: product
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - firefox
+          - devedition
+      - name: branch
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - releases/mozilla-beta
+          - try
+      responses:
+        200:
+          description: OK
+        405:
+          description: Invalid input
 components:
   schemas:
     ReleaseInput:
@@ -450,4 +500,21 @@ components:
           type: string
           description: Timestamp of the signoff
           format: datetime
-
+    DisableProduct:
+      type: object
+      required:
+      - product
+      - branch
+      properties:
+        product:
+          type: string
+          example: firefox
+          enum:
+          - firefox
+          - devedition
+        branch:
+          type: string
+          example: releases/mozilla-beta
+          enum:
+          - releases/mozilla-beta
+          - try
