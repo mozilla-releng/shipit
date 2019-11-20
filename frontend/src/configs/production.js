@@ -1,6 +1,5 @@
 module.exports = {
   TREEHERDER_URL: 'https://treeherder.mozilla.org',
-  TASKCLUSTER_TOOLS_URL: 'https://tools.taskcluster.net',
   AUTH0: {
     domain: 'auth.mozilla.auth0.com',
     clientID: '2dXygwTNP3p7iLTSaEWbdoiJFkjSBqm4',

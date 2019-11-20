@@ -6,6 +6,7 @@
 import datetime
 from collections import defaultdict
 
+import taskcluster_urls
 from flask import abort, current_app, jsonify
 from flask_login import current_user
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
@@ -177,10 +178,7 @@ def schedule_phase(name, phase):
     session.commit()
 
     root_url = hooks.options["rootUrl"]
-    url = f"{root_url}/tasks/groups/{phase.task_id}"
-    # TODO: Remove the condition after migration
-    if root_url == "https://taskcluster.net":
-        url = "https://tools.taskcluster.net/groups/{phase.task_id}"
+    url = taskcluster_urls.ui(root_url, f"/tasks/groups/{phase.task_id}")
 
     notify_via_irc(
         phase.release.product,

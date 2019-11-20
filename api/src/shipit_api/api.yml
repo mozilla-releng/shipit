@@ -1,94 +1,104 @@
 ---
-swagger: '2.0'
+openapi: 3.0.1
 info:
   title: Ship-It API
   description: |
     Find  out more about Ship-it at
     [https://github.com/mozilla-releng/ship-it](https://github.com/mozilla-releng/ship-it)
-  version: 1.0.0
   license:
     name: MPL 2.0
     url: https://www.mozilla.org/MPL/2.0/
-
+  version: 1.0.0
+servers:
+- url: /
 paths:
-
   /product-details:
     post:
       summary: Trigger a rebuild of product details
       operationId: shipit_api.api.rebuild_product_details
-      consumes:
-      - "application/json"
-      parameters:
-      - in: body
-        name: options
+      requestBody:
         description: Rebuild options
+        x-body-name: options
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                breakpoint_version:
+                  type: integer
+                clean_working_copy:
+                  type: boolean
+                channel:
+                  type: string
+                folder_in_repo:
+                  type: string
         required: false
-        schema:
-          type: object
-          properties:
-            breakpoint_version:
-              type: integer
-            clean_working_copy:
-              type: boolean
-            channel:
-              type: string
-            folder_in_repo:
-              type: string
       responses:
-        405:
-          description: Invalid input
         200:
           description: Product details rebuild triggered.
-
-  /releases:
-    post:
-      summary: Add a new release
-      operationId: shipit_api.api.add_release
-      consumes:
-      - "application/json"
-      parameters:
-      - in: body
-        name: body
-        description: Release object
-        required: true
-        schema:
-          $ref: '#/definitions/ReleaseInput'
-      responses:
+          content: {}
         405:
           description: Invalid input
-        201:
-          description: Release added
-          schema:
-            $ref: '#/definitions/Release'
+          content: {}
+  /releases:
     get:
       summary: List releases
       operationId: shipit_api.api.list_releases
       parameters:
-      - in: query
-        name: product
-        type: string
-      - in: query
-        name: branch
-        type: string
-      - in: query
-        name: version
-        type: string
-      - in: query
-        name: build_number
-        type: integer
-      - in: query
-        name: status
-        type: array
-        items:
+      - name: product
+        in: query
+        schema:
           type: string
+      - name: branch
+        in: query
+        schema:
+          type: string
+      - name: version
+        in: query
+        schema:
+          type: string
+      - name: build_number
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
       responses:
         200:
           description: A list of releases
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Release'
-
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Release'
+    post:
+      summary: Add a new release
+      operationId: shipit_api.api.add_release
+      requestBody:
+        description: Release object
+        x-body-name: body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReleaseInput'
+        required: true
+      responses:
+        201:
+          description: Release added
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Release'
+        405:
+          description: Invalid input
+          content: {}
   /releases/{name}:
     get:
       summary: Release info
@@ -96,53 +106,62 @@ paths:
       parameters:
       - name: name
         in: path
-        required: true
-        type: string
         description: release name
+        required: true
+        schema:
+          type: string
       responses:
         200:
           description: Returns release representation
-          schema:
-            $ref: '#/definitions/Release'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Release'
     delete:
       summary: Release info
       operationId: shipit_api.api.abandon_release
       parameters:
       - name: name
         in: path
-        required: true
-        type: string
         description: release name
+        required: true
+        schema:
+          type: string
       responses:
         200:
           description: Returns release representation
-          schema:
-            $ref: '#/definitions/Release'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Release'
     patch:
       summary: Update release status
       operationId: shipit_api.api.update_release_status
-      consumes:
-      - "application/json"
       parameters:
       - name: name
         in: path
-        required: true
-        type: string
         description: release name
-      - in: body
-        name: body
-        description: Release status object
         required: true
         schema:
-          $ref: '#/definitions/ReleaseStatus'
+          type: string
+      requestBody:
+        description: Release status object
+        x-body-name: body
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReleaseStatus'
+        required: true
       responses:
-        405:
-          description: Invalid input
         200:
           description: Release updated
-          schema:
-            $ref: '#/definitions/Release'
-
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Release'
+        405:
+          description: Invalid input
+          content: {}
   /releases/{name}/{phase}:
     get:
       summary: Release info
@@ -150,39 +169,47 @@ paths:
       parameters:
       - name: name
         in: path
-        required: true
-        type: string
         description: release name
+        required: true
+        schema:
+          type: string
       - name: phase
         in: path
         required: true
-        type: string
+        schema:
+          type: string
       responses:
         200:
           description: Retruns phase representation
-          schema:
-            $ref: '#/definitions/Phase'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Phase'
     put:
       summary: act on phase
       operationId: shipit_api.api.schedule_phase
       parameters:
       - name: name
         in: path
-        required: true
-        type: string
         description: release name
+        required: true
+        schema:
+          type: string
       - name: phase
         in: path
         required: true
-        type: string
+        schema:
+          type: string
       responses:
-        409:
-          description: Already submitted
         200:
           description: Phase scheduled
-          schema:
-            $ref: '#/definitions/Phase'
-
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Phase'
+        409:
+          description: Already submitted
+          content: {}
   /signoff/{name}/{phase}:
     get:
       summary: Get phase signoff requirements and status
@@ -190,45 +217,55 @@ paths:
       parameters:
       - name: name
         in: path
-        required: true
-        type: string
         description: release name
+        required: true
+        schema:
+          type: string
       - name: phase
         in: path
         required: true
-        type: string
+        schema:
+          type: string
       responses:
         200:
           description: Retruns phase signoff representation
-          schema:
-            $ref: '#/definitions/Signoffs'
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Signoffs'
     put:
       summary: Sign off a phase
       operationId: shipit_api.api.phase_signoff
       parameters:
       - name: name
         in: path
-        required: true
-        type: string
         description: release name
-      - name: phase
-        in: path
-        required: true
-        type: string
-      - in: body
-        name: uid
-        description: Signoff UID
         required: true
         schema:
           type: string
+      - name: phase
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Signoff UID
+        x-body-name: uid
+        content:
+          '*/*':
+            schema:
+              type: string
+        required: true
       responses:
-        409:
-          description: Already submitted
         200:
           description: Retruns phase signoff representation
-          schema:
-            $ref: '#/definitions/Signoffs'
-
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Signoffs'
+        409:
+          description: Already submitted
+          content: {}
   /disabled-products:
     get:
       summary: Get the list of product/branches which are currently disabled. Disabled products/branches will not have automated releases created
@@ -236,18 +273,19 @@ paths:
       responses:
         200:
           description: Disabled product/branches
-          schema:
-            type: object
+          content:
+            application/json:
+              schema:
+                type: object
     post:
       summary: Disable a product+branch
       operationId: shipit_api.api.disable_product
-      parameters:
-      - in: body
-        name: body
+      requestBody:
         description: Disable Product object
-        required: true
-        schema:
-          $ref: '#/definitions/DisableProduct'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisableProduct'
       responses:
         200:
           description: OK
@@ -260,226 +298,223 @@ paths:
       - name: product
         in: query
         required: true
-        type: string
-        enum:
-        - firefox
-        - devedition
+        schema:
+          type: string
+          enum:
+          - firefox
+          - devedition
       - name: branch
         in: query
         required: true
-        type: string
-        enum:
-        - releases/mozilla-beta
-        - try
+        schema:
+          type: string
+          enum:
+          - releases/mozilla-beta
+          - try
       responses:
         200:
           description: OK
         405:
           description: Invalid input
-
-definitions:
-  ReleaseInput:
-    type: object
-    required:
-    - product
-    - version
-    - branch
-    - revision
-    - build_number
-    properties:
-      product:
-        type: string
-        example: firefox
-        enum:
-        - firefox
-        - fennec
-        - devedition
-        - thunderbird
-      version:
-        type: string
-        example: 56.0b12
-      branch:
-        type: string
-        example: projects/maple
-      revision:
-        type: string
-        example: abcd1234
-      build_number:
-        type: integer
-        example: 12
-      release_eta:
-        type: string
-        format: dateTime
-        example: 2006-08-14T02:34:56-06:00
-      partial_updates:
-        type: object
-        default: {}
-      product_key:
-        type: string
-        example: fennec_beta
-
-  ReleaseStatus:
-    type: object
-    required:
+components:
+  schemas:
+    ReleaseInput:
+      required:
+      - branch
+      - build_number
+      - product
+      - revision
+      - version
+      type: object
+      properties:
+        product:
+          type: string
+          example: firefox
+          enum:
+          - firefox
+          - fennec
+          - devedition
+          - thunderbird
+        version:
+          type: string
+          example: 56.0b12
+        branch:
+          type: string
+          example: projects/maple
+        revision:
+          type: string
+          example: abcd1234
+        build_number:
+          type: integer
+          example: 12
+        release_eta:
+          type: string
+          format: dateTime
+          example: 2006-08-14T02:34:56-06:00
+        partial_updates:
+          type: object
+          properties: {}
+        product_key:
+          type: string
+          example: fennec_beta
+    ReleaseStatus:
+      required:
       - status
-    properties:
-      status:
-        type: string
-        example: scheduled
-        enum:
+      type: object
+      properties:
+        status:
+          type: string
+          example: scheduled
+          enum:
           - scheduled
           - shipped
           - aborted
-
-  Phase:
-    type: object
-    required:
+    Phase:
+      required:
       - name
       - submitted
-    properties:
-      name:
-        type: string
-        example: promote_firefox
-        description: Release promotion phase name
-      submitted:
-        type: boolean
-        description: Indicated if the phase was submitted to TC
-      actionTaskId:
-        type: string
-        description: Action Task ID for the phase. This is also the taskGroupId for the tasks created for this phase.
-      started:
-        type: string
-        format: dateTime
-        example: 2006-08-14T02:34:56-06:00
-      completed:
-        type: string
-        format: dateTime
-        example: 2006-08-14T02:34:56-06:00
-
-  Release:
-    type: object
-    required:
-    - name
-    - product
-    - version
-    - branch
-    - revision
-    - build_number
-    - status
-    - phases
-    properties:
-      name:
-        type: string
-        example: firefox-69.0b1-build1
-      product:
-        type: string
-        example: firefox
-        enum:
-        - firefox
-        - fennec
-        - devedition
-        - thunderbird
-      version:
-        type: string
-        example: 56.0b12
-      branch:
-        type: string
-        example: projects/maple
-      project:
-        type: string
-        example: maple
-      revision:
-        type: string
-        example: abcd1234
-      build_number:
-        type: integer
-        example: 12
-      release_eta:
-        type: string
-        format: dateTime
-        example: 2006-08-14T02:34:56-06:00
-      status:
-        type: string
-        example: scheduled
-        enum:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Release promotion phase name
+          example: promote_firefox
+        submitted:
+          type: boolean
+          description: Indicated if the phase was submitted to TC
+        actionTaskId:
+          type: string
+          description: Action Task ID for the phase. This is also the taskGroupId
+            for the tasks created for this phase.
+        started:
+          type: string
+          format: dateTime
+          example: 2006-08-14T02:34:56-06:00
+        completed:
+          type: string
+          format: dateTime
+          example: 2006-08-14T02:34:56-06:00
+    Release:
+      required:
+      - branch
+      - build_number
+      - name
+      - phases
+      - product
+      - revision
+      - status
+      - version
+      type: object
+      properties:
+        name:
+          type: string
+          example: firefox-69.0b1-build1
+        product:
+          type: string
+          example: firefox
+          enum:
+          - firefox
+          - fennec
+          - devedition
+          - thunderbird
+        version:
+          type: string
+          example: 56.0b12
+        branch:
+          type: string
+          example: projects/maple
+        project:
+          type: string
+          example: maple
+        revision:
+          type: string
+          example: abcd1234
+        build_number:
+          type: integer
+          example: 12
+        release_eta:
+          type: string
+          format: dateTime
+          example: 2006-08-14T02:34:56-06:00
+        status:
+          type: string
+          example: scheduled
+          enum:
           - scheduled
           - shipped
           - aborted
-      phases:
-        type: array
-        items:
-          $ref: '#/definitions/Phase'
-      started:
-        type: string
-        format: dateTime
-        example: 2006-08-14T02:34:56-06:00
-      completed:
-        type: string
-        format: dateTime
-        example: 2006-08-14T02:34:56-06:00
-
-  Signoffs:
-    type: object
-    required:
-    - signoffs
-    properties:
-      signoffs:
-        type: array
-        items:
-          $ref: '#/definitions/Signoff'
-      deadline:
-        type: string
-        format: datetime
-        description: Deadline of all signoffs
-
-  Signoff:
-    type: object
-    required:
-      - uid
-      - name
+        phases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Phase'
+        started:
+          type: string
+          format: dateTime
+          example: 2006-08-14T02:34:56-06:00
+        completed:
+          type: string
+          format: dateTime
+          example: 2006-08-14T02:34:56-06:00
+    Signoffs:
+      required:
+      - signoffs
+      type: object
+      properties:
+        signoffs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signoff'
+        deadline:
+          type: string
+          description: Deadline of all signoffs
+          format: datetime
+    Signoff:
+      required:
       - description
+      - name
       - permissions
-    properties:
-      uid:
-        type: string
-        description: Unique identifier
-      name:
-        type: string
-        description: Human readable signoff name
-      description:
-        type: string
-        description: Human readable explpanation of the signogg
-      signed:
-        type: boolean
-        description: Is the signoff signed off
-        default: false
-      permissions:
-        type: string
-        description: Permision required to sign the signoff
-      completed_by:
-        type: string
-        description: Person who signed off (Auth0 ID)
-        default: ''
-      completed:
-        type: string
-        format: datetime
-        description: Timestamp of the signoff
-
-  DisableProduct:
-    type: object
-    required:
-    - product
-    - branch
-    properties:
-      product:
-        type: string
-        example: firefox
-        enum:
-        - firefox
-        - devedition
-      branch:
-        type: string
-        example: releases/mozilla-beta
-        enum:
-        - releases/mozilla-beta
-        - try
+      - uid
+      type: object
+      properties:
+        uid:
+          type: string
+          description: Unique identifier
+        name:
+          type: string
+          description: Human readable signoff name
+        description:
+          type: string
+          description: Human readable explpanation of the signogg
+        signed:
+          type: boolean
+          description: Is the signoff signed off
+          default: false
+        permissions:
+          type: string
+          description: Permision required to sign the signoff
+        completed_by:
+          type: string
+          description: Person who signed off (Auth0 ID)
+          default: ""
+        completed:
+          type: string
+          description: Timestamp of the signoff
+          format: datetime
+    DisableProduct:
+      type: object
+      required:
+      - product
+      - branch
+      properties:
+        product:
+          type: string
+          example: firefox
+          enum:
+          - firefox
+          - devedition
+        branch:
+          type: string
+          example: releases/mozilla-beta
+          enum:
+          - releases/mozilla-beta
+          - try
