@@ -169,6 +169,12 @@ def schedule_phase(name, phase):
     phase.task_id = result["status"]["taskId"]
 
     phase.submitted = True
+    # Make sure that if one of the previous phases are either submitted or
+    # skipped
+    for ph in phase.release.phases:
+        if ph.name == phase.name:
+            break
+        ph.submitted = True
     phase.completed_by = current_user.get_id()
     completed = datetime.datetime.utcnow()
     phase.completed = completed

@@ -18,6 +18,7 @@ const statusStyles = {
   // Additional statuses
   ready: 'info',
   blocked: 'info',
+  skipped: 'info',
 };
 
 const taskStatus = async (taskId) => {
@@ -269,7 +270,11 @@ class Release extends React.Component {
           </Modal.Footer>
         </Modal>
         <div className="col">
-          <TaskProgress phases={release.phases} releaseName={release.name} />
+          <TaskProgress
+            phases={release.phases}
+            releaseName={release.name}
+            allowPhaseSkipping={release.allow_phase_skipping}
+          />
         </div>
       </div>
     );
@@ -277,8 +282,10 @@ class Release extends React.Component {
 }
 
 const phaseStatus = async (phase, idx, phases) => {
+  if (phase.skipped) {
+    return 'skipped';
+  }
   // Use TC status if task is submitted
-  const previousPhase = phases[idx - 1];
   if (phase.submitted) {
     const status = await taskStatus(phase.actionTaskId);
     return status.status.state;
@@ -288,6 +295,7 @@ const phaseStatus = async (phase, idx, phases) => {
     return 'ready';
   }
   // Phase is ready only when the previous one is submitted and the task is completed
+  const previousPhase = phases[idx - 1];
   if (previousPhase.submitted) {
     // TODO: cache previous phase status
     const status = await taskStatus(previousPhase.actionTaskId);
@@ -325,6 +333,7 @@ class TaskProgress extends React.Component {
     super(...args);
     this.state = {
       phasesWithStatus: [],
+      tasksInProgress: false,
     };
   }
 
@@ -339,12 +348,13 @@ class TaskProgress extends React.Component {
       const signoffs = await phaseSignOffs(releaseName, phase.name);
       return { ...phase, status, signoffs };
     }));
-    this.setState({ phasesWithStatus });
+    const tasksInProgress = phasesWithStatus.some(phase => phase.status === 'running');
+    this.setState({ phasesWithStatus, tasksInProgress });
   };
 
   render() {
-    const { phasesWithStatus } = this.state;
-    const { releaseName } = this.props;
+    const { phasesWithStatus, tasksInProgress } = this.state;
+    const { releaseName, allowPhaseSkipping } = this.props;
     const width = 100 / phasesWithStatus.length;
     const taskGroupUrlPrefix = libUrls.ui(TASKCLUSTER_ROOT_URL, '/tasks/groups');
 
@@ -363,6 +373,8 @@ class TaskProgress extends React.Component {
               name={name}
               submitted={submitted}
               status={status}
+              tasksInProgress={tasksInProgress}
+              allowPhaseSkipping={allowPhaseSkipping}
               signoffs={signoffs}
               releaseName={releaseName}
               taskGroupUrl={`${taskGroupUrlPrefix}/${actionTaskId}`}
@@ -522,15 +534,17 @@ class TaskLabel extends React.PureComponent {
   };
 
   render() {
-    const { status, name, taskGroupUrl } = this.props;
-    if (status === 'blocked') {
+    const {
+      status, name, taskGroupUrl, tasksInProgress, allowPhaseSkipping,
+    } = this.props;
+    if ((status === 'blocked' && !allowPhaseSkipping) || status === 'skipped' || tasksInProgress) {
       return (
         <div>
           <Button disabled bsStyle={statusStyles[status]}>{name}</Button>
         </div>
       );
     }
-    if (status === 'ready') {
+    if (status === 'ready' || (status === 'blocked' && allowPhaseSkipping)) {
       return (
         <div>
           <Button bsStyle="primary" onClick={this.open}>{name}</Button>
