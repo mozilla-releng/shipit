@@ -354,7 +354,21 @@ components:
         partial_updates:
           anyOf:
             - type: object
-              properties: {}
+              # Using additionalProperties allows having properties with names
+              # unknown in advance, like versions used here.
+              additionalProperties:
+                type: object
+                required:
+                  - buildNumber
+                  - locales
+                additionalProperties: false
+                properties:
+                  buildNumber:
+                    type: integer
+                  locales:
+                    type: array
+                    items:
+                      type: string
             - type: string
               enum: [auto]
         product_key:
