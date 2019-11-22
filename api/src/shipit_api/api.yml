@@ -352,8 +352,11 @@ components:
           format: dateTime
           example: 2006-08-14T02:34:56-06:00
         partial_updates:
-          type: object
-          properties: {}
+          anyOf:
+            - type: object
+              properties: {}
+            - type: string
+              enum: [auto]
         product_key:
           type: string
           example: fennec_beta
