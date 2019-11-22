@@ -75,13 +75,17 @@ def add_release(body):
 
     session = current_app.db.session
     product = body["product"]
+    branch = body["branch"]
     partial_updates = body.get("partial_updates")
     if partial_updates == "auto":
-        partial_updates = _suggest_partials(product=product, branch=body["branch"], version=body["version"])
+        if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in ["try", "releases/mozilla-beta"]:
+            raise NotImplementedError("Partial suggestion works for automated betas only")
+
+        partial_updates = _suggest_partials(product=product, branch=branch, version=body["version"])
     r = Release(
         product=product,
         version=body["version"],
-        branch=body["branch"],
+        branch=branch,
         revision=body["revision"],
         build_number=body["build_number"],
         release_eta=body.get("release_eta"),
@@ -369,9 +373,6 @@ def enable_product(product, branch):
 
 def _suggest_partials(product, branch, version, max_partials=3):
     """Return a list of suggested partials"""
-    if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in ["try", "releases/mozilla-beta"]:
-        raise NotImplementedError("Partial suggestion works for automated betas only")
-
     shipped_releases = reversed(list_releases(product, branch, status=["shipped"]))
     suggested_releases = list(shipped_releases)[:max_partials]
     suggested_partials = {}

@@ -133,10 +133,8 @@ def is_eme_free_enabled(product, version):
 
 def product_to_appname(product):
     """Convert product name to appName"""
-    # Limited to the automated beta products on purpose
     if product in [Product.FIREFOX.value, Product.DEVEDITION.value]:
         return "browser"
-    raise NotImplementedError(f"Automated releases are not implemented for {product}")
 
 
 def get_locales(repo, revision, appname):
