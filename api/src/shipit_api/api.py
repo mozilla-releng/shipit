@@ -16,7 +16,7 @@ from werkzeug.exceptions import BadRequest
 from backend_common.auth import auth
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
-from shipit_api.config import PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX, HG_PREFIX
+from shipit_api.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
 from shipit_api.models import DisabledProduct, Phase, Release, Signoff
 from shipit_api.release import Product, get_locales, product_to_appname
 from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact, generate_action_hook, render_action_hook
