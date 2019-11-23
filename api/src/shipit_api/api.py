@@ -73,9 +73,14 @@ def add_release(body):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
-    session = current_app.db.session
     product = body["product"]
     branch = body["branch"]
+
+    product_disabled = branch in get_disabled_products()[product]
+    if current_user.type == "taskcluster" and product_disabled:
+        abort(401, "Taskcluster based submissions are disabled")
+
+    session = current_app.db.session
     partial_updates = body.get("partial_updates")
     if partial_updates == "auto":
         if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in ["try", "releases/mozilla-beta"]:
