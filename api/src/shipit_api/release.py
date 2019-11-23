@@ -6,6 +6,8 @@
 import enum
 import re
 
+import requests
+
 from shipit_api.config import SUPPORTED_FLAVORS
 
 # If version has two parts with no trailing specifiers like "rc", we
@@ -127,3 +129,17 @@ def is_eme_free_enabled(product, version):
         elif not is_esr(version):
             return True
     return False
+
+
+def product_to_appname(product):
+    """Convert product name to appName"""
+    if product in [Product.FIREFOX.value, Product.DEVEDITION.value]:
+        return "browser"
+
+
+def get_locales(repo, revision, appname):
+    """Fetches list of locales from mercurial"""
+    url = f"{repo}/raw-file/{revision}/{appname}/locales/l10n-changesets.json"
+    req = requests.get(url, timeout=10)
+    req.raise_for_status()
+    return list(req.json().keys())

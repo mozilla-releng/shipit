@@ -16,9 +16,9 @@ from werkzeug.exceptions import BadRequest
 from backend_common.auth import auth
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
-from shipit_api.config import PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
+from shipit_api.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
 from shipit_api.models import DisabledProduct, Phase, Release, Signoff
-from shipit_api.release import Product
+from shipit_api.release import Product, get_locales, product_to_appname
 from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact, generate_action_hook, render_action_hook
 
 logger = get_logger(__name__)
@@ -75,15 +75,22 @@ def add_release(body):
 
     session = current_app.db.session
     product = body["product"]
+    branch = body["branch"]
+    partial_updates = body.get("partial_updates")
+    if partial_updates == "auto":
+        if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in ["try", "releases/mozilla-beta"]:
+            raise NotImplementedError("Partial suggestion works for automated betas only")
+
+        partial_updates = _suggest_partials(product=product, branch=branch, version=body["version"])
     r = Release(
         product=product,
         version=body["version"],
-        branch=body["branch"],
+        branch=branch,
         revision=body["revision"],
         build_number=body["build_number"],
         release_eta=body.get("release_eta"),
         status="scheduled",
-        partial_updates=body.get("partial_updates"),
+        partial_updates=partial_updates,
         product_key=body.get("product_key"),
     )
     try:
@@ -362,3 +369,16 @@ def enable_product(product, branch):
         return 200
     except NoResultFound:
         abort(404)
+
+
+def _suggest_partials(product, branch, version, max_partials=3):
+    """Return a list of suggested partials"""
+    shipped_releases = reversed(list_releases(product, branch, status=["shipped"]))
+    suggested_releases = list(shipped_releases)[:max_partials]
+    suggested_partials = {}
+    for release in suggested_releases:
+        suggested_partials[release["version"]] = {
+            "buildNumber": release["build_number"],
+            "locales": get_locales(f"${HG_PREFIX}/{release['branch']}", release["revision"], product_to_appname(product)),
+        }
+    return suggested_partials

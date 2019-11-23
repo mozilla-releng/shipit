@@ -251,7 +251,7 @@ export default class NewRelease extends React.Component {
           this.state.selectedProduct.appName,
         );
         return [
-          version, { buildNumber, locales },
+          version, { buildNumber: parseInt(buildNumber, 10), locales },
         ];
       }));
       const partialUpdatesFlattened = {};

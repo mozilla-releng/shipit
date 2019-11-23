@@ -352,8 +352,25 @@ components:
           format: dateTime
           example: 2006-08-14T02:34:56-06:00
         partial_updates:
-          type: object
-          properties: {}
+          anyOf:
+            - type: object
+              # Using additionalProperties allows having properties with names
+              # unknown in advance, like versions used here.
+              additionalProperties:
+                type: object
+                required:
+                  - buildNumber
+                  - locales
+                additionalProperties: false
+                properties:
+                  buildNumber:
+                    type: integer
+                  locales:
+                    type: array
+                    items:
+                      type: string
+            - type: string
+              enum: [auto]
         product_key:
           type: string
           example: fennec_beta
