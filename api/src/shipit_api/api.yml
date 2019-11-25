@@ -398,9 +398,10 @@ components:
           example: promote_firefox
         submitted:
           type: boolean
-          description: Indicated if the phase was skipped
+          description: Indicated if the phase was submitted to TC
         skipped:
           type: boolean
+          description: Indicated if the phase was skipped
         actionTaskId:
           type: string
           description: Action Task ID for the phase. This is also the taskGroupId
