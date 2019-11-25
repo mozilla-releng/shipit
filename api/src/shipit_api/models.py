@@ -90,10 +90,17 @@ class Phase(db.Model):
         other_phases = {p.name: p.task_id for p in self.release.phases}
         for phase_name in remaining:
             resolved_previous_graph_ids.append(other_phases[phase_name])
-        context["input"]["previous_graph_ids"] = resolved_previous_graph_ids
+        # in case we skip a phase, the task ID is not defined, we want to
+        # filter it out
+        resolved_previous_graph_ids = filter(None, resolved_previous_graph_ids)
+        context["input"]["previous_graph_ids"] = list(resolved_previous_graph_ids)
         if extra_context:
             context.update(extra_context)
         return render_action_hook(self.task_json["hook_payload"], context)
+
+    @property
+    def skipped(self):
+        return bool(self.submitted and not self.task_id)
 
     @property
     def json(self):
@@ -103,6 +110,7 @@ class Phase(db.Model):
             "actionTaskId": self.task_id or "",
             "created": self.created or "",
             "completed": self.completed or "",
+            "skipped": self.skipped,
         }
 
 
@@ -212,6 +220,11 @@ class Release(db.Model):
         return our_flavors
 
     @property
+    def allow_phase_skipping(self):
+        # Phases can be skipped for betas and try only. The API doesn't enforce this.
+        return self.product in ["firefox", "devedition"] and self.project in ["try", "beta"]
+
+    @property
     def json(self):
         return {
             "name": self.name,
@@ -226,6 +239,7 @@ class Release(db.Model):
             "created": self.created or "",
             "completed": self.completed or "",
             "phases": [p.json for p in self.phases],
+            "allow_phase_skipping": self.allow_phase_skipping,
         }
 
 
