@@ -76,7 +76,7 @@ def add_release(body):
     product = body["product"]
     branch = body["branch"]
 
-    product_disabled = branch in get_disabled_products()[product]
+    product_disabled = branch in get_disabled_products().get(product, [])
     if current_user.type == "taskcluster" and product_disabled:
         abort(401, "Taskcluster based submissions are disabled")
 
