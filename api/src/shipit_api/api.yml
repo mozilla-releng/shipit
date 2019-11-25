@@ -399,6 +399,9 @@ components:
         submitted:
           type: boolean
           description: Indicated if the phase was submitted to TC
+        skipped:
+          type: boolean
+          description: Indicated if the phase was skipped
         actionTaskId:
           type: string
           description: Action Task ID for the phase. This is also the taskGroupId
@@ -472,6 +475,9 @@ components:
           type: string
           format: dateTime
           example: 2006-08-14T02:34:56-06:00
+        allow_phase_skipping:
+          type: boolean
+          description: Allow skipping phases. In this case the snowman release model will not skipped phases.
     Signoffs:
       required:
       - signoffs

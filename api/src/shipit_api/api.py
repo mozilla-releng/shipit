@@ -181,9 +181,19 @@ def schedule_phase(name, phase):
     phase.task_id = result["status"]["taskId"]
 
     phase.submitted = True
-    phase.completed_by = current_user.get_id()
     completed = datetime.datetime.utcnow()
+    phase.completed_by = current_user.get_id()
     phase.completed = completed
+    # If the previous phases are not submitted, mark them as submitted and they
+    # will be calculated as skipped because they don't have taskId associated
+    for ph in phase.release.phases:
+        if ph.name == phase.name:
+            break
+        if not phase.submitted:
+            ph.submitted = True
+            ph.completed_by = current_user.get_id()
+            ph.completed = completed
+
     if all([ph.submitted for ph in phase.release.phases]):
         phase.release.status = "shipped"
         phase.release.completed = completed
@@ -212,7 +222,7 @@ def abandon_release(name):
             abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
         # Cancel all submitted task groups first
-        for phase in filter(lambda x: x.submitted, release.phases):
+        for phase in filter(lambda x: x.submitted and not x.skipped, release.phases):
             try:
                 actions = fetch_artifact(phase.task_id, "public/actions.json")
                 parameters = fetch_artifact(phase.task_id, "public/parameters.yml")
