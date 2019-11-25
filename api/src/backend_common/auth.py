@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import enum
 import functools
 import json
 import os
@@ -29,10 +30,18 @@ UNAUTHORIZED_JSON = {
 }
 
 
+@enum.unique
+class AuthType(enum.Enum):
+    NONE = None
+    ANONYMOUS = "anonymous"
+    TASKCLUSTER = "taskcluster"
+    AUTH0 = "auth0"
+
+
 class BaseUser(object):
 
     anonymous = False
-    type = None
+    type = AuthType.NONE
 
     def __eq__(self, other):
         return isinstance(other, BaseUser) and self.get_id() == other.get_id()
@@ -75,7 +84,7 @@ class BaseUser(object):
 class AnonymousUser(BaseUser):
 
     anonymous = True
-    type = "anonymous"
+    type = AuthType.ANONYMOUS
 
     def get_id(self):
         return "anonymous:"
@@ -83,7 +92,7 @@ class AnonymousUser(BaseUser):
 
 class TaskclusterUser(BaseUser):
 
-    type = "taskcluster"
+    type = AuthType.TASKCLUSTER
 
     def __init__(self, credentials):
         if not isinstance(credentials, dict):
@@ -127,7 +136,7 @@ class TaskclusterUser(BaseUser):
 
 class Auth0User(BaseUser):
 
-    type = "auth0"
+    type = AuthType.AUTH0
 
     def __init__(self, token, userinfo):
         if not isinstance(token, str):

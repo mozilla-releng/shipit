@@ -13,7 +13,7 @@ from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersi
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import BadRequest
 
-from backend_common.auth import auth
+from backend_common.auth import AuthType, auth
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
 from shipit_api.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
@@ -73,9 +73,14 @@ def add_release(body):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
-    session = current_app.db.session
     product = body["product"]
     branch = body["branch"]
+
+    product_disabled = branch in get_disabled_products().get(product, [])
+    if current_user.type == AuthType.TASKCLUSTER and product_disabled:
+        abort(401, "Taskcluster based submissions are disabled")
+
+    session = current_app.db.session
     partial_updates = body.get("partial_updates")
     if partial_updates == "auto":
         if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in ["try", "releases/mozilla-beta"]:
