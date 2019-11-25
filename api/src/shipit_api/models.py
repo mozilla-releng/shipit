@@ -175,9 +175,7 @@ class Release(db.Model):
             input_common["release_enable_emefree"] = False
 
         if self.partial_updates:
-            input_common["partial_updates"] = {}
-            for partial_version, info in self.partial_updates.items():
-                input_common["partial_updates"][partial_version] = {"buildNumber": info["buildNumber"], "locales": info["locales"]}
+            input_common["partial_updates"] = self.partial_updates
         target_action = find_action("release-promotion", self.actions)
         kind = target_action["kind"]
         if kind != "hook":

@@ -31,14 +31,6 @@ module.exports = {
           numberOfPartials: 4,
         },
         {
-          prettyName: 'ESR60',
-          project: 'mozilla-esr60',
-          branch: 'releases/mozilla-esr60',
-          repo: 'https://hg.mozilla.org/releases/mozilla-esr60',
-          enableReleaseEta: true,
-          numberOfPartials: 5,
-        },
-        {
           prettyName: 'ESR68',
           project: 'mozilla-esr68',
           branch: 'releases/mozilla-esr68',
@@ -102,13 +94,6 @@ module.exports = {
           project: 'comm-beta',
           branch: 'releases/comm-beta',
           repo: 'https://hg.mozilla.org/releases/comm-beta',
-          enableReleaseEta: false,
-        },
-        {
-          prettyName: 'ESR60',
-          project: 'comm-esr60',
-          branch: 'releases/comm-esr60',
-          repo: 'https://hg.mozilla.org/releases/comm-esr60',
           enableReleaseEta: false,
         },
         {
