@@ -92,7 +92,7 @@ class AnonymousUser(BaseUser):
 
 class TaskclusterUser(BaseUser):
 
-    type = Auth.TASKCLUSTER
+    type = AuthType.TASKCLUSTER
 
     def __init__(self, credentials):
         if not isinstance(credentials, dict):
