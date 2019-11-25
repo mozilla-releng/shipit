@@ -189,7 +189,7 @@ def schedule_phase(name, phase):
     for ph in phase.release.phases:
         if ph.name == phase.name:
             break
-        if not phase.submitted:
+        if not ph.submitted:
             ph.submitted = True
             ph.completed_by = current_user.get_id()
             ph.completed = completed
