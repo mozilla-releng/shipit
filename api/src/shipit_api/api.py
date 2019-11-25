@@ -13,7 +13,7 @@ from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersi
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import BadRequest
 
-from backend_common.auth import auth, AuthType
+from backend_common.auth import AuthType, auth
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
 from shipit_api.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
