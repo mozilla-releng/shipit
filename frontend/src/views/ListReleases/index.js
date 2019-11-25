@@ -281,7 +281,7 @@ class Release extends React.Component {
   }
 }
 
-const phaseStatus = async (phase, idx, phases) => {
+const phaseStatus = async (phase, idx, phases, allowPhaseSkipping) => {
   if (phase.skipped) {
     return 'skipped';
   }
@@ -315,7 +315,7 @@ const phaseStatus = async (phase, idx, phases) => {
       }
     }
   }
-  return 'blocked';
+  return allowPhaseSkipping ? 'ready' : 'blocked';
 };
 
 const phaseSignOffs = async (releaseName, phaseName) => {
@@ -342,9 +342,9 @@ class TaskProgress extends React.Component {
   }
 
   syncPhases = async () => {
-    const { releaseName, phases } = this.props;
+    const { releaseName, phases, allowPhaseSkipping } = this.props;
     const phasesWithStatus = await Promise.all(phases.map(async (phase, idx, arr) => {
-      const status = await phaseStatus(phase, idx, arr);
+      const status = await phaseStatus(phase, idx, arr, allowPhaseSkipping);
       const signoffs = await phaseSignOffs(releaseName, phase.name);
       return { ...phase, status, signoffs };
     }));
@@ -354,7 +354,7 @@ class TaskProgress extends React.Component {
 
   render() {
     const { phasesWithStatus, tasksInProgress } = this.state;
-    const { releaseName, allowPhaseSkipping } = this.props;
+    const { releaseName } = this.props;
     const width = 100 / phasesWithStatus.length;
     const taskGroupUrlPrefix = libUrls.ui(TASKCLUSTER_ROOT_URL, '/tasks/groups');
 
@@ -374,7 +374,6 @@ class TaskProgress extends React.Component {
               submitted={submitted}
               status={status}
               tasksInProgress={tasksInProgress}
-              allowPhaseSkipping={allowPhaseSkipping}
               signoffs={signoffs}
               releaseName={releaseName}
               taskGroupUrl={`${taskGroupUrlPrefix}/${actionTaskId}`}
@@ -535,19 +534,20 @@ class TaskLabel extends React.PureComponent {
 
   render() {
     const {
-      status, name, taskGroupUrl, tasksInProgress, allowPhaseSkipping,
+      status, name, taskGroupUrl, tasksInProgress,
     } = this.props;
-    if ((status === 'blocked' && !allowPhaseSkipping) || status === 'skipped' || tasksInProgress) {
+    if (status === 'blocked' || status === 'skipped') {
       return (
         <div>
-          <Button disabled bsStyle={statusStyles[status]}>{name}</Button>
+          <Button disabled={tasksInProgress} bsStyle={statusStyles[status]}>{name}</Button>
+          {status === 'skipped' && <small>skipped</small>}
         </div>
       );
     }
-    if (status === 'ready' || (status === 'blocked' && allowPhaseSkipping)) {
+    if (status === 'ready') {
       return (
         <div>
-          <Button bsStyle="primary" onClick={this.open}>{name}</Button>
+          <Button bsStyle="primary" disabled={tasksInProgress} onClick={this.open}>{name}</Button>
           <Modal show={this.state.showModal} onHide={this.close}>
             <Modal.Header closeButton>
               <Modal.Title>Do eeet</Modal.Title>
