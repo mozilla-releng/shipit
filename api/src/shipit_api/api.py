@@ -13,7 +13,7 @@ from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersi
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import BadRequest
 
-from backend_common.auth import auth
+from backend_common.auth import auth, AuthType
 from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
 from shipit_api.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
@@ -77,7 +77,7 @@ def add_release(body):
     branch = body["branch"]
 
     product_disabled = branch in get_disabled_products().get(product, [])
-    if current_user.type == "taskcluster" and product_disabled:
+    if current_user.type == AuthType.TASKCLUSTER and product_disabled:
         abort(401, "Taskcluster based submissions are disabled")
 
     session = current_app.db.session
