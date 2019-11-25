@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { ProgressBar, Button, Modal, Collapse, FormGroup, Radio, ControlLabel, Tabs, Tab } from 'react-bootstrap';
 import { object } from 'prop-types';
 import ReactInterval from 'react-interval';
@@ -6,6 +6,7 @@ import { Queue } from 'taskcluster-client-web';
 import libUrls from 'taskcluster-lib-urls';
 import config, { SHIPIT_API_URL, TASKCLUSTER_ROOT_URL } from '../../config';
 import { getShippedReleases } from '../../components/api';
+import ProductDisabler from '../../components/ProductDisabler';
 
 const statusStyles = {
   // TC statuses
@@ -87,6 +88,10 @@ export default class ListReleases extends React.Component {
     }
   };
 
+  handleStateChange = (productBranch) => {
+    console.log(productBranch);
+  };
+
   handleTabSelect = (key) => {
     if (key === 'recentReleases') {
       // this is an expensive call, let's not repeat it
@@ -147,14 +152,31 @@ export default class ListReleases extends React.Component {
 
   render() {
     return (
-      <Tabs defaultActiveKey="releases" id="releases" onSelect={this.handleTabSelect}>
-        <Tab eventKey="releases" title="In progress">
-          {this.renderReleases()}
-        </Tab>
-        <Tab eventKey="recentReleases" title="Recent">
-          {this.renderRecentReleases()}
-        </Tab>
-      </Tabs>
+      <Fragment>
+        <ProductDisabler
+          productBranches={config.PRODUCTS.flatMap(product =>
+            product.branches.filter(branch => branch.disableable).map(pb => ({
+              product: product.product,
+              branch: pb.branch,
+              prettyProduct: product.prettyName,
+              prettyBranch: pb.prettyName,
+              // todo: need to pull status from backend to find real value
+              enabled: true,
+            })))}
+          onStateChange={this.handleStateChange}
+          // todo: can't get this.context.authController to work here
+          // disabled={!this.context.authController.userSession}
+          disabled={false}
+        />
+        <Tabs defaultActiveKey="releases" id="releases" onSelect={this.handleTabSelect}>
+          <Tab eventKey="releases" title="In progress">
+            {this.renderReleases()}
+          </Tab>
+          <Tab eventKey="recentReleases" title="Recent">
+            {this.renderRecentReleases()}
+          </Tab>
+        </Tabs>
+      </Fragment>
     );
   }
 }
