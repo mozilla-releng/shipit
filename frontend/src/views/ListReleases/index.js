@@ -111,9 +111,42 @@ export default class ListReleases extends React.Component {
     }
   };
 
-  handleStateChange = (productBranch) => {
-    // can't implement until authController is working
-    console.log(productBranch);
+  // TODO: this sin't working for maple because it's not in the hardcodes
+  handleStateChange = async (productBranch) => {
+    const url = productBranch.enabled
+      ? `${SHIPIT_API_URL}/disabled-products?product=${productBranch.product}&branch=${productBranch.branch}`
+      : `${SHIPIT_API_URL}/disabled-products`;
+    const method = productBranch.enabled ? 'DELETE' : 'POST';
+    const body = productBranch.enabled
+      ? null
+      : JSON.stringify({ product: productBranch.product, branch: productBranch.branch });
+
+    if (!this.context.authController.userSession) {
+      // TODO: replace with error message that ends up in ProductDisabler
+      // this.setState({ errorMsg: 'Login required!' });
+      return;
+    }
+
+    const { accessToken } = this.context.authController.getUserSession();
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    };
+    try {
+      const response = await fetch(url, { method, headers, body });
+      if (!response.ok) {
+        // TODO: replace with error message that ends up in ProductDisabler
+        // this.setState({ errorMsg: 'Auth failure!' });
+        return;
+      }
+      // TODO: replace this
+      // this.setState({ submitted: true });
+      window.location.reload();
+    } catch (e) {
+      // TODO: replace with error message that ends up in ProductDisabler
+      // this.setState({ errorMsg: 'Server issues!' });
+      throw e;
+    }
   };
 
   handleTabSelect = (key) => {
