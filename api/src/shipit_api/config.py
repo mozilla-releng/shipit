@@ -3,12 +3,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
 import pathlib
 import tempfile
 
 PROJECT_NAME = "shipit/api"
 APP_NAME = "shipit_api"
-SCOPE_PREFIX = f"project:releng:services/{APP_NAME}"
+APP_CHANNEL = os.environ.get("APP_CHANNEL", "development")
+SCOPE_PREFIX = f"project:releng:services/{APP_NAME}/{APP_CHANNEL}"
 
 # A route key that triggers rebuild of product details.
 # Worker will listen to this route key to trigger the rebuild.
