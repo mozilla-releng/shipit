@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { ProgressBar, Button, Modal, Collapse, FormGroup, Radio, ControlLabel, Tabs, Tab } from 'react-bootstrap';
 import { object } from 'prop-types';
 import ReactInterval from 'react-interval';
@@ -6,7 +6,6 @@ import { Queue } from 'taskcluster-client-web';
 import libUrls from 'taskcluster-lib-urls';
 import config, { SHIPIT_API_URL, TASKCLUSTER_ROOT_URL } from '../../config';
 import { getShippedReleases } from '../../components/api';
-import ProductDisabler from '../../components/ProductDisabler';
 
 const statusStyles = {
   // TC statuses
@@ -28,17 +27,12 @@ const taskStatus = async (taskId) => {
 };
 
 export default class ListReleases extends React.Component {
-  static contextTypes = {
-    authController: object.isRequired,
-  };
   constructor(...args) {
     super(...args);
     this.state = {
-      loadedReleases: false,
-      loadedDisabledProducts: false,
+      loaded: false,
       message: '',
       releases: [],
-      disabledProducts: [],
       shippedReleases: [],
       shippedReleasesMessage: '',
     };
@@ -46,7 +40,6 @@ export default class ListReleases extends React.Component {
 
   async componentDidMount() {
     await this.getReleases();
-    await this.getDisabledProducts();
   }
 
   getReleases = async () => {
@@ -60,31 +53,14 @@ export default class ListReleases extends React.Component {
       this.setState({
         releases,
         message,
-        loadedReleases: true,
+        loaded: true,
       });
     } catch (e) {
       const message = <h3>Failed to fetch releases!</h3>;
       this.setState({
-        loadedReleases: true,
+        loaded: true,
         message,
         releases: [],
-      });
-      throw e;
-    }
-  };
-
-  getDisabledProducts = async () => {
-    try {
-      const req = await fetch(`${SHIPIT_API_URL}/disabled-products`);
-      const disabledProducts = await req.json();
-      this.setState({
-        loadedDisabledProducts: true,
-        disabledProducts,
-      });
-    } catch (e) {
-      this.setState({
-        loadedDisabledProducts: true,
-        disabledProducts: [],
       });
       throw e;
     }
@@ -107,44 +83,6 @@ export default class ListReleases extends React.Component {
         shippedReleasesMessage,
         shippedReleases: [],
       });
-      throw e;
-    }
-  };
-
-  // TODO: this sin't working for maple because it's not in the hardcodes
-  handleStateChange = async (productBranch) => {
-    const url = productBranch.enabled
-      ? `${SHIPIT_API_URL}/disabled-products?product=${productBranch.product}&branch=${productBranch.branch}`
-      : `${SHIPIT_API_URL}/disabled-products`;
-    const method = productBranch.enabled ? 'DELETE' : 'POST';
-    const body = productBranch.enabled
-      ? null
-      : JSON.stringify({ product: productBranch.product, branch: productBranch.branch });
-
-    if (!this.context.authController.userSession) {
-      // TODO: replace with error message that ends up in ProductDisabler
-      // this.setState({ errorMsg: 'Login required!' });
-      return;
-    }
-
-    const { accessToken } = this.context.authController.getUserSession();
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
-    try {
-      const response = await fetch(url, { method, headers, body });
-      if (!response.ok) {
-        // TODO: replace with error message that ends up in ProductDisabler
-        // this.setState({ errorMsg: 'Auth failure!' });
-        return;
-      }
-      // TODO: replace this
-      // this.setState({ submitted: true });
-      window.location.reload();
-    } catch (e) {
-      // TODO: replace with error message that ends up in ProductDisabler
-      // this.setState({ errorMsg: 'Server issues!' });
       throw e;
     }
   };
@@ -184,14 +122,12 @@ export default class ListReleases extends React.Component {
   };
 
   renderReleases = () => {
-    const {
-      releases, loadedReleases, loadedDisabledProducts, message,
-    } = this.state;
+    const { releases, loaded, message } = this.state;
     return (
       <div className="container">
         <h3>Releases in progress</h3>
         <div>
-          {(loadedReleases && loadedDisabledProducts) || <b>loading...</b>}
+          {loaded || <b>loading...</b>}
           {message}
           {releases.length > 0 && releases.map(release => (
             <Release
@@ -210,33 +146,15 @@ export default class ListReleases extends React.Component {
   };
 
   render() {
-    const { loadedDisabledProducts, disabledProducts } = this.state;
-
     return (
-      <Fragment>
-        <ProductDisabler
-          productBranches={config.PRODUCTS.flatMap(product =>
-            product.branches.filter(branch => branch.disableable).map(pb => ({
-              product: product.product,
-              branch: pb.branch,
-              prettyProduct: product.prettyName,
-              prettyBranch: pb.prettyName,
-              enabled: product.product in disabledProducts
-                && disabledProducts[product.product].includes(pb.branch),
-            })))}
-          onStateChange={this.handleStateChange}
-          disabled={!this.context.authController.userSession}
-          loading={!loadedDisabledProducts}
-        />
-        <Tabs defaultActiveKey="releases" id="releases" onSelect={this.handleTabSelect}>
-          <Tab eventKey="releases" title="In progress">
-            {this.renderReleases()}
-          </Tab>
-          <Tab eventKey="recentReleases" title="Recent">
-            {this.renderRecentReleases()}
-          </Tab>
-        </Tabs>
-      </Fragment>
+      <Tabs defaultActiveKey="releases" id="releases" onSelect={this.handleTabSelect}>
+        <Tab eventKey="releases" title="In progress">
+          {this.renderReleases()}
+        </Tab>
+        <Tab eventKey="recentReleases" title="Recent">
+          {this.renderRecentReleases()}
+        </Tab>
+      </Tabs>
     );
   }
 }

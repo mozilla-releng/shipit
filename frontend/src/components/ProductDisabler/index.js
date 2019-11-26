@@ -79,7 +79,6 @@ export default class ProductDisabler extends React.PureComponent {
 
     return (
       <Fragment>
-        <h3>Product Status</h3>
         {productBranches.map(pb => (
           <Button
             key={`${pb.product}-${pb.branch}`}
