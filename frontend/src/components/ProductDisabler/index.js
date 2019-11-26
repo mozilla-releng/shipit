@@ -1,5 +1,20 @@
 import React, { Fragment } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Glyphicon, Modal, Label } from 'react-bootstrap';
+
+// TODO: dunno why putting this in styles.css isn't working
+const pbLabelStyle = {
+  paddingLeft: '5px',
+  paddingRight: '5px',
+  cursor: 'initial',
+  color: '#9d9d9d',
+};
+
+const verticalDivider = {
+  marginLeft: '5px',
+  borderLeft: '1px solid #ddd',
+  borderRight: '1px solid #ddd',
+  height: '100%',
+};
 
 export default class ProductDisabler extends React.PureComponent {
   constructor(props) {
@@ -7,20 +22,31 @@ export default class ProductDisabler extends React.PureComponent {
     this.state = {
       showModal: false,
       modalContent: '',
-      errorMsg: null,
     };
   }
 
   getIcon = (loading, enabled) => {
     if (loading) {
-      return '❔';
+      return 'question-sign';
     }
 
     if (enabled) {
-      return '✅';
+      return 'ok-sign';
     }
 
-    return '❌';
+    return 'remove-sign';
+  };
+
+  getButtonStyle = (loading, enabled) => {
+    if (loading) {
+      return 'warning';
+    }
+
+    if (enabled) {
+      return 'success';
+    }
+
+    return 'danger';
   };
 
   openModal = (pb) => {
@@ -30,29 +56,30 @@ export default class ProductDisabler extends React.PureComponent {
   closeModal = () => {
     this.setState({
       showModal: false,
-      errorMsg: null,
     });
   };
 
   renderModal = (pb) => {
     // onStateChange will accept a single productBranch entry
-    const { onStateChange } = this.props;
+    const { onStateChange, errorMsg } = this.props;
 
     return (
       <Fragment>
         <Modal.Header closeButton>
           <Modal.Title>
             {pb.enabled ? 'Disable' : 'Enable'} updates for&nbsp;
-            {pb.prettyProduct} {pb.prettyBranch}
+            {pb.prettyProduct} {pb.prettyBranch}?
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          I have got a lovely bunch of coconuts
-        </Modal.Body>
+        {errorMsg && (
+          <Modal.Body>
+            {errorMsg}
+          </Modal.Body>
+        )}
         <Modal.Footer>
           <Button
             onClick={() => onStateChange(pb)}
-            bsStyle="danger"
+            bsStyle={pb.enabled ? 'danger' : 'success'}
           >
             {pb.enabled ? 'Disable releases' : 'Enable releases'}
           </Button>
@@ -64,6 +91,7 @@ export default class ProductDisabler extends React.PureComponent {
 
   render() {
     /* productBranches looks like:
+
        [
          {
            "product": "firefox",
@@ -79,26 +107,23 @@ export default class ProductDisabler extends React.PureComponent {
 
     return (
       <Fragment>
+        <Label>Automated Release Status</Label>
         {productBranches.map(pb => (
-          <Button
-            key={`${pb.product}-${pb.branch}`}
-            onClick={() => this.openModal(pb)}
-            disabled={disabled}
-          >
-            {pb.prettyProduct} : {pb.prettyBranch}
-            {this.getIcon(loading, pb.enabled)}
-          </Button>
+          <Fragment key={`${pb.product}-${pb.branch}`}>
+            <span style={verticalDivider} />
+            <span style={pbLabelStyle}>{pb.prettyProduct} : {pb.prettyBranch}</span>
+            <Button
+              onClick={() => this.openModal(pb)}
+              disabled={disabled}
+              bsSize="xsmall"
+              bsStyle={this.getButtonStyle(loading, pb.enabled)}
+            >
+              <Glyphicon glyph={this.getIcon(loading, pb.enabled)} />
+            </Button>
+          </Fragment>
         ))}
         <Modal show={this.state.showModal} onHide={this.closeModal}>
-          {this.state.errorMsg
-            ? (
-              <div>
-                <p>{this.state.errorMsg}</p>
-              </div>
-            ) : (
-              this.state.modalContent
-            )
-          }
+          {this.state.modalContent}
         </Modal>
       </Fragment>
     );
