@@ -28,12 +28,17 @@ const taskStatus = async (taskId) => {
 };
 
 export default class ListReleases extends React.Component {
+  static contextTypes = {
+    authController: object.isRequired,
+  };
   constructor(...args) {
     super(...args);
     this.state = {
-      loaded: false,
+      loadedReleases: false,
+      loadedDisabledProducts: false,
       message: '',
       releases: [],
+      disabledProducts: [],
       shippedReleases: [],
       shippedReleasesMessage: '',
     };
@@ -41,6 +46,7 @@ export default class ListReleases extends React.Component {
 
   async componentDidMount() {
     await this.getReleases();
+    await this.getDisabledProducts();
   }
 
   getReleases = async () => {
@@ -54,14 +60,31 @@ export default class ListReleases extends React.Component {
       this.setState({
         releases,
         message,
-        loaded: true,
+        loadedReleases: true,
       });
     } catch (e) {
       const message = <h3>Failed to fetch releases!</h3>;
       this.setState({
-        loaded: true,
+        loadedReleases: true,
         message,
         releases: [],
+      });
+      throw e;
+    }
+  };
+
+  getDisabledProducts = async () => {
+    try {
+      const req = await fetch(`${SHIPIT_API_URL}/disabled-products`);
+      const disabledProducts = await req.json();
+      this.setState({
+        loadedDisabledProducts: true,
+        disabledProducts,
+      });
+    } catch (e) {
+      this.setState({
+        loadedDisabledProducts: true,
+        disabledProducts: [],
       });
       throw e;
     }
@@ -89,6 +112,7 @@ export default class ListReleases extends React.Component {
   };
 
   handleStateChange = (productBranch) => {
+    // can't implement until authController is working
     console.log(productBranch);
   };
 
@@ -127,12 +151,14 @@ export default class ListReleases extends React.Component {
   };
 
   renderReleases = () => {
-    const { releases, loaded, message } = this.state;
+    const {
+      releases, loadedReleases, loadedDisabledProducts, message,
+    } = this.state;
     return (
       <div className="container">
         <h3>Releases in progress</h3>
         <div>
-          {loaded || <b>loading...</b>}
+          {(loadedReleases && loadedDisabledProducts) || <b>loading...</b>}
           {message}
           {releases.length > 0 && releases.map(release => (
             <Release
@@ -151,6 +177,8 @@ export default class ListReleases extends React.Component {
   };
 
   render() {
+    const { loadedDisabledProducts, disabledProducts } = this.state;
+
     return (
       <Fragment>
         <ProductDisabler
@@ -160,13 +188,12 @@ export default class ListReleases extends React.Component {
               branch: pb.branch,
               prettyProduct: product.prettyName,
               prettyBranch: pb.prettyName,
-              // todo: need to pull status from backend to find real value
-              enabled: true,
+              enabled: product.product in disabledProducts
+                && disabledProducts[product.product].includes(pb.branch),
             })))}
           onStateChange={this.handleStateChange}
-          // todo: can't get this.context.authController to work here
-          // disabled={!this.context.authController.userSession}
-          disabled={false}
+          disabled={!this.context.authController.userSession}
+          loading={!loadedDisabledProducts}
         />
         <Tabs defaultActiveKey="releases" id="releases" onSelect={this.handleTabSelect}>
           <Tab eventKey="releases" title="In progress">

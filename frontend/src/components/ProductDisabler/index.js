@@ -11,6 +11,18 @@ export default class ProductDisabler extends React.PureComponent {
     };
   }
 
+  getIcon = (loading, enabled) => {
+    if (loading) {
+      return '❔';
+    }
+
+    if (enabled) {
+      return '✅';
+    }
+
+    return '❌';
+  };
+
   openModal = (pb) => {
     this.setState({ showModal: true, modalContent: this.renderModal(pb) });
   };
@@ -63,7 +75,7 @@ export default class ProductDisabler extends React.PureComponent {
        ],
        ...
     */
-    const { productBranches, disabled } = this.props;
+    const { productBranches, disabled, loading } = this.props;
 
     return (
       <Fragment>
@@ -75,7 +87,7 @@ export default class ProductDisabler extends React.PureComponent {
             disabled={disabled}
           >
             {pb.prettyProduct} : {pb.prettyBranch}
-            {pb.enabled ? '✅' : '❌'}
+            {this.getIcon(loading, pb.enabled)}
           </Button>
         ))}
         <Modal show={this.state.showModal} onHide={this.closeModal}>
