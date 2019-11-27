@@ -101,7 +101,7 @@ export default class ProductDisabler extends React.PureComponent {
             <Fragment>
               <Modal.Header closeButton>
                 <Modal.Title>
-                  {modalItem.disabled ? 'Disable' : 'Enable'} updates for&nbsp;
+                  {modalItem.disabled ? 'Enable' : 'Disable'} updates for&nbsp;
                   {modalItem.prettyProduct} {modalItem.prettyBranch}?
                 </Modal.Title>
               </Modal.Header>
@@ -113,9 +113,9 @@ export default class ProductDisabler extends React.PureComponent {
               <Modal.Footer>
                 <Button
                   onClick={() => onStateChange(modalItem)}
-                  bsStyle={modalItem.disabled ? 'danger' : 'success'}
+                  bsStyle={modalItem.disabled ? 'success' : 'danger'}
                 >
-                  {modalItem.disabled ? 'Disable releases' : 'Enable releases'}
+                  {modalItem.disabled ? 'Enable releases' : 'Disable releases'}
                 </Button>
                 <Button onClick={this.closeModal} bsStyle="primary">Close</Button>
               </Modal.Footer>

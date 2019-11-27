@@ -372,7 +372,6 @@ def disable_product(body):
 def enable_product(product, branch):
     session = current_app.db.session
 
-    raise Exception("wtf!")
     required_permission = f"{SCOPE_PREFIX}/enable_product/{product}"
     if not current_user.has_permissions(required_permission):
         user_permissions = ", ".join(current_user.get_permissions())
