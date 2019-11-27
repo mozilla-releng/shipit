@@ -83,7 +83,7 @@ def add_release(body):
     session = current_app.db.session
     partial_updates = body.get("partial_updates")
     if partial_updates == "auto":
-        if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in ["try", "releases/mozilla-beta"]:
+        if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in ["try", "releases/mozilla-beta", "projects/maple"]:
             raise NotImplementedError("Partial suggestion works for automated betas only")
 
         partial_updates = _suggest_partials(product=product, branch=branch, version=body["version"])
@@ -253,14 +253,14 @@ def abandon_release(name):
 
 
 @auth.require_permissions([SCOPE_PREFIX + "/rebuild_product_details"])
-def rebuild_product_details(options):
+def rebuild_product_details(body):
     pulse_user = current_app.config["PULSE_USER"]
     exchange = f"exchange/{pulse_user}/{PROJECT_NAME}"
 
-    logger.info(f"Sending pulse message `{options}` to queue `{exchange}` for " f"route `{PULSE_ROUTE_REBUILD_PRODUCT_DETAILS}`.")
+    logger.info(f"Sending pulse message `{body}` to queue `{exchange}` for " f"route `{PULSE_ROUTE_REBUILD_PRODUCT_DETAILS}`.")
 
     try:
-        current_app.pulse.publish(exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, options)
+        current_app.pulse.publish(exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, body)
     except Exception as e:
         import traceback
 
@@ -300,10 +300,10 @@ def get_phase_signoff(name, phase):
         abort(404)
 
 
-def phase_signoff(name, phase, uid):
+def phase_signoff(name, phase, body):
     session = current_app.db.session
     try:
-        signoff = session.query(Signoff).filter(Signoff.uid == uid).one()
+        signoff = session.query(Signoff).filter(Signoff.uid == body).one()
     except NoResultFound:
         abort(404, "Sign off does not exist")
 

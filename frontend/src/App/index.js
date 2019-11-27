@@ -8,6 +8,7 @@ import iconUrl from './shipit.png';
 import PropsRoute from '../components/PropsRoute';
 import AuthController from '../components/auth/AuthController';
 import Navigation from '../views/Navigation';
+import Footer from '../views/Footer';
 import NewRelease from '../views/NewRelease';
 import ListReleases from '../views/ListReleases';
 import NotFound from '../components/NotFound';
@@ -100,6 +101,7 @@ export default class App extends React.Component {
               </div>
             )}
           </Grid>
+          <PropsRoute component={Footer} />
         </div>
       </Router>
     );

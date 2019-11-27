@@ -18,7 +18,6 @@ paths:
       operationId: shipit_api.api.rebuild_product_details
       requestBody:
         description: Rebuild options
-        x-body-name: options
         content:
           application/json:
             schema:
@@ -83,7 +82,6 @@ paths:
       operationId: shipit_api.api.add_release
       requestBody:
         description: Release object
-        x-body-name: body
         content:
           application/json:
             schema:
@@ -146,7 +144,6 @@ paths:
           type: string
       requestBody:
         description: Release status object
-        x-body-name: body
         content:
           application/json:
             schema:
@@ -250,7 +247,6 @@ paths:
           type: string
       requestBody:
         description: Signoff UID
-        x-body-name: uid
         content:
           'application/json':
             schema:
@@ -309,6 +305,7 @@ paths:
         schema:
           type: string
           enum:
+          - projects/maple
           - releases/mozilla-beta
           - try
       responses:
@@ -539,5 +536,6 @@ components:
           type: string
           example: releases/mozilla-beta
           enum:
+          - projects/maple
           - releases/mozilla-beta
           - try
