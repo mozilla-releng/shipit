@@ -348,7 +348,7 @@ class TaskProgress extends React.Component {
       const signoffs = await phaseSignOffs(releaseName, phase.name);
       return { ...phase, status, signoffs };
     }));
-    const tasksInProgress = phasesWithStatus.some(phase => phase.status === 'running');
+    const tasksInProgress = phasesWithStatus.some(phase => ['running', 'pending'].includes(phase.status));
     this.setState({ phasesWithStatus, tasksInProgress });
   };
 
@@ -367,7 +367,7 @@ class TaskProgress extends React.Component {
             key={name}
             bsStyle={statusStyles[status] || 'info'}
             now={width}
-            active={submitted && status === 'running'}
+            active={submitted && ['running', 'pending'].includes(status)}
             label={<TaskLabel
               key={actionTaskId}
               name={name}
