@@ -21,6 +21,8 @@ const statusStyles = {
   skipped: 'info',
 };
 
+const submittedTaskStatuses = ['unscheduled', 'pending', 'running'];
+
 const taskStatus = async (taskId) => {
   const status = await (new Queue({ rootUrl: TASKCLUSTER_ROOT_URL })).status(taskId);
   return status;
@@ -348,7 +350,8 @@ class TaskProgress extends React.Component {
       const signoffs = await phaseSignOffs(releaseName, phase.name);
       return { ...phase, status, signoffs };
     }));
-    const tasksInProgress = phasesWithStatus.some(phase => phase.status === 'running');
+    const tasksInProgress = phasesWithStatus.some(phase =>
+      submittedTaskStatuses.includes(phase.status));
     this.setState({ phasesWithStatus, tasksInProgress });
   };
 
@@ -367,7 +370,7 @@ class TaskProgress extends React.Component {
             key={name}
             bsStyle={statusStyles[status] || 'info'}
             now={width}
-            active={submitted && status === 'running'}
+            active={submitted && submittedTaskStatuses.includes(status)}
             label={<TaskLabel
               key={actionTaskId}
               name={name}
