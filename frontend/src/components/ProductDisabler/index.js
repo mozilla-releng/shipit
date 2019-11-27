@@ -21,7 +21,7 @@ export default class ProductDisabler extends React.PureComponent {
     super(props);
     this.state = {
       showModal: false,
-      modalContent: '',
+      modalItem: null,
     };
   }
 
@@ -50,44 +50,15 @@ export default class ProductDisabler extends React.PureComponent {
   };
 
   openModal = (pb) => {
-    this.setState({ showModal: true, modalContent: this.renderModal(pb) });
+    this.setState({ showModal: true, modalItem: pb });
   };
 
   closeModal = () => {
     this.setState({
       showModal: false,
+      modalItem: null,
     });
   };
-
-  renderModal = (pb) => {
-    // onStateChange will accept a single productBranch entry
-    const { onStateChange, errorMsg } = this.props;
-
-    return (
-      <Fragment>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {pb.disabled ? 'Disable' : 'Enable'} updates for&nbsp;
-            {pb.prettyProduct} {pb.prettyBranch}?
-          </Modal.Title>
-        </Modal.Header>
-        {errorMsg && (
-          <Modal.Body>
-            {errorMsg}
-          </Modal.Body>
-        )}
-        <Modal.Footer>
-          <Button
-            onClick={() => onStateChange(pb)}
-            bsStyle={pb.disabled ? 'danger' : 'success'}
-          >
-            {pb.disabled ? 'Disable releases' : 'Enable releases'}
-          </Button>
-          <Button onClick={this.closeModal} bsStyle="primary">Close</Button>
-        </Modal.Footer>
-      </Fragment>
-    );
-  }
 
   render() {
     /* productBranches looks like:
@@ -103,7 +74,10 @@ export default class ProductDisabler extends React.PureComponent {
        ],
        ...
     */
-    const { productBranches, disabled, loading } = this.props;
+    const {
+      productBranches, disabled, loading, onStateChange, errorMsg,
+    } = this.props;
+    const { modalItem } = this.state;
 
     return (
       <Fragment>
@@ -123,7 +97,30 @@ export default class ProductDisabler extends React.PureComponent {
           </Fragment>
         ))}
         <Modal show={this.state.showModal} onHide={this.closeModal}>
-          {this.state.modalContent}
+          {modalItem && (
+            <Fragment>
+              <Modal.Header closeButton>
+                <Modal.Title>
+                  {modalItem.disabled ? 'Disable' : 'Enable'} updates for&nbsp;
+                  {modalItem.prettyProduct} {modalItem.prettyBranch}?
+                </Modal.Title>
+              </Modal.Header>
+              {errorMsg && (
+                <Modal.Body>
+                  {errorMsg}
+                </Modal.Body>
+              )}
+              <Modal.Footer>
+                <Button
+                  onClick={() => onStateChange(modalItem)}
+                  bsStyle={modalItem.disabled ? 'danger' : 'success'}
+                >
+                  {modalItem.disabled ? 'Disable releases' : 'Enable releases'}
+                </Button>
+                <Button onClick={this.closeModal} bsStyle="primary">Close</Button>
+              </Modal.Footer>
+            </Fragment>
+          )}
         </Modal>
       </Fragment>
     );
