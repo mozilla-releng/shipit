@@ -25,28 +25,28 @@ export default class ProductDisabler extends React.PureComponent {
     };
   }
 
-  getIcon = (loading, enabled) => {
+  getIcon = (loading, disabled) => {
     if (loading) {
       return 'question-sign';
     }
 
-    if (enabled) {
-      return 'ok-sign';
+    if (disabled) {
+      return 'remove-sign';
     }
 
-    return 'remove-sign';
+    return 'ok-sign';
   };
 
-  getButtonStyle = (loading, enabled) => {
+  getButtonStyle = (loading, disabled) => {
     if (loading) {
       return 'warning';
     }
 
-    if (enabled) {
-      return 'success';
+    if (disabled) {
+      return 'danger';
     }
 
-    return 'danger';
+    return 'success';
   };
 
   openModal = (pb) => {
@@ -67,7 +67,7 @@ export default class ProductDisabler extends React.PureComponent {
       <Fragment>
         <Modal.Header closeButton>
           <Modal.Title>
-            {pb.enabled ? 'Disable' : 'Enable'} updates for&nbsp;
+            {pb.disabled ? 'Disable' : 'Enable'} updates for&nbsp;
             {pb.prettyProduct} {pb.prettyBranch}?
           </Modal.Title>
         </Modal.Header>
@@ -79,9 +79,9 @@ export default class ProductDisabler extends React.PureComponent {
         <Modal.Footer>
           <Button
             onClick={() => onStateChange(pb)}
-            bsStyle={pb.enabled ? 'danger' : 'success'}
+            bsStyle={pb.disabled ? 'danger' : 'success'}
           >
-            {pb.enabled ? 'Disable releases' : 'Enable releases'}
+            {pb.disabled ? 'Disable releases' : 'Enable releases'}
           </Button>
           <Button onClick={this.closeModal} bsStyle="primary">Close</Button>
         </Modal.Footer>
@@ -98,7 +98,7 @@ export default class ProductDisabler extends React.PureComponent {
            "branch": "mozilla-beta",
            "prettyProduct": "Firefox Desktop",
            "prettyBranch": "Beta",
-           "enabled": true,
+           "disabled": true,
          }
        ],
        ...
@@ -116,9 +116,9 @@ export default class ProductDisabler extends React.PureComponent {
               onClick={() => this.openModal(pb)}
               disabled={disabled}
               bsSize="xsmall"
-              bsStyle={this.getButtonStyle(loading, pb.enabled)}
+              bsStyle={this.getButtonStyle(loading, pb.disabled)}
             >
-              <Glyphicon glyph={this.getIcon(loading, pb.enabled)} />
+              <Glyphicon glyph={this.getIcon(loading, pb.disabled)} />
             </Button>
           </Fragment>
         ))}

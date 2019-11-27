@@ -41,13 +41,13 @@ export default class Navigation extends React.Component {
   };
 
   handleStateChange = async (productBranch) => {
-    const url = productBranch.enabled
-      ? `${SHIPIT_API_URL}/disabled-products`
-      : `${SHIPIT_API_URL}/disabled-products?product=${productBranch.product}&branch=${productBranch.branch}`;
-    const method = productBranch.enabled ? 'POST' : 'DELETE';
+    const url = productBranch.disabled
+      ? `${SHIPIT_API_URL}/disabled-products?product=${productBranch.product}&branch=${productBranch.branch}`
+      : `${SHIPIT_API_URL}/disabled-products`;
+    const method = productBranch.disabled ? 'DELETE' : 'POST';
     const body = productBranch.enabled
-      ? JSON.stringify({ product: productBranch.product, branch: productBranch.branch })
-      : null;
+      ? null
+      : JSON.stringify({ product: productBranch.product, branch: productBranch.branch });
 
     if (!this.context.authController.userSession) {
       this.setState({ errorMsg: 'Login required!' });
@@ -72,9 +72,8 @@ export default class Navigation extends React.Component {
     }
   };
 
-  // TODO: disable on hover styling
   render() {
-    const { loaded, disabledProducts } = this.state;
+    const { loaded, disabledProducts, errorMsg } = this.state;
 
     return (
       <div>
@@ -88,13 +87,13 @@ export default class Navigation extends React.Component {
                     branch: pb.branch,
                     prettyProduct: product.prettyName,
                     prettyBranch: pb.prettyName,
-                    enabled: product.product in disabledProducts
+                    disabled: product.product in disabledProducts
                       && disabledProducts[product.product].includes(pb.branch),
                   })))}
                 onStateChange={this.handleStateChange}
                 disabled={!this.context.authController.userSession}
                 loading={!loaded}
-                errorMsg={this.state.errorMsg}
+                errorMsg={errorMsg}
               />
             </NavItem>
           </Nav>
