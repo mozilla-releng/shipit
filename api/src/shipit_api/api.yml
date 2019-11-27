@@ -309,6 +309,7 @@ paths:
         schema:
           type: string
           enum:
+          - projects/maple
           - releases/mozilla-beta
           - try
       responses:
@@ -539,5 +540,6 @@ components:
           type: string
           example: releases/mozilla-beta
           enum:
+          - projects/maple
           - releases/mozilla-beta
           - try

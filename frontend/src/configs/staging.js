@@ -18,6 +18,7 @@ module.exports = {
           branch: 'projects/maple',
           repo: 'https://hg.mozilla.org/projects/maple',
           enableReleaseEta: true,
+          disableable: true,
         },
         {
           prettyName: 'Try',
@@ -25,6 +26,7 @@ module.exports = {
           branch: 'try',
           repo: 'https://hg.mozilla.org/try',
           enableReleaseEta: false,
+          disableable: true,
         },
       ],
       enablePartials: true,
@@ -42,6 +44,7 @@ module.exports = {
           repo: 'https://hg.mozilla.org/projects/maple',
           enableReleaseEta: false,
           alternativeBranch: 'releases/mozilla-beta',
+          disableable: false,
         },
         {
           prettyName: 'Try',
@@ -49,6 +52,7 @@ module.exports = {
           branch: 'try',
           repo: 'https://hg.mozilla.org/try',
           enableReleaseEta: false,
+          disableable: false,
         },
         {
           prettyName: 'Try Beta',
@@ -58,6 +62,7 @@ module.exports = {
           enableReleaseEta: false,
           productKey: 'fennec_beta',
           versionFile: 'mobile/android/config/version-files/beta/version_display.txt',
+          disableable: false,
         },
         {
           prettyName: 'Try Release',
@@ -67,6 +72,7 @@ module.exports = {
           enableReleaseEta: false,
           productKey: 'fennec_release',
           versionFile: 'mobile/android/config/version-files/release/version_display.txt',
+          disableable: false,
         },
       ],
       enablePartials: false,
@@ -82,6 +88,7 @@ module.exports = {
           branch: 'projects/maple',
           repo: 'https://hg.mozilla.org/projects/maple',
           enableReleaseEta: false,
+          disableable: true,
         },
         {
           prettyName: 'Try',
@@ -89,6 +96,7 @@ module.exports = {
           branch: 'try',
           repo: 'https://hg.mozilla.org/try',
           enableReleaseEta: false,
+          disableable: true,
         },
       ],
       enablePartials: true,
@@ -104,6 +112,7 @@ module.exports = {
           branch: 'try-comm-central',
           repo: 'https://hg.mozilla.org/try-comm-central',
           enableReleaseEta: false,
+          disableable: false,
         },
       ],
       // TODO

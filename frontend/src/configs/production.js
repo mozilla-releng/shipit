@@ -18,6 +18,7 @@ module.exports = {
           branch: 'releases/mozilla-beta',
           repo: 'https://hg.mozilla.org/releases/mozilla-beta',
           enableReleaseEta: false,
+          disableable: true,
         },
         {
           prettyName: 'Release',
@@ -29,6 +30,7 @@ module.exports = {
           rcBranchVersionPattern: /b/,
           rcRepo: 'https://hg.mozilla.org/releases/mozilla-beta',
           numberOfPartials: 4,
+          disableable: false,
         },
         {
           prettyName: 'ESR68',
@@ -39,6 +41,7 @@ module.exports = {
           numberOfPartials: 5,
           alternativeBranch: 'releases/mozilla-esr60',
           alternativeRepo: 'https://hg.mozilla.org/releases/mozilla-esr60',
+          disableable: false,
         },
       ],
       enablePartials: true,
@@ -57,6 +60,7 @@ module.exports = {
           enableReleaseEta: false,
           productKey: 'fennec_beta',
           versionFile: 'mobile/android/config/version-files/beta/version_display.txt',
+          disableable: false,
         },
         {
           prettyName: 'Release',
@@ -65,6 +69,7 @@ module.exports = {
           repo: 'https://hg.mozilla.org/releases/mozilla-esr68',
           productKey: 'fennec_release',
           versionFile: 'mobile/android/config/version-files/release/version_display.txt',
+          disableable: false,
         },
       ],
       enablePartials: false,
@@ -80,6 +85,7 @@ module.exports = {
           branch: 'releases/mozilla-beta',
           repo: 'https://hg.mozilla.org/releases/mozilla-beta',
           enableReleaseEta: false,
+          disableable: true,
         },
       ],
       enablePartials: true,
@@ -95,6 +101,7 @@ module.exports = {
           branch: 'releases/comm-beta',
           repo: 'https://hg.mozilla.org/releases/comm-beta',
           enableReleaseEta: false,
+          disableable: false,
         },
         {
           prettyName: 'ESR68',
@@ -102,6 +109,7 @@ module.exports = {
           branch: 'releases/comm-esr68',
           repo: 'https://hg.mozilla.org/releases/comm-esr68',
           enableReleaseEta: false,
+          disableable: false,
         },
       ],
       enablePartials: false,
