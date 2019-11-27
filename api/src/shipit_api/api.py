@@ -31,6 +31,12 @@ VERSION_CLASSES = {
 }
 
 
+def _scope_prefix():
+    # make sure it matches the value in settings.py
+    app_channel = current_app.config.get("APP_CHANNEL", "development")
+    return f"{SCOPE_PREFIX}/{app_channel}"
+
+
 def good_version(release):
     """Can the version be parsed by mozilla_version
 
@@ -68,7 +74,7 @@ def notify_via_irc(product, message):
 
 def add_release(body):
     # we must require scope which depends on product
-    required_permission = f'{SCOPE_PREFIX}/add_release/{body["product"]}'
+    required_permission = f'{_scope_prefix()}/add_release/{body["product"]}'
     if not current_user.has_permissions(required_permission):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
@@ -157,7 +163,7 @@ def schedule_phase(name, phase):
         abort(404)
 
     # we must require scope which depends on product
-    required_permission = f"{SCOPE_PREFIX}/schedule_phase/{phase.release.product}/{phase.name}"
+    required_permission = f"{_scope_prefix()}/schedule_phase/{phase.release.product}/{phase.name}"
     if not current_user.has_permissions(required_permission):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
@@ -216,7 +222,7 @@ def abandon_release(name):
         release = session.query(Release).filter(Release.name == name).one()
 
         # we must require scope which depends on product
-        required_permission = f"{SCOPE_PREFIX}/abandon_release/{release.product}"
+        required_permission = f"{_scope_prefix()}/abandon_release/{release.product}"
         if not current_user.has_permissions(required_permission):
             user_permissions = ", ".join(current_user.get_permissions())
             abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
@@ -252,7 +258,7 @@ def abandon_release(name):
     return release_json
 
 
-@auth.require_permissions([SCOPE_PREFIX + "/rebuild_product_details"])
+@auth.require_permissions(lambda: [f"{_scope_prefix}/rebuild_product_details"])
 def rebuild_product_details(options):
     pulse_user = current_app.config["PULSE_USER"]
     exchange = f"exchange/{pulse_user}/{PROJECT_NAME}"
@@ -270,7 +276,7 @@ def rebuild_product_details(options):
     return jsonify({"ok": "ok"})
 
 
-@auth.require_permissions([SCOPE_PREFIX + "/update_release_status"])
+@auth.require_permissions(lambda: [f"{_scope_prefix()}/update_release_status"])
 def update_release_status(name, body):
     session = current_app.db.session
     try:
@@ -311,7 +317,7 @@ def phase_signoff(name, phase, uid):
         abort(409, "Already signed off")
 
     # we must require scope which depends on product and phase name
-    required_permission = f"{SCOPE_PREFIX}/phase_signoff/{signoff.phase.release.product}/{signoff.phase.name}"
+    required_permission = f"{_scope_prefix()}/phase_signoff/{signoff.phase.release.product}/{signoff.phase.name}"
     if not current_user.has_permissions(required_permission):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
@@ -355,7 +361,7 @@ def disable_product(body):
     product = body["product"]
     branch = body["branch"]
 
-    required_permission = f"{SCOPE_PREFIX}/disable_product/{product}"
+    required_permission = f"{_scope_prefix()}/disable_product/{product}"
     if not current_user.has_permissions(required_permission):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
@@ -372,7 +378,7 @@ def disable_product(body):
 def enable_product(product, branch):
     session = current_app.db.session
 
-    required_permission = f"{SCOPE_PREFIX}/enable_product/{product}"
+    required_permission = f"{_scope_prefix()}/enable_product/{product}"
     if not current_user.has_permissions(required_permission):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")

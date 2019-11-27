@@ -220,7 +220,10 @@ class Auth(object):
         def decorator(method):
             @functools.wraps(method)
             def wrapper(*args, **kwargs):
-                logger.info("Checking permissions", permissions=permissions)
+                _permissions = permissions
+                if callable(permissions):
+                    _permissions = permissions()
+                logger.info("Checking permissions", permissions=_permissions)
                 if self._require_permissions(permissions):
                     # Validated permissions, running method
                     logger.info("Validated permissions, processing api request")

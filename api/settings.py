@@ -137,6 +137,7 @@ AUTH0_AUTH_SCOPES.update(scopes)
 AUTH0_AUTH_SCOPES.update({"rebuild_product_details": [], "update_release_status": []})
 
 # append scopes with scope prefix and add admin group of users
-AUTH0_AUTH_SCOPES = {f"{shipit_api.config.SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
+# make sure that it matches shipit_api.api._scope_prefix()
+AUTH0_AUTH_SCOPES = {f"{shipit_api.config.SCOPE_PREFIX}/{secrets['APP_CHANNEL']}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
 AUTH0_AUTH = True
 TASKCLUSTER_AUTH = True
