@@ -9,7 +9,7 @@ import * as moment from 'moment';
 
 import config, { SHIPIT_API_URL } from '../../config';
 import { getBuildNumbers, getShippedReleases } from '../../components/api';
-import { getPushes, getVersion, getLocales } from '../../components/mercurial';
+import { getPushes, getVersion, getLocales } from '../../components/vcs';
 import maybeShorten from '../../components/text';
 
 export default class NewRelease extends React.Component {
