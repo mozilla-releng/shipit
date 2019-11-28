@@ -67,10 +67,8 @@ export default class NewRelease extends React.Component {
       buildNumber: 0,
       partialVersions: [],
     });
-    const pushes = await getPushes(branch.repo);
-    const suggestedRevisions = Object.values(pushes.pushes).map(push =>
-      ({ ...push.changesets[0], date: new Date(push.date * 1000) })).reverse().filter(push =>
-      push.desc.indexOf('DONTBUILD') === -1);
+    const pushes = await getPushes(branch.repo, branch.branch);
+    const suggestedRevisions = pushes.filter(push => push.desc.indexOf('DONTBUILD') === -1);
     this.setState({ suggestedRevisions });
   };
 
