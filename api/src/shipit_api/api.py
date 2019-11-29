@@ -394,6 +394,6 @@ def _suggest_partials(product, branch, version, max_partials=3):
     for release in suggested_releases:
         suggested_partials[release["version"]] = {
             "buildNumber": release["build_number"],
-            "locales": get_locales(f"${HG_PREFIX}/{release['branch']}", release["revision"], product_to_appname(product)),
+            "locales": get_locales(f"{HG_PREFIX}/{release['branch']}", release["revision"], product_to_appname(product)),
         }
     return suggested_partials
