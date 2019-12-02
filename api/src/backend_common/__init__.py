@@ -11,7 +11,7 @@ import flask
 import backend_common.dockerflow
 import cli_common.log
 
-EXTENSIONS = ["log", "security", "cors", "api", "auth", "cache", "pulse", "db"]
+EXTENSIONS = ["log", "security", "cors", "api", "auth", "pulse", "db"]
 
 logger = cli_common.log.get_logger(__name__)
 

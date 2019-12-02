@@ -18,11 +18,6 @@ import shipit_api.config
 logger = cli_common.log.get_logger(__name__)
 
 
-def generate_product_details(product_details_dir, breakpoint_version):
-    # TODO: we need to migrate current code that generates from cli.py
-    pass
-
-
 def rebuild_product_details(default_git_repo_url, default_folder_in_repo, default_channel, default_breakpoint_version, default_clean_working_copy):
     """Rebuild product details.
     """

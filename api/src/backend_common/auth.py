@@ -7,6 +7,7 @@ import enum
 import functools
 import json
 import os
+import tempfile
 
 import flask
 import flask_login
@@ -79,6 +80,27 @@ class BaseUser(object):
 
     def __str__(self):
         return self.get_id()
+
+
+def create_auth0_secrets_file(AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, APP_URL, USERINFO_URI="https://auth.mozilla.auth0.com/userinfo"):
+    _, secrets_file = tempfile.mkstemp()
+    with open(secrets_file, "w+") as f:
+        f.write(
+            json.dumps(
+                {
+                    "web": {
+                        "auth_uri": "https://auth.mozilla.auth0.com/authorize",
+                        "issuer": "https://auth.mozilla.auth0.com/",
+                        "client_id": AUTH_CLIENT_ID,
+                        "client_secret": AUTH_CLIENT_SECRET,
+                        "redirect_uris": [APP_URL + "/oidc_callback"],
+                        "token_uri": "https://auth.mozilla.auth0.com/oauth/token",
+                        "userinfo_uri": USERINFO_URI,
+                    }
+                }
+            )
+        )
+    return secrets_file
 
 
 class AnonymousUser(BaseUser):

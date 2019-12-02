@@ -156,7 +156,7 @@ class Release(db.Model):
             for req in shipit_api.config.SIGNOFFS.get(branch, {}).get(product, {}).get(phase, [])
         ]
 
-    def generate_phases(self, partner_urls=None, github_token=None):
+    def generate_phases(self):
         phases = []
         previous_graph_ids = [self.decision_task_id]
         next_version = bump_version(self.version.replace("esr", ""))
