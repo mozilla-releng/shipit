@@ -84,9 +84,9 @@ def add_release(body):
     partial_updates = body.get("partial_updates")
     if partial_updates == "auto":
         if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in ["try", "releases/mozilla-beta", "projects/maple"]:
-            raise NotImplementedError("Partial suggestion works for automated betas only")
+            abort(400, "Partial suggestion works for automated betas only")
 
-        partial_updates = _suggest_partials(product=product, branch=branch, version=body["version"])
+        partial_updates = _suggest_partials(product=product, branch=branch)
     r = Release(
         product=product,
         version=body["version"],
@@ -386,7 +386,7 @@ def enable_product(product, branch):
         abort(404)
 
 
-def _suggest_partials(product, branch, version, max_partials=3):
+def _suggest_partials(product, branch, max_partials=3):
     """Return a list of suggested partials"""
     shipped_releases = reversed(list_releases(product, branch, status=["shipped"]))
     suggested_releases = list(shipped_releases)[:max_partials]
