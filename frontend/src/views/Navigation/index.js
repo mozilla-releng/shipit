@@ -15,6 +15,12 @@ export default function Navigation() {
           <Navbar.Brand>
             <NavLink to="/new">New Release</NavLink>
           </Navbar.Brand>
+          <Navbar.Brand>
+            <NavLink to="/xpi">XPI Releases</NavLink>
+          </Navbar.Brand>
+          <Navbar.Brand>
+            <NavLink to="/newxpi">New XPI Release</NavLink>
+          </Navbar.Brand>
         </Navbar.Header>
         <Nav pullRight>
           <CredentialsMenu />

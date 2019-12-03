@@ -23,7 +23,7 @@ required = [
     "DATABASE_URL",
     "SECRET_KEY_BASE64",
 ]
-optional = ["DISABLE_NOTIFY"]
+optional = ["DISABLE_NOTIFY", "GITHUB_TOKEN", "XPI_MANIFEST_OWNER", "XPI_MANIFEST_REPO"]
 
 # In local development, these come directly from the environment.
 if os.environ.get("APP_CHANNEL") == "development":
@@ -92,6 +92,9 @@ GROUPS = {
     ],
     "firefox-signoff": ["rkothari@mozilla.com", "ehenry@mozilla.com", "jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
+    # We use 2 separate groups for standard and system addon type
+    "xpi_standard_signoff": ["rdalal@mozilla.com"],
+    "xpi_system_signoff": ["rdalal@mozilla.com"],
 }
 
 AUTH0_AUTH_SCOPES = dict()
@@ -127,6 +130,22 @@ AUTH0_AUTH_SCOPES.update(scopes)
 
 # other scopes
 AUTH0_AUTH_SCOPES.update({"rebuild_product_details": [], "update_release_status": []})
+
+# XPI scopes
+# The following scope gives permission to all github quries, inlcuding private repos
+AUTH0_AUTH_SCOPES.update({"github": GROUPS["xpi_standard_signoff"] + GROUPS["xpi_system_signoff"]})
+
+for xpi_type in ["standard", "system"]:
+    AUTH0_AUTH_SCOPES.update(
+        {f"add_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"], f"abandon_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"]}
+    )
+    for phase in ["build", "promote"]:
+        AUTH0_AUTH_SCOPES.update(
+            {
+                f"schedule_phase/xpi/{xpi_type}/{phase}": GROUPS[f"xpi_{xpi_type}_signoff"],
+                f"phase_signoff/xpi/{xpi_type}/{phase}": GROUPS[f"xpi_{xpi_type}_signoff"],
+            }
+        )
 
 # append scopes with scope prefix and add admin group of users
 AUTH0_AUTH_SCOPES = {f"{shipit_api.config.SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}

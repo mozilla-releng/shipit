@@ -10,7 +10,9 @@ import AuthController from '../components/auth/AuthController';
 import Navigation from '../views/Navigation';
 import Footer from '../views/Footer';
 import NewRelease from '../views/NewRelease';
+import NewXPIRelease from '../views/NewXPIRelease';
 import ListReleases from '../views/ListReleases';
+import ListXPIReleases from '../views/ListXPIReleases';
 import NotFound from '../components/NotFound';
 import Auth0Login from '../views/Auth0Login';
 import Spinner from '../components/Spinner';
@@ -91,6 +93,8 @@ export default class App extends React.Component {
                   setUserSession={authController.setUserSession}
                 />
                 <PropsRoute path="/new" component={NewRelease} />
+                <PropsRoute path="/xpi" component={ListXPIReleases} />
+                <PropsRoute path="/newxpi" component={NewXPIRelease} />
                 <Route component={NotFound} />
               </Switch>
             ) : (

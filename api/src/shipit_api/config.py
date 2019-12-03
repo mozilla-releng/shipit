@@ -466,8 +466,6 @@ SUPPORTED_FLAVORS = {
     ],
 }
 
-# TODO: add other branches
-# TODO: consider move this to secrets, aka per env config
 SIGNOFFS = {
     # 'projects/maple': {
     #     'fennec': {
@@ -486,5 +484,17 @@ SIGNOFFS = {
     #             },
     #         ],
     #     },
+    # },
+    # "xpi": {
+    #     "standard": {
+    #         "promote": [
+    #             {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
+    #             {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
+    #         ],
+    #     },
+    #     "system": [
+    #         {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
+    #         {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
+    #     ],
     # },
 }
