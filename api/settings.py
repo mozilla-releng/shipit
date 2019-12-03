@@ -6,7 +6,7 @@
 import base64
 import os
 
-import backend_common.auth0
+import backend_common.auth
 import cli_common.taskcluster
 import shipit_api.config
 
@@ -72,7 +72,7 @@ else:
 
 OIDC_USER_INFO_ENABLED = True
 args = [secrets["AUTH_CLIENT_ID"], secrets["AUTH_CLIENT_SECRET"], secrets["APP_URL"]]
-OIDC_CLIENT_SECRETS = backend_common.auth0.create_auth0_secrets_file(*args)
+OIDC_CLIENT_SECRETS = backend_common.auth.create_auth0_secrets_file(*args)
 
 # XXX: scopes/groups are hardcoded for now
 GROUPS = {

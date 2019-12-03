@@ -99,7 +99,7 @@ def add_release(body):
         product_key=body.get("product_key"),
     )
     try:
-        r.generate_phases(partner_urls=current_app.config.get("PARTNERS_URL"), github_token=current_app.config.get("GITHUB_TOKEN"))
+        r.generate_phases()
         session.add(r)
         session.commit()
         release = r.json
