@@ -95,7 +95,6 @@ GROUPS = {
         "ehenry@mozilla.com",
         "jcristau@mozilla.com",
         "pchevrel@mozilla.com",
-        "sylvestre@debian.org",
         "rvandermeulen@mozilla.com",
     ],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
