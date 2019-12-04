@@ -90,13 +90,7 @@ GROUPS = {
         "sfraser@mozilla.com",
         "tprince@mozilla.com",
     ],
-    "firefox-signoff": [
-        "rkothari@mozilla.com",
-        "ehenry@mozilla.com",
-        "jcristau@mozilla.com",
-        "pchevrel@mozilla.com",
-        "rvandermeulen@mozilla.com",
-    ],
+    "firefox-signoff": ["rkothari@mozilla.com", "ehenry@mozilla.com", "jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com",],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
 }
 
