@@ -1,4 +1,5 @@
 import json
+from urllib.parse import unquote, urlparse
 
 import requests
 import yaml
@@ -45,7 +46,7 @@ def query_api(query):
 
     j = req.json()
     if "errors" in j:
-        raise RuntimeError(f"Github query error - {j['errors']}")
+        abort(502, f"Github query error - {j['errors']}")
     return j
 
 
@@ -103,27 +104,30 @@ def get_xpi_manifest(owner, repo, ref):
     return manifest
 
 
-def get_config(owner, repo, ref):
+def get_taskgraph_config(owner, repo, ref):
     config = yaml.safe_load(get_file_from_github(owner, repo, "taskcluster/ci/config.yml", ref))
     return config
 
 
-def get_package(owner, repo, revision):
+def get_package_json(owner, repo, revision):
     package = json.loads(get_file_from_github(owner, repo, "package.json", revision))
     return package
 
 
 def list_xpis(owner, repo, revision):
     manifest = get_xpi_manifest(owner, repo, revision)
-    config = get_config(owner, repo, revision)
+    config = get_taskgraph_config(owner, repo, revision)
     xpis = []
     for xpi in filter(lambda xpi: xpi["active"], manifest["xpis"]):
-        repo_parts = config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-repository"].split(":")[-1].split("/")
-        xpi_owner, xpi_repo = repo_parts[-2], repo_parts[-1]
+        if current_app.config.get("GITHUB_SKIP_PRIVATE_REPOS") and xpi.get("private-repo"):
+            # Skip private repos in localdev and maybe staging
+            continue
+        repo_url = config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-repository"]
+        xpi_owner, xpi_repo = extract_github_repo_owner_and_name(repo_url)
         # convert "master" into a stable ref
         ref = config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-ref"]
         commit = ref_to_commit(xpi_owner, xpi_repo, ref)
-        package = get_package(xpi_owner, xpi_repo, commit)
+        package = get_package_json(xpi_owner, xpi_repo, commit)
         xpis.append(
             {
                 "revision": commit,
@@ -141,5 +145,71 @@ def list_xpis(owner, repo, revision):
 
 def get_xpi_type(owner, repo, revision, xpi_name):
     xpis = list_xpis(owner, repo, revision)["xpis"]
-    our_xpi = list(filter(lambda xpi: xpi["xpi_name"] == xpi_name, xpis))[0]
+    our_xpi = get_single_item_from_sequence(xpis, lambda xpi: xpi["xpi_name"] == xpi_name)
     return our_xpi["addon-type"]
+
+
+def extract_github_repo_owner_and_name(url):
+    """Given an URL, return the repo name and who owns it.
+    Args:
+        url (str): The URL to the GitHub repository
+    Returns:
+        str, str: the owner of the repository, the repository name
+    """
+
+    parts = get_parts_of_url_path(url)
+    repo_owner = parts[0]
+    repo_name = parts[1]
+
+    return repo_owner, repo_name.rstrip(".git")
+
+
+def get_parts_of_url_path(url):
+    """Given a url, take out the path part and split it by '/'.
+    Args:
+        url (str): the url slice
+    returns
+        list: parts after the domain name of the URL
+    """
+    if "@" in url:
+        # git@github.com:owner/repo
+        return url.split(":")[-1].split("/")
+    parsed = urlparse(url)
+    path = unquote(parsed.path).lstrip("/")
+    parts = path.split("/")
+    return parts
+
+
+def get_single_item_from_sequence(
+    sequence,
+    condition,
+    ErrorClass=ValueError,
+    no_item_error_message="No item matched condition",
+    too_many_item_error_message="Too many items matched condition",
+    append_sequence_to_error_message=True,
+):
+    """Return an item from a python sequence based on the given condition.
+    Args:
+        sequence (sequence): The sequence to filter
+        condition: A function that serves to filter items from `sequence`. Function
+            must have one argument (a single item from the sequence) and return a boolean.
+        ErrorClass (Exception): The error type raised in case the item isn't unique
+        no_item_error_message (str): The message raised when no item matched the condtion
+        too_many_item_error_message (str): The message raised when more than one item matched the condition
+        append_sequence_to_error_message (bool): Show or hide what was the tested sequence in the error message.
+            Hiding it may prevent sensitive data (such as password) to be exposed to public logs
+    Returns:
+        The only item in the sequence which matched the condition
+    """
+    filtered_sequence = [item for item in sequence if condition(item)]
+    number_of_items_in_filtered_sequence = len(filtered_sequence)
+    if number_of_items_in_filtered_sequence == 0:
+        error_message = no_item_error_message
+    elif number_of_items_in_filtered_sequence > 1:
+        error_message = too_many_item_error_message
+    else:
+        return filtered_sequence[0]
+
+    if append_sequence_to_error_message:
+        error_message = "{}. Given: {}".format(error_message, sequence)
+    raise ErrorClass(error_message)

@@ -25,6 +25,7 @@ services:
       - TASKCLUSTER_SECRET
       - TASKCLUSTER_ROOT_URL=https://firefox-ci-tc.services.mozilla.com
       - GITHUB_TOKEN
+      - GITHUB_SKIP_PRIVATE_REPOS=1
       - XPI_MANIFEST_OWNER=escapewindow
       - XPI_MANIFEST_REPO=test-xpi-manifest
     depends_on:

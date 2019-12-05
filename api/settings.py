@@ -23,7 +23,7 @@ required = [
     "DATABASE_URL",
     "SECRET_KEY_BASE64",
 ]
-optional = ["DISABLE_NOTIFY", "GITHUB_TOKEN", "XPI_MANIFEST_OWNER", "XPI_MANIFEST_REPO"]
+optional = ["DISABLE_NOTIFY", "GITHUB_TOKEN", "XPI_MANIFEST_OWNER", "XPI_MANIFEST_REPO", "GITHUB_SKIP_PRIVATE_REPOS"]
 
 # In local development, these come directly from the environment.
 if os.environ.get("APP_CHANNEL") == "development":
@@ -132,7 +132,7 @@ AUTH0_AUTH_SCOPES.update(scopes)
 AUTH0_AUTH_SCOPES.update({"rebuild_product_details": [], "update_release_status": []})
 
 # XPI scopes
-# The following scope gives permission to all github quries, inlcuding private repos
+# The following scope gives permission to all github queries, inlcuding private repos
 AUTH0_AUTH_SCOPES.update({"github": GROUPS["xpi_standard_signoff"] + GROUPS["xpi_system_signoff"]})
 
 for xpi_type in ["standard", "system"]:
