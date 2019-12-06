@@ -172,7 +172,7 @@ tasks:
                 owner: ${owner_email}
                 source: ${repo_url}
 
-            - $if: 'ui_bucket != "relengstatic-none-shipitfrontend-static-website"'
+            - $if: 'release_channel in ["testing", "staging", "production"]'
               then:
                 - taskId: {$eval: as_slugid("ui-deploy")}
                   created: {$fromNow: ''}
