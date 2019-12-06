@@ -4,8 +4,8 @@ import { object } from 'prop-types';
 import ReactInterval from 'react-interval';
 import { Queue } from 'taskcluster-client-web';
 import libUrls from 'taskcluster-lib-urls';
-import config, { SHIPIT_API_URL, TASKCLUSTER_ROOT_URL } from '../../config';
-import { getShippedReleases } from '../../components/api';
+import { SHIPIT_API_URL, TASKCLUSTER_ROOT_URL } from '../../config';
+import { getShippedXPIReleases } from '../../components/api';
 
 const statusStyles = {
   // TC statuses
@@ -46,7 +46,7 @@ export default class ListReleases extends React.Component {
 
   getReleases = async () => {
     try {
-      const req = await fetch(`${SHIPIT_API_URL}/releases`);
+      const req = await fetch(`${SHIPIT_API_URL}/xpi/releases`);
       const releases = await req.json();
       let message = '';
       if (releases.length === 0) {
@@ -68,9 +68,9 @@ export default class ListReleases extends React.Component {
     }
   };
 
-  getRecentReleases = async (product, branch) => {
+  getRecentReleases = async () => {
     try {
-      const shippedReleases = await getShippedReleases(product, branch);
+      const shippedReleases = await getShippedXPIReleases();
       let shippedReleasesMessage = '';
       if (shippedReleases.length === 0) {
         shippedReleasesMessage = <h3>No recent releases!</h3>;
@@ -95,11 +95,7 @@ export default class ListReleases extends React.Component {
       if (this.state.shippedReleases.length > 0) {
         return;
       }
-      config.PRODUCTS.forEach((product) => {
-        product.branches.forEach((branch) => {
-          this.getRecentReleases(product.product, branch.branch);
-        });
-      });
+      this.getRecentReleases();
     }
   };
 
@@ -186,7 +182,7 @@ class Release extends React.Component {
   };
 
   abortRelease = async (release) => {
-    const url = `${SHIPIT_API_URL}/releases/${release.name}`;
+    const url = `${SHIPIT_API_URL}/xpi/releases/${release.name}`;
     if (!this.context.authController.userSession) {
       this.setState({ errorMsg: 'Login required!' });
       return;
@@ -237,9 +233,7 @@ class Release extends React.Component {
       <div className="row">
         <div className="col">
           <h3>
-            <a href={`${config.TREEHERDER_URL}/#/jobs?repo=${release.project}&revision=${release.revision}`}>
-              {release.product} <small>{release.version} build{release.build_number}</small>
-            </a>
+            {release.xpi_name} <small>{release.xpi_version} build{release.build_number}</small>
             {showCancel &&
               <Button
                 onClick={this.open}
@@ -305,23 +299,11 @@ const phaseStatus = async (phase, idx, phases, allowPhaseSkipping) => {
       return 'ready';
     }
   }
-  // Special case for Firefox RC.
-  // push_firefox can be scheduled even if ship_firefox_rc (the previous phase)
-  // is not ready. We still need to be sure that promote_firefox_rc is ready
-  if (phase.name === 'push_firefox' && previousPhase.name === 'ship_firefox_rc') {
-    const promoteFirefoxRCPhase = phases[0];
-    if (promoteFirefoxRCPhase.submitted) {
-      const status = await taskStatus(promoteFirefoxRCPhase.actionTaskId);
-      if (status.status.state === 'completed') {
-        return 'ready';
-      }
-    }
-  }
   return allowPhaseSkipping ? 'ready' : 'blocked';
 };
 
 const phaseSignOffs = async (releaseName, phaseName) => {
-  const url = `${SHIPIT_API_URL}/signoff/${releaseName}/${phaseName}`;
+  const url = `${SHIPIT_API_URL}/xpi/signoff/${releaseName}/${phaseName}`;
   const response = await fetch(url);
   if (!response.ok) {
     return [];
@@ -421,7 +403,7 @@ class TaskLabel extends React.PureComponent {
     const { accessToken } = this.context.authController.getUserSession();
     const { releaseName, name } = this.props;
     const { selectedSignoff } = this.state;
-    const url = `${SHIPIT_API_URL}/signoff/${releaseName}/${name}`;
+    const url = `${SHIPIT_API_URL}/xpi/signoff/${releaseName}/${name}`;
     const headers = {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
@@ -448,7 +430,7 @@ class TaskLabel extends React.PureComponent {
     const { accessToken } = this.context.authController.getUserSession();
     const { releaseName, name } = this.props;
     const headers = { Authorization: `Bearer ${accessToken}` };
-    const url = `${SHIPIT_API_URL}/releases/${releaseName}/${name}`;
+    const url = `${SHIPIT_API_URL}/xpi/releases/${releaseName}/${name}`;
     try {
       const response = await fetch(url, { method: 'PUT', headers });
       if (!response.ok) {
@@ -554,7 +536,7 @@ class TaskLabel extends React.PureComponent {
           <Button bsStyle="primary" disabled={tasksInProgress} onClick={this.open}>{name}</Button>
           <Modal show={this.state.showModal} onHide={this.close}>
             <Modal.Header closeButton>
-              <Modal.Title>Do eeet</Modal.Title>
+              <Modal.Title>Do eet</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {this.renderBody()}

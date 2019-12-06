@@ -29,6 +29,8 @@ class ArtifactNotFound(Exception):
 def get_trust_domain(project):
     if "comm" in project:
         return "comm"
+    elif "xpi" in project:
+        return "xpi"
     else:
         return "gecko"
 

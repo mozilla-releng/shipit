@@ -183,7 +183,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Phase'
     put:
-      summary: act on phase
+      summary: Schedule phase
       operationId: shipit_api.api.schedule_phase
       parameters:
       - name: name
@@ -313,6 +313,287 @@ paths:
           description: OK
         405:
           description: Invalid input
+  /github/commits/{owner}/{repo}/{branch}:
+    get:
+      summary: List git commits in a Github repo
+      operationId: shipit_api.github.list_github_commits
+      parameters:
+      - name: owner
+        in: path
+        required: true
+        description: repo owner
+        schema:
+          type: string
+      - name: repo
+        in: path
+        required: true
+        description: repo name
+        schema:
+          type: string
+      - name: branch
+        in: path
+        required: true
+        description: branch name
+        schema:
+          type: string
+      responses:
+        200:
+          description: List of git commits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /github/package_json/{owner}/{repo}/{revision}:
+    get:
+      summary: Returns contents of package.json from a github repo's root directory
+      operationId: shipit_api.github.get_package_json
+      parameters:
+      - name: owner
+        in: path
+        required: true
+        description: repo owner
+        schema:
+          type: string
+      - name: repo
+        in: path
+        required: true
+        description: repo name
+        schema:
+          type: string
+      - name: revision
+        in: path
+        required: true
+        description: commit revision
+        schema:
+          type: string
+      responses:
+        200:
+          description: Contents of package.json
+          content:
+            application/json:
+              schema:
+                type: object
+  /github/xpis/{owner}/{repo}/{revision}:
+    get:
+      summary: List XPIs in the manifest
+      operationId: shipit_api.github.list_xpis
+      parameters:
+      - name: owner
+        in: path
+        required: true
+        description: repo owner
+        schema:
+          type: string
+      - name: repo
+        in: path
+        required: true
+        description: repo name
+        schema:
+          type: string
+      - name: revision
+        required: true
+        in: path
+        description: commit revision
+        schema:
+          type: string
+      responses:
+        200:
+          description: List of XPIs in a manifest
+          content:
+            application/json:
+              schema:
+                type: object
+  /xpi/releases:
+    get:
+      summary: List XPI releases
+      operationId: shipit_api.xpi.list_releases
+      parameters:
+      - name: xpi_name
+        in: query
+        schema:
+          type: string
+      - name: xpi_version
+        in: query
+        schema:
+          type: string
+      - name: build_number
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        200:
+          description: A list of releases
+          content:
+            'application/json':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/XPIRelease'
+    post:
+      summary: Add a new XPI release
+      operationId: shipit_api.xpi.add_release
+      requestBody:
+        description: XPI Release object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/XPIReleaseInput'
+        required: true
+      responses:
+        201:
+          description: Release added
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/XPIRelease'
+  /xpi/releases/{name}:
+    get:
+      summary: Release info
+      operationId: shipit_api.xpi.get_release
+      parameters:
+      - name: name
+        in: path
+        description: release name
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Returns release representation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/XPIRelease'
+    delete:
+      summary: Release info
+      operationId: shipit_api.xpi.abandon_release_xpi
+      parameters:
+      - name: name
+        in: path
+        description: release name
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Returns release representation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/XPIRelease'
+  /xpi/releases/{name}/{phase}:
+    get:
+      summary: Phase info
+      operationId: shipit_api.xpi.get_phase
+      parameters:
+      - name: name
+        in: path
+        description: release name
+        required: true
+        schema:
+          type: string
+      - name: phase
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Retruns phase representation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Phase'
+    put:
+      summary: Schedule phase
+      operationId: shipit_api.xpi.schedule_phase
+      parameters:
+      - name: name
+        in: path
+        description: release name
+        required: true
+        schema:
+          type: string
+      - name: phase
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Phase scheduled
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Phase'
+        409:
+          description: Already submitted
+          content: {}
+  /xpi/signoff/{name}/{phase}:
+    get:
+      summary: Get phase signoff requirements and status
+      operationId: shipit_api.xpi.get_phase_signoff
+      parameters:
+      - name: name
+        in: path
+        description: release name
+        required: true
+        schema:
+          type: string
+      - name: phase
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Retruns phase signoff representation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Signoffs'
+    put:
+      summary: Sign off a phase
+      operationId: shipit_api.xpi.phase_signoff
+      parameters:
+      - name: name
+        in: path
+        description: release name
+        required: true
+        schema:
+          type: string
+      - name: phase
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Signoff UID
+        content:
+          'application/json':
+            schema:
+              type: string
+        required: true
+      responses:
+        200:
+          description: Retruns phase signoff representation
+          content:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/Signoffs'
+        409:
+          description: Already submitted
+          content: {}
 components:
   schemas:
     ReleaseInput:
@@ -403,7 +684,7 @@ components:
           type: string
           description: Action Task ID for the phase. This is also the taskGroupId
             for the tasks created for this phase.
-        started:
+        created:
           type: string
           format: dateTime
           example: 2006-08-14T02:34:56-06:00
@@ -464,7 +745,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Phase'
-        started:
+        created:
           type: string
           format: dateTime
           example: 2006-08-14T02:34:56-06:00
@@ -539,3 +820,66 @@ components:
           - projects/maple
           - releases/mozilla-beta
           - try
+    XPIReleaseInput:
+      required:
+      - xpi_name
+      - xpi_revision
+      - xpi_version
+      - revision
+      - build_number
+      type: object
+      properties:
+        xpi_name:
+          type: string
+        xpi_revision:
+          type: string
+        xpi_version:
+          type: string
+        revision:
+          type: string
+          description: Manifest revision
+        build_number:
+          type: integer
+    XPIRelease:
+      # TODO: fixme
+      type: object
+      required:
+      - xpi_name
+      - xpi_revision
+      - xpi_version
+      - build_number
+      - name
+      - phases
+      - status
+      - revision
+      type: object
+      properties:
+        name:
+          type: string
+        xpi_name:
+          type: string
+        xpi_revision:
+          type: string
+        xpi_version:
+          type: string
+        revision:
+          type: string
+        build_number:
+          type: integer
+        status:
+          type: string
+          example: scheduled
+          enum:
+          - scheduled
+          - shipped
+          - aborted
+        phases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Phase'
+        created:
+          type: string
+          format: dateTime
+        completed:
+          type: string
+          format: dateTime

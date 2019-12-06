@@ -10,7 +10,6 @@ import taskcluster_urls
 from flask import abort, current_app, jsonify
 from flask_login import current_user
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
-from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
@@ -123,7 +122,7 @@ def list_releases(product=None, branch=None, version=None, build_number=None, st
         if build_number:
             releases = releases.filter(Release.build_number == build_number)
     elif build_number:
-        raise BadRequest(description="Filtering by build_number without version" " is not supported.")
+        raise BadRequest(description="Filtering by build_number without version is not supported.")
     releases = releases.filter(Release.status.in_(status))
     releases = [r.json for r in releases.all()]
     # filter out not parsable releases, like 1.1, 1.1b1, etc
@@ -133,35 +132,17 @@ def list_releases(product=None, branch=None, version=None, build_number=None, st
 
 def get_release(name):
     session = current_app.db.session
-    try:
-        release = session.query(Release).filter(Release.name == name).one()
-        return release.json
-    except NoResultFound:
-        abort(404)
+    release = session.query(Release).filter(Release.name == name).first_or_404()
+    return release.json
 
 
 def get_phase(name, phase):
     session = current_app.db.session
-    try:
-        phase = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).one()
-        return phase.json
-    except NoResultFound:
-        abort(404)
+    phase = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
+    return phase.json
 
 
-def schedule_phase(name, phase):
-    session = current_app.db.session
-    try:
-        phase = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).one()
-    except NoResultFound:
-        abort(404)
-
-    # we must require scope which depends on product
-    required_permission = f"{SCOPE_PREFIX}/schedule_phase/{phase.release.product}/{phase.name}"
-    if not current_user.has_permissions(required_permission):
-        user_permissions = ", ".join(current_user.get_permissions())
-        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
-
+def do_schedule_phase(session, phase):
     if phase.submitted:
         abort(409, "Already submitted!")
 
@@ -170,10 +151,6 @@ def schedule_phase(name, phase):
             abort(400, "Pending signoffs")
 
     hook = phase.task_json
-
-    if "hook_payload" not in hook:
-        raise ValueError("Action tasks are not supported")
-
     hooks = get_service("hooks")
     client_id = hooks.options["credentials"]["clientId"].decode("utf-8")
     extra_context = {"clientId": client_id}
@@ -198,7 +175,22 @@ def schedule_phase(name, phase):
         phase.release.status = "shipped"
         phase.release.completed = completed
     session.commit()
+    return phase
 
+
+def schedule_phase(name, phase):
+    session = current_app.db.session
+    phase = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
+
+    # we must require scope which depends on product
+    required_permission = f"{SCOPE_PREFIX}/schedule_phase/{phase.release.product}/{phase.name}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+
+    phase = do_schedule_phase(session, phase)
+
+    hooks = get_service("hooks")
     root_url = hooks.options["rootUrl"]
     url = taskcluster_urls.ui(root_url, f"/tasks/groups/{phase.task_id}")
 
@@ -212,44 +204,38 @@ def schedule_phase(name, phase):
 
 def abandon_release(name):
     session = current_app.db.session
-    try:
-        release = session.query(Release).filter(Release.name == name).one()
+    release = session.query(Release).filter(Release.name == name).first_or_404()
 
-        # we must require scope which depends on product
-        required_permission = f"{SCOPE_PREFIX}/abandon_release/{release.product}"
-        if not current_user.has_permissions(required_permission):
-            user_permissions = ", ".join(current_user.get_permissions())
-            abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+    # we must require scope which depends on product
+    required_permission = f"{SCOPE_PREFIX}/abandon_release/{release.product}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
-        # Cancel all submitted task groups first
-        for phase in filter(lambda x: x.submitted and not x.skipped, release.phases):
-            try:
-                actions = fetch_artifact(phase.task_id, "public/actions.json")
-                parameters = fetch_artifact(phase.task_id, "public/parameters.yml")
-            except ArtifactNotFound:
-                logger.info("Ignoring not completed action task %s", phase.task_id)
-                continue
+    # Cancel all submitted task groups first
+    for phase in filter(lambda x: x.submitted and not x.skipped, release.phases):
+        try:
+            actions = fetch_artifact(phase.task_id, "public/actions.json")
+            parameters = fetch_artifact(phase.task_id, "public/parameters.yml")
+        except ArtifactNotFound:
+            logger.info("Ignoring not completed action task %s", phase.task_id)
+            continue
 
-            hook = generate_action_hook(task_group_id=phase.task_id, action_name="cancel-all", actions=actions, parameters=parameters, input_={})
-            hooks = get_service("hooks")
-            client_id = hooks.options["credentials"]["clientId"].decode("utf-8")
-            hook["context"]["clientId"] = client_id
-            hook_payload_rendered = render_action_hook(
-                payload=hook["hook_payload"], context=hook["context"], delete_params=["existing_tasks", "release_history", "release_partner_config"]
-            )
-            logger.info("Cancel phase %s by hook %s with payload: %s", phase.name, hook["hook_id"], hook_payload_rendered)
-            res = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], hook_payload_rendered)
-            logger.debug("Done: %s", res)
+        hook = generate_action_hook(task_group_id=phase.task_id, action_name="cancel-all", actions=actions, parameters=parameters, input_={})
+        hooks = get_service("hooks")
+        client_id = hooks.options["credentials"]["clientId"].decode("utf-8")
+        hook["context"]["clientId"] = client_id
+        hook_payload_rendered = render_action_hook(
+            payload=hook["hook_payload"], context=hook["context"], delete_params=["existing_tasks", "release_history", "release_partner_config"]
+        )
+        logger.info("Cancel phase %s by hook %s with payload: %s", phase.name, hook["hook_id"], hook_payload_rendered)
+        res = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], hook_payload_rendered)
+        logger.debug("Done: %s", res)
 
-        release.status = "aborted"
-        session.commit()
-        release_json = release.json
-    except NoResultFound:
-        abort(404)
-
+    release.status = "aborted"
+    session.commit()
     notify_via_irc(release.product, f"Release {release.product} {release.version} build{release.build_number} was just canceled.")
-
-    return release_json
+    return release.json
 
 
 @auth.require_permissions([SCOPE_PREFIX + "/rebuild_product_details"])
@@ -273,10 +259,7 @@ def rebuild_product_details(body):
 @auth.require_permissions([SCOPE_PREFIX + "/update_release_status"])
 def update_release_status(name, body):
     session = current_app.db.session
-    try:
-        r = session.query(Release).filter(Release.name == name).one()
-    except NoResultFound:
-        abort(404)
+    r = session.query(Release).filter(Release.name == name).first_or_404()
 
     status = body["status"]
     r.status = status
@@ -292,20 +275,14 @@ def update_release_status(name, body):
 
 def get_phase_signoff(name, phase):
     session = current_app.db.session
-    try:
-        phase = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).one()
-        signoffs = [s.json for s in phase.signoffs]
-        return dict(signoffs=signoffs)
-    except NoResultFound:
-        abort(404)
+    phase = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
+    signoffs = [s.json for s in phase.signoffs]
+    return dict(signoffs=signoffs)
 
 
 def phase_signoff(name, phase, body):
     session = current_app.db.session
-    try:
-        signoff = session.query(Signoff).filter(Signoff.uid == body).one()
-    except NoResultFound:
-        abort(404, "Sign off does not exist")
+    signoff = session.query(Signoff).filter(Signoff.uid == body).first_or_404()
 
     if signoff.signed:
         abort(409, "Already signed off")
@@ -316,11 +293,8 @@ def phase_signoff(name, phase, body):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
-    try:
-        # Prevent the same user signing off for multiple signoffs
-        phase_obj = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).one()
-    except NoResultFound:
-        abort(404, "Phase not found")
+    # Prevent the same user signing off for multiple signoffs
+    phase_obj = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
 
     who = current_user.get_id()
     if who in [s.completed_by for s in phase_obj.signoffs]:
@@ -377,13 +351,10 @@ def enable_product(product, branch):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
-    try:
-        dp = session.query(DisabledProduct).filter(DisabledProduct.product == product).filter(DisabledProduct.branch == branch).one()
-        session.delete(dp)
-        session.commit()
-        return 200
-    except NoResultFound:
-        abort(404)
+    dp = session.query(DisabledProduct).filter(DisabledProduct.product == product).filter(DisabledProduct.branch == branch).first_or_404()
+    session.delete(dp)
+    session.commit()
+    return 200
 
 
 def _suggest_partials(product, branch, max_partials=3):

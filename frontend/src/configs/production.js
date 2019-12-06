@@ -115,4 +115,13 @@ module.exports = {
       enablePartials: false,
     },
   ],
+  XPI_PRODUCTS: [
+    {
+      product: 'xpi',
+      prettyName: 'Click to load manifest',
+      branch: 'master',
+      owner: 'mozilla-extensions',
+      repo: 'xpi-manifest',
+    },
+  ],
 };
