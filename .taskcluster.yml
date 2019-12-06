@@ -5,7 +5,7 @@ tasks:
   $let:
     release_channel:
       $if: 'tasks_for == "github-pull-request"'
-      then: 'none'
+      then: 'PR'
       else:
         $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/testing", "refs/heads/staging", "refs/heads/production"]'
         then: '${event.ref[11:]}'
@@ -93,8 +93,8 @@ tasks:
                       pip install tox &&
                       tox -e ${py[0]}
                 metadata:
-                  name: Ship It API ${py[0]} tests
-                  description: Ship It API ${py[0]} tests
+                  name: Ship-it API ${py[0]} tests (${release_channel})
+                  description: Ship-it API ${py[0]} tests (${release_channel})
                   owner: ${owner_email}
                   source: ${repo_url}
 
@@ -116,8 +116,8 @@ tasks:
                     yarn install &&
                     yarn test
               metadata:
-                name: Ship It Frontend tests
-                description: Ship It Frontend tests
+                name: Ship-it Frontend tests (${release_channel})
+                description: Ship-it Frontend tests (${release_channel})
                 owner: ${owner_email}
                 source: ${repo_url}
 
@@ -167,12 +167,12 @@ tasks:
                 else:
                   - 'secrets:get:project/releng/shipit/deploy'
               metadata:
-                name: Ship It API docker build
-                description: Ship It API docker build
+                name: Ship-it API docker build (${release_channel})
+                description: Ship-it API docker build (${release_channel})
                 owner: ${owner_email}
                 source: ${repo_url}
 
-            - $if: 'ui_bucket != "relengstatic-none-shipitfrontend-static-website"'
+            - $if: 'release_channel in ["testing", "staging", "production"]'
               then:
                 - taskId: {$eval: as_slugid("ui-deploy")}
                   created: {$fromNow: ''}
@@ -202,7 +202,7 @@ tasks:
                     features:
                       taskclusterProxy: true
                   metadata:
-                    name: Ship It ${release_channel} ui deploy
-                    description: Balrog ${release_channel} ui deploy
+                    name: Ship-it UI deploy (${release_channel})
+                    description: Ship-it UI deploy (${release_channel})
                     owner: ${owner_email}
                     source: ${repo_url}
