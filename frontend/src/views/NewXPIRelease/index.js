@@ -307,7 +307,7 @@ export default class NewXPIelease extends React.Component {
                   id="input-dropdown-addon"
                   title="XPIs"
                 >
-                  {this.state.xpis.map(xpi => (
+                  {this.state.xpis && this.state.xpis.map(xpi => (
                     <MenuItem
                       onClick={() => this.handleXPIPick(
                         xpi.manifest_revision,
