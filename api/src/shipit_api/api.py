@@ -171,9 +171,6 @@ def do_schedule_phase(session, phase):
             ph.completed_by = current_user.get_id()
             ph.completed = completed
 
-    if all([ph.submitted for ph in phase.release.phases]):
-        phase.release.status = "shipped"
-        phase.release.completed = completed
     session.commit()
     return phase
 
