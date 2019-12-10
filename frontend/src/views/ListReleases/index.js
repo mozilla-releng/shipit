@@ -58,7 +58,7 @@ export default class ListReleases extends React.Component {
         loaded: true,
       });
     } catch (e) {
-      const message = <h3>Failed to fetch releases!</h3>;
+      const message = <h3>Failed to fetch releases! (VPN required)</h3>;
       this.setState({
         loaded: true,
         message,
@@ -80,7 +80,7 @@ export default class ListReleases extends React.Component {
         shippedReleases: state.shippedReleases.concat(shippedReleases.slice(0, 4)),
       }));
     } catch (e) {
-      const shippedReleasesMessage = <h3>Failed to fetch releases!</h3>;
+      const shippedReleasesMessage = <h3>Failed to fetch releases! (VPN required)</h3>;
       this.setState({
         shippedReleasesMessage,
         shippedReleases: [],
