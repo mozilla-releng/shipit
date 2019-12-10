@@ -56,7 +56,9 @@ export default class NewRelease extends React.Component {
   };
 
   close = () => {
-    this.setState(Object.assign(this.defaultState()));
+    if (!this.state.errorMsg) {
+      this.setState(Object.assign(this.defaultState()));
+    }
   };
 
   handleBranch = async (branch) => {
