@@ -5,28 +5,14 @@
 
 import pathlib
 
-import connexion
-import flask
-import werkzeug
+from connexion.apis.flask_api import FlaskApi
+from connexion.apps.flask_app import FlaskApp, FlaskJSONEncoder
+from connexion.exceptions import ProblemException
+from werkzeug.exceptions import default_exceptions
 
 import cli_common.log
 
 logger = cli_common.log.get_logger(__name__)
-
-
-def common_error_handler(exception):
-    """TODO: add description
-
-    :param extension:  TODO
-    :type exception: Exception
-
-    :rtype: TODO:
-    """
-
-    if not isinstance(exception, werkzeug.exceptions.HTTPException):
-        exception = werkzeug.exceptions.InternalServerError()
-
-    return connexion.problem(title=exception.name, detail=exception.description, status=exception.code)
 
 
 class Api:
@@ -43,11 +29,15 @@ class Api:
 
         logger.debug("Setting JSON encoder.")
 
-        app.json_encoder = connexion.apps.flask_app.FlaskJSONEncoder
+        app.json_encoder = FlaskJSONEncoder
 
         logger.debug("Setting common error handler for all error codes.")
-        for error_code in werkzeug.exceptions.default_exceptions:
-            app.register_error_handler(error_code, common_error_handler)
+        # FlaskApp sets up error handler automatically, but FlaskApi doesn't.
+        # We have to set them up manually.
+        for error_code in default_exceptions:
+            app.register_error_handler(error_code, FlaskApp.common_error_handler)
+
+        app.register_error_handler(ProblemException, FlaskApp.common_error_handler)
 
     def register(
         self,
@@ -72,7 +62,7 @@ class Api:
 
         logger.debug(f"Adding API: {specification}")
 
-        self.__api = api = connexion.apis.flask_api.FlaskApi(
+        self.__api = api = FlaskApi(
             specification=pathlib.Path(specification),
             base_path=base_path,
             arguments=arguments,
@@ -90,21 +80,7 @@ class Api:
         self.swagger_url = api.options.openapi_console_ui_path
         app.register_blueprint(api.blueprint)
 
-        for code, exception in werkzeug.exceptions.default_exceptions.items():
-            app.register_error_handler(exception, handle_default_exceptions)
-
         return api
-
-
-def handle_default_exceptions_raw(e):
-    code = getattr(e, "code", 500)
-    description = getattr(e, "description", str(e))
-    return {"type": "about:blank", "title": str(e), "status": code, "detail": description, "instance": "about:blank"}
-
-
-def handle_default_exceptions(e):
-    error = handle_default_exceptions_raw(e)
-    return flask.jsonify(error), error["status"]
 
 
 def init_app(app):
