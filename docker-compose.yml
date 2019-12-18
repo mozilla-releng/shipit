@@ -31,8 +31,27 @@ services:
     depends_on:
       - db
 
+  public:
+    build: api
+    ports:
+      - "8016:8016"
+    volumes:
+      - ./api:/app
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8016
+      - APP_CHANNEL=development
+      - DATABASE_URL=postgres://shipituserreadonly:shipitpasswordreadonly@db/shipitdb
+      - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
+      - FLASK_APP=shipit_api.public:app
+      - APP_SETTINGS=/app/settings_public.py
+    depends_on:
+      - db
+
   db:
-    image: postgres:11
+    build:
+      context: ./api
+      dockerfile: Dockerfile.postgres
     volumes:
       - dbstore:/var/lib/postgresql/data
     environment:

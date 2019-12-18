@@ -1,0 +1,253 @@
+openapi: 3.0.1
+info:
+  title: Ship-It API
+  description: 'Find  out more about Ship-it at
+
+    [https://github.com/mozilla-releng/ship-it](https://github.com/mozilla-releng/ship-it)
+
+    '
+  license:
+    name: MPL 2.0
+    url: https://www.mozilla.org/MPL/2.0/
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /releases:
+    get:
+      summary: List releases
+      operationId: shipit_api.api.list_releases
+      parameters:
+      - name: product
+        in: query
+        schema:
+          type: string
+      - name: branch
+        in: query
+        schema:
+          type: string
+      - name: version
+        in: query
+        schema:
+          type: string
+      - name: build_number
+        in: query
+        schema:
+          type: integer
+      - name: status
+        in: query
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        200:
+          description: A list of releases
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Release'
+  /releases/{name}:
+    get:
+      summary: Release info
+      operationId: shipit_api.api.get_release
+      parameters:
+      - name: name
+        in: path
+        description: release name
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Returns release representation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Release'
+  /releases/{name}/{phase}:
+    get:
+      summary: Release info
+      operationId: shipit_api.api.get_phase
+      parameters:
+      - name: name
+        in: path
+        description: release name
+        required: true
+        schema:
+          type: string
+      - name: phase
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Retruns phase representation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phase'
+components:
+  schemas:
+    Phase:
+      required:
+      - name
+      - submitted
+      type: object
+      properties:
+        name:
+          type: string
+          description: Release promotion phase name
+          example: promote_firefox
+        submitted:
+          type: boolean
+          description: Indicated if the phase was submitted to TC
+        skipped:
+          type: boolean
+          description: Indicated if the phase was skipped
+        actionTaskId:
+          type: string
+          description: Action Task ID for the phase. This is also the taskGroupId
+            for the tasks created for this phase.
+        created:
+          type: string
+          format: dateTime
+          example: '2017-12-21T15:10:00-05:00'
+        completed:
+          type: string
+          format: dateTime
+          example: '2017-12-21T15:10:00-05:00'
+    Release:
+      required:
+      - branch
+      - build_number
+      - name
+      - phases
+      - product
+      - revision
+      - status
+      - version
+      type: object
+      properties:
+        name:
+          type: string
+          example: firefox-69.0b1-build1
+        product:
+          type: string
+          example: firefox
+          enum:
+          - firefox
+          - fennec
+          - devedition
+          - thunderbird
+        version:
+          type: string
+          example: 56.0b12
+        branch:
+          type: string
+          example: projects/maple
+        project:
+          type: string
+          example: maple
+        revision:
+          type: string
+          example: abcd1234
+        build_number:
+          type: integer
+          example: 12
+        release_eta:
+          type: string
+          format: dateTime
+          example: '2017-12-21T15:10:00-05:00'
+        status:
+          type: string
+          example: scheduled
+          enum:
+          - scheduled
+          - shipped
+          - aborted
+        phases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Phase'
+        created:
+          type: string
+          format: dateTime
+          example: '2017-12-21T15:10:00-05:00'
+        completed:
+          type: string
+          format: dateTime
+          example: '2017-12-21T15:10:00-05:00'
+        allow_phase_skipping:
+          type: boolean
+          description: Allow skipping phases. In this case the snowman release model
+            will not skipped phases.
+    Signoffs:
+      required:
+      - signoffs
+      type: object
+      properties:
+        signoffs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signoff'
+        deadline:
+          type: string
+          description: Deadline of all signoffs
+          format: datetime
+    Signoff:
+      required:
+      - description
+      - name
+      - permissions
+      - uid
+      type: object
+      properties:
+        uid:
+          type: string
+          description: Unique identifier
+        name:
+          type: string
+          description: Human readable signoff name
+        description:
+          type: string
+          description: Human readable explpanation of the signogg
+        signed:
+          type: boolean
+          description: Is the signoff signed off
+          default: false
+        permissions:
+          type: string
+          description: Permision required to sign the signoff
+        completed_by:
+          type: string
+          description: Person who signed off (Auth0 ID)
+          default: ''
+        completed:
+          type: string
+          description: Timestamp of the signoff
+          format: datetime
+    DisableProduct:
+      type: object
+      required:
+      - product
+      - branch
+      properties:
+        product:
+          type: string
+          example: firefox
+          enum:
+          - firefox
+          - devedition
+        branch:
+          type: string
+          example: releases/mozilla-beta
+          enum:
+          - projects/maple
+          - releases/mozilla-beta
+          - try
