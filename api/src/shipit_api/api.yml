@@ -628,7 +628,7 @@ components:
         release_eta:
           type: string
           format: dateTime
-          example: 2006-08-14T02:34:56-06:00
+          example: "2017-12-21T15:10:00-05:00"
         partial_updates:
           anyOf:
             - type: object
@@ -687,11 +687,11 @@ components:
         created:
           type: string
           format: dateTime
-          example: 2006-08-14T02:34:56-06:00
+          example: "2017-12-21T15:10:00-05:00"
         completed:
           type: string
           format: dateTime
-          example: 2006-08-14T02:34:56-06:00
+          example: "2017-12-21T15:10:00-05:00"
     Release:
       required:
       - branch
@@ -733,7 +733,7 @@ components:
         release_eta:
           type: string
           format: dateTime
-          example: 2006-08-14T02:34:56-06:00
+          example: "2017-12-21T15:10:00-05:00"
         status:
           type: string
           example: scheduled
@@ -748,11 +748,11 @@ components:
         created:
           type: string
           format: dateTime
-          example: 2006-08-14T02:34:56-06:00
+          example: "2017-12-21T15:10:00-05:00"
         completed:
           type: string
           format: dateTime
-          example: 2006-08-14T02:34:56-06:00
+          example: "2017-12-21T15:10:00-05:00"
         allow_phase_skipping:
           type: boolean
           description: Allow skipping phases. In this case the snowman release model will not skipped phases.

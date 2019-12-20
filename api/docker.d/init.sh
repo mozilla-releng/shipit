@@ -16,4 +16,4 @@ then
     EXTRA_ARGS="--bind $HOST:$PORT --workers 3 --timeout 3600 --reload --reload-engine=poll --certfile=$cert --keyfile=$key"
 fi
 
-exec /usr/local/bin/gunicorn shipit_api.flask:app --log-file - $EXTRA_ARGS
+exec /usr/local/bin/gunicorn $FLASK_APP --log-file - $EXTRA_ARGS

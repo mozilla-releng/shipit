@@ -30,11 +30,35 @@ services:
       - XPI_MANIFEST_REPO=test-xpi-manifest
     depends_on:
       - db
+    healthcheck:
+      test: ["CMD", "curl", "-fk", "https://localhost:8015"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  public:
+    build: api
+    ports:
+      - "8016:8016"
+    volumes:
+      - ./api:/app
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8016
+      - APP_CHANNEL=development
+      - DATABASE_URL=postgres://shipituserreadonly:shipitpasswordreadonly@db/shipitdb
+      - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
+      - FLASK_APP=shipit_api.public:app
+      - APP_SETTINGS=/app/settings_public.py
+    depends_on:
+      - db
+      - api
 
   db:
     image: postgres:11
     volumes:
       - dbstore:/var/lib/postgresql/data
+      - ./api/docker.d/postgres_create_readonly_user.sh:/docker-entrypoint-initdb.d/postgres_create_readonly_user.sh
     environment:
       - POSTGRES_USER=shipituser
       - POSTGRES_PASSWORD=shipitpassword

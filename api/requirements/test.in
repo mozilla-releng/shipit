@@ -1,10 +1,13 @@
 -r base.in
 
-pytest
-pytest-cov
 black
 check-manifest
-flake8
-pip-compile-multi
-isort
 coverage
+dpath
+flake8
+isort
+openapi-spec-validator
+oyaml
+pip-compile-multi
+pytest
+pytest-cov
