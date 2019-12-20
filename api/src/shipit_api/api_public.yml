@@ -92,6 +92,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Phase'
+  /disabled-products:
+    get:
+      summary: Get the list of product/branches which are currently disabled. Disabled
+        products/branches will not have automated releases created
+      operationId: shipit_api.api.get_disabled_products
+      responses:
+        200:
+          description: Disabled product/branches
+          content:
+            application/json:
+              schema:
+                type: object
 components:
   schemas:
     Phase:

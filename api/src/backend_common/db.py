@@ -25,12 +25,12 @@ def init_database(app):
 
     with app.app_context():
 
-        # Needed to init potential migrations later on
-        # Use a separate alembic_version table per app
-        options = {f"version_table": "{app.import_name}_alembic_version"}
-        migrate.init_app(app, directory=migrations_dir, **options)
-
         if os.path.isdir(migrations_dir):
+            # Needed to init potential migrations later on
+            # Use a separate alembic_version table per app
+            options = {f"version_table": "{app.import_name}_alembic_version"}
+            migrate.init_app(app, directory=migrations_dir, **options)
+
             logger.info("Starting migrations", app=app.name)
             try:
                 flask_migrate.upgrade()
@@ -39,8 +39,11 @@ def init_database(app):
                 logger.error("Migrations failure", app=app.name, error=e)
 
         else:
-            logger.info("No migrations: creating full DB", app=app.name)
-            db.create_all()
+            if flask.current_app.config.get("READONLY_API"):
+                logger.info("Skipping DB creation for a read-only app", app=app.name)
+            else:
+                logger.info("No migrations: creating full DB", app=app.name)
+                db.create_all()
 
 
 def init_app(app):

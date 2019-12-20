@@ -1,3 +1,0 @@
-FROM postgres:11
-
-COPY docker.d/postgres_create_readonly_user.sh /docker-entrypoint-initdb.d/

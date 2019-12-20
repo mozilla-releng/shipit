@@ -6,6 +6,7 @@ coverage
 dpath
 flake8
 isort
+openapi-spec-validator
 oyaml
 pip-compile-multi
 pytest

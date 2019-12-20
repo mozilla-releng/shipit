@@ -1,25 +1,21 @@
-"""
-Generate subset of OpenAPI specification
-
-This script is used to generate a subset of OpenAPI api.yml spec.
-
-Example:
-    python openapi_subset.py api.yml api_public.yml
-"""
-
+# -*- coding: utf-8 -*-
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import sys
 
 import dpath
-import oyaml as yaml  # oyaml preserves the order of the original document
+import oyaml
 
 # Sections to be copied from the original document, separated by "." (period).
-sections = [
+PUBLIC_API_SECTIONS = [
     "openapi",
     "info",
     "servers",
     "paths./releases.get",
     "paths./releases/{name}.get",
     "paths./releases/{name}/{phase}.get",
+    "paths./disabled-products.get",
     "components.schemas.Phase",
     "components.schemas.Release",
     "components.schemas.Signoffs",
@@ -28,16 +24,18 @@ sections = [
 ]
 
 
-def main(input_file, output_file):
-
-    full_api = yaml.safe_load(open(input_file))
-
+def extract(full_api, sections):
     subset = {}
     for section in sections:
         source = dpath.util.get(full_api, section, separator=".")
         dpath.util.new(subset, section, source, separator=".")
+    return subset
 
-    yaml.safe_dump(subset, open(output_file, "w"))
+
+def main(input_file, output_file):
+    full_api = oyaml.safe_load(open(input_file))
+    subset = extract(full_api, PUBLIC_API_SECTIONS)
+    oyaml.safe_dump(subset, open(output_file, "w"))
 
 
 if __name__ == "__main__":
