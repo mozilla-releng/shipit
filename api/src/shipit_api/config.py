@@ -19,7 +19,12 @@ PRODUCT_DETAILS_DIR = pathlib.Path(tempfile.gettempdir(), "product-details")
 PRODUCT_DETAILS_NEW_DIR = pathlib.Path(tempfile.gettempdir(), "product-details-new")
 PRODUCT_DETAILS_CACHE_DIR = pathlib.Path(tempfile.gettempdir(), "product-details-cache")
 
-BREAKPOINT_VERSION = 60
+# Use CURRENT_ESR-1. Releases with major version equal or less than the
+# breakpoint version will be served using static files. No related
+# product-details data will be generated if we decide to ship a dot release
+# with major version <= BREAKPOINT_VERSION. This includes Firefox (release,
+# esr, beta, devedition), Fennec and Thunderbird.
+BREAKPOINT_VERSION = 67
 
 # When there is only one ESR release ESR_NEXT is set to '' and ESR_CURRENT is
 # set to current ESR major version.  When we have 2 ESR releases, ESR_CURRENT

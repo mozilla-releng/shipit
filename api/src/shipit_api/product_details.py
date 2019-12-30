@@ -421,8 +421,18 @@ def get_release_history(
     history = dict()
 
     #
-    # get release history from the JSON files up to breakpoint_version
+    # Get release history from the JSON files up to breakpoint_version.
+    # There are 2 reasons we use this method:
     #
+    # 1. To speed up product details generation. All releases before the
+    # breakpoint version, will be used as they are presented in the JSON files.
+    # As a result they won't be retrieved from the database, and more
+    # importantly, the corresponding l10n data won't be fetched from
+    # hg.mozilla.org.
+    #
+    # 2. Some really old releases use different data structure (versioning,
+    # l10n info, branches, etc). Instead of creating a special case per
+    # exception, we just serve the data as is.
     product_file = f"1.0/{product.value}_history_{product_category.name.lower()}_releases.json"
     if product is Product.FENNEC:
         product_file = f"1.0/mobile_history_{product_category.name.lower()}_releases.json"
