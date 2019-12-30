@@ -86,7 +86,6 @@ GROUPS = {
         "mtabara@mozilla.com",
         "nthomas@mozilla.com",
         "raliiev@mozilla.com",
-        "rgarbas@mozilla.com",
         "sfraser@mozilla.com",
         "tprince@mozilla.com",
     ],
