@@ -26,7 +26,7 @@ async def _create_consumer(user, password, exchange, topic, callback):
     host = "pulse.mozilla.org"
     port = 5671
 
-    _, protocol = await aioamqp.connect(host=host, login=user, password=password, ssl=True, port=port)
+    _, protocol = await aioamqp.connect(host=host, login=user, password=password, ssl=True, port=port, login_method="PLAIN")
 
     channel = await protocol.channel()
     await channel.basic_qos(prefetch_count=1, prefetch_size=0, connection_global=False)
