@@ -44,7 +44,7 @@ module.exports = {
           branch: 'projects/maple',
           repo: 'https://hg.mozilla.org/projects/maple',
           enableReleaseEta: false,
-          disableable: true,
+          disableable: false,
         },
       ],
       enablePartials: false,
