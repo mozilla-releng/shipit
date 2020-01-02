@@ -60,7 +60,7 @@ module.exports = {
           enableReleaseEta: false,
           productKey: 'fennec_beta',
           versionFile: 'mobile/android/config/version-files/beta/version_display.txt',
-          disableable: false,
+          disableable: true,
         },
         {
           prettyName: 'Release',

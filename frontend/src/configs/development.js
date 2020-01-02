@@ -51,7 +51,7 @@ module.exports = {
           branch: 'try',
           repo: 'https://hg.mozilla.org/try',
           enableReleaseEta: false,
-          disableable: false,
+          disableable: true,
           productKey: 'fennec_beta',
           versionFile: 'mobile/android/config/version-files/beta/version_display.txt',
         },

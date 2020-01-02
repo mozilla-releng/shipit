@@ -43,7 +43,7 @@ module.exports = {
           branch: 'projects/maple',
           repo: 'https://hg.mozilla.org/projects/maple',
           enableReleaseEta: false,
-          disableable: false,
+          disableable: true,
         },
         {
           prettyName: 'Try',
@@ -51,7 +51,7 @@ module.exports = {
           branch: 'try',
           repo: 'https://hg.mozilla.org/try',
           enableReleaseEta: false,
-          disableable: false,
+          disableable: true,
         },
       ],
       enablePartials: false,
