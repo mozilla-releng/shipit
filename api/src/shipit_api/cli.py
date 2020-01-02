@@ -142,7 +142,7 @@ def shipit_import(api_from):
 
 
 @click.command(name="trigger-product-details")
-@click.option("--base-url", default="https://api.mozilla-releng.net")
+@click.option("--base-url", default="https://api.shipit.staging.mozilla-releng.net")
 @click.option("--taskcluster-client-id", help="Taskcluster Client ID", required=True, prompt=True)
 @click.option("--taskcluster-access-token", help="Taskcluster Access token", required=True, prompt=True, hide_input=True)
 def trigger_product_details(base_url: str, taskcluster_client_id: str, taskcluster_access_token: str):

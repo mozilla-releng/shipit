@@ -1,5 +1,5 @@
 aioamqp
-aiohttp
+aiohttp[speedups]
 arrow
 backoff
 # to support signals in Flask

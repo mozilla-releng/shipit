@@ -1,5 +1,6 @@
 -r base.in
 
+aioresponses
 black
 check-manifest
 coverage
@@ -10,4 +11,5 @@ openapi-spec-validator
 oyaml
 pip-compile-multi
 pytest
+pytest-asyncio
 pytest-cov

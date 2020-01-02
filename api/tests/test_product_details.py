@@ -4,13 +4,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pathlib
+import re
 
+import aiohttp
 import pytest
+from aioresponses import aioresponses
+
+import shipit_api.product_details
+from shipit_api.models import Release
+from shipit_api.product_details import fetch_l10n_data
 
 
 def create_html(folder, items):
-    import shipit_api.product_details
-
     return shipit_api.product_details.create_index_listing_html(pathlib.Path(folder), [pathlib.Path(item) for item in items])
 
 
@@ -30,6 +35,40 @@ def create_html(folder, items):
     ),
 )
 def test_create_index_listing(product_details, product_details_final):
-    import shipit_api.product_details
-
     assert shipit_api.product_details.create_index_listing(product_details) == product_details_final
+
+
+@pytest.mark.asyncio
+async def test_fetch_l10n_data():
+    release = Release(
+        product="firefox",
+        branch="releases/mozilla-beta",
+        version="62.0b16",
+        revision="812b11ed03e02e7d5ec9f23c6abcbc46d7859740",
+        build_number=1,
+        release_eta=None,
+        status="shipped",
+        partial_updates=None,
+    )
+    session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1))
+    url = re.compile(r"^https://hg\.mozilla\.org/")
+    with aioresponses() as m:
+        m.get(url, status=200, payload=dict(a="a"))
+        (_, changesets) = await fetch_l10n_data(session, release, raise_on_failure=True, use_cache=False)
+        assert changesets == {"a": "a"}
+
+        # simulate HTTP errors.
+        # Fail first time
+        m.get(url, status=500)
+        # Return proper result second time
+        m.get(url, status=200, payload=dict(a="a"))
+        (_, changesets) = await fetch_l10n_data(session, release, raise_on_failure=True, use_cache=False)
+        assert changesets == {"a": "a"}
+
+        # simulate timeout
+        # Fail first time
+        m.get(url, timeout=True)
+        # Return proper result second time
+        m.get(url, status=200, payload=dict(a="a"))
+        (_, changesets) = await fetch_l10n_data(session, release, raise_on_failure=True, use_cache=False)
+        assert changesets == {"a": "a"}

@@ -19,6 +19,7 @@ import urllib.parse
 
 import aiohttp
 import arrow
+import backoff
 import click
 import mozilla_version.gecko
 import mypy_extensions
@@ -189,8 +190,9 @@ def create_index_listing(product_details: ProductDetails) -> ProductDetails:
     return new_product_details
 
 
+@backoff.on_exception(backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_time=60)
 async def fetch_l10n_data(
-    session: aiohttp.ClientSession, release: shipit_api.models.Release, git_branch: str
+    session: aiohttp.ClientSession, release: shipit_api.models.Release, raise_on_failure: bool, use_cache: bool = True
 ) -> typing.Tuple[shipit_api.models.Release, typing.Optional[ReleaseL10ns]]:
 
     url_file = {
@@ -210,28 +212,30 @@ async def fetch_l10n_data(
         return (release, None)
 
     cache_dir = shipit_api.config.PRODUCT_DETAILS_CACHE_DIR / "fetch_l10n_data"
-    os.makedirs(cache_dir, exist_ok=True)
-
     cache = cache_dir / hashlib.sha256(url.encode("utf-8")).hexdigest()
-    if cache.exists():
-        logger.debug(f"Cache hit for {url}")
-        with cache.open() as f:
-            changesets = json.load(f)
-    else:
-        logger.debug(f"Fetching {url}")
-        changesets = dict()
-        try:
-            async with session.get(url) as response:
-                response.raise_for_status()
-                logger.debug(f"Fetched {url}")
-                changesets = await response.json()
+    if use_cache:
+        os.makedirs(cache_dir, exist_ok=True)
+        if cache.exists():
+            logger.debug(f"Cache hit for {url}")
+            with cache.open() as f:
+                changesets = json.load(f)
+            return (release, changesets)
+
+    logger.debug(f"Fetching {url}")
+    changesets = dict()
+    try:
+        async with session.get(url) as response:
+            response.raise_for_status()
+            logger.debug(f"Fetched {url}")
+            changesets = await response.json()
+            if use_cache:
                 with cache.open("w+") as f:
                     f.write(json.dumps(changesets))
-        except Exception as e:
-            logger.fatal("Failed to fetch", url=url, release=release.json)
-            logger.exception(e)
-            if git_branch == "production":
-                raise
+    except Exception as e:
+        logger.fatal("Failed to fetch", url=url, release=release.json)
+        logger.exception(e)
+        if raise_on_failure:
+            raise
 
     return (release, changesets)
 
@@ -1026,15 +1030,6 @@ async def rebuild(
     # breakpoint_version on
     logger.info(f"Getting old releases from the database")
     releases = get_releases_from_db(db_session, breakpoint_version)
-
-    # get all the l10n for each release from the database
-    # use limit_per_host=50 since hg.mozilla.org doesn't like too many connections
-    logger.info(f"Getting locales from hg.mozilla.org for each release from database")
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=50)) as session:
-        releases_l10n = await asyncio.gather(*[fetch_l10n_data(session, release, git_branch) for release in releases])
-
-    releases_l10n = {release: changeset for (release, changeset) in releases_l10n if changeset is not None}
-
     # Also fetch latest nightly builds with their L10N info
     nightly_builds = [
         shipit_api.models.Release(
@@ -1058,10 +1053,14 @@ async def rebuild(
             status=None,
         ),
     ]
+    logger.info(f"Getting locales from hg.mozilla.org for each release from database")
+    # use limit_per_host=50 since hg.mozilla.org doesn't like too many connections
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=50), timeout=aiohttp.ClientTimeout(total=30)) as session:
+        raise_on_failure = git_branch in ["production", "staging"]
+        releases_l10n = await asyncio.gather(*[fetch_l10n_data(session, release, raise_on_failure) for release in releases])
+        nightly_l10n = await asyncio.gather(*[fetch_l10n_data(session, release, raise_on_failure) for release in nightly_builds])
 
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=50)) as session:
-        nightly_l10n = await asyncio.gather(*[fetch_l10n_data(session, release, git_branch) for release in nightly_builds])
-
+    releases_l10n = {release: changeset for (release, changeset) in releases_l10n if changeset is not None}
     nightly_l10n = {release: changeset for (release, changeset) in nightly_l10n if changeset is not None}
 
     combined_releases = releases + nightly_builds
