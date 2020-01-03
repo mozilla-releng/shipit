@@ -407,6 +407,13 @@ export default class NewRelease extends React.Component {
   };
 
   render() {
+    if (!this.context.authController.userSession) {
+      return (
+        <div className="container">
+          <h1>Auth required</h1>
+        </div>
+      );
+    }
     return (
       <div className="container">
         <h3>Start a new release</h3>
