@@ -112,8 +112,10 @@ for product in ["firefox", "fennec", "devedition"]:
 AUTH0_AUTH_SCOPES.update(
     {
         "disable_product/firefox": GROUPS["firefox-signoff"],
+        "disable_product/fennec": GROUPS["firefox-signoff"],
         "disable_product/devedition": GROUPS["firefox-signoff"],
         "enable_product/firefox": GROUPS["firefox-signoff"],
+        "enable_product/fennec": GROUPS["firefox-signoff"],
         "enable_product/devedition": GROUPS["firefox-signoff"],
     }
 )
