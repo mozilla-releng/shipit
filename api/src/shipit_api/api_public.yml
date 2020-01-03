@@ -255,6 +255,7 @@ components:
           example: firefox
           enum:
           - firefox
+          - fennec
           - devedition
         branch:
           type: string
@@ -262,4 +263,5 @@ components:
           enum:
           - projects/maple
           - releases/mozilla-beta
+          - releases/mozilla-esr68
           - try
