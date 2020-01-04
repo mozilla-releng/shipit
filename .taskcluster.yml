@@ -124,6 +124,7 @@ tasks:
             - taskId: {$eval: as_slugid("docker-build-and-push")}
               dependencies:
                 - '${as_slugid(python_version)}'
+                - '${as_slugid("check")}'
               created: {$fromNow: ''}
               deadline: {$fromNow: '24 hours'}
               provisionerId: 'releng-${worker_level}'
