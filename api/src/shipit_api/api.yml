@@ -307,6 +307,7 @@ paths:
           type: string
           enum:
           - projects/maple
+          - releases/mozilla-esr68
           - releases/mozilla-beta
           - try
       responses:
