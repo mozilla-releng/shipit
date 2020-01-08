@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import logging
 import pathlib
 
 from connexion.apis.flask_api import FlaskApi
@@ -10,9 +11,7 @@ from connexion.apps.flask_app import FlaskApp, FlaskJSONEncoder
 from connexion.exceptions import ProblemException
 from werkzeug.exceptions import default_exceptions
 
-import cli_common.log
-
-logger = cli_common.log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Api:
@@ -60,7 +59,7 @@ class Api:
 
         app = self.__app
 
-        logger.debug(f"Adding API: {specification}")
+        logger.debug("Adding API: %s", specification)
 
         self.__api = api = FlaskApi(
             specification=pathlib.Path(specification),
@@ -85,7 +84,3 @@ class Api:
 
 def init_app(app):
     return Api(app)
-
-
-def app_heartbeat():
-    pass

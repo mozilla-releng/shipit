@@ -9,12 +9,9 @@ import jsone
 import requests
 import yaml
 
-from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
 from shipit_api.config import SUPPORTED_FLAVORS
 from shipit_api.release import is_rc
-
-log = get_logger(__name__)
 
 
 class UnsupportedFlavor(Exception):

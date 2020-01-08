@@ -3,14 +3,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import logging
 import shlex
 import subprocess
 
 import click
 
-import cli_common.log
-
-log = cli_common.log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def hide_secrets(text, secrets):
@@ -48,7 +47,7 @@ def run(command, stream=False, handle_stream_line=None, log_command=True, log_ou
         _kwargs["bufsize"] = 1
 
     if log_command:
-        log.debug("Running command", command=hide_secrets(command_as_string, secrets), kwargs=_kwargs)
+        logger.debug("Running command: %s, %s", hide_secrets(command_as_string, secrets), _kwargs)
 
     with subprocess.Popen(command, **_kwargs) as proc:
         if stream:
@@ -57,7 +56,7 @@ def run(command, stream=False, handle_stream_line=None, log_command=True, log_ou
                 line = line.decode("utf-8", "ignore")
                 line = line.rstrip("\n")
                 if log_output:
-                    log.debug(hide_secrets(line, secrets))
+                    logger.debug(hide_secrets(line, secrets))
                 output.append(line)
                 if handle_stream_line:
                     handle_stream_line(line)
@@ -87,11 +86,12 @@ def run_check(command, **kwargs):
 
     if returncode != 0:
         secrets = kwargs.get("secrets", [])
-        log.info(
-            f"Command failed with code: {returncode}",
-            command=hide_secrets(command_as_string, secrets),
-            output=hide_secrets(output, secrets),
-            error=hide_secrets(error, secrets),
+        logger.info(
+            "Command failed with code: %s, %s, %s, %s",
+            returncode,
+            hide_secrets(command_as_string, secrets),
+            hide_secrets(output, secrets),
+            hide_secrets(error, secrets),
         )
         raise click.ClickException(hide_secrets(f"`{command[0]}` failed with code: {returncode}.", secrets))
 

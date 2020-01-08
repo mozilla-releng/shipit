@@ -18,7 +18,7 @@ def create_app(config=None):
         project_name=shipit_api.config.PROJECT_NAME,
         app_name=shipit_api.config.APP_NAME,
         config=config,
-        extensions=["log", "security", "cors", "api", "auth", "db", "pulse"],
+        extensions=["dockerflow", "log", "security", "cors", "api", "auth", "db", "pulse"],
     )
 
     if not app.config.get("DISABLE_NOTIFY", False):
@@ -44,7 +44,10 @@ def create_public_app(config=None):
     api_public.yml`
     """
     app = backend_common.create_app(
-        project_name=shipit_api.config.PROJECT_NAME, app_name=shipit_api.config.APP_NAME, config=config, extensions=["log", "security", "cors", "api", "db"]
+        project_name=shipit_api.config.PROJECT_NAME,
+        app_name=shipit_api.config.APP_NAME,
+        config=config,
+        extensions=["log", "security", "cors", "api", "db", "dockerflow"],
     )
     app.api.register(os.path.join(os.path.dirname(__file__), "api_public.yml"))
     return app

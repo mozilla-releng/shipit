@@ -4,14 +4,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
+import logging
+import os
 
 import flask
 import kombu
+from dockerflow.flask import checks
 
-import backend_common.dockerflow
-import cli_common.log
+from backend_common.dockerflow import dockerflow
 
-logger = cli_common.log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Pulse(object):
@@ -52,6 +54,7 @@ class Pulse(object):
 
 
 def init_app(app):
+
     return Pulse(
         app.config.get("PULSE_HOST"),
         app.config.get("PULSE_PORT"),
@@ -63,9 +66,14 @@ def init_app(app):
     )
 
 
+@dockerflow.check(name="pulse")
 def app_heartbeat():
+    if os.environ.get("DISABLE_PULSE"):
+        return []
+
     try:
         flask.current_app.pulse.ping()
-    except Exception as e:
-        logger.exception(e)
-        raise backend_common.dockerflow.HeartbeatException("Cannot connect to pulse the service.")
+        return []
+    except Exception:
+        logger.info("Pulse heartbeat issues")
+        return [checks.Error("Cannot connect to the pulse service.", id="pulse.ping")]

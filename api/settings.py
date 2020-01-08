@@ -10,14 +10,11 @@ import backend_common.auth
 import cli_common.taskcluster
 import shipit_api.config
 
-DEBUG = bool(os.environ.get("DEBUG", False))
-
 # -- LOAD SECRETS -------------------------------------------------------------
 
 required = [
     "APP_CHANNEL",
-    # Unused, but required by flask-oidc
-    "APP_URL",
+    "AUTH_DOMAIN",
     "AUTH_CLIENT_ID",
     "AUTH_CLIENT_SECRET",
     "DATABASE_URL",
@@ -55,24 +52,12 @@ if "PULSE_USER" in os.environ:
 # -- DATABASE -----------------------------------------------------------------
 
 SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-if DEBUG:
-    SQLALCHEMY_ECHO = True
-
-# We require DATABASE_URL set by environment variables for branches deployed to Dockerflow.
-if secrets["APP_CHANNEL"] in ("testing", "staging", "production"):
-    if "DATABASE_URL" not in os.environ:
-        raise RuntimeError(f"DATABASE_URL has to be set as an environment variable, when " f'APP_CHANNEL is set to {secrets["APP_CHANNEL"]}')
-    else:
-        SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"]
-else:
-    SQLALCHEMY_DATABASE_URI = secrets["DATABASE_URL"]
+SQLALCHEMY_DATABASE_URI = secrets["DATABASE_URL"]
 
 # -- AUTH --------------------------------------------------------------------
 
 OIDC_USER_INFO_ENABLED = True
-args = [secrets["AUTH_CLIENT_ID"], secrets["AUTH_CLIENT_SECRET"], secrets["APP_URL"]]
-OIDC_CLIENT_SECRETS = backend_common.auth.create_auth0_secrets_file(*args)
+OIDC_CLIENT_SECRETS = backend_common.auth.create_auth0_secrets_file(secrets["AUTH_CLIENT_ID"], secrets["AUTH_CLIENT_SECRET"], secrets["AUTH_DOMAIN"])
 
 # XXX: scopes/groups are hardcoded for now
 GROUPS = {

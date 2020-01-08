@@ -10,6 +10,7 @@ import functools
 import hashlib
 import io
 import json
+import logging
 import os
 import pathlib
 import re
@@ -27,13 +28,12 @@ import sqlalchemy
 import sqlalchemy.orm
 
 import cli_common.command
-import cli_common.log
 import cli_common.utils
 import shipit_api.config
 import shipit_api.models
 from shipit_api.release import Product, ProductCategory
 
-logger = cli_common.log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 File = str
 ReleaseDetails = mypy_extensions.TypedDict(
@@ -231,9 +231,8 @@ async def fetch_l10n_data(
             if use_cache:
                 with cache.open("w+") as f:
                     f.write(json.dumps(changesets))
-    except Exception as e:
-        logger.fatal("Failed to fetch", url=url, release=release.json)
-        logger.exception(e)
+    except Exception:
+        logger.info("Failed to fetch %s, %s", url, release.json)
         if raise_on_failure:
             raise
 
@@ -995,7 +994,7 @@ async def rebuild(
         shutil.rmtree(shipit_api.config.PRODUCT_DETAILS_DIR)
 
     # Clone/pull latest product details
-    logger.info(f"Getting latest product details from {git_repo_url}.")
+    logger.info(f"Getting latest product details from {cli_common.command.hide_secrets(git_repo_url, secrets)}.")
     if shipit_api.config.PRODUCT_DETAILS_DIR.exists():
         # Checkout the branch we are working on
         logger.info(f"Checkout {git_branch} branch.")

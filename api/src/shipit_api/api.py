@@ -4,23 +4,23 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
+import logging
 from collections import defaultdict
 
 import taskcluster_urls
-from flask import abort, current_app, jsonify
+from flask import abort, current_app
 from flask_login import current_user
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
-from cli_common.log import get_logger
 from cli_common.taskcluster import get_service
 from shipit_api.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
 from shipit_api.models import DisabledProduct, Phase, Release, Signoff
 from shipit_api.release import Product, get_locales, product_to_appname
 from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact, generate_action_hook, render_action_hook
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 VERSION_CLASSES = {
     Product.FIREFOX.value: FirefoxVersion,
@@ -53,7 +53,7 @@ def notify_via_irc(product, message):
     channels_section = current_app.config.get("IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT")
 
     if not (owners_section and channels_section):
-        logger.info(f'Product "{product}" IRC notifications are not enabled')
+        logger.info('Product "%s" IRC notifications are not enabled', product)
         return
 
     owners = owners_section.get(product, owners_section.get("default"))
@@ -86,7 +86,7 @@ def add_release(body):
             abort(400, "Partial suggestion works for automated betas only")
 
         partial_updates = _suggest_partials(product=product, branch=branch)
-    r = Release(
+    release = Release(
         product=product,
         version=body["version"],
         branch=branch,
@@ -98,16 +98,16 @@ def add_release(body):
         product_key=body.get("product_key"),
     )
     try:
-        r.generate_phases()
-        session.add(r)
+        release.generate_phases()
+        session.add(release)
         session.commit()
-        release = r.json
     except UnsupportedFlavor as e:
         raise BadRequest(description=e.description)
 
-    notify_via_irc(product, f"New release ({product} {r.version} build{r.build_number}) was just created.")
+    logger.info("New release of %s", release.name)
+    notify_via_irc(product, f"New release of {release.name}")
 
-    return release, 201
+    return release.json, 201
 
 
 def list_releases(product=None, branch=None, version=None, build_number=None, status=["scheduled"]):
@@ -191,6 +191,7 @@ def schedule_phase(name, phase):
     root_url = hooks.options["rootUrl"]
     url = taskcluster_urls.ui(root_url, f"/tasks/groups/{phase.task_id}")
 
+    logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
     notify_via_irc(
         phase.release.product,
         f"Phase {phase.name} was just scheduled for release {phase.release.product} {phase.release.version} build{phase.release.build_number} - {url}",
@@ -231,6 +232,7 @@ def abandon_release(name):
 
     release.status = "aborted"
     session.commit()
+    logger.info("Canceled release %s", release.name)
     notify_via_irc(release.product, f"Release {release.product} {release.version} build{release.build_number} was just canceled.")
     return release.json
 
@@ -239,35 +241,26 @@ def abandon_release(name):
 def rebuild_product_details(body):
     pulse_user = current_app.config["PULSE_USER"]
     exchange = f"exchange/{pulse_user}/{PROJECT_NAME}"
-
-    logger.info(f"Sending pulse message `{body}` to queue `{exchange}` for " f"route `{PULSE_ROUTE_REBUILD_PRODUCT_DETAILS}`.")
-
-    try:
-        current_app.pulse.publish(exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, body)
-    except Exception as e:
-        import traceback
-
-        msg = "Can't send notification to pulse."
-        trace = traceback.format_exc()
-        logger.error(f"{msg}\nException:{e}\nTraceback: {trace}")
-    return jsonify({"ok": "ok"})
+    logger.info("Sending pulse message `%` to queue `%s` for route `%s`.", body, exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS)
+    current_app.pulse.publish(exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, body)
+    return {"status": "ok"}
 
 
 @auth.require_permissions([SCOPE_PREFIX + "/update_release_status"])
 def update_release_status(name, body):
     session = current_app.db.session
-    r = session.query(Release).filter(Release.name == name).first_or_404()
+    release = session.query(Release).filter(Release.name == name).first_or_404()
 
     status = body["status"]
-    r.status = status
+    release.status = status
     if status == "shipped":
-        r.completed = datetime.datetime.utcnow()
+        release.completed = datetime.datetime.utcnow()
     session.commit()
-    release = r.json
 
-    notify_via_irc(r.product, f"Release {r.product} {r.version} build{r.build_number} status changed to `{status}`.")
+    logger.info("Status of %s changed to %s", release.name, status)
+    notify_via_irc(release.product, f"Release {release.name} status changed to `{status}`.")
 
-    return release
+    return release.json
 
 
 def get_phase_signoff(name, phase):
@@ -308,8 +301,9 @@ def phase_signoff(name, phase, body):
     if all([s.signed for s in phase_obj.signoffs]):
         schedule_phase(name, phase)
 
-    r = phase_obj.release
-    notify_via_irc(r.product, f"{phase} of {r.product} {r.version} build{r.build_number} signed off by {who}.")
+    release = phase_obj.release
+    logger.info("Phase %s of %s signed off by %s", phase, release.name, who)
+    notify_via_irc(release.product, f"{phase} of {release.name} signed off by {who}.")
 
     return dict(signoffs=signoffs)
 
@@ -336,6 +330,7 @@ def disable_product(body):
     dp = DisabledProduct(product=product, branch=branch)
     session.add(dp)
     session.commit()
+    logger.info("Disabled %s on branch %s", product, branch)
 
     return 200
 
@@ -351,6 +346,7 @@ def enable_product(product, branch):
     dp = session.query(DisabledProduct).filter(DisabledProduct.product == product).filter(DisabledProduct.branch == branch).first_or_404()
     session.delete(dp)
     session.commit()
+    logger.info("Enabled %s on branch %s", product, branch)
     return 200
 
 
