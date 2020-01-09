@@ -9,7 +9,6 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8015
-      - APP_URL=https://localhost:8015
       - APP_SETTINGS=/app/settings.py
       - APP_CHANNEL=development
       - DATABASE_URL=postgres://shipituser:shipitpassword@db/shipitdb
