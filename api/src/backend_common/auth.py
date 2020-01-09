@@ -199,6 +199,14 @@ class Auth(object):
         self.app = app
         self.login_manager.init_app(app)
 
+    def _require_login(self):
+        with flask.current_app.app_context():
+            try:
+                return flask_login.current_user.is_authenticated
+            except Exception as e:
+                logger.info("Invalid authentication: %s", e)
+                return False
+
     def _require_permissions(self, permissions):
         if not self._require_login():
             return False
