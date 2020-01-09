@@ -3,8 +3,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import os
-
 import flask_talisman
 import flask_talisman.talisman
 
@@ -16,7 +14,6 @@ DEFAULT_CSP_POLICY = {
     "img-src": "'self'",
     "connect-src": "'self'",
 }
-
 
 DEFAULT_CONFIG = dict(
     force_https=False,
@@ -35,10 +32,6 @@ DEFAULT_CONFIG = dict(
     session_cookie_http_only=True,
 )
 
-# on heroku force https redirect
-if "DYNO" in os.environ:
-    DEFAULT_CONFIG["force_https"] = True
-
 security = flask_talisman.Talisman()
 
 
@@ -46,7 +39,3 @@ def init_app(app):
     config = app.config.get("SECURITY", DEFAULT_CONFIG)
     security.init_app(app, **config)
     return security
-
-
-def app_heartbeat():
-    pass

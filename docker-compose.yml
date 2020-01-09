@@ -9,15 +9,12 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8015
-      - APP_URL=https://localhost:8015
       - APP_SETTINGS=/app/settings.py
       - APP_CHANNEL=development
       - DATABASE_URL=postgres://shipituser:shipitpassword@db/shipitdb
-      - AUTH_AUDIENCE=todo
       - AUTH_CLIENT_ID=todo
       - AUTH_CLIENT_SECRET=todo
-      - AUTH_DOMAIN=todo
-      - AUTH_REDIRECT_URI=todo
+      - AUTH_DOMAIN=auth.mozilla.auth0.com
       - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
       - DISABLE_NOTIFY=1
       - TASKCLUSTER_CLIENT_ID
@@ -28,10 +25,12 @@ services:
       - GITHUB_SKIP_PRIVATE_REPOS=1
       - XPI_MANIFEST_OWNER=escapewindow
       - XPI_MANIFEST_REPO=test-xpi-manifest
+      - LOG_FORMAT=plain
+      - DISABLE_PULSE=1
     depends_on:
       - db
     healthcheck:
-      test: ["CMD", "curl", "-fk", "https://localhost:8015"]
+      test: ["CMD", "curl", "-fk", "https://localhost:8015/__heartbeat__"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -50,6 +49,7 @@ services:
       - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
       - FLASK_APP=shipit_api.public:app
       - APP_SETTINGS=/app/settings_public.py
+      - LOG_FORMAT=plain
     depends_on:
       - db
       - api

@@ -5,9 +5,6 @@
 
 import flask_cors
 
-import cli_common.log
-
-logger = cli_common.log.get_logger(__name__)
 cors = flask_cors.CORS()
 
 
@@ -19,7 +16,3 @@ def init_app(app):
     else:
         cors.init_app(app, origins=origins)
     return cors
-
-
-def app_heartbeat():
-    pass

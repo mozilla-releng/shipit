@@ -4,13 +4,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import asyncio
+import logging
 import sys
 
 import aioamqp
 
-import cli_common.log
-
-logger = cli_common.log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 async def _create_consumer(user, password, exchange, topic, callback):
@@ -57,7 +56,7 @@ async def _create_consumer(user, password, exchange, topic, callback):
     if exchange.startswith(f"exchange/{user}/"):
         await channel.exchange_declare(exchange_name=exchange, type_name="topic", durable=True)
 
-    logger.info("Connected", queue=queue, topic=topic, exchange=exchange)
+    logger.info("Connected to queue %s, topic %s, exchange %s", queue, topic, exchange)
 
     await channel.queue_bind(exchange_name=exchange, queue_name=queue, routing_key=topic)
     await channel.basic_consume(callback, queue_name=queue)
@@ -75,7 +74,7 @@ async def create_consumer(user, password, exchange, topic, callback):
         try:
             return await _create_consumer(user, password, exchange, topic, callback)
         except (aioamqp.AmqpClosedConnection, OSError):
-            logger.exception("Reconnecting in 10 seconds")
+            logger.info("Reconnecting in 10 seconds")
             await asyncio.sleep(10)
 
 
@@ -90,7 +89,7 @@ def run_consumer(consumer):
         event_loop.run_forever()
     except KeyboardInterrupt:
         # TODO: make better shutdown
-        logger.exception("KeyboardInterrupt registered, exiting.")
+        logger.info("KeyboardInterrupt registered, exiting.")
         event_loop.stop()
         while event_loop.is_running():
             pass

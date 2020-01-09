@@ -5,17 +5,17 @@
 
 import asyncio
 import json
+import logging
 import os
 
 import click
 import flask
 
-import cli_common.log
 import cli_common.pulse
 import cli_common.taskcluster
 import shipit_api.config
 
-logger = cli_common.log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def rebuild_product_details(default_git_repo_url, default_folder_in_repo, default_channel, default_breakpoint_version, default_clean_working_copy):
@@ -42,15 +42,12 @@ def rebuild_product_details(default_git_repo_url, default_folder_in_repo, defaul
 
         body = json.loads(body.decode("utf-8"))
 
-        logger.debug("Get rebuild parameters from request payload", body=body)
+        logger.debug("Get rebuild parameters from request payload: %s", body)
         breakpoint_version = body.get("breakpoint_version", default_breakpoint_version)
         clean_working_copy = body.get("clean_working_copy", default_clean_working_copy)
         channel_ = body.get("channel", default_channel)
         folder_in_repo = body.get("folder_in_repo", default_folder_in_repo)
 
-        logger.debug(
-            "Rebuild parameters", channel=channel_, folder_in_repo=folder_in_repo, breakpoint_version=breakpoint_version, clean_working_copy=clean_working_copy
-        )
         if None in (channel_, git_repo_url, folder_in_repo):
             raise click.ClickException("One of the rebuild product details parameters is not set correctly.")
 
@@ -78,5 +75,5 @@ def cmd(git_repo_url, folder_in_repo, channel, breakpoint_version, clean_working
         shipit_api.config.PULSE_ROUTE_REBUILD_PRODUCT_DETAILS,
         rebuild_product_details(git_repo_url, folder_in_repo, channel, breakpoint_version, clean_working_copy),
     )
-    logger.info("Listening for new messages on", exchange=exchange, route=shipit_api.config.PULSE_ROUTE_REBUILD_PRODUCT_DETAILS)
+    logger.info("Listening for new messages on %s %s", exchange, shipit_api.config.PULSE_ROUTE_REBUILD_PRODUCT_DETAILS)
     cli_common.pulse.run_consumer(asyncio.gather(*[rebuild_product_details_consumer]))

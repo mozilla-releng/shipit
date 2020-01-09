@@ -6,6 +6,7 @@
 import enum
 import functools
 import json
+import logging
 import os
 import tempfile
 
@@ -14,13 +15,12 @@ import flask_login
 import flask_oidc
 import requests
 import taskcluster.utils
+from dockerflow.flask import checks
 
-import backend_common.db
-import backend_common.dockerflow
-import cli_common.log
 import cli_common.taskcluster
+from backend_common.dockerflow import dockerflow
 
-logger = cli_common.log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 UNAUTHORIZED_JSON = {
     "status": 401,
@@ -82,20 +82,19 @@ class BaseUser(object):
         return self.get_id()
 
 
-def create_auth0_secrets_file(AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, APP_URL, USERINFO_URI="https://auth.mozilla.auth0.com/userinfo"):
+def create_auth0_secrets_file(auth_client_id, auth_client_secret, auth_domain):
     _, secrets_file = tempfile.mkstemp()
     with open(secrets_file, "w+") as f:
         f.write(
             json.dumps(
                 {
                     "web": {
-                        "auth_uri": "https://auth.mozilla.auth0.com/authorize",
-                        "issuer": "https://auth.mozilla.auth0.com/",
-                        "client_id": AUTH_CLIENT_ID,
-                        "client_secret": AUTH_CLIENT_SECRET,
-                        "redirect_uris": [APP_URL + "/oidc_callback"],
-                        "token_uri": "https://auth.mozilla.auth0.com/oauth/token",
-                        "userinfo_uri": USERINFO_URI,
+                        "auth_uri": f"https://{auth_domain}/authorize",
+                        "issuer": f"https://{auth_domain}/",
+                        "client_id": auth_client_id,
+                        "client_secret": auth_client_secret,
+                        "token_uri": f"https://{auth_domain}/oauth/token",
+                        "userinfo_uri": f"https://{auth_domain}/userinfo",
                     }
                 }
             )
@@ -134,7 +133,7 @@ class TaskclusterUser(BaseUser):
 
         self.credentials = credentials
 
-        logger.info(f"Init user {self.get_id()}")
+        logger.info("Init user %s", self.get_id())
 
     def get_id(self):
         return self.credentials["clientId"]
@@ -173,7 +172,7 @@ class Auth0User(BaseUser):
         self.token = token
         self.userinfo = userinfo
 
-        logger.info("Init user {}".format(self.get_id()))
+        logger.info("Init user %s", self.get_id())
 
     def get_id(self):
         return self.userinfo["email"]
@@ -200,26 +199,6 @@ class Auth(object):
         self.app = app
         self.login_manager.init_app(app)
 
-    def _require_login(self):
-        with flask.current_app.app_context():
-            try:
-                return flask_login.current_user.is_authenticated
-            except Exception as e:
-                logger.error(f"Invalid authentication: {e}")
-                return False
-
-    def require_login(self, method):
-        """Decorator to check if user is authenticated
-        """
-
-        @functools.wraps(method)
-        def wrapper(*args, **kwargs):
-            if self._require_login():
-                return method(*args, **kwargs)
-            return "Unauthorized", 401
-
-        return wrapper
-
     def _require_permissions(self, permissions):
         if not self._require_login():
             return False
@@ -229,7 +208,7 @@ class Auth(object):
                 user = flask_login.current_user.get_id()
                 user_permissions = flask_login.current_user.get_permissions()
                 diff = " OR ".join([", ".join(set(p).difference(user_permissions)) for p in permissions])
-                logger.error(f"User {user} misses some permissions: {diff}")
+                logger.info("User %s misses some permissions: %s", user, diff)
                 return False
 
         return True
@@ -242,7 +221,7 @@ class Auth(object):
         def decorator(method):
             @functools.wraps(method)
             def wrapper(*args, **kwargs):
-                logger.info("Checking permissions", permissions=permissions)
+                logger.info("Checking permissions %s", permissions)
                 if self._require_permissions(permissions):
                     # Validated permissions, running method
                     logger.info("Validated permissions, processing api request")
@@ -290,8 +269,7 @@ def parse_header_taskcluster(request):
         if not resp.get("status") == "auth-success":
             raise Exception("Taskcluster rejected the authentication")
     except Exception as e:
-        logger.error(f"TC auth error: {e}")
-        logger.error(f"TC auth details: {payload}")
+        logger.info("Taskcluster auth error for payload %s: %s", payload, e)
         return NO_AUTH
 
     return TaskclusterUser(resp)
@@ -378,22 +356,27 @@ def init_app(app):
     return auth
 
 
+@dockerflow.check(name="auth")
 def app_heartbeat():
     config = flask.current_app.config
+    results = []
 
     if config.get("AUTH0_AUTH") is True:
         try:
-            r = requests.get("https://auth.mozilla.auth0.com/test")
+            auth_domain = config.get("AUTH_DOMAIN")
+            r = requests.get(f"https://{auth_domain}/test")
             assert "clock" in r.json()
-        except Exception as e:
-            logger.exception(e)
-            raise backend_common.dockerflow.HeartbeatException("Cannot connect to the mozilla auth0 service.")
+        except Exception:
+            logger.info("Auth0 heartbeat error")
+            results.append(checks.Error("Cannot connect to the mozilla auth0 service.", id="auth.auth0"))
 
     if config.get("TASKCLUSTER_AUTH") is True:
         auth = cli_common.taskcluster.get_service("auth", **get_taskcluster_credentials())
         try:
             ping = auth.ping()
             assert ping["alive"] is True
-        except Exception as e:
-            logger.exception(e)
-            raise backend_common.dockerflow.HeartbeatException("Cannot connect to the taskcluster auth service.")
+        except Exception:
+            logger.info("Taskcluster heartbeat error")
+            results.append(checks.Error("Cannot connect to the Taskcluster service.", id="auth.taskcluster"))
+
+    return results

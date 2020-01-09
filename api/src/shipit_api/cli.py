@@ -21,6 +21,7 @@ import sqlalchemy
 import sqlalchemy.orm
 
 import shipit_api.product_details
+from backend_common.log import configure_logging
 from shipit_api.models import Release
 
 
@@ -97,6 +98,7 @@ async def download_product_details(url: str, download_dir: str):
 async def rebuild_product_details(
     database_url: str, git_repo_url: str, folder_in_repo: str, channel: str, breakpoint_version: typing.Optional[int] = None, clean_working_copy: bool = False
 ):
+    configure_logging()
     if channel == "development":
         channel = "master"
     engine = sqlalchemy.create_engine(database_url)
@@ -160,7 +162,7 @@ def trigger_product_details(base_url: str, taskcluster_client_id: str, taskclust
 
     r.raise_for_status()
 
-    if r.json() != {"ok": "ok"}:
+    if r.json() != {"result": "ok"}:
         click.secho("ERROR: Something went wrong", fg="red")
         click.echo(f"  URL={url}")
         click.echo(f"  RESPONSE={r.content}")

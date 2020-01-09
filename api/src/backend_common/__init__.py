@@ -4,32 +4,27 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import importlib
+import logging
 import os
 
 import flask
 
-import backend_common.dockerflow
-import cli_common.log
+EXTENSIONS = ["dockerflow", "log", "security", "cors", "api", "auth", "pulse", "db"]
 
-EXTENSIONS = ["log", "security", "cors", "api", "auth", "pulse", "db"]
-
-logger = cli_common.log.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
-def create_app(project_name, app_name, extensions=[], config=None, redirect_root_to_api=True, enable_dockerflow=True, **kw):
+def create_app(project_name, app_name, extensions=[], config=None, redirect_root_to_api=True, **kwargs):
     """
     Create a new Flask backend application
     app_name is the Python application name, used as Flask import_name
     project_name is a "nice" name, used to identify the application
     """
-    logger.debug("Initializing", app=app_name)
+    logger.debug("Initializing %s", app_name)
 
-    app = flask.Flask(import_name=app_name, **kw)
+    app = flask.Flask(import_name=app_name, **kwargs)
     app.name = project_name
     app.__extensions = extensions
-
-    if config:
-        app.config.update(**config)
 
     if not app.config.get("TESTING") and os.environ.get("APP_SETTINGS"):
         app.config.from_envvar("APP_SETTINGS")
@@ -42,33 +37,23 @@ def create_app(project_name, app_name, extensions=[], config=None, redirect_root
             continue
 
         if extension_name not in extensions:
+            logger.debug("Skipping extension %s", extension_name)
             continue
 
-        logger.debug("Initializing extension", extension=extension_name, app=app.name)
+        logger.debug("Initializing extension %s", extension_name)
 
-        extension_init_app = None
-        try:
-            extension_init_app = getattr(importlib.import_module("backend_common." + extension_name), "init_app")
-        except Exception as e:
-            logger.exception(e)
-            pass
-
+        extension_init_app = getattr(importlib.import_module(f"backend_common.{extension_name}"), "init_app", None)
         if extension_init_app is None:
-            raise Exception(f"Could not import backend_common extension: {extension_name}")
+            raise RuntimeError(f"Could not find {extension_name}.init_app function")
 
         extension = extension_init_app(app)
         if extension and extension_name is not None:
             setattr(app, extension_name, extension)
 
-        logger.debug("Extension initialized", extension=extension_name, app=app.name)
+        logger.debug("Extension %s initialized", extension_name)
 
     if redirect_root_to_api:
         app.add_url_rule("/", "root", lambda: flask.redirect(app.api.swagger_url))
 
-    if enable_dockerflow:
-        app.add_url_rule("/__heartbeat__", view_func=backend_common.dockerflow.heartbeat_response)
-        app.add_url_rule("/__lbheartbeat__", view_func=backend_common.dockerflow.lbheartbeat_response)
-        app.add_url_rule("/__version__", view_func=backend_common.dockerflow.get_version)
-
-    logger.debug("Initialized", app=app.name)
+    logger.debug("Initialized %s", app.name)
     return app

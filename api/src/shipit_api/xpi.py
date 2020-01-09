@@ -1,14 +1,19 @@
 import datetime
+import logging
 
+import taskcluster_urls
 from flask import abort, current_app
 from flask_login import current_user
 from werkzeug.exceptions import BadRequest
 
+from cli_common.taskcluster import get_root_url
 from shipit_api.api import do_schedule_phase
 from shipit_api.config import SCOPE_PREFIX
 from shipit_api.github import get_xpi_type
 from shipit_api.models import XPI, XPIPhase, XPIRelease, XPISignoff
 from shipit_api.tasks import UnsupportedFlavor
+
+logger = logging.getLogger(__name__)
 
 
 def _xpi_type(revision, xpi_name):
@@ -34,6 +39,7 @@ def add_release(body):
     except UnsupportedFlavor as e:
         raise BadRequest(description=e.description)
 
+    logger.info("New release of %s", release.name)
     return release.json, 201
 
 
@@ -76,6 +82,8 @@ def schedule_phase(name, phase):
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     phase = do_schedule_phase(session, phase)
+    url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{phase.task_id}")
+    logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
     return phase.json
 
 
@@ -92,6 +100,7 @@ def abandon_release_xpi(name):
     # XPI doesn't support the "cancel-all" action task, just mark as aborted
     release.status = "aborted"
     session.commit()
+    logger.info("Canceled release %s", release.name)
     return release.json
 
 
@@ -135,4 +144,6 @@ def phase_signoff(name, phase, body):
     if all([s.signed for s in phase_obj.signoffs]):
         schedule_phase(name, phase)
 
+    release = phase_obj.release
+    logger.info("Phase %s of %s signed off by %s", phase, release.name, who)
     return dict(signoffs=signoffs)

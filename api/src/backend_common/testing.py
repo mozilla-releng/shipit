@@ -175,7 +175,3 @@ def client(app):
                 requests_mock.add_callback(responses.GET, re.compile(r"https://auth\.mozilla\.auth0\.com/userinfo.*"), callback=mock_auth_auth0)
 
             yield client
-
-
-def app_heartbeat():
-    pass
