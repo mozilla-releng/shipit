@@ -64,6 +64,7 @@ async def download_json_file(session, url, file_):
 async def download_product_details(url: str, download_dir: str):
     """Download product details from `url` to `download_dir`.
     """
+    configure_logging()
 
     async with aiohttp.ClientSession() as session:
         async with session.get(f"{url}/json_exports.json") as response:
@@ -119,6 +120,7 @@ def get_taskcluster_headers(request_url, method, content, taskcluster_client_id,
 @click.option("--api-from", default="https://shipit-api.mozilla-releng.net")
 @flask.cli.with_appcontext
 def shipit_import(api_from):
+    configure_logging()
     session = flask.current_app.db.session
 
     click.echo("Fetching release list...", nl=False)
@@ -148,23 +150,13 @@ def shipit_import(api_from):
 @click.option("--taskcluster-client-id", help="Taskcluster Client ID", required=True, prompt=True)
 @click.option("--taskcluster-access-token", help="Taskcluster Access token", required=True, prompt=True, hide_input=True)
 def trigger_product_details(base_url: str, taskcluster_client_id: str, taskcluster_access_token: str):
+    configure_logging()
     data = "{}"
     url = f"{base_url}/product-details"
-
     click.echo(f"Triggering product details rebuild on {url} url ... ", nl=False)
-
     headers = get_taskcluster_headers(url, "post", data, taskcluster_client_id, taskcluster_access_token)
-
     # skip ssl verification when working against development instances
     verify = not any(map(lambda x: x in base_url, ["localhost", "127.0.0.1"]))
-
     r = requests.post(url, headers=headers, verify=verify, data=data)
-
     r.raise_for_status()
-
-    if r.json() != {"result": "ok"}:
-        click.secho("ERROR: Something went wrong", fg="red")
-        click.echo(f"  URL={url}")
-        click.echo(f"  RESPONSE={r.content}")
-
     click.echo(click.style("Product details triggered successfully!", fg="green"))
