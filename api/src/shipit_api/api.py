@@ -241,7 +241,7 @@ def abandon_release(name):
 def rebuild_product_details(body):
     pulse_user = current_app.config["PULSE_USER"]
     exchange = f"exchange/{pulse_user}/{PROJECT_NAME}"
-    logger.info("Sending pulse message `%` to queue `%s` for route `%s`.", body, exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS)
+    logger.info("Sending pulse message `%s` to queue `%s` for route `%s`.", body, exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS)
     current_app.pulse.publish(exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, body)
     return {"status": "ok"}
 
