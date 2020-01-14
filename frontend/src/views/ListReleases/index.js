@@ -5,7 +5,7 @@ import ReactInterval from 'react-interval';
 import { Queue } from 'taskcluster-client-web';
 import libUrls from 'taskcluster-lib-urls';
 import config, { SHIPIT_API_URL, TASKCLUSTER_ROOT_URL } from '../../config';
-import { getShippedReleases } from '../../components/api';
+import { getApiHeaders, getShippedReleases } from '../../components/api';
 
 const statusStyles = {
   // TC statuses
@@ -192,7 +192,7 @@ class Release extends React.Component {
       return;
     }
     const { accessToken } = this.context.authController.getUserSession();
-    const headers = { Authorization: `Bearer ${accessToken}` };
+    const headers = getApiHeaders(accessToken);
     try {
       const response = await fetch(url, { method: 'DELETE', headers });
       if (!response.ok) {
@@ -422,10 +422,7 @@ class TaskLabel extends React.PureComponent {
     const { releaseName, name } = this.props;
     const { selectedSignoff } = this.state;
     const url = `${SHIPIT_API_URL}/signoff/${releaseName}/${name}`;
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
+    const headers = getApiHeaders(accessToken);
     const body = JSON.stringify(selectedSignoff);
     try {
       const response = await fetch(url, { method: 'PUT', headers, body });
@@ -447,7 +444,7 @@ class TaskLabel extends React.PureComponent {
     this.setState({ inProgress: true });
     const { accessToken } = this.context.authController.getUserSession();
     const { releaseName, name } = this.props;
-    const headers = { Authorization: `Bearer ${accessToken}` };
+    const headers = getApiHeaders(accessToken);
     const url = `${SHIPIT_API_URL}/releases/${releaseName}/${name}`;
     try {
       const response = await fetch(url, { method: 'PUT', headers });

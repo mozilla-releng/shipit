@@ -7,7 +7,7 @@ import { object } from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
 import config, { SHIPIT_API_URL } from '../../config';
-import { getXPIBuildNumbers } from '../../components/api';
+import { getApiHeaders, getXPIBuildNumbers } from '../../components/api';
 import { getGithubCommits } from '../../components/vcs';
 import maybeShorten from '../../components/text';
 
@@ -20,15 +20,6 @@ export default class NewXPIelease extends React.Component {
     super(...args);
     this.state = Object.assign(this.defaultState());
   }
-
-  getAuthHeaders = () => {
-    const { accessToken } = this.context.authController.getUserSession();
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
-    return headers;
-  };
 
   getManifestCommits = async (owner, repo, branch) => {
     try {
@@ -67,7 +58,8 @@ export default class NewXPIelease extends React.Component {
   };
 
   queryApi = async (url) => {
-    const headers = this.getAuthHeaders();
+    const { accessToken } = this.context.authController.getUserSession();
+    const headers = getApiHeaders(accessToken);
     const response = await fetch(url, { headers });
     if (!response.ok) {
       const error = await response.json();

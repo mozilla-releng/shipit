@@ -8,7 +8,7 @@ import { NavLink } from 'react-router-dom';
 import * as moment from 'moment';
 
 import config, { SHIPIT_API_URL } from '../../config';
-import { getBuildNumbers, getShippedReleases } from '../../components/api';
+import { getApiHeaders, getBuildNumbers, getShippedReleases } from '../../components/api';
 import { getPushes, getVersion, getLocales } from '../../components/vcs';
 import maybeShorten from '../../components/text';
 
@@ -279,10 +279,7 @@ export default class NewRelease extends React.Component {
     }
     const url = `${SHIPIT_API_URL}/releases`;
     const { accessToken } = this.context.authController.getUserSession();
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
+    const headers = getApiHeaders(accessToken);
     try {
       const body = JSON.stringify(releaseObj);
       const response = await fetch(url, { method: 'POST', headers, body });
