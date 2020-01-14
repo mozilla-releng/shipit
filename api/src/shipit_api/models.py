@@ -312,7 +312,7 @@ class XPIRelease(db.Model, ReleaseBase):
 
     phase_class = XPIPhase
 
-    def __init__(self, revision, xpi, build_number, status, xpi_type, project):
+    def __init__(self, revision, xpi, build_number, status, xpi_type, project, repo_url=""):
         self.name = f"{xpi.name}-{xpi.version}-build{build_number}"
         self.xpi_name = xpi.name
         self.xpi_revision = xpi.revision
@@ -322,6 +322,7 @@ class XPIRelease(db.Model, ReleaseBase):
         self.status = status
         self.xpi_type = xpi_type
         self.project = project
+        self.repo_url = repo_url
 
     def phase_signoffs(self, phase):
         return [
