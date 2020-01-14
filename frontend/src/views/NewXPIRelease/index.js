@@ -23,7 +23,8 @@ export default class NewXPIelease extends React.Component {
 
   getManifestCommits = async (owner, repo, branch) => {
     try {
-      return await getGithubCommits(owner, repo, branch);
+      const { accessToken } = this.context.authController.getUserSession();
+      return await getGithubCommits(owner, repo, branch, accessToken);
     } catch (e) {
       this.setState({ errorMsg: e.message });
       return null;
