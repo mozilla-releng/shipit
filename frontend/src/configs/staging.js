@@ -118,6 +118,21 @@ module.exports = {
       // TODO
       enablePartials: false,
     },
+    {
+      product: 'fenix',
+      prettyName: 'Fenix',
+      appName: 'fenix',
+      branches: [
+        {
+          prettyName: "Johan's fork master branch",
+          project: 'fenix',
+          branch: 'master',
+          repo: 'https://github.com/JohanLorenzo/fenix',
+          enableReleaseEta: false,
+        },
+      ],
+      enablePartials: false,
+    },
   ],
   XPI_PRODUCTS: [
     {
