@@ -438,7 +438,7 @@ export default class NewRelease extends React.Component {
               {this.state.selectedProduct.branches &&
                this.state.selectedProduct.branches.map(branch => (
                  <Button
-                   key={branch.project}
+                   key={`${this.state.selectedProduct.product}-${branch.prettyName}`}
                    bsStyle={this.state.selectedBranch === branch ? 'primary' : 'default'}
                    bsSize="large"
                    onClick={() => this.handleBranch(branch)}
