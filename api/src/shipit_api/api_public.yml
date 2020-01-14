@@ -153,9 +153,10 @@ components:
           type: string
           example: firefox
           enum:
-          - firefox
-          - fennec
           - devedition
+          - fenix
+          - fennec
+          - firefox
           - thunderbird
         version:
           type: string

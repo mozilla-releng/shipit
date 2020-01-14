@@ -68,3 +68,10 @@ export async function getShippedXPIReleases() {
   const data = await res.json();
   return data.reverse();
 }
+
+export function getApiHeaders(accessToken) {
+  return {
+    Authorization: `Bearer ${accessToken}`,
+    'Content-Type': 'application/json',
+  };
+}

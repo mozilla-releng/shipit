@@ -9,7 +9,7 @@ import * as moment from 'moment';
 
 import config, { SHIPIT_API_URL } from '../../config';
 import { getBuildNumbers, getShippedReleases } from '../../components/api';
-import { getPushes, getVersion, getLocales } from '../../components/mercurial';
+import { getPushes, getVersion, getLocales } from '../../components/vcs';
 import maybeShorten from '../../components/text';
 
 export default class NewRelease extends React.Component {
@@ -69,10 +69,9 @@ export default class NewRelease extends React.Component {
       buildNumber: 0,
       partialVersions: [],
     });
-    const pushes = await getPushes(branch.repo);
-    const suggestedRevisions = Object.values(pushes.pushes).map(push =>
-      ({ ...push.changesets[0], date: new Date(push.date * 1000) })).reverse().filter(push =>
-      push.desc.indexOf('DONTBUILD') === -1);
+    const { accessToken } = this.context.authController.getUserSession();
+    const pushes = await getPushes(branch.repo, branch.branch, accessToken);
+    const suggestedRevisions = pushes.filter(push => push.desc.indexOf('DONTBUILD') === -1);
     this.setState({ suggestedRevisions });
   };
 
@@ -140,10 +139,12 @@ export default class NewRelease extends React.Component {
     this.setState({
       revision: rev.node,
     });
+    const { accessToken } = this.context.authController.getUserSession();
     this.version = await getVersion(
       this.state.selectedBranch.repo, rev.node,
       this.state.selectedProduct.appName,
       this.state.selectedBranch.versionFile,
+      accessToken,
     );
     await this.guessBuildId();
     if (this.state.selectedProduct.enablePartials) {
@@ -213,12 +214,13 @@ export default class NewRelease extends React.Component {
       alternativeBranch, alternativeRepo,
     } = this.state.selectedBranch;
     const releaseObj = {
-      product,
       branch,
+      build_number: this.state.buildNumber,
+      product,
+      release_eta: this.generateReleaseEta(this.state.releaseDate, this.state.releaseTime),
+      repo_url: repo,
       revision: this.state.revision,
       version: this.state.version,
-      build_number: this.state.buildNumber,
-      release_eta: this.generateReleaseEta(this.state.releaseDate, this.state.releaseTime),
     };
 
     if (this.state.selectedProduct.enablePartials) {

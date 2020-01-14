@@ -8,6 +8,7 @@ import { NavLink } from 'react-router-dom';
 
 import config, { SHIPIT_API_URL } from '../../config';
 import { getXPIBuildNumbers } from '../../components/api';
+import { getGithubCommits } from '../../components/vcs';
 import maybeShorten from '../../components/text';
 
 export default class NewXPIelease extends React.Component {
@@ -30,10 +31,8 @@ export default class NewXPIelease extends React.Component {
   };
 
   getManifestCommits = async (owner, repo, branch) => {
-    const url = `${SHIPIT_API_URL}/github/commits/${owner}/${repo}/${branch}`;
     try {
-      const commits = await this.queryApi(url);
-      return commits;
+      return await getGithubCommits(owner, repo, branch);
     } catch (e) {
       this.setState({ errorMsg: e.message });
       return null;

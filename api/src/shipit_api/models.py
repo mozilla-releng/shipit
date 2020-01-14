@@ -145,7 +145,7 @@ class ReleaseBase:
     @property
     @lru_cache(maxsize=2048)
     def decision_task_id(self):
-        return find_decision_task_id(self.project, self.revision)
+        return find_decision_task_id(self.repo_url, self.project, self.revision, self.product)
 
     @property
     def actions(self):
@@ -197,19 +197,20 @@ class Release(db.Model, ReleaseBase):
 
     phase_class = Phase
 
-    def __init__(self, product, version, branch, revision, build_number, release_eta, partial_updates, status, product_key=None):
-        self.name = f"{product.capitalize()}-{version}-build{build_number}"
-        self.product = product
-        self.version = version
+    def __init__(self, product, version, branch, revision, build_number, release_eta, partial_updates, status, product_key=None, repo_url=""):
         self.branch = branch
-        self.revision = revision
         self.build_number = build_number
+        self.name = f"{product.capitalize()}-{version}-build{build_number}"
+        self.partial_updates = partial_updates
+        self.product = product
+        self.product_key = product_key
         # Swagger doesn't let passing null values for strings, we use "falsy"
         # ones instead
         self.release_eta = release_eta or None
-        self.partial_updates = partial_updates
+        self.repo_url = repo_url  # XXX Not stored in the DB, just used for find_decision_task_id()
+        self.revision = revision
         self.status = status
-        self.product_key = product_key
+        self.version = version
 
     def phase_signoffs(self, phase):
         return [
