@@ -4,6 +4,7 @@ import { object } from 'prop-types';
 
 import config, { SHIPIT_API_URL } from '../../config';
 import ProductDisabler from '../../components/ProductDisabler';
+import { getApiHeaders } from '../../components/api';
 
 export default class Navigation extends React.Component {
   static contextTypes = {
@@ -55,10 +56,7 @@ export default class Navigation extends React.Component {
     }
 
     const { accessToken } = this.context.authController.getUserSession();
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
+    const headers = getApiHeaders(accessToken);
     try {
       const response = await fetch(url, { method, headers, body });
       if (!response.ok) {
@@ -102,4 +100,3 @@ export default class Navigation extends React.Component {
     );
   }
 }
-

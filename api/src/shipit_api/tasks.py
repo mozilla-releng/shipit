@@ -11,6 +11,7 @@ import yaml
 
 from cli_common.taskcluster import get_service
 from shipit_api.config import SUPPORTED_FLAVORS
+from shipit_api.github import extract_github_repo_owner_and_name
 from shipit_api.release import is_rc
 
 
@@ -23,8 +24,14 @@ class ArtifactNotFound(Exception):
     pass
 
 
-def get_trust_domain(project):
-    if "comm" in project:
+def get_trust_domain(repo_url, project, product):
+    if product == "fenix":
+        repo_owner, _ = extract_github_repo_owner_and_name(repo_url)
+        if repo_owner == "mozilla-mobile":
+            return "project.mobile.fenix"
+        else:
+            return "garbage.project.mobile.fenix"
+    elif "comm" in project:
         return "comm"
     elif "xpi" in project:
         return "xpi"
@@ -32,8 +39,14 @@ def get_trust_domain(project):
         return "gecko"
 
 
-def find_decision_task_id(project, revision):
-    decision_task_route = f"{get_trust_domain(project)}.v2.{project}.revision.{revision}.taskgraph.decision"
+def find_decision_task_id(repo_url, project, revision, product):
+    trust_domain = get_trust_domain(repo_url, project, product)
+    if repo_url.startswith("https://github.com"):
+        # XXX "project" is a gecko-centric term which is translated into a branch in the git world.
+        branch = project
+        decision_task_route = f"{trust_domain}.v2.branch.{branch}.revision.{revision}.taskgraph.decision"
+    else:
+        decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.decision"
     index = get_service("index")
     return index.findTask(decision_task_route)["taskId"]
 

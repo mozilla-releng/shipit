@@ -469,6 +469,7 @@ SUPPORTED_FLAVORS = {
         {"name": "ship_fennec_release_rc", "in_previous_graph_ids": True},
         {"name": "ship_fennec_release", "in_previous_graph_ids": True},
     ],
+    "fenix": [{"name": "ship", "in_previous_graph_ids": True}],
 }
 
 SIGNOFFS = {

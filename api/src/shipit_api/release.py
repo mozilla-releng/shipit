@@ -16,6 +16,8 @@ FINAL_RELEASE_REGEX = r"^\d+\.\d+$"
 _FENNEC_RC_REGEX = r"^68\.\d+\.0$"
 
 
+# TODO: Reland https://github.com/mozilla/release-services/pull/2262. It was backed out because of
+# https://github.com/mozilla/release-services/pull/2265#issue-317003960
 VERSION_REGEX = re.compile(
     r"^"
     r"(?P<major_minor>[0-9]+\.[0-9]+)"  # Major and minor version
@@ -24,6 +26,7 @@ VERSION_REGEX = re.compile(
     r"(?P<patch>[0-9]+)"  # Patch or beta version
     r")?"
     r"(?P<esr>(?:esr)?)"  # ESR indicator
+    r"(-beta\.(?P<semver_beta>[0-9]+))?"  # Semver beta number (used in Fenix)
     r"$"
 )
 
@@ -32,6 +35,7 @@ VERSION_REGEX = re.compile(
 class Product(enum.Enum):
     DEVEDITION = "devedition"
     FIREFOX = "firefox"
+    FENIX = "fenix"
     FENNEC = "fennec"
     THUNDERBIRD = "thunderbird"
 

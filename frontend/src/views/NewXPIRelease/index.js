@@ -7,7 +7,8 @@ import { object } from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
 import config, { SHIPIT_API_URL } from '../../config';
-import { getXPIBuildNumbers } from '../../components/api';
+import { getApiHeaders, getXPIBuildNumbers } from '../../components/api';
+import { getGithubCommits } from '../../components/vcs';
 import maybeShorten from '../../components/text';
 
 export default class NewXPIelease extends React.Component {
@@ -20,20 +21,9 @@ export default class NewXPIelease extends React.Component {
     this.state = Object.assign(this.defaultState());
   }
 
-  getAuthHeaders = () => {
-    const { accessToken } = this.context.authController.getUserSession();
-    const headers = {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json',
-    };
-    return headers;
-  };
-
   getManifestCommits = async (owner, repo, branch) => {
-    const url = `${SHIPIT_API_URL}/github/commits/${owner}/${repo}/${branch}`;
     try {
-      const commits = await this.queryApi(url);
-      return commits;
+      return await getGithubCommits(owner, repo, branch);
     } catch (e) {
       this.setState({ errorMsg: e.message });
       return null;
@@ -68,7 +58,8 @@ export default class NewXPIelease extends React.Component {
   };
 
   queryApi = async (url) => {
-    const headers = this.getAuthHeaders();
+    const { accessToken } = this.context.authController.getUserSession();
+    const headers = getApiHeaders(accessToken);
     const response = await fetch(url, { headers });
     if (!response.ok) {
       const error = await response.json();

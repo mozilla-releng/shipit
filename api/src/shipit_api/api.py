@@ -10,6 +10,7 @@ from collections import defaultdict
 import taskcluster_urls
 from flask import abort, current_app
 from flask_login import current_user
+from mozilla_version.fenix import FenixVersion
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 from werkzeug.exceptions import BadRequest
 
@@ -23,10 +24,11 @@ from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact
 logger = logging.getLogger(__name__)
 
 VERSION_CLASSES = {
-    Product.FIREFOX.value: FirefoxVersion,
-    Product.FENNEC.value: FennecVersion,
-    Product.THUNDERBIRD.value: ThunderbirdVersion,
     Product.DEVEDITION.value: DeveditionVersion,
+    Product.FENIX.value: FenixVersion,
+    Product.FENNEC.value: FennecVersion,
+    Product.FIREFOX.value: FirefoxVersion,
+    Product.THUNDERBIRD.value: ThunderbirdVersion,
 }
 
 
@@ -87,15 +89,16 @@ def add_release(body):
 
         partial_updates = _suggest_partials(product=product, branch=branch)
     release = Release(
-        product=product,
-        version=body["version"],
         branch=branch,
-        revision=body["revision"],
         build_number=body["build_number"],
-        release_eta=body.get("release_eta"),
-        status="scheduled",
         partial_updates=partial_updates,
         product_key=body.get("product_key"),
+        product=product,
+        release_eta=body.get("release_eta"),
+        repo_url=body.get("repo_url", ""),
+        revision=body["revision"],
+        status="scheduled",
+        version=body["version"],
     )
     try:
         release.generate_phases()
@@ -127,7 +130,21 @@ def list_releases(product=None, branch=None, version=None, build_number=None, st
     releases = [r.json for r in releases.all()]
     # filter out not parsable releases, like 1.1, 1.1b1, etc
     releases = filter(good_version, releases)
-    return sorted(releases, key=lambda r: VERSION_CLASSES[r["product"]].parse(r["version"]))
+    return _sort_releases_by_product_then_version(releases)
+
+
+def _sort_releases_by_product_then_version(releases):
+    # mozilla-version doesn't allow 2 version of 2 different products to be compared one another.
+    # This function ensures mozilla-version is given only versions of the same product
+    releases_by_product = {}
+    for release in releases:
+        releases_for_product = releases_by_product.setdefault(release["product"], [])
+        releases_for_product.append(release)
+
+    for product, releases in releases_by_product.items():
+        releases_by_product[product] = sorted(releases, key=lambda r: VERSION_CLASSES[product].parse(r["version"]))
+
+    return [release for product in sorted(releases_by_product.keys()) for release in releases_by_product[product]]
 
 
 def get_release(name):

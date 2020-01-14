@@ -83,6 +83,9 @@ def list_github_commits(owner, repo, branch, limit=10):
                   node {
                     messageHeadline
                     oid
+                    committer {
+                      date
+                    }
                   }
                 }
               }
@@ -96,7 +99,7 @@ def list_github_commits(owner, repo, branch, limit=10):
     )
     commits = query_api(query)
     edges = commits["data"]["repository"]["ref"]["target"]["history"]["edges"]
-    return [{"revision": e["node"]["oid"], "message": e["node"]["messageHeadline"]} for e in edges]
+    return [{"committer_date": e["node"]["committer"]["date"], "message": e["node"]["messageHeadline"], "revision": e["node"]["oid"]} for e in edges]
 
 
 def get_xpi_manifest(owner, repo, ref):
@@ -112,6 +115,10 @@ def get_taskgraph_config(owner, repo, ref):
 def get_package_json(owner, repo, revision):
     package = json.loads(get_file_from_github(owner, repo, "package.json", revision))
     return package
+
+
+def get_version_txt(owner, repo, revision):
+    return get_file_from_github(owner, repo, "version.txt", revision)
 
 
 def list_xpis(owner, repo, revision):
