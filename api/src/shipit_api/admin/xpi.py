@@ -7,11 +7,11 @@ from flask_login import current_user
 from werkzeug.exceptions import BadRequest
 
 from cli_common.taskcluster import get_root_url
-from shipit_api.api import do_schedule_phase
-from shipit_api.config import SCOPE_PREFIX
-from shipit_api.github import get_xpi_type
-from shipit_api.models import XPI, XPIPhase, XPIRelease, XPISignoff
-from shipit_api.tasks import UnsupportedFlavor
+from shipit_api.admin.api import do_schedule_phase
+from shipit_api.admin.github import get_xpi_type
+from shipit_api.admin.models import XPI, XPIPhase, XPIRelease, XPISignoff
+from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases
+from shipit_api.common.config import SCOPE_PREFIX
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,8 @@ def add_release(body):
     project = current_app.config.get("XPI_MANIFEST_REPO")
     release = XPIRelease(revision=body["revision"], xpi=xpi, build_number=body["build_number"], status="scheduled", xpi_type=xpi_type, project=project)
     try:
-        release.generate_phases()
+        common_input = {"build_number": release.build_number, "xpi_name": release.xpi_name, "revision": release.xpi_revision, "version": release.xpi_version}
+        release.phases = generate_phases(release, common_input, verify_supported_flavors=False)
         session.add(release)
         session.commit()
     except UnsupportedFlavor as e:

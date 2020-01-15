@@ -8,7 +8,7 @@ import os
 
 import backend_common.auth
 import cli_common.taskcluster
-import shipit_api.config
+import shipit_api.common.config
 
 # -- LOAD SECRETS -------------------------------------------------------------
 
@@ -30,7 +30,7 @@ if os.environ.get("APP_CHANNEL") == "development":
 else:
     secrets = cli_common.taskcluster.get_secrets(
         os.environ.get("TASKCLUSTER_SECRET"),
-        shipit_api.config.PROJECT_NAME,
+        shipit_api.common.config.PROJECT_NAME,
         required=required,
         existing={x: os.environ.get(x) for x in required if x in os.environ},
         taskcluster_client_id=os.environ.get("TASKCLUSTER_CLIENT_ID"),
@@ -89,7 +89,7 @@ for product in ["firefox", "fenix", "fennec", "devedition"]:
     scopes = {f"add_release/{product}": GROUPS["firefox-signoff"], f"abandon_release/{product}": GROUPS["firefox-signoff"]}
     phases = []
     for flavor in [product, f"{product}_rc", f"{product}_release", f"{product}_release_rc", f"{product}_beta"]:
-        phases += [i["name"] for i in shipit_api.config.SUPPORTED_FLAVORS.get(flavor, [])]
+        phases += [i["name"] for i in shipit_api.common.config.SUPPORTED_FLAVORS.get(flavor, [])]
     for phase in set(phases):
         scopes.update({f"schedule_phase/{product}/{phase}": GROUPS["firefox-signoff"], f"phase_signoff/{product}/{phase}": GROUPS["firefox-signoff"]})
     AUTH0_AUTH_SCOPES.update(scopes)
@@ -110,7 +110,7 @@ AUTH0_AUTH_SCOPES.update(
 scopes = {"add_release/thunderbird": GROUPS["thunderbird-signoff"], "abandon_release/thunderbird": GROUPS["thunderbird-signoff"]}
 phases = []
 for flavor in ["thunderbird", "thunderbird_rc"]:
-    phases += [i["name"] for i in shipit_api.config.SUPPORTED_FLAVORS.get(flavor, [])]
+    phases += [i["name"] for i in shipit_api.common.config.SUPPORTED_FLAVORS.get(flavor, [])]
 for phase in set(phases):
     scopes.update({f"schedule_phase/thunderbird/{phase}": GROUPS["thunderbird-signoff"], f"phase_signoff/thunderbird/{phase}": GROUPS["thunderbird-signoff"]})
 AUTH0_AUTH_SCOPES.update(scopes)
@@ -136,6 +136,6 @@ for xpi_type in ["standard", "system"]:
         )
 
 # append scopes with scope prefix and add admin group of users
-AUTH0_AUTH_SCOPES = {f"{shipit_api.config.SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
+AUTH0_AUTH_SCOPES = {f"{shipit_api.common.config.SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
 AUTH0_AUTH = True
 TASKCLUSTER_AUTH = True

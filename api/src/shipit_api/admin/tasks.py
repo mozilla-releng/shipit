@@ -4,15 +4,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import copy
+import json
+from functools import lru_cache
 
 import jsone
 import requests
 import yaml
 
 from cli_common.taskcluster import get_service
-from shipit_api.config import SUPPORTED_FLAVORS
-from shipit_api.github import extract_github_repo_owner_and_name
-from shipit_api.release import is_rc
+from shipit_api.admin.github import extract_github_repo_owner_and_name
+from shipit_api.admin.release import is_rc
+from shipit_api.common.config import SUPPORTED_FLAVORS
 
 
 class UnsupportedFlavor(Exception):
@@ -39,6 +41,7 @@ def get_trust_domain(repo_url, project, product):
         return "gecko"
 
 
+@lru_cache(maxsize=2048)
 def find_decision_task_id(repo_url, project, revision, product):
     trust_domain = get_trust_domain(repo_url, project, product)
     if repo_url.startswith("https://github.com"):
@@ -103,3 +106,74 @@ def render_action_hook(payload, context, delete_params=[]):
         for param in delete_params:
             del rendered_payload["decision"]["parameters"][param]
     return rendered_payload
+
+
+def rendered_hook_payload(phase, extra_context={}):
+    context = phase.context_json
+    previous_graph_ids = context["input"]["previous_graph_ids"]
+    # The first ID is always the decision task ID. We need to update the
+    # remaining tasks' IDs using their names.
+    decision_task_id, remaining = previous_graph_ids[0], previous_graph_ids[1:]
+    resolved_previous_graph_ids = [decision_task_id]
+    other_phases = {p.name: p.task_id for p in phase.release.phases}
+    for phase_name in remaining:
+        resolved_previous_graph_ids.append(other_phases[phase_name])
+    # in case we skip a phase, the task ID is not defined, we want to
+    # filter it out
+    resolved_previous_graph_ids = filter(None, resolved_previous_graph_ids)
+    context["input"]["previous_graph_ids"] = list(resolved_previous_graph_ids)
+    if extra_context:
+        context.update(extra_context)
+    return render_action_hook(phase.task_json["hook_payload"], context)
+
+
+def generate_phases(release, common_input, verify_supported_flavors):
+    phases = []
+    decision_task_id = find_decision_task_id(release.repo_url, release.project, release.revision)
+    previous_graph_ids = [decision_task_id]
+    actions = get_actions(decision_task_id)
+    for phase in release_promotion_flavors(release, actions, verify_supported_flavors):
+        input_ = copy.deepcopy(common_input)
+        input_["release_promotion_flavor"] = phase["name"]
+        input_["previous_graph_ids"] = list(previous_graph_ids)
+
+        hook = generate_action_hook(
+            task_group_id=decision_task_id(release.project, release.revision),
+            action_name="release-promotion",
+            actions=actions,
+            parameters=release.parameters,
+            input_=input_,
+        )
+        hook_no_context = {k: v for k, v in hook.items() if k != "context"}
+        phase_obj = release.phase_class(name=phase["name"], task_id="", task=json.dumps(hook_no_context), context=json.dumps(hook["context"]))
+        # we need to update input_['previous_graph_ids'] later, because
+        # the task IDs cannot be set for hooks in advance
+        if phase["in_previous_graph_ids"]:
+            previous_graph_ids.append(phase["name"])
+
+        phase_obj.signoffs = release.phase_signoffs(phase["name"])
+        phases.append(phase_obj)
+    return phases
+
+
+@lru_cache(maxsize=2048)
+def get_decision_task_id(repo_url, project, revision):
+    return find_decision_task_id(repo_url, project, revision)
+
+
+@lru_cache(maxsize=2048)
+def get_actions(decision_task_id):
+    return fetch_artifact(decision_task_id, "public/actions.json")
+
+
+@lru_cache(maxsize=2048)
+def get_parameters(decision_task_id):
+    return fetch_artifact(decision_task_id, "public/parameters.yml")
+
+
+def release_promotion_flavors(release, actions, verify_supported_flavors=True):
+    relpro = find_action("release-promotion", actions)
+    avail_flavors = relpro["schema"]["properties"]["release_promotion_flavor"]["enum"]
+    if verify_supported_flavors:
+        return extract_our_flavors(avail_flavors, release.product, release.version, release.partial_updates, release.product_key)
+    return [{"name": name, "in_previous_graph_ids": True} for name in avail_flavors]

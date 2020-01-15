@@ -5,49 +5,30 @@
 
 import datetime
 import logging
-from collections import defaultdict
 
 import taskcluster_urls
 from flask import abort, current_app
 from flask_login import current_user
-from mozilla_version.fenix import FenixVersion
-from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
 from cli_common.taskcluster import get_service
-from shipit_api.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
-from shipit_api.models import DisabledProduct, Phase, Release, Signoff
-from shipit_api.release import Product, get_locales, product_to_appname
-from shipit_api.tasks import ArtifactNotFound, UnsupportedFlavor, fetch_artifact, generate_action_hook, render_action_hook
+from shipit_api.admin.release import Product, bump_version, get_locales, is_eme_free_enabled, is_partner_enabled, product_to_appname
+from shipit_api.admin.tasks import (
+    ArtifactNotFound,
+    UnsupportedFlavor,
+    generate_action_hook,
+    generate_phases,
+    get_actions,
+    get_parameters,
+    render_action_hook,
+    rendered_hook_payload,
+)
+from shipit_api.common.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
+from shipit_api.common.models import DisabledProduct, Phase, Release, Signoff
+from shipit_api.public.api import get_disabled_products, list_releases
 
 logger = logging.getLogger(__name__)
-
-VERSION_CLASSES = {
-    Product.DEVEDITION.value: DeveditionVersion,
-    Product.FENIX.value: FenixVersion,
-    Product.FENNEC.value: FennecVersion,
-    Product.FIREFOX.value: FirefoxVersion,
-    Product.THUNDERBIRD.value: ThunderbirdVersion,
-}
-
-
-def good_version(release):
-    """Can the version be parsed by mozilla_version
-
-    Some ancient versions cannot be parsed by the mozilla_version module. This
-    function helps to skip the versions that are not supported.
-    Example versions that cannot be parsed:
-    1.1, 1.1b1, 2.0.0.1
-    """
-    product = release["product"]
-    if product not in VERSION_CLASSES:
-        raise ValueError(f"Product {product} versions are not supported")
-    try:
-        VERSION_CLASSES[product].parse(release["version"])
-        return True
-    except ValueError:
-        return False
 
 
 def notify_via_irc(product, message):
@@ -101,7 +82,24 @@ def add_release(body):
         version=body["version"],
     )
     try:
-        release.generate_phases()
+        next_version = bump_version(release.version.replace("esr", ""))
+        common_input = {
+            "build_number": release.build_number,
+            "next_version": next_version,
+            # specify version rather than relying on in-tree version,
+            # so if a version bump happens between the build and an action task
+            # revision, we still use the correct version.
+            "version": release.version,
+            "release_eta": release.release_eta,
+        }
+        if not is_partner_enabled(release.product, release.version):
+            common_input["release_enable_partners"] = False
+        if not is_eme_free_enabled(release.product, release.version):
+            common_input["release_enable_emefree"] = False
+        if release.partial_updates:
+            common_input["partial_updates"] = release.partial_updates
+
+        release.phases = generate_phases(release, common_input, verify_supported_flavors=True)
         session.add(release)
         session.commit()
     except UnsupportedFlavor as e:
@@ -111,52 +109,6 @@ def add_release(body):
     notify_via_irc(product, f"New release of {release.name}")
 
     return release.json, 201
-
-
-def list_releases(product=None, branch=None, version=None, build_number=None, status=["scheduled"]):
-    session = current_app.db.session
-    releases = session.query(Release)
-    if product:
-        releases = releases.filter(Release.product == product)
-    if branch:
-        releases = releases.filter(Release.branch == branch)
-    if version:
-        releases = releases.filter(Release.version == version)
-        if build_number:
-            releases = releases.filter(Release.build_number == build_number)
-    elif build_number:
-        raise BadRequest(description="Filtering by build_number without version is not supported.")
-    releases = releases.filter(Release.status.in_(status))
-    releases = [r.json for r in releases.all()]
-    # filter out not parsable releases, like 1.1, 1.1b1, etc
-    releases = filter(good_version, releases)
-    return _sort_releases_by_product_then_version(releases)
-
-
-def _sort_releases_by_product_then_version(releases):
-    # mozilla-version doesn't allow 2 version of 2 different products to be compared one another.
-    # This function ensures mozilla-version is given only versions of the same product
-    releases_by_product = {}
-    for release in releases:
-        releases_for_product = releases_by_product.setdefault(release["product"], [])
-        releases_for_product.append(release)
-
-    for product, releases in releases_by_product.items():
-        releases_by_product[product] = sorted(releases, key=lambda r: VERSION_CLASSES[product].parse(r["version"]))
-
-    return [release for product in sorted(releases_by_product.keys()) for release in releases_by_product[product]]
-
-
-def get_release(name):
-    session = current_app.db.session
-    release = session.query(Release).filter(Release.name == name).first_or_404()
-    return release.json
-
-
-def get_phase(name, phase):
-    session = current_app.db.session
-    phase = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
-    return phase.json
 
 
 def do_schedule_phase(session, phase):
@@ -171,7 +123,7 @@ def do_schedule_phase(session, phase):
     hooks = get_service("hooks")
     client_id = hooks.options["credentials"]["clientId"].decode("utf-8")
     extra_context = {"clientId": client_id}
-    result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], phase.rendered_hook_payload(extra_context=extra_context))
+    result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], rendered_hook_payload(phase, extra_context=extra_context))
     phase.task_id = result["status"]["taskId"]
 
     phase.submitted = True
@@ -230,8 +182,8 @@ def abandon_release(name):
     # Cancel all submitted task groups first
     for phase in filter(lambda x: x.submitted and not x.skipped, release.phases):
         try:
-            actions = fetch_artifact(phase.task_id, "public/actions.json")
-            parameters = fetch_artifact(phase.task_id, "public/parameters.yml")
+            actions = get_actions(phase.task_id)
+            parameters = get_parameters(phase.task_id)
         except ArtifactNotFound:
             logger.info("Ignoring not completed action task %s", phase.task_id)
             continue
@@ -280,13 +232,6 @@ def update_release_status(name, body):
     return release.json
 
 
-def get_phase_signoff(name, phase):
-    session = current_app.db.session
-    phase = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
-    signoffs = [s.json for s in phase.signoffs]
-    return dict(signoffs=signoffs)
-
-
 def phase_signoff(name, phase, body):
     session = current_app.db.session
     signoff = session.query(Signoff).filter(Signoff.uid == body).first_or_404()
@@ -323,14 +268,6 @@ def phase_signoff(name, phase, body):
     notify_via_irc(release.product, f"{phase} of {release.name} signed off by {who}.")
 
     return dict(signoffs=signoffs)
-
-
-def get_disabled_products():
-    session = current_app.db.session
-    ret = defaultdict(list)
-    for row in session.query(DisabledProduct).all():
-        ret[row.product].append(row.branch)
-    return ret
 
 
 def disable_product(body):

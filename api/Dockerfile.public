@@ -6,14 +6,15 @@ RUN groupadd --gid 10001 app && \
 WORKDIR /app
 
 COPY requirements/ /app/requirements/
-RUN pip install -r requirements/base.txt
+RUN pip install -r requirements/public.txt
 
-COPY . /app
-RUN pip install -e .
+COPY docker.d/init.sh /app/docker.d/
+COPY settings_public.py /app
+COPY . ./src
+RUN pip install ./src && rm -rf ./src
 
-ENV APP_NAME shipit_api
-ENV APP_SETTINGS /app/settings.py
-ENV FLASK_APP shipit_api.flask:app
+ENV FLASK_APP shipit_api.public.flask:app
+ENV APP_SETTINGS /app/settings_public.py
 ENV WEB_CONCURRENCY=3
 USER app
 

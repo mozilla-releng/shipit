@@ -20,9 +20,10 @@ import requests
 import sqlalchemy
 import sqlalchemy.orm
 
-import shipit_api.product_details
+import shipit_api.admin.product_details
 from backend_common.log import configure_logging
-from shipit_api.models import Release
+from shipit_api.common.config import BREAKPOINT_VERSION
+from shipit_api.common.models import Release
 
 
 def coroutine(f):
@@ -92,7 +93,7 @@ async def download_product_details(url: str, download_dir: str):
     required=True,
     default=os.environ.get("RELEASE_CHANNEL", "master"),
 )
-@click.option("--breakpoint-version", default=shipit_api.config.BREAKPOINT_VERSION, type=int)
+@click.option("--breakpoint-version", default=BREAKPOINT_VERSION, type=int)
 @click.option("--clean-working-copy", is_flag=True)
 @coroutine
 async def rebuild_product_details(
@@ -104,7 +105,7 @@ async def rebuild_product_details(
     engine = sqlalchemy.create_engine(database_url)
     session = sqlalchemy.orm.sessionmaker(bind=engine)()
     click.echo("Product details are building ...")
-    await shipit_api.product_details.rebuild(session, channel, git_repo_url, folder_in_repo, breakpoint_version, clean_working_copy)
+    await shipit_api.admin.product_details.rebuild(session, channel, git_repo_url, folder_in_repo, breakpoint_version, clean_working_copy)
     click.echo("Product details have been rebuilt")
 
 

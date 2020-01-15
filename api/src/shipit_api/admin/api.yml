@@ -15,7 +15,7 @@ paths:
   /product-details:
     post:
       summary: Trigger a rebuild of product details
-      operationId: shipit_api.api.rebuild_product_details
+      operationId: shipit_api.admin.api.rebuild_product_details
       requestBody:
         description: Rebuild options
         content:
@@ -42,7 +42,7 @@ paths:
   /releases:
     get:
       summary: List releases
-      operationId: shipit_api.api.list_releases
+      operationId: shipit_api.public.api.list_releases
       parameters:
       - name: product
         in: query
@@ -79,7 +79,7 @@ paths:
                   $ref: '#/components/schemas/Release'
     post:
       summary: Add a new release
-      operationId: shipit_api.api.add_release
+      operationId: shipit_api.admin.api.add_release
       requestBody:
         description: Release object
         content:
@@ -100,7 +100,7 @@ paths:
   /releases/{name}:
     get:
       summary: Release info
-      operationId: shipit_api.api.get_release
+      operationId: shipit_api.public.api.get_release
       parameters:
       - name: name
         in: path
@@ -117,7 +117,7 @@ paths:
                 $ref: '#/components/schemas/Release'
     delete:
       summary: Release info
-      operationId: shipit_api.api.abandon_release
+      operationId: shipit_api.admin.api.abandon_release
       parameters:
       - name: name
         in: path
@@ -134,7 +134,7 @@ paths:
                 $ref: '#/components/schemas/Release'
     patch:
       summary: Update release status
-      operationId: shipit_api.api.update_release_status
+      operationId: shipit_api.admin.api.update_release_status
       parameters:
       - name: name
         in: path
@@ -162,7 +162,7 @@ paths:
   /releases/{name}/{phase}:
     get:
       summary: Release info
-      operationId: shipit_api.api.get_phase
+      operationId: shipit_api.public.api.get_phase
       parameters:
       - name: name
         in: path
@@ -184,7 +184,7 @@ paths:
                 $ref: '#/components/schemas/Phase'
     put:
       summary: Schedule phase
-      operationId: shipit_api.api.schedule_phase
+      operationId: shipit_api.admin.api.schedule_phase
       parameters:
       - name: name
         in: path
@@ -210,7 +210,7 @@ paths:
   /signoff/{name}/{phase}:
     get:
       summary: Get phase signoff requirements and status
-      operationId: shipit_api.api.get_phase_signoff
+      operationId: shipit_api.public.api.get_phase_signoff
       parameters:
       - name: name
         in: path
@@ -232,7 +232,7 @@ paths:
                 $ref: '#/components/schemas/Signoffs'
     put:
       summary: Sign off a phase
-      operationId: shipit_api.api.phase_signoff
+      operationId: shipit_api.admin.api.phase_signoff
       parameters:
       - name: name
         in: path
@@ -265,7 +265,7 @@ paths:
   /disabled-products:
     get:
       summary: Get the list of product/branches which are currently disabled. Disabled products/branches will not have automated releases created
-      operationId: shipit_api.api.get_disabled_products
+      operationId: shipit_api.public.api.get_disabled_products
       responses:
         200:
           description: Disabled product/branches
@@ -275,7 +275,7 @@ paths:
                 type: object
     post:
       summary: Disable a product+branch
-      operationId: shipit_api.api.disable_product
+      operationId: shipit_api.admin.api.disable_product
       requestBody:
         description: Disable Product object
         content:
@@ -289,7 +289,7 @@ paths:
           description: Invalid input
     delete:
       summary: Enable a product+branch
-      operationId: shipit_api.api.enable_product
+      operationId: shipit_api.admin.api.enable_product
       parameters:
       - name: product
         in: query
@@ -318,7 +318,7 @@ paths:
   /github/commits/{owner}/{repo}/{branch}:
     get:
       summary: List git commits in a Github repo
-      operationId: shipit_api.github.list_github_commits
+      operationId: shipit_api.admin.github.list_github_commits
       parameters:
       - name: owner
         in: path
@@ -350,7 +350,7 @@ paths:
   /github/package_json/{owner}/{repo}/{revision}:
     get:
       summary: Returns contents of package.json from a github repo's root directory
-      operationId: shipit_api.github.get_package_json
+      operationId: shipit_api.admin.github.get_package_json
       parameters:
       - name: owner
         in: path
@@ -411,7 +411,7 @@ paths:
   /github/xpis/{owner}/{repo}/{revision}:
     get:
       summary: List XPIs in the manifest
-      operationId: shipit_api.github.list_xpis
+      operationId: shipit_api.admin.github.list_xpis
       parameters:
       - name: owner
         in: path
@@ -441,7 +441,7 @@ paths:
   /xpi/releases:
     get:
       summary: List XPI releases
-      operationId: shipit_api.xpi.list_releases
+      operationId: shipit_api.admin.xpi.list_releases
       parameters:
       - name: xpi_name
         in: query
@@ -474,7 +474,7 @@ paths:
                   $ref: '#/components/schemas/XPIRelease'
     post:
       summary: Add a new XPI release
-      operationId: shipit_api.xpi.add_release
+      operationId: shipit_api.admin.xpi.add_release
       requestBody:
         description: XPI Release object
         content:
@@ -492,7 +492,7 @@ paths:
   /xpi/releases/{name}:
     get:
       summary: Release info
-      operationId: shipit_api.xpi.get_release
+      operationId: shipit_api.admin.xpi.get_release
       parameters:
       - name: name
         in: path
@@ -509,7 +509,7 @@ paths:
                 $ref: '#/components/schemas/XPIRelease'
     delete:
       summary: Release info
-      operationId: shipit_api.xpi.abandon_release_xpi
+      operationId: shipit_api.admin.xpi.abandon_release_xpi
       parameters:
       - name: name
         in: path
@@ -527,7 +527,7 @@ paths:
   /xpi/releases/{name}/{phase}:
     get:
       summary: Phase info
-      operationId: shipit_api.xpi.get_phase
+      operationId: shipit_api.admin.xpi.get_phase
       parameters:
       - name: name
         in: path
@@ -549,7 +549,7 @@ paths:
                 $ref: '#/components/schemas/Phase'
     put:
       summary: Schedule phase
-      operationId: shipit_api.xpi.schedule_phase
+      operationId: shipit_api.admin.xpi.schedule_phase
       parameters:
       - name: name
         in: path
@@ -575,7 +575,7 @@ paths:
   /xpi/signoff/{name}/{phase}:
     get:
       summary: Get phase signoff requirements and status
-      operationId: shipit_api.xpi.get_phase_signoff
+      operationId: shipit_api.admin.xpi.get_phase_signoff
       parameters:
       - name: name
         in: path
@@ -597,7 +597,7 @@ paths:
                 $ref: '#/components/schemas/Signoffs'
     put:
       summary: Sign off a phase
-      operationId: shipit_api.xpi.phase_signoff
+      operationId: shipit_api.admin.xpi.phase_signoff
       parameters:
       - name: name
         in: path
