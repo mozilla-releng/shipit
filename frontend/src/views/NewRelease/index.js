@@ -284,7 +284,8 @@ export default class NewRelease extends React.Component {
       const body = JSON.stringify(releaseObj);
       const response = await fetch(url, { method: 'POST', headers, body });
       if (!response.ok) {
-        this.setState({ errorMsg: 'Auth failure!' });
+        const responseJson = await response.json();
+        this.setState({ errorMsg: responseJson.detail ? `Error: ${responseJson.detail}` : 'Unknown server error' });
         return;
       }
       this.setState({ submitted: true });
