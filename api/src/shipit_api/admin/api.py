@@ -9,6 +9,7 @@ import logging
 import taskcluster_urls
 from flask import abort, current_app
 from flask_login import current_user
+from taskcluster.exceptions import TaskclusterRestFailure
 from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
@@ -104,6 +105,10 @@ def add_release(body):
         session.commit()
     except UnsupportedFlavor as e:
         raise BadRequest(description=e.description)
+    except TaskclusterRestFailure as e:
+        # Report back Taskcluster failure for better visibility of the actual
+        # issue. Usually it happens when we cannot find the indexed task.
+        abort(400, str(e))
 
     logger.info("New release of %s", release.name)
     notify_via_irc(product, f"New release of {release.name}")
