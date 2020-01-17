@@ -13,7 +13,7 @@ from taskcluster.exceptions import TaskclusterRestFailure
 from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
-from cli_common.taskcluster import get_service
+from cli_common.taskcluster import get_root_url, get_service
 from shipit_api.admin.release import Product, bump_version, get_locales, is_eme_free_enabled, is_partner_enabled, product_to_appname
 from shipit_api.admin.tasks import (
     ArtifactNotFound,
@@ -128,8 +128,11 @@ def do_schedule_phase(session, phase):
     hooks = get_service("hooks")
     client_id = hooks.options["credentials"]["clientId"].decode("utf-8")
     extra_context = {"clientId": client_id}
-    result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], rendered_hook_payload(phase, extra_context=extra_context))
-    phase.task_id = result["status"]["taskId"]
+    try:
+        result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], rendered_hook_payload(phase, extra_context=extra_context))
+        phase.task_id = result["status"]["taskId"]
+    except TaskclusterRestFailure as e:
+        abort(400, str(e))
 
     phase.submitted = True
     completed = datetime.datetime.utcnow()
@@ -160,11 +163,7 @@ def schedule_phase(name, phase):
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     phase = do_schedule_phase(session, phase)
-
-    hooks = get_service("hooks")
-    root_url = hooks.options["rootUrl"]
-    url = taskcluster_urls.ui(root_url, f"/tasks/groups/{phase.task_id}")
-
+    url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{phase.task_id}")
     logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
     notify_via_irc(
         phase.release.product,
@@ -201,8 +200,11 @@ def abandon_release(name):
             payload=hook["hook_payload"], context=hook["context"], delete_params=["existing_tasks", "release_history", "release_partner_config"]
         )
         logger.info("Cancel phase %s by hook %s with payload: %s", phase.name, hook["hook_id"], hook_payload_rendered)
-        res = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], hook_payload_rendered)
-        logger.debug("Done: %s", res)
+        try:
+            result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], hook_payload_rendered)
+            logger.debug("Done: %s", result)
+        except TaskclusterRestFailure as e:
+            abort(400, str(e))
 
     release.status = "aborted"
     session.commit()
