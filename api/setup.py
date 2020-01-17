@@ -35,7 +35,6 @@ def get_requirements(req_file):
                 requirements.extend(get_requirements(req_file))
             else:
                 requirements.extend(line.split(";")[0].rstrip("  \\").split())
-    print(requirements)
     return requirements
 
 
