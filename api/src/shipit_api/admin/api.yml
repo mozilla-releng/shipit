@@ -380,7 +380,7 @@ paths:
   /github/version_txt/{owner}/{repo}/{revision}:
     get:
       summary: Returns contents of version.txt from a github repo's root directory
-      operationId: shipit_api.github.get_version_txt
+      operationId: shipit_api.admin.github.get_version_txt
       parameters:
       - name: owner
         in: path

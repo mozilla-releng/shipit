@@ -1,7 +1,9 @@
 version: '3'
 services:
   api:
-    build: api
+    build:
+      context: api
+      dockerfile: Dockerfile
     ports:
       - "8015:8015"
     volumes:
@@ -36,7 +38,9 @@ services:
       retries: 5
 
   public:
-    build: api
+    build:
+      context: api
+      dockerfile: Dockerfile.public
     ports:
       - "8016:8016"
     volumes:
@@ -47,7 +51,6 @@ services:
       - APP_CHANNEL=development
       - DATABASE_URL=postgres://shipituserreadonly:shipitpasswordreadonly@db/shipitdb
       - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
-      - FLASK_APP=shipit_api.public:app
       - APP_SETTINGS=/app/settings_public.py
       - LOG_FORMAT=plain
     depends_on:
