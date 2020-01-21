@@ -48,13 +48,6 @@ tasks:
           else: '${event.release.tag_name}',
         }
       }
-      docker_tag:
-        $if: 'tasks_for == "github-pull-request"'
-        then: 'pull-request'
-        else:
-          $if: 'tasks_for == "github-push" && event.ref[0:11] == "refs/heads/"'
-          then: 'shipit_api_dockerflow_${release_channel}'
-          else: 'unknown'
       push_docker_image:
         $if: 'tasks_for == "github-pull-request"'
         then: '0'
@@ -137,11 +130,12 @@ tasks:
                 # image: docker:stable
                 image: 'docker:1.6.2'
                 env:
-                  # TODO: update these when we're to push to the real repos
+                  DOCKERFILE: Dockerfile.public
                   DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
                   DOCKERHUB_USER: 'mozillarelengservices'
-                  DOCKER_REPO: 'mozilla/release-services'
-                  DOCKER_TAG: '${docker_tag}'
+                  # TODO: create this repo
+                  DOCKER_REPO: 'mozilla/releng-shipit-admin'
+                  DOCKER_TAG: '${release_channel}'
                   GIT_HEAD_REV: '${head_sha}'
                   PUSH_DOCKER_IMAGE: '${push_docker_image}'
                   REPO_URL: '${repo_url}'
@@ -170,6 +164,59 @@ tasks:
               metadata:
                 name: Ship-it API docker build (${release_channel})
                 description: Ship-it API docker build (${release_channel})
+                owner: ${owner_email}
+                source: ${repo_url}
+
+            - taskId: {$eval: as_slugid("public-docker-build-and-push")}
+              dependencies:
+                - '${as_slugid(python_version)}'
+                - '${as_slugid("check")}'
+              created: {$fromNow: ''}
+              deadline: {$fromNow: '24 hours'}
+              provisionerId: 'releng-${worker_level}'
+              workerType: linux
+              routes: []
+              payload:
+                maxRunTime: 3600
+                # we need to run really old docker version because taskcluster is using
+                # really old version in their setup
+                # image: docker:stable
+                image: 'docker:1.6.2'
+                env:
+                  DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
+                  DOCKERHUB_USER: 'mozillarelengservices'
+                  # TODO: create this repo
+                  DOCKER_REPO: 'mozilla/releng-shipit-public'
+                  DOCKER_TAG: '${release_channel}'
+                  GIT_HEAD_REV: '${head_sha}'
+                  PUSH_DOCKER_IMAGE: '${push_docker_image}'
+                  REPO_URL: '${repo_url}'
+                  SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
+                  DOCKERFILE: Dockerfile.public
+                command:
+                  - sh
+                  - -lxce
+                  - >-
+                    cd /tmp &&
+                    wget ${repo_url}/archive/${head_sha}.tar.gz &&
+                    tar zxf ${head_sha}.tar.gz &&
+                    find . &&
+                    mv shipit-${head_sha} /src &&
+                    cd /src/api &&
+                    ./docker.d/generate_version_json.sh &&
+                    ./docker.d/build_image.sh &&
+                    ./docker.d/push_image.sh
+                features:
+                  dind: true
+                  taskclusterProxy: true
+              scopes:
+                $if: 'push_docker_image == "0"'
+                then: []
+                else:
+                  - 'secrets:get:project/releng/shipit/deploy'
+              metadata:
+                name: Ship-it Public API docker build (${release_channel})
+                description: Ship-it Public API docker build (${release_channel})
                 owner: ${owner_email}
                 source: ${repo_url}
 
