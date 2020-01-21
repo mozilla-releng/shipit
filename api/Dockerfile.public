@@ -9,7 +9,7 @@ COPY requirements/ /app/requirements/
 RUN pip install -r requirements/public.txt
 
 COPY docker.d/init.sh /app/docker.d/
-COPY settings_public.py /app
+COPY settings_public.py /app/settings_public.py
 COPY . ./src
 RUN pip install ./src && rm -rf ./src
 

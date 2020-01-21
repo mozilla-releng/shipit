@@ -130,7 +130,7 @@ tasks:
                 # image: docker:stable
                 image: 'docker:1.6.2'
                 env:
-                  DOCKERFILE: Dockerfile.public
+                  DOCKERFILE: Dockerfile
                   DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
                   DOCKERHUB_USER: 'mozillarelengservices'
                   # TODO: create this repo
@@ -183,6 +183,7 @@ tasks:
                 # image: docker:stable
                 image: 'docker:1.6.2'
                 env:
+                  DOCKERFILE: Dockerfile.public
                   DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
                   DOCKERHUB_USER: 'mozillarelengservices'
                   # TODO: create this repo
@@ -192,7 +193,6 @@ tasks:
                   PUSH_DOCKER_IMAGE: '${push_docker_image}'
                   REPO_URL: '${repo_url}'
                   SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
-                  DOCKERFILE: Dockerfile.public
                 command:
                   - sh
                   - -lxce
