@@ -116,7 +116,7 @@ tasks:
 
             - $map: [['admin', 'Dockerfile', 'mozilla/releng-shipit-admin'], ['public', 'Dockerfile.public', 'mozilla/releng-shipit-public']]
               each(env):
-                taskId: {$eval: as_slugid("${env[0]}-docker-build-and-push")}
+                taskId: "${as_slugid(env[0])}"
                 dependencies:
                   - '${as_slugid(python_version)}'
                   - '${as_slugid("check")}'
