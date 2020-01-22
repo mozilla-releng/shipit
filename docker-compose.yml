@@ -11,7 +11,6 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8015
-      - APP_SETTINGS=/app/settings.py
       - APP_CHANNEL=development
       - DATABASE_URL=postgres://shipituser:shipitpassword@db/shipitdb
       - AUTH_CLIENT_ID=todo
@@ -50,8 +49,6 @@ services:
       - PORT=8016
       - APP_CHANNEL=development
       - DATABASE_URL=postgres://shipituserreadonly:shipitpasswordreadonly@db/shipitdb
-      - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
-      - APP_SETTINGS=/app/settings_public.py
       - LOG_FORMAT=plain
     depends_on:
       - db
