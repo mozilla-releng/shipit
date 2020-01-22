@@ -114,111 +114,59 @@ tasks:
                 owner: ${owner_email}
                 source: ${repo_url}
 
-            - taskId: {$eval: as_slugid("docker-build-and-push")}
-              dependencies:
-                - '${as_slugid(python_version)}'
-                - '${as_slugid("check")}'
-              created: {$fromNow: ''}
-              deadline: {$fromNow: '24 hours'}
-              provisionerId: 'releng-${worker_level}'
-              workerType: linux
-              routes: []
-              payload:
-                maxRunTime: 3600
-                # we need to run really old docker version because taskcluster is using
-                # really old version in their setup
-                # image: docker:stable
-                image: 'docker:1.6.2'
-                env:
-                  DOCKERFILE: Dockerfile
-                  DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
-                  DOCKERHUB_USER: 'mozillarelengservices'
-                  # TODO: create this repo
-                  DOCKER_REPO: 'mozilla/releng-shipit-admin'
-                  DOCKER_TAG: '${release_channel}'
-                  GIT_HEAD_REV: '${head_sha}'
-                  PUSH_DOCKER_IMAGE: '${push_docker_image}'
-                  REPO_URL: '${repo_url}'
-                  SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
-                command:
-                  - sh
-                  - -lxce
-                  - >-
-                    cd /tmp &&
-                    wget ${repo_url}/archive/${head_sha}.tar.gz &&
-                    tar zxf ${head_sha}.tar.gz &&
-                    find . &&
-                    mv shipit-${head_sha} /src &&
-                    cd /src/api &&
-                    ./docker.d/generate_version_json.sh &&
-                    ./docker.d/build_image.sh &&
-                    ./docker.d/push_image.sh
-                features:
-                  dind: true
-                  taskclusterProxy: true
-              scopes:
-                $if: 'push_docker_image == "0"'
-                then: []
-                else:
-                  - 'secrets:get:project/releng/shipit/deploy'
-              metadata:
-                name: Ship-it API docker build (${release_channel})
-                description: Ship-it API docker build (${release_channel})
-                owner: ${owner_email}
-                source: ${repo_url}
-
-            - taskId: {$eval: as_slugid("public-docker-build-and-push")}
-              dependencies:
-                - '${as_slugid(python_version)}'
-                - '${as_slugid("check")}'
-              created: {$fromNow: ''}
-              deadline: {$fromNow: '24 hours'}
-              provisionerId: 'releng-${worker_level}'
-              workerType: linux
-              routes: []
-              payload:
-                maxRunTime: 3600
-                # we need to run really old docker version because taskcluster is using
-                # really old version in their setup
-                # image: docker:stable
-                image: 'docker:1.6.2'
-                env:
-                  DOCKERFILE: Dockerfile.public
-                  DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
-                  DOCKERHUB_USER: 'mozillarelengservices'
-                  # TODO: create this repo
-                  DOCKER_REPO: 'mozilla/releng-shipit-public'
-                  DOCKER_TAG: '${release_channel}'
-                  GIT_HEAD_REV: '${head_sha}'
-                  PUSH_DOCKER_IMAGE: '${push_docker_image}'
-                  REPO_URL: '${repo_url}'
-                  SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
-                command:
-                  - sh
-                  - -lxce
-                  - >-
-                    cd /tmp &&
-                    wget ${repo_url}/archive/${head_sha}.tar.gz &&
-                    tar zxf ${head_sha}.tar.gz &&
-                    find . &&
-                    mv shipit-${head_sha} /src &&
-                    cd /src/api &&
-                    ./docker.d/generate_version_json.sh &&
-                    ./docker.d/build_image.sh &&
-                    ./docker.d/push_image.sh
-                features:
-                  dind: true
-                  taskclusterProxy: true
-              scopes:
-                $if: 'push_docker_image == "0"'
-                then: []
-                else:
-                  - 'secrets:get:project/releng/shipit/deploy'
-              metadata:
-                name: Ship-it Public API docker build (${release_channel})
-                description: Ship-it Public API docker build (${release_channel})
-                owner: ${owner_email}
-                source: ${repo_url}
+            - $map: [['admin', 'Dockerfile', 'mozilla/releng-shipit-admin'], ['public', 'Dockerfile.public', 'mozilla/releng-shipit-public']]
+              each(env):
+                taskId: {$eval: as_slugid("${env[0]}-docker-build-and-push")}
+                dependencies:
+                  - '${as_slugid(python_version)}'
+                  - '${as_slugid("check")}'
+                created: {$fromNow: ''}
+                deadline: {$fromNow: '24 hours'}
+                provisionerId: 'releng-${worker_level}'
+                workerType: linux
+                routes: []
+                payload:
+                  maxRunTime: 3600
+                  # we need to run really old docker version because taskcluster is using
+                  # really old version in their setup
+                  # image: docker:stable
+                  image: 'docker:1.6.2'
+                  env:
+                    DOCKERFILE: '${env[1]}'
+                    DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
+                    DOCKERHUB_USER: 'mozillarelengservices'
+                    DOCKER_REPO: '${env[2]}'
+                    DOCKER_TAG: '${release_channel}'
+                    GIT_HEAD_REV: '${head_sha}'
+                    PUSH_DOCKER_IMAGE: '${push_docker_image}'
+                    REPO_URL: '${repo_url}'
+                    SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
+                  command:
+                    - sh
+                    - -lxce
+                    - >-
+                      cd /tmp &&
+                      wget ${repo_url}/archive/${head_sha}.tar.gz &&
+                      tar zxf ${head_sha}.tar.gz &&
+                      find . &&
+                      mv shipit-${head_sha} /src &&
+                      cd /src/api &&
+                      ./docker.d/generate_version_json.sh &&
+                      ./docker.d/build_image.sh &&
+                      ./docker.d/push_image.sh
+                  features:
+                    dind: true
+                    taskclusterProxy: true
+                scopes:
+                  $if: 'push_docker_image == "0"'
+                  then: []
+                  else:
+                    - 'secrets:get:project/releng/shipit/deploy'
+                metadata:
+                  name: Ship-it API (${env[0]}) docker build (${release_channel})
+                  description: Ship-it API (${env[0]}) docker build (${release_channel})
+                  owner: ${owner_email}
+                  source: ${repo_url}
 
             - $if: 'release_channel in ["testing", "staging", "production"]'
               then:
