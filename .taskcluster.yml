@@ -89,7 +89,7 @@ tasks:
                   name: Ship-it API ${py[0]} tests (${release_channel})
                   description: Ship-it API ${py[0]} tests (${release_channel})
                   owner: ${owner_email}
-                  source: ${repo_url}
+                  source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
 
             - taskId: {$eval: as_slugid("ui tests")}
               created: {$fromNow: ''}
@@ -112,7 +112,7 @@ tasks:
                 name: Ship-it Frontend tests (${release_channel})
                 description: Ship-it Frontend tests (${release_channel})
                 owner: ${owner_email}
-                source: ${repo_url}
+                source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
 
             - $map: [['admin', 'Dockerfile', 'mozilla/releng-shipit-admin'], ['public', 'Dockerfile.public', 'mozilla/releng-shipit-public']]
               each(env):
@@ -166,7 +166,7 @@ tasks:
                   name: Ship-it API (${env[0]}) docker build (${release_channel})
                   description: Ship-it API (${env[0]}) docker build (${release_channel})
                   owner: ${owner_email}
-                  source: ${repo_url}
+                  source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
 
             - $if: 'release_channel in ["testing", "staging", "production"]'
               then:
@@ -201,4 +201,4 @@ tasks:
                     name: Ship-it UI deploy (${release_channel})
                     description: Ship-it UI deploy (${release_channel})
                     owner: ${owner_email}
-                    source: ${repo_url}
+                    source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
