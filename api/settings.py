@@ -77,8 +77,8 @@ GROUPS = {
     "firefox-signoff": ["rkothari@mozilla.com", "ehenry@mozilla.com", "jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "fenix-signoff": ["rkothari@mozilla.com", "ehenry@mozilla.com", "jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
-    # We use 2 separate groups for standard and system addon type
-    "xpi_standard_signoff": ["rdalal@mozilla.com"],
+    # We use 2 separate groups for privileged and system addon type
+    "xpi_privileged_signoff": ["rdalal@mozilla.com"],
     "xpi_system_signoff": ["rdalal@mozilla.com"],
 }
 
@@ -120,10 +120,10 @@ AUTH0_AUTH_SCOPES.update({"rebuild_product_details": [], "update_release_status"
 
 # Github scopes
 # The following scope gives permission to all github queries, inlcuding private repos
-AUTH0_AUTH_SCOPES.update({"github": GROUPS["fenix-signoff"] + GROUPS["xpi_standard_signoff"] + GROUPS["xpi_system_signoff"]})
+AUTH0_AUTH_SCOPES.update({"github": GROUPS["fenix-signoff"] + GROUPS["xpi_privileged_signoff"] + GROUPS["xpi_system_signoff"]})
 
 # XPI scopes
-for xpi_type in ["standard", "system"]:
+for xpi_type in ["privileged", "system"]:
     AUTH0_AUTH_SCOPES.update(
         {f"add_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"], f"abandon_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"]}
     )
