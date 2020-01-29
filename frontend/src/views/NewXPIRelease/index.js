@@ -186,7 +186,8 @@ export default class NewXPIelease extends React.Component {
       return;
     }
     const url = `${SHIPIT_API_URL}/xpi/releases`;
-    const headers = this.getAuthHeaders();
+    const { accessToken } = this.context.authController.getUserSession();
+    const headers = getApiHeaders(accessToken);
     try {
       const body = JSON.stringify(releaseObj);
       const response = await fetch(url, { method: 'POST', headers, body });
