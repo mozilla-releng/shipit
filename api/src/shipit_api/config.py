@@ -492,7 +492,7 @@ SIGNOFFS = {
     #     },
     # },
     # "xpi": {
-    #     "standard": {
+    #     "privileged": {
     #         "promote": [
     #             {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
     #             {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
