@@ -323,6 +323,7 @@ class XPIRelease(db.Model, ReleaseBase):
         self.xpi_type = xpi_type
         self.project = project
         self.repo_url = repo_url
+        self.product = xpi.name
 
     def phase_signoffs(self, phase):
         return [
