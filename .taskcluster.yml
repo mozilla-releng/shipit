@@ -7,7 +7,7 @@ tasks:
       $if: 'tasks_for == "github-pull-request"'
       then: 'PR'
       else:
-        $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/testing", "refs/heads/staging", "refs/heads/production"]'
+        $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/testing", "refs/heads/staging", "refs/heads/production", "refs/heads/dev"]'
         then: '${event.ref[11:]}'
         else: 'none'
   in:
@@ -48,13 +48,6 @@ tasks:
           else: '${event.release.tag_name}',
         }
       }
-      docker_tag:
-        $if: 'tasks_for == "github-pull-request"'
-        then: 'pull-request'
-        else:
-          $if: 'tasks_for == "github-push" && event.ref[0:11] == "refs/heads/"'
-          then: 'shipit_api_dockerflow_${release_channel}'
-          else: 'unknown'
       push_docker_image:
         $if: 'tasks_for == "github-pull-request"'
         then: '0'
@@ -140,8 +133,8 @@ tasks:
                   # TODO: update these when we're to push to the real repos
                   DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
                   DOCKERHUB_USER: 'mozillarelengservices'
-                  DOCKER_REPO: 'mozilla/release-services'
-                  DOCKER_TAG: '${docker_tag}'
+                  DOCKER_REPO: 'mozilla/releng-shipit-admin'
+                  DOCKER_TAG: '${release_channel}'
                   GIT_HEAD_REV: '${head_sha}'
                   PUSH_DOCKER_IMAGE: '${push_docker_image}'
                   REPO_URL: '${repo_url}'
