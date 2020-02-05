@@ -6,7 +6,7 @@ import yaml
 from flask import abort, current_app
 from flask_login import current_user
 
-from shipit_api.config import SCOPE_PREFIX
+from shipit_api.common.config import SCOPE_PREFIX
 
 GITHUB_API_ENDPOINT = "https://api.github.com/graphql"
 

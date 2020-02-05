@@ -1,28 +1,20 @@
+-r public.in
+
 aioamqp
 aiohttp[speedups]
 arrow
 backoff
 # to support signals in Flask
 blinker
-connexion[swagger-ui]
-dockerflow
-flask
-flask_cors
 flask_login
-flask_migrate
 flask_oidc
-flask_talisman
 json-e
 kombu
 mohawk
-mozilla-version
 mypy
 mypy_extensions
 pyyaml
-sentry-sdk[flask]
-sqlalchemy
-# Pinned for now because ship it reaches into internlas that are no longer there
-taskcluster==7.0.0
+taskcluster
 
 # deployment
 gunicorn

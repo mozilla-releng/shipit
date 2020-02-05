@@ -5,7 +5,7 @@
 
 import pytest
 
-from shipit_api.release import bump_version, is_beta, is_eme_free_enabled, is_esr, is_final_release, is_partner_enabled, is_rc
+from shipit_api.admin.release import bump_version, is_beta, is_eme_free_enabled, is_esr, is_final_release, is_partner_enabled, is_rc
 
 
 @pytest.mark.parametrize("version, result", (("57.0", True), ("7.0", True), ("123.0", True), ("56.0b3", False), ("41.0esr", False), ("78.0.1", False)))

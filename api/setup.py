@@ -3,10 +3,11 @@
 
 """The setup script."""
 
+import os
 from glob import glob
 from os.path import abspath, basename, dirname, join, splitext
 
-from setuptools import find_packages, setup
+from setuptools import find_namespace_packages, find_packages, setup
 
 with open("README.rst") as readme_file:
     readme = readme_file.read()
@@ -15,25 +16,42 @@ with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
 here = abspath(dirname(__file__))
-# We're using a pip8 style requirements file, which allows us to embed hashes
-# of the packages in it. However, setuptools doesn't support parsing this type
-# of file, so we need to strip those out before passing the requirements along
-# to it.
-with open(join(here, "requirements", "base.txt")) as f:
+
+
+def get_requirements(req_file):
+    # We're using a pip8 style requirements file, which allows us to embed
+    # hashes of the packages in it. However, setuptools doesn't support parsing
+    # this type of file, so we need to strip those out before passing the
+    # requirements along to it.
     requirements = []
-    for line in f:
-        # Skip empty and comment lines
-        if not line.strip() or line.strip().startswith("#"):
-            continue
-        # Skip lines with hash values
-        if not line.strip().startswith("--"):
-            requirements.append(line.split(";")[0].split()[0])
-            requirement_without_python_filter = line.split(";")[0]
-            requirement_without_trailing_characters = requirement_without_python_filter.split()[0]
+    with open(join(here, "requirements", req_file)) as f:
+        for line in f:
+            line = line.strip()
+            # Skip empty, comment lines, and line with hashes
+            if not line or line.startswith("#") or line.startswith("--"):
+                continue
+            if line.startswith("-r "):
+                req_file = line.split()[1]
+                requirements.extend(get_requirements(req_file))
+            else:
+                requirements.extend(line.split(";")[0].rstrip("  \\").split())
+    return requirements
+
 
 setup_requirements = ["pytest-runner"]
-
 test_requirements = ["pytest"]
+
+# By default use public app requirements and name
+packages = find_packages("src", include=["backend_common", "cli_common"]) + find_namespace_packages("src", include=["shipit_api.common", "shipit_api.public"])
+name = "shipit_api-public"
+req_file = "public.txt"
+
+# In order to separate the public and admin apps, use `APP_TYPE` environment
+# variable as a most portable way to parameterize setup.py
+if os.environ.get("APP_TYPE") == "admin":
+    packages.extend(find_namespace_packages("src", include=["shipit_api.admin"]))
+    name = "shipit_api-admin"
+    req_file = "base.txt"
 
 setup(
     author="Mozilla Release Engineering",
@@ -47,13 +65,13 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     description="Ship It API",
-    install_requires=requirements,
+    install_requires=get_requirements(req_file),
     license="MPL2.0",
     long_description=readme + "\n\n" + history,
     include_package_data=True,
     keywords="shipit_api",
-    name="shipit_api",
-    packages=find_packages("src"),
+    name=name,
+    packages=packages,
     package_dir={"": "src"},
     py_modules=[splitext(basename(path))[0] for path in glob("src/*.py")],
     setup_requires=setup_requirements,

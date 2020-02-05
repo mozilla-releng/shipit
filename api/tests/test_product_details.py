@@ -10,13 +10,13 @@ import aiohttp
 import pytest
 from aioresponses import aioresponses
 
-import shipit_api.product_details
-from shipit_api.models import Release
-from shipit_api.product_details import fetch_l10n_data
+import shipit_api.admin.product_details
+from shipit_api.admin.product_details import fetch_l10n_data
+from shipit_api.common.models import Release
 
 
 def create_html(folder, items):
-    return shipit_api.product_details.create_index_listing_html(pathlib.Path(folder), [pathlib.Path(item) for item in items])
+    return shipit_api.admin.product_details.create_index_listing_html(pathlib.Path(folder), [pathlib.Path(item) for item in items])
 
 
 @pytest.mark.parametrize(
@@ -35,7 +35,7 @@ def create_html(folder, items):
     ),
 )
 def test_create_index_listing(product_details, product_details_final):
-    assert shipit_api.product_details.create_index_listing(product_details) == product_details_final
+    assert shipit_api.admin.product_details.create_index_listing(product_details) == product_details_final
 
 
 @pytest.mark.asyncio

@@ -3,12 +3,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import enum
 import re
 
 import requests
 
-from shipit_api.config import SUPPORTED_FLAVORS
+from shipit_api.common.config import SUPPORTED_FLAVORS
+from shipit_api.common.product import Product
 
 # If version has two parts with no trailing specifiers like "rc", we
 # consider it a 'final' release for which we only create a _RELEASE tag.
@@ -29,23 +29,6 @@ VERSION_REGEX = re.compile(
     r"(-beta\.(?P<semver_beta>[0-9]+))?"  # Semver beta number (used in Fenix)
     r"$"
 )
-
-
-@enum.unique
-class Product(enum.Enum):
-    DEVEDITION = "devedition"
-    FIREFOX = "firefox"
-    FENIX = "fenix"
-    FENNEC = "fennec"
-    THUNDERBIRD = "thunderbird"
-
-
-@enum.unique
-class ProductCategory(enum.Enum):
-    MAJOR = "major"
-    DEVELOPMENT = "dev"
-    STABILITY = "stability"
-    ESR = "esr"
 
 
 def parse_version(version):

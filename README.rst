@@ -26,11 +26,11 @@ Deploys in response to pushes to the ``production`` branch, if the ``CloudOps St
 - Frontend S3 bucket: ``relengstatic-prod-shipitfrontend-static-website``
 - Product Details URL: https://product-details.mozilla.org
 
-There is also a "CloudOps Stage" environment (which is different than the "Staging" environment below) that is deployment as part of the production pipeline. When a production deployment begins, Jenkins first deploys to this environment. If that deployment succeeds, the deployment proceeds. If it fails, the deployment is aborted. The URL for this backend is https://stage.shipitapi.nonprod.cloudops.mozgcp.net.
+When a production deployment begins, Jenkins first deploys to the canary environment. If that deployment succeeds, the deployment proceeds. If it fails, the deployment is aborted.
 
-Staging
+Dev
 -------
-Deploys in response to pushes to the ``staging`` branch.
+Deploys in response to pushes to the ``dev`` branch.
 
 - Backend URL: https://api.shipit.staging.mozilla-releng.net
 - Backend Dockerhub Tag: ``shipit_api_dockerflow_staging``
@@ -39,21 +39,4 @@ Deploys in response to pushes to the ``staging`` branch.
 - Frontend URL: https://shipit.staging.mozilla-releng.net/
 - Frontend S3 bucket: ``relengstatic-staging-shipitfrontend-static-website``
 - Product Details URL: https://product-details.staging.mozilla-releng.net
-
-Two important notes about staging:
-
-1) The backend URL is actually a CNAME for dev.shipitapi.nonprod.cloudops.mozgcp.net. Despite the fact that the real FQDN says "dev", we refer to this environment as "staging".
-2) There is *also* a CloudOps environment known as "stage", at stage.shipitapi.nonprod.cloudops.mozgcp.net, which we do not use (more on that in the "CloudOps staging" section below).
-
-
-Testing
--------
-Deploys in response to pushes to the ``testing`` branch.
-
-- Backend URL: https://testing.shipitapi.nonprod.cloudops.mozgcp.net
-- Backend Dockerhub Tag: ``shipit_api_dockerflow_testing``
-- Taskcluster Secret: project/releng/shipit/config:testing
-- Taskcluster Client ID: project/releng/shipit/dev
-- Frontend URL: https://shipit.testing.mozilla-releng.net/
-- Frontend S3 bucket: ``relengstatic-testing-shipitfrontend-static-website``
-- Product Details URL: https://product-details.testing.mozilla-releng.net
+- Public API URL: https://public-dev.shipitapi.nonprod.cloudops.mozgcp.net

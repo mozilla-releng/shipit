@@ -6,9 +6,9 @@
 import base64
 import os
 
-import backend_common.auth
-import cli_common.taskcluster
-import shipit_api.config
+from backend_common.auth import create_auth0_secrets_file
+from cli_common.taskcluster import get_secrets
+from shipit_api.common.config import PROJECT_NAME, SCOPE_PREFIX, SUPPORTED_FLAVORS
 
 # -- LOAD SECRETS -------------------------------------------------------------
 
@@ -28,9 +28,9 @@ if os.environ.get("APP_CHANNEL") == "development":
     secrets.update({k: os.environ[k] for k in optional if k in os.environ})
 # For deployed environments, they come from Taskcluster.
 else:
-    secrets = cli_common.taskcluster.get_secrets(
+    secrets = get_secrets(
         os.environ.get("TASKCLUSTER_SECRET"),
-        shipit_api.config.PROJECT_NAME,
+        PROJECT_NAME,
         required=required,
         existing={x: os.environ.get(x) for x in required if x in os.environ},
         taskcluster_client_id=os.environ.get("TASKCLUSTER_CLIENT_ID"),
@@ -62,7 +62,7 @@ SQLALCHEMY_DATABASE_URI = secrets["DATABASE_URL"]
 # -- AUTH --------------------------------------------------------------------
 
 OIDC_USER_INFO_ENABLED = True
-OIDC_CLIENT_SECRETS = backend_common.auth.create_auth0_secrets_file(secrets["AUTH_CLIENT_ID"], secrets["AUTH_CLIENT_SECRET"], secrets["AUTH_DOMAIN"])
+OIDC_CLIENT_SECRETS = create_auth0_secrets_file(secrets["AUTH_CLIENT_ID"], secrets["AUTH_CLIENT_SECRET"], secrets["AUTH_DOMAIN"])
 
 # XXX: scopes/groups are hardcoded for now
 GROUPS = {
@@ -94,7 +94,7 @@ for product in ["firefox", "fenix", "fennec", "devedition"]:
     scopes = {f"add_release/{product}": GROUPS["firefox-signoff"], f"abandon_release/{product}": GROUPS["firefox-signoff"]}
     phases = []
     for flavor in [product, f"{product}_rc", f"{product}_release", f"{product}_release_rc", f"{product}_beta"]:
-        phases += [i["name"] for i in shipit_api.config.SUPPORTED_FLAVORS.get(flavor, [])]
+        phases += [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
     for phase in set(phases):
         scopes.update({f"schedule_phase/{product}/{phase}": GROUPS["firefox-signoff"], f"phase_signoff/{product}/{phase}": GROUPS["firefox-signoff"]})
     AUTH0_AUTH_SCOPES.update(scopes)
@@ -115,7 +115,7 @@ AUTH0_AUTH_SCOPES.update(
 scopes = {"add_release/thunderbird": GROUPS["thunderbird-signoff"], "abandon_release/thunderbird": GROUPS["thunderbird-signoff"]}
 phases = []
 for flavor in ["thunderbird", "thunderbird_rc"]:
-    phases += [i["name"] for i in shipit_api.config.SUPPORTED_FLAVORS.get(flavor, [])]
+    phases += [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
 for phase in set(phases):
     scopes.update({f"schedule_phase/thunderbird/{phase}": GROUPS["thunderbird-signoff"], f"phase_signoff/thunderbird/{phase}": GROUPS["thunderbird-signoff"]})
 AUTH0_AUTH_SCOPES.update(scopes)
@@ -141,6 +141,6 @@ for xpi_type in ["privileged", "system"]:
         )
 
 # append scopes with scope prefix and add admin group of users
-AUTH0_AUTH_SCOPES = {f"{shipit_api.config.SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
+AUTH0_AUTH_SCOPES = {f"{SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
 AUTH0_AUTH = True
 TASKCLUSTER_AUTH = True

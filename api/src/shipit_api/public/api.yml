@@ -16,7 +16,7 @@ paths:
   /releases:
     get:
       summary: List releases
-      operationId: shipit_api.api.list_releases
+      operationId: shipit_api.public.api.list_releases
       parameters:
       - name: product
         in: query
@@ -54,7 +54,7 @@ paths:
   /releases/{name}:
     get:
       summary: Release info
-      operationId: shipit_api.api.get_release
+      operationId: shipit_api.public.api.get_release
       parameters:
       - name: name
         in: path
@@ -72,7 +72,7 @@ paths:
   /releases/{name}/{phase}:
     get:
       summary: Release info
-      operationId: shipit_api.api.get_phase
+      operationId: shipit_api.public.api.get_phase
       parameters:
       - name: name
         in: path
@@ -96,7 +96,7 @@ paths:
     get:
       summary: Get the list of product/branches which are currently disabled. Disabled
         products/branches will not have automated releases created
-      operationId: shipit_api.api.get_disabled_products
+      operationId: shipit_api.public.api.get_disabled_products
       responses:
         200:
           description: Disabled product/branches
