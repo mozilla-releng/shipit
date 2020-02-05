@@ -8,4 +8,9 @@ import os
 SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"]
 APP_CHANNEL = os.environ["APP_CHANNEL"]
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+# Use pessimistic disconnect handling as described at
+# https://docs.sqlalchemy.org/en/13/core/pooling.html#disconnect-handling-pessimistic
+# In some edge cases, when GCP performs maintenance on the database, the
+# connection goes away, but sqlalchemy doesn't detect it.
+SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
 READONLY_API = True
