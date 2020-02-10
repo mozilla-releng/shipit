@@ -46,16 +46,6 @@ module.exports = {
           disableable: false,
         },
         {
-          prettyName: 'Try Beta',
-          project: 'maple',
-          branch: 'try',
-          repo: 'https://hg.mozilla.org/try',
-          enableReleaseEta: false,
-          disableable: true,
-          productKey: 'fennec_beta',
-          versionFile: 'mobile/android/config/version-files/beta/version_display.txt',
-        },
-        {
           prettyName: 'Try Release',
           project: 'maple',
           branch: 'try',
