@@ -150,9 +150,9 @@ clickclick==1.2.2 \
     --hash=sha256:4a890aaa9c3990cfabd446294eb34e3dc89701101ac7b41c1bff85fc210f6d23 \
     --hash=sha256:ab8f229fb9906a86634bdfc6fabfc2b665f44804170720db4f6e1d98f8a58f3d \
     # via connexion
-connexion[swagger-ui]==2.5.1 \
-    --hash=sha256:3f6c2cb8a3f24af281ff561eebaaa926700b24f4c430f4d945c8ace0384c220c \
-    --hash=sha256:56854c65334281b303120a1097df09a79ffa44bdaecfc4400e7194821e17566d
+connexion[swagger-ui]==2.6.0 \
+    --hash=sha256:bf32bfae6af337cfa4a8489c21516adbe5c50e3f8dc0b7ed2394ce8dde218018 \
+    --hash=sha256:c568e579f84be808e387dcb8570bb00a536891be1318718a0dad3ba90f034191
 dockerflow==2019.10.0 \
     --hash=sha256:44baf5c78dbf28855924c8c21c41f83147a3bd854cc0c9e1930b3b46174df6c9 \
     --hash=sha256:6c5099cb4492c43b1daa5c1421b7b39d69836c3be8bdf6b5fb2fc95b1c60696b
