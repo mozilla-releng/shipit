@@ -159,8 +159,9 @@ dockerflow==2019.10.0 \
 flask-cors==3.0.8 \
     --hash=sha256:72170423eb4612f0847318afff8c247b38bd516b7737adfc10d1c2cdbb382d16 \
     --hash=sha256:f4d97201660e6bbcff2d89d082b5b6d31abee04b1b3003ee073a6fd25ad1d69a
-flask-login==0.4.1 \
-    --hash=sha256:c815c1ac7b3e35e2081685e389a665f2c74d7e077cb93cecabaea352da4752ec
+flask-login==0.5.0 \
+    --hash=sha256:6d33aef15b5bcead780acc339464aae8a6e28f13c90d8b1cf9de8b549d1c0b4b \
+    --hash=sha256:7451b5001e17837ba58945aead261ba425fdf7b4f0448777e597ddab39f4fba0
 flask-migrate==2.5.2 \
     --hash=sha256:6fb038be63d4c60727d5dfa5f581a6189af5b4e2925bc378697b4f0a40cfb4e1 \
     --hash=sha256:a96ff1875a49a40bd3e8ac04fce73fdb0870b9211e6168608cbafa4eb839d502
