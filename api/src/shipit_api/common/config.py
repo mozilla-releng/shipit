@@ -45,8 +45,8 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # day).
 # We could have used the in-tree version, but there can be race conditions,
 # e.g. version bumped, but still no builds available.
-FIREFOX_NIGHTLY = "74.0a1"
-FENNEC_NIGHTLY = "68.5a1"
+FIREFOX_NIGHTLY = "75.0a1"
+FENNEC_NIGHTLY = "68.6a1"
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
@@ -67,7 +67,7 @@ IOS_VERSION = "12.1"
 
 # Thunderbird configs
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
-LATEST_THUNDERBIRD_NIGHTLY_VERSION = "74.0a1"
+LATEST_THUNDERBIRD_NIGHTLY_VERSION = "75.0a1"
 # TODO: Need to update this every cycle
 THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr68"
 THUNDERBIRD_BETA_BRANCH = "releases/comm-beta"

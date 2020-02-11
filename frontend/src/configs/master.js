@@ -79,8 +79,7 @@ module.exports = {
           disableable: false,
         },
       ],
-      // TODO
-      enablePartials: false,
+      enablePartials: true,
     },
   ],
   XPI_PRODUCTS: [

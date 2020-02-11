@@ -115,8 +115,7 @@ module.exports = {
           disableable: false,
         },
       ],
-      // TODO
-      enablePartials: false,
+      enablePartials: true,
     },
     {
       product: 'fenix',
