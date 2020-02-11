@@ -7,7 +7,7 @@ tasks:
       $if: 'tasks_for == "github-pull-request"'
       then: 'PR'
       else:
-        $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/testing", "refs/heads/staging", "refs/heads/production", "refs/heads/dev"]'
+        $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/production", "refs/heads/dev"]'
         then: '${event.ref[11:]}'
         else: 'none'
   in:
@@ -22,17 +22,19 @@ tasks:
         # but the other environments do.
         $if: 'release_channel == "production"'
         then: 'relengstatic-prod-shipitfrontend-static-website'
-        else: 'relengstatic-${release_channel}-shipitfrontend-static-website'
+        else:
+          $if: 'release_channel == "dev"'
+          # TODO: switch to dev
+          then: 'relengstatic-staging-shipitfrontend-static-website'
+          else: ''
       shipit_api_url:
         $if: 'release_channel == "production"'
         then: 'https://shipit-api.mozilla-releng.net'
         else:
-          $if: 'release_channel == "staging"'
+          $if: 'release_channel == "dev"'
+          # TODO: switch to dev
           then: 'https://api.shipit.staging.mozilla-releng.net'
-          else:
-            $if: 'release_channel == "testing"'
-            then: 'https://api.shipit.testing.mozilla-releng.net'
-            else: ''
+          else: ''
       # Github events have this stuff in different places...
       repo_url:
         $if: 'tasks_for == "github-pull-request"'
@@ -52,14 +54,14 @@ tasks:
         $if: 'tasks_for == "github-pull-request"'
         then: '0'
         else:
-          $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev", "refs/heads/testing", "refs/heads/staging", "refs/heads/production"]'
+          $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev", "refs/heads/production"]'
           then: '1'
           else: '0'
       worker_level:
         $if: 'tasks_for == "github-pull-request"'
         then: 't'
         else:
-          $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev", "refs/heads/testing", "refs/heads/staging", "refs/heads/production"]'
+          $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev", "refs/heads/production"]'
           then: '3'
           else: 't'
     in:
@@ -89,7 +91,7 @@ tasks:
                   name: Ship-it API ${py[0]} tests (${release_channel})
                   description: Ship-it API ${py[0]} tests (${release_channel})
                   owner: ${owner_email}
-                  source: ${repo_url}
+                  source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
 
             - taskId: {$eval: as_slugid("ui tests")}
               created: {$fromNow: ''}
@@ -112,61 +114,63 @@ tasks:
                 name: Ship-it Frontend tests (${release_channel})
                 description: Ship-it Frontend tests (${release_channel})
                 owner: ${owner_email}
-                source: ${repo_url}
+                source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
 
-            - taskId: {$eval: as_slugid("docker-build-and-push")}
-              dependencies:
-                - '${as_slugid(python_version)}'
-                - '${as_slugid("check")}'
-              created: {$fromNow: ''}
-              deadline: {$fromNow: '24 hours'}
-              provisionerId: 'releng-${worker_level}'
-              workerType: linux
-              routes: []
-              payload:
-                maxRunTime: 3600
-                # we need to run really old docker version because taskcluster is using
-                # really old version in their setup
-                # image: docker:stable
-                image: 'docker:1.6.2'
-                env:
-                  # TODO: update these when we're to push to the real repos
-                  DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
-                  DOCKERHUB_USER: 'mozillarelengservices'
-                  DOCKER_REPO: 'mozilla/releng-shipit-admin'
-                  DOCKER_TAG: '${release_channel}'
-                  GIT_HEAD_REV: '${head_sha}'
-                  PUSH_DOCKER_IMAGE: '${push_docker_image}'
-                  REPO_URL: '${repo_url}'
-                  SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
-                command:
-                  - sh
-                  - -lxce
-                  - >-
-                    cd /tmp &&
-                    wget ${repo_url}/archive/${head_sha}.tar.gz &&
-                    tar zxf ${head_sha}.tar.gz &&
-                    find . &&
-                    mv shipit-${head_sha} /src &&
-                    cd /src/api &&
-                    ./docker.d/generate_version_json.sh &&
-                    ./docker.d/build_image.sh &&
-                    ./docker.d/push_image.sh
-                features:
-                  dind: true
-                  taskclusterProxy: true
-              scopes:
-                $if: 'push_docker_image == "0"'
-                then: []
-                else:
-                  - 'secrets:get:project/releng/shipit/deploy'
-              metadata:
-                name: Ship-it API docker build (${release_channel})
-                description: Ship-it API docker build (${release_channel})
-                owner: ${owner_email}
-                source: ${repo_url}
+            - $map: [['admin', 'Dockerfile', 'mozilla/releng-shipit-admin'], ['public', 'Dockerfile.public', 'mozilla/releng-shipit-public']]
+              each(env):
+                taskId: "${as_slugid(env[0])}"
+                dependencies:
+                  - '${as_slugid(python_version)}'
+                  - '${as_slugid("check")}'
+                created: {$fromNow: ''}
+                deadline: {$fromNow: '24 hours'}
+                provisionerId: 'releng-${worker_level}'
+                workerType: linux
+                routes: []
+                payload:
+                  maxRunTime: 3600
+                  # we need to run really old docker version because taskcluster is using
+                  # really old version in their setup
+                  # image: docker:stable
+                  image: 'docker:1.6.2'
+                  env:
+                    DOCKERFILE: '${env[1]}'
+                    DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
+                    DOCKERHUB_USER: 'mozillarelengservices'
+                    DOCKER_REPO: '${env[2]}'
+                    DOCKER_TAG: '${release_channel}'
+                    GIT_HEAD_REV: '${head_sha}'
+                    PUSH_DOCKER_IMAGE: '${push_docker_image}'
+                    REPO_URL: '${repo_url}'
+                    SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
+                  command:
+                    - sh
+                    - -lxce
+                    - >-
+                      cd /tmp &&
+                      wget ${repo_url}/archive/${head_sha}.tar.gz &&
+                      tar zxf ${head_sha}.tar.gz &&
+                      find . &&
+                      mv shipit-${head_sha} /src &&
+                      cd /src/api &&
+                      ./docker.d/generate_version_json.sh &&
+                      ./docker.d/build_image.sh &&
+                      ./docker.d/push_image.sh
+                  features:
+                    dind: true
+                    taskclusterProxy: true
+                scopes:
+                  $if: 'push_docker_image == "0"'
+                  then: []
+                  else:
+                    - 'secrets:get:project/releng/shipit/deploy'
+                metadata:
+                  name: Ship-it API (${env[0]}) docker build (${release_channel})
+                  description: Ship-it API (${env[0]}) docker build (${release_channel})
+                  owner: ${owner_email}
+                  source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
 
-            - $if: 'release_channel in ["testing", "staging", "production"]'
+            - $if: 'release_channel in ["dev", "production"]'
               then:
                 - taskId: {$eval: as_slugid("ui-deploy")}
                   created: {$fromNow: ''}
@@ -199,4 +203,4 @@ tasks:
                     name: Ship-it UI deploy (${release_channel})
                     description: Ship-it UI deploy (${release_channel})
                     owner: ${owner_email}
-                    source: ${repo_url}
+                    source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'

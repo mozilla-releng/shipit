@@ -9,11 +9,10 @@ COPY requirements/ /app/requirements/
 RUN pip install -r requirements/base.txt
 
 COPY . /app
-RUN pip install -e .
+RUN APP_TYPE="admin" pip install -e .
 
-ENV APP_NAME shipit_api
+ENV FLASK_APP shipit_api.admin.flask:app
 ENV APP_SETTINGS /app/settings.py
-ENV FLASK_APP shipit_api.flask:app
 ENV WEB_CONCURRENCY=3
 USER app
 

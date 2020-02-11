@@ -1,0 +1,21 @@
+FROM python:3.7
+
+RUN groupadd --gid 10001 app && \
+    useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
+
+WORKDIR /app
+
+COPY requirements/ /app/requirements/
+RUN pip install -r requirements/public.txt
+
+COPY docker.d/init.sh /app/docker.d/
+COPY settings_public.py /app/settings_public.py
+COPY . ./src
+RUN pip install ./src && rm -rf ./src
+
+ENV FLASK_APP shipit_api.public.flask:app
+ENV APP_SETTINGS /app/settings_public.py
+ENV WEB_CONCURRENCY=3
+USER app
+
+CMD ["/app/docker.d/init.sh"]

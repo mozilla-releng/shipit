@@ -3,6 +3,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import shipit_api
+from shipit_api.public import create_app
 
-app = shipit_api.create_public_app()
+app = create_app()
