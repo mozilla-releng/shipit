@@ -12,7 +12,7 @@ tasks:
         else: 'none'
   in:
     $let:
-      python_version: 'py37'
+      python_version: 'py38'
       # Dependabot, and possibly other things creating pull requests
       # can set `user` to something that can't be used in an e-mail
       # address, so we simply make this static to workaround.
@@ -68,7 +68,7 @@ tasks:
       $flattenDeep:
         - $if: '(tasks_for == "github-pull-request" && event["action"] in ["edited", "opened", "reopened", "synchronize"]) || tasks_for == "github-push"'
           then:
-            - $map: [['py37', 'python:3.7'], ['check', 'python:3.7']]
+            - $map: [['py38', 'python:3.8'], ['check', 'python:3.8']]
               each(py):
                 taskId: "${as_slugid(py[0])}"
                 created: {$fromNow: ''}
