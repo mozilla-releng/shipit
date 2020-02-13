@@ -4,7 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import sys
 
-import dpath
+import dpath.util
 import oyaml
 
 # Sections to be copied from the original document, separated by "." (period).
