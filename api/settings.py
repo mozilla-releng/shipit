@@ -83,8 +83,8 @@ GROUPS = {
     "fenix-signoff": ["rkothari@mozilla.com", "ehenry@mozilla.com", "jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
     # We use 2 separate groups for privileged and system addon type
-    "xpi_privileged_signoff": ["rdalal@mozilla.com"],
-    "xpi_system_signoff": ["rdalal@mozilla.com"],
+    "xpi_privileged_signoff": ["rdalal@mozilla.com", "mcooper@mozilla.com"],
+    "xpi_system_signoff": ["rdalal@mozilla.com", "mcooper@mozilla.com"],
 }
 
 AUTH0_AUTH_SCOPES = dict()
