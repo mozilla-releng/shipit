@@ -94,9 +94,7 @@ def schedule_phase(name, phase):
     phase = do_schedule_phase(session, phase)
     url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{phase.task_id}")
     logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
-    notify_via_matrix(
-        f"Phase {phase.name} was just scheduled for release {phase.release.name} - {url}",
-    )
+    notify_via_matrix(f"Phase {phase.name} was just scheduled for release {phase.release.name} - {url}",)
 
     return phase.json
 
