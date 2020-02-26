@@ -10,7 +10,7 @@ from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import auth
 from cli_common.taskcluster import get_root_url
-from shipit_api.admin.api import do_schedule_phase
+from shipit_api.admin.api import do_schedule_phase, notify_via_matrix
 from shipit_api.admin.github import get_xpi_type
 from shipit_api.admin.models import XPI, XPIPhase, XPIRelease, XPISignoff
 from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases
@@ -49,6 +49,7 @@ def add_release(body):
         abort(400, str(e))
 
     logger.info("New release of %s", release.name)
+    notify_via_matrix(f"New release of {release.name}")
     return release.json, 201
 
 
@@ -93,6 +94,10 @@ def schedule_phase(name, phase):
     phase = do_schedule_phase(session, phase)
     url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{phase.task_id}")
     logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
+    notify_via_matrix(
+        f"Phase {phase.name} was just scheduled for release {phase.release.name} - {url}",
+    )
+
     return phase.json
 
 
@@ -110,6 +115,7 @@ def abandon_release_xpi(name):
     release.status = "aborted"
     session.commit()
     logger.info("Canceled release %s", release.name)
+    notify_via_matrix(f"Release {release.name} was just canceled.")
     return release.json
 
 
@@ -155,6 +161,7 @@ def phase_signoff(name, phase, body):
 
     release = phase_obj.release
     logger.info("Phase %s of %s signed off by %s", phase, release.name, who)
+    notify_via_matrix(f"{phase} of {release.name} signed off by {who}.")
     return dict(signoffs=signoffs)
 
 
@@ -170,4 +177,5 @@ def update_release_status(name, body):
 
     session.commit()
     logger.info("Status of %s changed to %s", release.name, status)
+    notify_via_matrix(f"Release {release.name} status changed to `{status}`.")
     return release.json

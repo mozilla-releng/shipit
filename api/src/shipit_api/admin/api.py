@@ -34,21 +34,14 @@ from shipit_api.public.api import get_disabled_products, list_releases
 logger = logging.getLogger(__name__)
 
 
-def notify_via_irc(product, message):
-    owners_section = current_app.config.get("IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT")
-    channels_section = current_app.config.get("IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT")
+def notify_via_matrix(body):
+    room_id = current_app.config.get("MATRIX_ROOM_ID")
 
-    if not (owners_section and channels_section):
-        logger.info('Product "%s" IRC notifications are not enabled', product)
+    if not room_id:
+        logger.info("Set `MATRIX_ROOM_ID` to enable Matrix notifications")
         return
 
-    owners = owners_section.get(product, owners_section.get("default"))
-    channels = channels_section.get(product, channels_section.get("default"))
-
-    if owners and channels:
-        owners = ": ".join(owners)
-        for channel in channels:
-            current_app.notify.irc({"channel": channel, "message": f"{owners}: {message}"})
+    current_app.notify.matrix({"roomId": room_id, "body": f"releaseduty: {body}"})
 
 
 def add_release(body):
@@ -114,7 +107,7 @@ def add_release(body):
         abort(400, str(e))
 
     logger.info("New release of %s", release.name)
-    notify_via_irc(product, f"New release of {release.name}")
+    notify_via_matrix(f"New release of {release.name}")
 
     return release.json, 201
 
@@ -168,10 +161,7 @@ def schedule_phase(name, phase):
     phase = do_schedule_phase(session, phase)
     url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{phase.task_id}")
     logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
-    notify_via_irc(
-        phase.release.product,
-        f"Phase {phase.name} was just scheduled for release {phase.release.product} {phase.release.version} build{phase.release.build_number} - {url}",
-    )
+    notify_via_matrix(f"Phase {phase.name} was just scheduled for release {phase.release.name} - {url}")
 
     return phase.json
 
@@ -216,7 +206,7 @@ def abandon_release(name):
     release.status = "aborted"
     session.commit()
     logger.info("Canceled release %s", release.name)
-    notify_via_irc(release.product, f"Release {release.product} {release.version} build{release.build_number} was just canceled.")
+    notify_via_matrix(f"Release {release.name} was just canceled.")
     return release.json
 
 
@@ -241,7 +231,7 @@ def update_release_status(name, body):
     session.commit()
 
     logger.info("Status of %s changed to %s", release.name, status)
-    notify_via_irc(release.product, f"Release {release.name} status changed to `{status}`.")
+    notify_via_matrix(f"Release {release.name} status changed to `{status}`.")
 
     return release.json
 
@@ -279,7 +269,7 @@ def phase_signoff(name, phase, body):
 
     release = phase_obj.release
     logger.info("Phase %s of %s signed off by %s", phase, release.name, who)
-    notify_via_irc(release.product, f"{phase} of {release.name} signed off by {who}.")
+    notify_via_matrix(f"{phase} of {release.name} signed off by {who}.")
 
     return dict(signoffs=signoffs)
 

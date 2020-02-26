@@ -144,3 +144,5 @@ for xpi_type in ["privileged", "system"]:
 AUTH0_AUTH_SCOPES = {f"{SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
 AUTH0_AUTH = True
 TASKCLUSTER_AUTH = True
+
+MATRIX_ROOM_ID = os.environ.get("MATRIX_ROOM_ID")
