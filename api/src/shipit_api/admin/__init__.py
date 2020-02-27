@@ -6,6 +6,8 @@
 import os
 
 import backend_common
+import shipit_api.admin.models  # noqa
+import shipit_api.common.models  # noqa
 from cli_common.taskcluster import get_service
 from shipit_api.admin.worker import cmd
 from shipit_api.common.config import APP_NAME
