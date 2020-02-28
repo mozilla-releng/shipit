@@ -8,10 +8,10 @@ WORKDIR /app
 COPY requirements/ /app/requirements/
 RUN pip install -r requirements/public.txt
 
-COPY version.json /app/version.json
 COPY docker.d/init.sh /app/docker.d/
 COPY settings_public.py /app/settings_public.py
 COPY . ./src
+RUN cp -avf /src/version.json /app/version.json || :
 RUN pip install ./src && rm -rf ./src
 
 ENV FLASK_APP shipit_api.public.flask:app
