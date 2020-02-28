@@ -6,14 +6,14 @@
 import asyncio
 import json
 import logging
-import os
 
 import click
 import flask
+from decouple import Config, config
 
 import cli_common.pulse
-import cli_common.taskcluster
 import shipit_api.common.config
+from cli_common.taskcluster import get_secrets
 from shipit_api.admin.product_details import rebuild
 
 logger = logging.getLogger(__name__)
@@ -24,21 +24,23 @@ def rebuild_product_details(default_git_repo_url, default_folder_in_repo, defaul
     """
     logger.debug("Rebuilding product details")
 
-    taskcluster_secret = os.environ["TASKCLUSTER_SECRET"]
-    taskcluster_client_id = os.environ["TASKCLUSTER_CLIENT_ID"]
-    taskcluster_access_token = os.environ["TASKCLUSTER_ACCESS_TOKEN"]
+    taskcluster_secret = config("TASKCLUSTER_SECRET")
+    taskcluster_client_id = config("TASKCLUSTER_CLIENT_ID")
+    taskcluster_access_token = config("TASKCLUSTER_ACCESS_TOKEN")
 
     logger.debug(f"Fetching secrets from {taskcluster_secret}")
-    secrets = cli_common.taskcluster.get_secrets(
-        taskcluster_secret,
-        shipit_api.common.config.PROJECT_NAME,
-        taskcluster_client_id=taskcluster_client_id,
-        taskcluster_access_token=taskcluster_access_token,
+    secrets = Config(
+        repository=get_secrets(
+            taskcluster_secret,
+            shipit_api.common.config.PROJECT_NAME,
+            taskcluster_client_id=taskcluster_client_id,
+            taskcluster_access_token=taskcluster_access_token,
+        )
     )
 
-    git_repo_url = secrets.get("PRODUCT_DETAILS_GIT_REPO_URL", default_git_repo_url)
-    default_channel = default_channel or secrets.get("APP_CHANNEL", os.environ.get("APP_CHANNEL", "master"))
-    default_breakpoint_version = secrets.get("BREAKPOINT_VERSION", default_breakpoint_version)
+    git_repo_url = secrets("PRODUCT_DETAILS_GIT_REPO_URL", default=default_git_repo_url)
+    default_channel = default_channel or secrets("APP_CHANNEL", default="master")
+    default_breakpoint_version = secrets("BREAKPOINT_VERSION", default=default_breakpoint_version)
 
     async def rebuild_product_details_async(channel, body, envelope, properties):
         await channel.basic_client_ack(delivery_tag=envelope.delivery_tag)

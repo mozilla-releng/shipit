@@ -4,50 +4,60 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import base64
-import os
+import functools
+
+from decouple import Config, config
 
 from backend_common.auth import create_auth0_secrets_file
 from cli_common.taskcluster import get_secrets
 from shipit_api.common.config import PROJECT_NAME, SCOPE_PREFIX, SUPPORTED_FLAVORS
 
-# -- LOAD SECRETS -------------------------------------------------------------
+# TODO: 1) rename "development" to "local" 2) remove "staging" when fully migrated
+supported_channels = ["dev", "development", "staging", "production"]
+APP_CHANNEL = config("APP_CHANNEL", default=None)
 
-required = [
-    "APP_CHANNEL",
-    "AUTH_DOMAIN",
-    "AUTH_CLIENT_ID",
-    "AUTH_CLIENT_SECRET",
-    "DATABASE_URL",
-    "SECRET_KEY_BASE64",
-]
-optional = ["DISABLE_NOTIFY", "GITHUB_TOKEN", "XPI_MANIFEST_OWNER", "XPI_MANIFEST_REPO", "GITHUB_SKIP_PRIVATE_REPOS"]
+# APP_CHANNEL is not defined as environment variable in GCP
+if not APP_CHANNEL:
+    # TODO: This section will be removed after we switch to SOPS secrets
+    # Until bug 1618454 is fixed, fall back to the Taskcluster secrets if the
+    # corresponding environment variable is not defined
+    taskcluster_secret = config("TASKCLUSTER_SECRET")
+    taskcluster_client_id = config("TASKCLUSTER_CLIENT_ID")
+    taskcluster_access_token = config("TASKCLUSTER_ACCESS_TOKEN")
+    secrets = get_secrets(taskcluster_secret, PROJECT_NAME, taskcluster_client_id=taskcluster_client_id, taskcluster_access_token=taskcluster_access_token)
+    config = Config(repository=secrets)
+    APP_CHANNEL = config("APP_CHANNEL")
 
-# In local development, these come directly from the environment.
-if os.environ.get("APP_CHANNEL") == "development":
-    secrets = {k: os.environ[k] for k in required}
-    secrets.update({k: os.environ[k] for k in optional if k in os.environ})
-# For deployed environments, they come from Taskcluster.
-else:
-    secrets = get_secrets(
-        os.environ.get("TASKCLUSTER_SECRET"),
-        PROJECT_NAME,
-        required=required,
-        existing={x: os.environ.get(x) for x in required if x in os.environ},
-        taskcluster_client_id=os.environ.get("TASKCLUSTER_CLIENT_ID"),
-        taskcluster_access_token=os.environ.get("TASKCLUSTER_ACCESS_TOKEN"),
-    )
+if APP_CHANNEL not in supported_channels:
+    raise ValueError(f"APP_CHANNEL should be one of {supported_channels}, `{APP_CHANNEL}` given")
 
-locals().update(secrets)
+# required
+AUTH_DOMAIN = config("AUTH_DOMAIN")
+AUTH_CLIENT_ID = config("AUTH_CLIENT_ID")
+AUTH_CLIENT_SECRET = config("AUTH_CLIENT_SECRET")
+SQLALCHEMY_DATABASE_URI = config("DATABASE_URL")
+SECRET_KEY = config("SECRET_KEY_BASE64", cast=base64.b64decode)
 
-SECRET_KEY = base64.b64decode(secrets["SECRET_KEY_BASE64"])
+# optional
+optional = functools.partial(config, default=None)
 
-# -- PULSE -----------------------------------------------------------------
-
-if "PULSE_PASSWORD" in os.environ:
-    PULSE_PASSWORD = os.environ["PULSE_PASSWORD"]
-
-if "PULSE_USER" in os.environ:
-    PULSE_USER = os.environ["PULSE_USER"]
+DISABLE_NOTIFY = config("DISABLE_NOTIFY", default=False, cast=bool)
+GITHUB_TOKEN = optional("GITHUB_TOKEN")
+XPI_MANIFEST_OWNER = optional("XPI_MANIFEST_OWNER")
+XPI_MANIFEST_REPO = optional("XPI_MANIFEST_REPO")
+GITHUB_SKIP_PRIVATE_REPOS = config("GITHUB_SKIP_PRIVATE_REPOS", default=False, cast=bool)
+PULSE_USER = optional("PULSE_USER")
+PULSE_PASSWORD = optional("PULSE_PASSWORD")
+PULSE_USE_SSL = config("PULSE_USE_SSL", default=True, cast=bool)
+PULSE_CONNECTION_TIMEOUT = config("PULSE_CONNECTION_TIMEOUT", default=5, cast=int)
+PULSE_HOST = config("PULSE_HOST", default="pulse.mozilla.org")
+PULSE_PORT = config("PULSE_PORT", default=5671, cast=int)
+PULSE_VIRTUAL_HOST = config("PULSE_VIRTUAL_HOST", default="/")
+SENTRY_DSN = optional("SENTRY_DSN")
+CORS_ORIGINS = optional("CORS_ORIGINS")
+IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT = optional("IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT")
+IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT = optional("IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT")
+PRODUCT_DETAILS_GIT_REPO_URL = optional("PRODUCT_DETAILS_GIT_REPO_URL")
 
 # -- DATABASE -----------------------------------------------------------------
 
@@ -57,12 +67,11 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 # In some edge cases, when GCP performs maintenance on the database, the
 # connection goes away, but sqlalchemy doesn't detect it.
 SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
-SQLALCHEMY_DATABASE_URI = secrets["DATABASE_URL"]
 
 # -- AUTH --------------------------------------------------------------------
 
 OIDC_USER_INFO_ENABLED = True
-OIDC_CLIENT_SECRETS = create_auth0_secrets_file(secrets["AUTH_CLIENT_ID"], secrets["AUTH_CLIENT_SECRET"], secrets["AUTH_DOMAIN"])
+OIDC_CLIENT_SECRETS = create_auth0_secrets_file(AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, AUTH_DOMAIN)
 
 # XXX: scopes/groups are hardcoded for now
 GROUPS = {

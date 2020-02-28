@@ -9,7 +9,8 @@ cors = flask_cors.CORS()
 
 
 def init_app(app):
-    origins = app.config.get("CORS_ORIGINS", "*").split(" ")
+    origins = app.config.get("CORS_ORIGINS") or "*"
+    origins = origins.split(" ")
     resources = app.config.get("CORS_RESOURCES")
     if resources is not None:
         cors.init_app(app, resources=resources)
