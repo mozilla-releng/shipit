@@ -462,6 +462,7 @@ SUPPORTED_FLAVORS = {
         {"name": "push_thunderbird", "in_previous_graph_ids": True},
         {"name": "ship_thunderbird", "in_previous_graph_ids": True},
     ],
+    "fennec_beta": [{"name": "promote_fennec_beta", "in_previous_graph_ids": True}, {"name": "ship_fennec_beta", "in_previous_graph_ids": True}],
     "fennec_release": [{"name": "promote_fennec_release", "in_previous_graph_ids": True}, {"name": "ship_fennec_release", "in_previous_graph_ids": True}],
     "fennec_release_rc": [
         {"name": "promote_fennec_release", "in_previous_graph_ids": True},
