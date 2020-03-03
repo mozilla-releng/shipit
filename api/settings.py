@@ -4,9 +4,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import base64
-import functools
 
-from decouple import Config, config
+from decouple import Config, config as dc_config
 
 from backend_common.auth import create_auth0_secrets_file
 from cli_common.taskcluster import get_secrets
@@ -14,10 +13,12 @@ from shipit_api.common.config import PROJECT_NAME, SCOPE_PREFIX, SUPPORTED_FLAVO
 
 # TODO: 1) rename "development" to "local" 2) remove "staging" when fully migrated
 supported_channels = ["dev", "development", "staging", "production"]
-APP_CHANNEL = config("APP_CHANNEL", default=None)
+APP_CHANNEL = dc_config("APP_CHANNEL", default=None)
 
-# APP_CHANNEL is not defined as environment variable in GCP
-if not APP_CHANNEL:
+if APP_CHANNEL:
+    config = dc_config
+else:
+    # APP_CHANNEL is not defined as environment variable in GCP
     # TODO: This section will be removed after we switch to SOPS secrets
     # Until bug 1618454 is fixed, fall back to the Taskcluster secrets if the
     # corresponding environment variable is not defined
@@ -39,25 +40,24 @@ SQLALCHEMY_DATABASE_URI = config("DATABASE_URL")
 SECRET_KEY = config("SECRET_KEY_BASE64", cast=base64.b64decode)
 
 # optional
-optional = functools.partial(config, default=None)
 
 DISABLE_NOTIFY = config("DISABLE_NOTIFY", default=False, cast=bool)
-GITHUB_TOKEN = optional("GITHUB_TOKEN")
-XPI_MANIFEST_OWNER = optional("XPI_MANIFEST_OWNER")
-XPI_MANIFEST_REPO = optional("XPI_MANIFEST_REPO")
+GITHUB_TOKEN = config("GITHUB_TOKEN", default=None)
+XPI_MANIFEST_OWNER = config("XPI_MANIFEST_OWNER", default=None)
+XPI_MANIFEST_REPO = config("XPI_MANIFEST_REPO", default=None)
 GITHUB_SKIP_PRIVATE_REPOS = config("GITHUB_SKIP_PRIVATE_REPOS", default=False, cast=bool)
-PULSE_USER = optional("PULSE_USER")
-PULSE_PASSWORD = optional("PULSE_PASSWORD")
+PULSE_USER = config("PULSE_USER", default=None)
+PULSE_PASSWORD = config("PULSE_PASSWORD", default=None)
 PULSE_USE_SSL = config("PULSE_USE_SSL", default=True, cast=bool)
 PULSE_CONNECTION_TIMEOUT = config("PULSE_CONNECTION_TIMEOUT", default=5, cast=int)
 PULSE_HOST = config("PULSE_HOST", default="pulse.mozilla.org")
 PULSE_PORT = config("PULSE_PORT", default=5671, cast=int)
 PULSE_VIRTUAL_HOST = config("PULSE_VIRTUAL_HOST", default="/")
-SENTRY_DSN = optional("SENTRY_DSN")
-CORS_ORIGINS = optional("CORS_ORIGINS")
-IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT = optional("IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT")
-IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT = optional("IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT")
-PRODUCT_DETAILS_GIT_REPO_URL = optional("PRODUCT_DETAILS_GIT_REPO_URL")
+SENTRY_DSN = config("SENTRY_DSN", default=None)
+CORS_ORIGINS = config("CORS_ORIGINS", default=None)
+IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT = config("IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT", default=None)
+IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT = config("IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT", default=None)
+PRODUCT_DETAILS_GIT_REPO_URL = config("PRODUCT_DETAILS_GIT_REPO_URL", default=None)
 
 # -- DATABASE -----------------------------------------------------------------
 
