@@ -5,7 +5,8 @@
 
 import base64
 
-from decouple import Config, config as dc_config
+from decouple import Config
+from decouple import config as dc_config
 
 from backend_common.auth import create_auth0_secrets_file
 from cli_common.taskcluster import get_secrets
