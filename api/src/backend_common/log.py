@@ -12,8 +12,6 @@ from dockerflow.logging import JsonLogFormatter
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-SENTRY_CHANNELS = ["testing", "staging", "production"]
-
 
 def init_app(app):
     """
@@ -43,7 +41,4 @@ def configure_logging():
 
 
 def configure_sentry(environment, sentry_dsn):
-    if environment not in SENTRY_CHANNELS:
-        raise ValueError("Initializing logging with environment `{}`. It should be one of: {}".format(environment, ", ".join(SENTRY_CHANNELS)))
-
     sentry_sdk.init(dsn=sentry_dsn, environment=environment, integrations=[LoggingIntegration(), FlaskIntegration()])

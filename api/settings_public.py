@@ -3,10 +3,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import os
+from decouple import config
 
-SQLALCHEMY_DATABASE_URI = os.environ["DATABASE_URL"]
-APP_CHANNEL = os.environ["APP_CHANNEL"]
+SQLALCHEMY_DATABASE_URI = config("DATABASE_URL")
+APP_CHANNEL = config("APP_CHANNEL")
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 # Use pessimistic disconnect handling as described at
 # https://docs.sqlalchemy.org/en/13/core/pooling.html#disconnect-handling-pessimistic
