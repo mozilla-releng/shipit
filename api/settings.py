@@ -23,9 +23,9 @@ else:
     # TODO: This section will be removed after we switch to SOPS secrets
     # Until bug 1618454 is fixed, fall back to the Taskcluster secrets if the
     # corresponding environment variable is not defined
-    taskcluster_secret = config("TASKCLUSTER_SECRET")
-    taskcluster_client_id = config("TASKCLUSTER_CLIENT_ID")
-    taskcluster_access_token = config("TASKCLUSTER_ACCESS_TOKEN")
+    taskcluster_secret = dc_config("TASKCLUSTER_SECRET")
+    taskcluster_client_id = dc_config("TASKCLUSTER_CLIENT_ID")
+    taskcluster_access_token = dc_config("TASKCLUSTER_ACCESS_TOKEN")
     secrets = get_secrets(taskcluster_secret, PROJECT_NAME, taskcluster_client_id=taskcluster_client_id, taskcluster_access_token=taskcluster_access_token)
     config = Config(repository=secrets)
     APP_CHANNEL = config("APP_CHANNEL")
