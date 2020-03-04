@@ -4,7 +4,6 @@ include LICENSE
 include README.rst
 include CODE_OF_CONDUCT.md
 include pyproject.toml
-include settings.py
 include setup.py
 include tox.ini
 include version.txt
