@@ -82,6 +82,9 @@ def extract_our_flavors(avail_flavors, product, version, partial_updates, produc
     if is_rc(product_key, version, partial_updates):
         product_key = f"{product_key}_rc"
 
+    if product_key not in SUPPORTED_FLAVORS:
+        raise UnsupportedFlavor(description=f"`{product_key}` is not supported")
+
     # sanity check
     all_flavors = set([fl["name"] for fl in SUPPORTED_FLAVORS[product_key]])
     if not set(avail_flavors).issuperset(all_flavors):
