@@ -12,7 +12,6 @@ COPY . /app
 RUN APP_TYPE="admin" pip install -e .
 
 ENV FLASK_APP shipit_api.admin.flask:app
-ENV APP_SETTINGS /app/settings.py
 ENV WEB_CONCURRENCY=3
 USER app
 

@@ -30,7 +30,7 @@ def create_app(project_name, app_name, extensions=[], config=None, redirect_root
         app.config.from_envvar("APP_SETTINGS")
 
     if config:
-        app.config.update(**config)
+        app.config.from_pyfile(config)
 
     for extension_name in EXTENSIONS:
         if app.config.get("TESTING") and extension_name in ["security", "cors"]:
