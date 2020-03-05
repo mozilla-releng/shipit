@@ -68,6 +68,8 @@ class XPIRelease(db.Model, ReleaseBase):
     completed = sa.Column(sa.DateTime)
 
     phase_class = XPIPhase
+    product = "xpi"  # Used in notifications
+    product_details_enabled = False
 
     def __init__(self, revision, xpi, build_number, status, xpi_type, project, repo_url=""):
         self.name = f"{xpi.name}-{xpi.version}-build{build_number}"
@@ -80,7 +82,6 @@ class XPIRelease(db.Model, ReleaseBase):
         self.xpi_type = xpi_type
         self.project = project
         self.repo_url = repo_url
-        self.product = xpi.name
 
     def phase_signoffs(self, phase):
         return [

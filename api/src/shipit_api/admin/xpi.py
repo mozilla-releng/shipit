@@ -8,7 +8,6 @@ from sqlalchemy.exc import IntegrityError
 from taskcluster.exceptions import TaskclusterRestFailure
 from werkzeug.exceptions import BadRequest
 
-from backend_common.auth import auth
 from cli_common.taskcluster import get_root_url
 from shipit_api.admin.api import do_schedule_phase
 from shipit_api.admin.github import get_xpi_type
@@ -156,18 +155,3 @@ def phase_signoff(name, phase, body):
     release = phase_obj.release
     logger.info("Phase %s of %s signed off by %s", phase, release.name, who)
     return dict(signoffs=signoffs)
-
-
-@auth.require_permissions([SCOPE_PREFIX + "/update_release_status"])
-def update_release_status(name, body):
-    session = current_app.db.session
-    release = session.query(XPIRelease).filter(XPIRelease.name == name).first_or_404()
-
-    status = body["status"]
-    release.status = status
-    if status == "shipped":
-        release.completed = datetime.datetime.utcnow()
-
-    session.commit()
-    logger.info("Status of %s changed to %s", release.name, status)
-    return release.json
