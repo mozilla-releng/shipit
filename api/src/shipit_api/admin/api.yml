@@ -524,30 +524,7 @@ paths:
             'application/json':
               schema:
                 $ref: '#/components/schemas/XPIRelease'
-    patch:
-      summary: Update release status
-      operationId: shipit_api.admin.xpi.update_release_status
-      parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      requestBody:
-        description: Release status object
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ReleaseStatus'
-        required: true
-      responses:
-        200:
-          description: Release updated
-          content:
-            'application/json':
-              schema:
-                $ref: '#/components/schemas/XPIRelease'
+
   /xpi/releases/{name}/{phase}:
     get:
       summary: Phase info

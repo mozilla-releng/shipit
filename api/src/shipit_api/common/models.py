@@ -97,6 +97,8 @@ class Phase(db.Model, PhaseBase):
 
 
 class ReleaseBase:
+    product_details_enabled = True
+
     @property
     def allow_phase_skipping(self):
         # Phases can be skipped for betas and try only. The API doesn't enforce this.

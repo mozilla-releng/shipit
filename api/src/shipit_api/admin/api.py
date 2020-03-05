@@ -15,6 +15,7 @@ from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
 from cli_common.taskcluster import get_root_url, get_service
+from shipit_api.admin.models import XPIRelease
 from shipit_api.admin.release import Product, bump_version, get_locales, is_eme_free_enabled, is_partner_enabled, product_to_appname
 from shipit_api.admin.tasks import (
     ArtifactNotFound,
@@ -220,19 +221,29 @@ def abandon_release(name):
     return release.json
 
 
-@auth.require_permissions([SCOPE_PREFIX + "/rebuild_product_details"])
-def rebuild_product_details(body):
+def _rebuild_product_details(body):
     pulse_user = current_app.config["PULSE_USER"]
     exchange = f"exchange/{pulse_user}/{PROJECT_NAME}"
     logger.info("Sending pulse message `%s` to queue `%s` for route `%s`.", body, exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS)
     current_app.pulse.publish(exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, body)
+
+
+@auth.require_permissions([SCOPE_PREFIX + "/rebuild_product_details"])
+def rebuild_product_details(body):
+    _rebuild_product_details(body)
     return {"status": "ok"}
 
 
 @auth.require_permissions([SCOPE_PREFIX + "/update_release_status"])
 def update_release_status(name, body):
     session = current_app.db.session
-    release = session.query(Release).filter(Release.name == name).first_or_404()
+    # Search in multiple release tables for possible match
+    releases = list(filter(None, [session.query(product_model).filter(product_model.name == name).first() for product_model in (Release, XPIRelease)]))
+
+    if not releases:
+        abort(404, f"Release {name} not found")
+
+    release = releases[0]
 
     status = body["status"]
     release.status = status
@@ -241,6 +252,10 @@ def update_release_status(name, body):
     session.commit()
 
     logger.info("Status of %s changed to %s", release.name, status)
+    if status == "shipped" and release.product_details_enabled:
+        logger.info("Regenerating product details after marking %s as shipped", release.name)
+        _rebuild_product_details({})
+
     notify_via_irc(release.product, f"Release {release.name} status changed to `{status}`.")
 
     return release.json
