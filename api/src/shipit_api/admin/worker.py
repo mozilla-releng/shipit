@@ -9,77 +9,45 @@ import logging
 
 import click
 import flask
-from decouple import Config, config
 
-import cli_common.pulse
-import shipit_api.common.config
-from cli_common.taskcluster import get_secrets
+from cli_common.pulse import create_consumer, run_consumer
 from shipit_api.admin.product_details import rebuild
+from shipit_api.common.config import BREAKPOINT_VERSION, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS
 
 logger = logging.getLogger(__name__)
 
 
-def rebuild_product_details(default_git_repo_url, default_folder_in_repo, default_channel, default_breakpoint_version, default_clean_working_copy):
+def rebuild_product_details(git_repo_url, folder_in_repo, app_channel, breakpoint_version):
     """Rebuild product details.
     """
     logger.debug("Rebuilding product details")
 
-    taskcluster_secret = config("TASKCLUSTER_SECRET")
-    taskcluster_client_id = config("TASKCLUSTER_CLIENT_ID")
-    taskcluster_access_token = config("TASKCLUSTER_ACCESS_TOKEN")
-
-    logger.debug(f"Fetching secrets from {taskcluster_secret}")
-    secrets = Config(
-        repository=get_secrets(
-            taskcluster_secret,
-            shipit_api.common.config.PROJECT_NAME,
-            taskcluster_client_id=taskcluster_client_id,
-            taskcluster_access_token=taskcluster_access_token,
-        )
-    )
-
-    git_repo_url = secrets("PRODUCT_DETAILS_GIT_REPO_URL", default=default_git_repo_url)
-    default_channel = default_channel or secrets("APP_CHANNEL", default="master")
-    default_breakpoint_version = secrets("BREAKPOINT_VERSION", default=default_breakpoint_version)
-
     async def rebuild_product_details_async(channel, body, envelope, properties):
         await channel.basic_client_ack(delivery_tag=envelope.delivery_tag)
         logger.info("Marked pulse message as acknowledged.")
-
-        body = json.loads(body.decode("utf-8"))
-
-        logger.debug("Get rebuild parameters from request payload: %s", body)
-        breakpoint_version = body.get("breakpoint_version", default_breakpoint_version)
-        clean_working_copy = body.get("clean_working_copy", default_clean_working_copy)
-        channel_ = body.get("channel", default_channel)
-        folder_in_repo = body.get("folder_in_repo", default_folder_in_repo)
-
-        if None in (channel_, git_repo_url, folder_in_repo):
-            raise click.ClickException("One of the rebuild product details parameters is not set correctly.")
-
-        await rebuild(flask.current_app.db.session, channel_, git_repo_url, folder_in_repo, breakpoint_version, clean_working_copy)
+        await rebuild(flask.current_app.db.session, app_channel, git_repo_url, folder_in_repo, breakpoint_version)
         logger.info("Product details rebuilt")
 
     return rebuild_product_details_async
 
 
 @click.command()
-@click.option("--git-repo-url", type=str, required=False, default=None)
-@click.option("--folder-in-repo", type=str, required=True, default="public/")
-@click.option("--channel", type=click.Choice(["master", "testing", "staging", "production"]), default=None)
-@click.option("--breakpoint-version", default=shipit_api.common.config.BREAKPOINT_VERSION, type=int)
-@click.option("--clean-working-copy", is_flag=True, default=True)
 @flask.cli.with_appcontext
-def cmd(git_repo_url, folder_in_repo, channel, breakpoint_version, clean_working_copy):
-    pulse_user = flask.current_app.config["PULSE_USER"]
-    pulse_pass = flask.current_app.config["PULSE_PASSWORD"]
-    exchange = f"exchange/{pulse_user}/{shipit_api.common.config.PROJECT_NAME}"
-    rebuild_product_details_consumer = cli_common.pulse.create_consumer(
+def cmd():
+    app_config = flask.current_app.config
+    app_channel = app_config["APP_CHANNEL"]
+    pulse_user = app_config["PULSE_USER"]
+    pulse_pass = app_config["PULSE_PASSWORD"]
+    git_repo_url = app_config["PRODUCT_DETAILS_GIT_REPO_URL"]
+    folder_in_repo = "public/"
+    exchange = f"exchange/{pulse_user}/{PROJECT_NAME}"
+
+    rebuild_product_details_consumer = create_consumer(
         pulse_user,
         pulse_pass,
         exchange,
-        shipit_api.common.config.PULSE_ROUTE_REBUILD_PRODUCT_DETAILS,
-        rebuild_product_details(git_repo_url, folder_in_repo, channel, breakpoint_version, clean_working_copy),
+        PULSE_ROUTE_REBUILD_PRODUCT_DETAILS,
+        rebuild_product_details(git_repo_url, folder_in_repo, app_channel, BREAKPOINT_VERSION),
     )
-    logger.info("Listening for new messages on %s %s", exchange, shipit_api.common.config.PULSE_ROUTE_REBUILD_PRODUCT_DETAILS)
-    cli_common.pulse.run_consumer(asyncio.gather(*[rebuild_product_details_consumer]))
+    logger.info("Listening for new messages on %s %s", exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS)
+    run_consumer(asyncio.gather(*[rebuild_product_details_consumer]))
