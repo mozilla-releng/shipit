@@ -17,7 +17,6 @@ services:
       - AUTH_CLIENT_SECRET=todo
       - AUTH_DOMAIN=auth.mozilla.auth0.com
       - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
-      - DISABLE_NOTIFY=1
       - TASKCLUSTER_CLIENT_ID
       - TASKCLUSTER_ACCESS_TOKEN
       - TASKCLUSTER_SECRET
@@ -27,7 +26,6 @@ services:
       - XPI_MANIFEST_OWNER=escapewindow
       - XPI_MANIFEST_REPO=test-xpi-manifest
       - LOG_FORMAT=plain
-      - DISABLE_PULSE=1
     depends_on:
       - db
     healthcheck:

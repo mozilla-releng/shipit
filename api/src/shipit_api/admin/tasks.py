@@ -11,7 +11,7 @@ import jsone
 import requests
 import yaml
 
-from cli_common.taskcluster import get_service
+from backend_common.taskcluster import get_service
 from shipit_api.admin.github import extract_github_repo_owner_and_name
 from shipit_api.admin.release import is_rc
 from shipit_api.common.config import SUPPORTED_FLAVORS

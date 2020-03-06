@@ -9,11 +9,11 @@ import logging
 
 import click
 import flask
-from decouple import Config, config
+from decouple import Config
 
 import cli_common.pulse
 import shipit_api.common.config
-from cli_common.taskcluster import get_secrets
+from backend_common.taskcluster import get_secrets
 from shipit_api.admin.product_details import rebuild
 
 logger = logging.getLogger(__name__)
@@ -23,20 +23,12 @@ def rebuild_product_details(default_git_repo_url, default_folder_in_repo, defaul
     """Rebuild product details.
     """
     logger.debug("Rebuilding product details")
-
-    taskcluster_secret = config("TASKCLUSTER_SECRET")
-    taskcluster_client_id = config("TASKCLUSTER_CLIENT_ID")
-    taskcluster_access_token = config("TASKCLUSTER_ACCESS_TOKEN")
-
-    logger.debug(f"Fetching secrets from {taskcluster_secret}")
-    secrets = Config(
-        repository=get_secrets(
-            taskcluster_secret,
-            shipit_api.common.config.PROJECT_NAME,
-            taskcluster_client_id=taskcluster_client_id,
-            taskcluster_access_token=taskcluster_access_token,
-        )
-    )
+    root_url = flask.current_app.config["TASKCLUSTER_ROOT_URL"]
+    client_id = flask.current_app.config["TASKCLUSTER_CLIENT_ID"]
+    access_token = flask.current_app.config["TASKCLUSTER_ACCESS_TOKEN"]
+    secret = flask.current_app.config["TASKCLUSTER_SECRET"]
+    logger.debug(f"Fetching secrets from {secret}")
+    secrets = Config(repository=get_secrets(secret, shipit_api.common.config.PROJECT_NAME, root_url, client_id, access_token))
 
     git_repo_url = secrets("PRODUCT_DETAILS_GIT_REPO_URL", default=default_git_repo_url)
     default_channel = default_channel or secrets("APP_CHANNEL", default="master")

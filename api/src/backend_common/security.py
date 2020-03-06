@@ -36,6 +36,5 @@ security = flask_talisman.Talisman()
 
 
 def init_app(app):
-    config = app.config.get("SECURITY", DEFAULT_CONFIG)
-    security.init_app(app, **config)
+    security.init_app(app, **DEFAULT_CONFIG)
     return security

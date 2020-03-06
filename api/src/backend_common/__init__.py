@@ -5,7 +5,6 @@
 
 import importlib
 import logging
-import os
 
 import flask
 
@@ -25,9 +24,6 @@ def create_app(project_name, app_name, extensions=[], config=None, redirect_root
     app = flask.Flask(import_name=app_name, **kwargs)
     app.name = project_name
     app.__extensions = extensions
-
-    if not app.config.get("TESTING") and os.environ.get("APP_SETTINGS"):
-        app.config.from_envvar("APP_SETTINGS")
 
     if config:
         app.config.from_pyfile(config)

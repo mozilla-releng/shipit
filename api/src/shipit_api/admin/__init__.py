@@ -8,7 +8,6 @@ import os
 import backend_common
 import shipit_api.admin.models  # noqa
 import shipit_api.common.models  # noqa
-from cli_common.taskcluster import get_service
 from shipit_api.admin.worker import cmd
 from shipit_api.common.config import APP_NAME
 
@@ -21,14 +20,6 @@ def create_app(config=None):
         extensions=["dockerflow", "log", "security", "cors", "api", "auth", "db", "pulse"],
         root_path=os.path.dirname(__file__),
     )
-
-    if not app.config.get("DISABLE_NOTIFY", False):
-        app.notify = get_service(
-            "notify",
-            os.environ.get("TASKCLUSTER_CLIENT_ID", app.config.get("TASKCLUSTER_CLIENT_ID")),
-            os.environ.get("TASKCLUSTER_ACCESS_TOKEN", app.config.get("TASKCLUSTER_ACCESS_TOKEN")),
-        )
-
     app.api.register(os.path.join(os.path.dirname(__file__), "api.yml"))
     app.cli.add_command(cmd, "worker")
 

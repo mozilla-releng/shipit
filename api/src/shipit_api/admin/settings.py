@@ -9,12 +9,15 @@ from decouple import Config
 from decouple import config as dc_config
 
 from backend_common.auth import create_auth0_secrets_file
-from cli_common.taskcluster import get_secrets
+from backend_common.taskcluster import get_secrets
 from shipit_api.common.config import PROJECT_NAME, SCOPE_PREFIX, SUPPORTED_FLAVORS
 
 # TODO: 1) rename "development" to "local" 2) remove "staging" when fully migrated
 supported_channels = ["dev", "development", "staging", "production"]
 APP_CHANNEL = dc_config("APP_CHANNEL", default=None)
+TASKCLUSTER_ROOT_URL = dc_config("TASKCLUSTER_ROOT_URL")
+TASKCLUSTER_CLIENT_ID = dc_config("TASKCLUSTER_CLIENT_ID")
+TASKCLUSTER_ACCESS_TOKEN = dc_config("TASKCLUSTER_ACCESS_TOKEN")
 
 if APP_CHANNEL:
     config = dc_config
@@ -23,10 +26,8 @@ else:
     # TODO: This section will be removed after we switch to SOPS secrets
     # Until bug 1618454 is fixed, fall back to the Taskcluster secrets if the
     # corresponding environment variable is not defined
-    taskcluster_secret = dc_config("TASKCLUSTER_SECRET")
-    taskcluster_client_id = dc_config("TASKCLUSTER_CLIENT_ID")
-    taskcluster_access_token = dc_config("TASKCLUSTER_ACCESS_TOKEN")
-    secrets = get_secrets(taskcluster_secret, PROJECT_NAME, taskcluster_client_id=taskcluster_client_id, taskcluster_access_token=taskcluster_access_token)
+    TASKCLUSTER_SECRET = dc_config("TASKCLUSTER_SECRET")
+    secrets = get_secrets(TASKCLUSTER_SECRET, PROJECT_NAME, TASKCLUSTER_ROOT_URL, TASKCLUSTER_CLIENT_ID, TASKCLUSTER_ACCESS_TOKEN)
     config = Config(repository=secrets)
     APP_CHANNEL = config("APP_CHANNEL")
 
@@ -41,8 +42,6 @@ SQLALCHEMY_DATABASE_URI = config("DATABASE_URL")
 SECRET_KEY = config("SECRET_KEY_BASE64", cast=base64.b64decode)
 
 # optional
-
-DISABLE_NOTIFY = config("DISABLE_NOTIFY", default=False, cast=bool)
 GITHUB_TOKEN = config("GITHUB_TOKEN", default=None)
 XPI_MANIFEST_OWNER = config("XPI_MANIFEST_OWNER", default=None)
 XPI_MANIFEST_REPO = config("XPI_MANIFEST_REPO", default=None)
@@ -152,5 +151,3 @@ for xpi_type in ["privileged", "system"]:
 
 # append scopes with scope prefix and add admin group of users
 AUTH0_AUTH_SCOPES = {f"{SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
-AUTH0_AUTH = True
-TASKCLUSTER_AUTH = True
