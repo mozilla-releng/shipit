@@ -5,11 +5,10 @@
 
 import datetime
 import logging
-import os
 
-import flask
 import kombu
 from dockerflow.flask import checks
+from flask import current_app
 
 from backend_common.dockerflow import dockerflow
 
@@ -68,12 +67,12 @@ def init_app(app):
 
 @dockerflow.check(name="pulse")
 def app_heartbeat():
-    if os.environ.get("DISABLE_PULSE"):
-        return []
-
-    try:
-        flask.current_app.pulse.ping()
-        return []
-    except Exception:
-        logger.info("Pulse heartbeat issues")
-        return [checks.Error("Cannot connect to the pulse service.", id="pulse.ping")]
+    if current_app.config.get("PULSE_USER") and current_app.config.get("PULSE_PASSWORD"):
+        try:
+            current_app.pulse.ping()
+            return []
+        except Exception:
+            logger.info("Pulse heartbeat issues")
+            return [checks.Error("Cannot connect to the pulse service.", id="pulse.ping")]
+    # Pulse not enabled
+    return []

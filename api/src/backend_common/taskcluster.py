@@ -1,0 +1,48 @@
+# -*- coding: utf-8 -*-
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+import taskcluster
+from flask import current_app
+
+TC_SERVICES_REQUIRE_AUTH = ["auth", "hooks", "notify", "secrets"]
+
+
+def get_root_url():
+    return current_app.config["TASKCLUSTER_ROOT_URL"]
+
+
+def get_options(service_name):
+    """
+    Build Taskcluster credentials options
+    """
+
+    tc_options = {"rootUrl": get_root_url(), "maxRetries": 12}
+    if service_name in TC_SERVICES_REQUIRE_AUTH:
+        client_id = current_app.config["TASKCLUSTER_CLIENT_ID"]
+        access_token = current_app.config["TASKCLUSTER_ACCESS_TOKEN"]
+        tc_options.update({"credentials": {"clientId": client_id, "accessToken": access_token}})
+
+    return tc_options
+
+
+def get_service(service_name):
+    """
+    Build a Taskcluster service instance
+    """
+    options = get_options(service_name)
+    return getattr(taskcluster, service_name.capitalize())(options)
+
+
+def get_secrets(name, project_name, root_url, client_id, access_token):
+    """
+    Fetch a specific set of secrets
+
+    """
+    # this will be removed after we switch to SOPS secrets
+    # Duplicating the code above to avoid flask context issues
+
+    tc_options = {"rootUrl": root_url, "maxRetries": 12, "credentials": {"clientId": client_id, "accessToken": access_token}}
+    secrets_service = taskcluster.Secrets(tc_options)
+    return secrets_service.get(name).get("secret", {}).get(project_name, {})

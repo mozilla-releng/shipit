@@ -14,7 +14,7 @@ from taskcluster.exceptions import TaskclusterRestFailure
 from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
-from cli_common.taskcluster import get_root_url, get_service
+from backend_common.taskcluster import get_root_url, get_service
 from shipit_api.admin.models import XPIRelease
 from shipit_api.admin.release import Product, bump_version, get_locales, is_eme_free_enabled, is_partner_enabled, product_to_appname
 from shipit_api.admin.tasks import (
@@ -48,8 +48,9 @@ def notify_via_irc(product, message):
 
     if owners and channels:
         owners = ": ".join(owners)
+        notify = get_service("notify")
         for channel in channels:
-            current_app.notify.irc({"channel": channel, "message": f"{owners}: {message}"})
+            notify.irc({"channel": channel, "message": f"{owners}: {message}"})
 
 
 def add_release(body):

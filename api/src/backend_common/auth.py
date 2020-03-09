@@ -7,7 +7,6 @@ import enum
 import functools
 import json
 import logging
-import os
 import tempfile
 
 import flask
@@ -17,8 +16,8 @@ import requests
 import taskcluster.utils
 from dockerflow.flask import checks
 
-import cli_common.taskcluster
 from backend_common.dockerflow import dockerflow
+from backend_common.taskcluster import get_service
 
 logger = logging.getLogger(__name__)
 
@@ -271,7 +270,7 @@ def parse_header_taskcluster(request):
     payload = {"resource": request.path, "method": method, "host": host, "port": int(port), "authorization": auth_header}
 
     # Auth with taskcluster
-    auth = cli_common.taskcluster.get_service("auth", **get_taskcluster_credentials())
+    auth = get_service("auth")
     try:
         resp = auth.authenticateHawk(payload)
         if not resp.get("status") == "auth-success":
@@ -315,28 +314,17 @@ def parse_header_auth0(request):
     return Auth0User(token, userinfo)
 
 
-def get_taskcluster_credentials():
-    if flask.current_app.config["TESTING"] is True:
-        return dict(client_id="XXX", access_token="YYY")
-    return dict(
-        client_id=os.environ.get("TASKCLUSTER_CLIENT_ID", flask.current_app.config.get("TASKCLUSTER_CLIENT_ID")),
-        access_token=os.environ.get("TASKCLUSTER_ACCESS_TOKEN", flask.current_app.config.get("TASKCLUSTER_ACCESS_TOKEN")),
-    )
-
-
 @auth.login_manager.request_loader
 def parse_header(request):
     """Parse header and try to authenticate
     """
-    if flask.current_app.config.get("AUTH0_AUTH") is True:
-        user = parse_header_auth0(request)
-        if user != NO_AUTH:
-            return user
+    user = parse_header_auth0(request)
+    if user != NO_AUTH:
+        return user
 
-    if flask.current_app.config.get("TASKCLUSTER_AUTH", True) is True:
-        user = parse_header_taskcluster(request)
-        if user != NO_AUTH:
-            return user
+    user = parse_header_taskcluster(request)
+    if user != NO_AUTH:
+        return user
 
 
 def get_permissions():
@@ -354,9 +342,7 @@ def init_app(app):
     if app.config.get("SECRET_KEY") is None:
         raise Exception("When using `auth` extention you need to specify SECRET_KEY.")
 
-    if app.config.get("AUTH0_AUTH") is True:
-        auth0.init_app(app)
-
+    auth0.init_app(app)
     auth.init_app(app)
 
     app.add_url_rule("/__permissions__", view_func=get_permissions)
@@ -369,22 +355,20 @@ def app_heartbeat():
     config = flask.current_app.config
     results = []
 
-    if config.get("AUTH0_AUTH") is True:
-        try:
-            auth_domain = config.get("AUTH_DOMAIN")
-            r = requests.get(f"https://{auth_domain}/test")
-            assert "clock" in r.json()
-        except Exception:
-            logger.info("Auth0 heartbeat error")
-            results.append(checks.Error("Cannot connect to the mozilla auth0 service.", id="auth.auth0"))
+    try:
+        auth_domain = config.get("AUTH_DOMAIN")
+        r = requests.get(f"https://{auth_domain}/test")
+        assert "clock" in r.json()
+    except Exception:
+        logger.info("Auth0 heartbeat error")
+        results.append(checks.Error("Cannot connect to the mozilla auth0 service.", id="auth.auth0"))
 
-    if config.get("TASKCLUSTER_AUTH") is True:
-        auth = cli_common.taskcluster.get_service("auth", **get_taskcluster_credentials())
-        try:
-            ping = auth.ping()
-            assert ping["alive"] is True
-        except Exception:
-            logger.info("Taskcluster heartbeat error")
-            results.append(checks.Error("Cannot connect to the Taskcluster service.", id="auth.taskcluster"))
+    auth = get_service("auth")
+    try:
+        ping = auth.ping()
+        assert ping["alive"] is True
+    except Exception:
+        logger.info("Taskcluster heartbeat error")
+        results.append(checks.Error("Cannot connect to the Taskcluster service.", id="auth.taskcluster"))
 
     return results

@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from taskcluster.exceptions import TaskclusterRestFailure
 from werkzeug.exceptions import BadRequest
 
-from cli_common.taskcluster import get_root_url
+from backend_common.taskcluster import get_root_url
 from shipit_api.admin.api import do_schedule_phase
 from shipit_api.admin.github import get_xpi_type
 from shipit_api.admin.models import XPI, XPIPhase, XPIRelease, XPISignoff
