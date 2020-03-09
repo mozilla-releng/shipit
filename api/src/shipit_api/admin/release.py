@@ -43,7 +43,7 @@ def is_final_release(version):
 
 
 def _is_fennec_rc_release(product, version):
-    return product == "fennec" and bool(re.match(_FENNEC_RC_REGEX, version))
+    return product == "fennec_release" and bool(re.match(_FENNEC_RC_REGEX, version))
 
 
 def is_beta(version):

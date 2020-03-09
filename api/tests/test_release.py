@@ -37,11 +37,14 @@ def test_is_esr(version, result):
         ("firefox", "64.0.1", None, False),
         ("thunderbird", "64.0.1", None, False),
         # Fennec on the 68 branch is a special case
-        ("fennec", "68.0", None, True),
-        ("fennec", "68.2.0", None, True),
-        ("fennec", "68.2.1", None, False),
-        ("fennec", "68.3.0", None, True),
-        ("fennec", "68.3.1", None, False),
+        ("fennec_release", "68.0", None, True),
+        ("fennec_beta", "68.0b1", None, False),
+        ("fennec", "68.0b1", None, False),
+        ("fennec_release", "68.2.0", None, True),
+        ("fennec", "68.2.0", None, False),
+        ("fennec_release", "68.2.1", None, False),
+        ("fennec_release", "68.3.0", None, True),
+        ("fennec_release", "68.3.1", None, False),
     ),
 )
 def test_is_rc(product, version, partial_updates, result):
