@@ -33,16 +33,3 @@ def get_service(service_name):
     """
     options = get_options(service_name)
     return getattr(taskcluster, service_name.capitalize())(options)
-
-
-def get_secrets(name, project_name, root_url, client_id, access_token):
-    """
-    Fetch a specific set of secrets
-
-    """
-    # this will be removed after we switch to SOPS secrets
-    # Duplicating the code above to avoid flask context issues
-
-    tc_options = {"rootUrl": root_url, "maxRetries": 12, "credentials": {"clientId": client_id, "accessToken": access_token}}
-    secrets_service = taskcluster.Secrets(tc_options)
-    return secrets_service.get(name).get("secret", {}).get(project_name, {})

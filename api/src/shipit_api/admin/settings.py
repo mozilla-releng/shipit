@@ -5,36 +5,19 @@
 
 import base64
 
-from decouple import Config
-from decouple import config as dc_config
+from decouple import config
 
 from backend_common.auth import create_auth0_secrets_file
-from backend_common.taskcluster import get_secrets
-from shipit_api.common.config import PROJECT_NAME, SCOPE_PREFIX, SUPPORTED_FLAVORS
+from shipit_api.common.config import SCOPE_PREFIX, SUPPORTED_FLAVORS
 
 # TODO: 1) rename "development" to "local" 2) remove "staging" when fully migrated
 supported_channels = ["dev", "development", "staging", "production"]
-APP_CHANNEL = dc_config("APP_CHANNEL", default=None)
-TASKCLUSTER_ROOT_URL = dc_config("TASKCLUSTER_ROOT_URL")
-TASKCLUSTER_CLIENT_ID = dc_config("TASKCLUSTER_CLIENT_ID")
-TASKCLUSTER_ACCESS_TOKEN = dc_config("TASKCLUSTER_ACCESS_TOKEN")
-
-if APP_CHANNEL:
-    config = dc_config
-else:
-    # APP_CHANNEL is not defined as environment variable in GCP
-    # TODO: This section will be removed after we switch to SOPS secrets
-    # Until bug 1618454 is fixed, fall back to the Taskcluster secrets if the
-    # corresponding environment variable is not defined
-    TASKCLUSTER_SECRET = dc_config("TASKCLUSTER_SECRET")
-    secrets = get_secrets(TASKCLUSTER_SECRET, PROJECT_NAME, TASKCLUSTER_ROOT_URL, TASKCLUSTER_CLIENT_ID, TASKCLUSTER_ACCESS_TOKEN)
-    config = Config(repository=secrets)
-    APP_CHANNEL = config("APP_CHANNEL")
-
-if APP_CHANNEL not in supported_channels:
-    raise ValueError(f"APP_CHANNEL should be one of {supported_channels}, `{APP_CHANNEL}` given")
 
 # required
+APP_CHANNEL = config("APP_CHANNEL")
+TASKCLUSTER_ROOT_URL = config("TASKCLUSTER_ROOT_URL")
+TASKCLUSTER_CLIENT_ID = config("TASKCLUSTER_CLIENT_ID")
+TASKCLUSTER_ACCESS_TOKEN = config("TASKCLUSTER_ACCESS_TOKEN")
 AUTH_DOMAIN = config("AUTH_DOMAIN")
 AUTH_CLIENT_ID = config("AUTH_CLIENT_ID")
 AUTH_CLIENT_SECRET = config("AUTH_CLIENT_SECRET")
@@ -58,6 +41,9 @@ CORS_ORIGINS = config("CORS_ORIGINS", default=None)
 IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT = config("IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT", default=None)
 IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT = config("IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT", default=None)
 PRODUCT_DETAILS_GIT_REPO_URL = config("PRODUCT_DETAILS_GIT_REPO_URL", default=None)
+
+if APP_CHANNEL not in supported_channels:
+    raise ValueError(f"APP_CHANNEL should be one of {supported_channels}, `{APP_CHANNEL}` given")
 
 # -- DATABASE -----------------------------------------------------------------
 

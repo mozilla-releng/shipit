@@ -19,7 +19,6 @@ services:
       - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
       - TASKCLUSTER_CLIENT_ID
       - TASKCLUSTER_ACCESS_TOKEN
-      - TASKCLUSTER_SECRET
       - TASKCLUSTER_ROOT_URL=https://firefox-ci-tc.services.mozilla.com
       - GITHUB_TOKEN
       - GITHUB_SKIP_PRIVATE_REPOS=1
