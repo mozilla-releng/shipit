@@ -114,7 +114,9 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/Release'
+                anyOf:
+                  - $ref: '#/components/schemas/Release'
+                  - $ref: '#/components/schemas/XPIRelease'
     delete:
       summary: Release info
       operationId: shipit_api.admin.api.abandon_release
@@ -155,7 +157,9 @@ paths:
           content:
             'application/json':
               schema:
-                $ref: '#/components/schemas/Release'
+                anyOf:
+                  - $ref: '#/components/schemas/Release'
+                  - $ref: '#/components/schemas/XPIRelease'
         405:
           description: Invalid input
           content: {}
