@@ -6,12 +6,12 @@
 import logging
 from collections import defaultdict
 
-from flask import current_app
+from flask import abort, current_app
 from mozilla_version.fenix import FenixVersion
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 from werkzeug.exceptions import BadRequest
 
-from shipit_api.common.models import DisabledProduct, Phase, Release
+from shipit_api.common.models import DisabledProduct, Phase, Release, XPIRelease
 from shipit_api.common.product import Product
 
 logger = logging.getLogger(__name__)
@@ -79,7 +79,12 @@ def _sort_releases_by_product_then_version(releases):
 
 def get_release(name):
     session = current_app.db.session
-    release = session.query(Release).filter(Release.name == name).first_or_404()
+    releases = list(filter(None, [session.query(product_model).filter(product_model.name == name).first() for product_model in (Release, XPIRelease)]))
+
+    if not releases:
+        abort(404, f"Release {name} not found")
+
+    release = releases[0]
     return release.json
 
 

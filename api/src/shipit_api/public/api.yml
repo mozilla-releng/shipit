@@ -68,7 +68,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Release'
+                anyOf:
+                - $ref: '#/components/schemas/Release'
+                - $ref: '#/components/schemas/XPIRelease'
   /releases/{name}/{phase}:
     get:
       summary: Release info
@@ -200,6 +202,47 @@ components:
           type: boolean
           description: Allow skipping phases. In this case the snowman release model
             will not skipped phases.
+    XPIRelease:
+      type: object
+      required:
+      - xpi_name
+      - xpi_revision
+      - xpi_version
+      - build_number
+      - name
+      - phases
+      - status
+      - revision
+      properties:
+        name:
+          type: string
+        xpi_name:
+          type: string
+        xpi_revision:
+          type: string
+        xpi_version:
+          type: string
+        revision:
+          type: string
+        build_number:
+          type: integer
+        status:
+          type: string
+          example: scheduled
+          enum:
+          - scheduled
+          - shipped
+          - aborted
+        phases:
+          type: array
+          items:
+            $ref: '#/components/schemas/Phase'
+        created:
+          type: string
+          format: dateTime
+        completed:
+          type: string
+          format: dateTime
     Signoffs:
       required:
       - signoffs

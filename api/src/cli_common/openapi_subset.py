@@ -18,6 +18,7 @@ PUBLIC_API_SECTIONS = [
     "paths./disabled-products.get",
     "components.schemas.Phase",
     "components.schemas.Release",
+    "components.schemas.XPIRelease",
     "components.schemas.Signoffs",
     "components.schemas.Signoff",
     "components.schemas.DisableProduct",

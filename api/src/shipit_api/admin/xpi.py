@@ -11,9 +11,9 @@ from werkzeug.exceptions import BadRequest
 from backend_common.taskcluster import get_root_url
 from shipit_api.admin.api import do_schedule_phase, notify_via_matrix
 from shipit_api.admin.github import get_xpi_type
-from shipit_api.admin.models import XPI, XPIPhase, XPIRelease, XPISignoff
 from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases
 from shipit_api.common.config import SCOPE_PREFIX
+from shipit_api.common.models import XPI, XPIPhase, XPIRelease, XPISignoff
 
 logger = logging.getLogger(__name__)
 

@@ -15,7 +15,6 @@ from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
 from backend_common.taskcluster import get_root_url, get_service
-from shipit_api.admin.models import XPIRelease
 from shipit_api.admin.release import Product, bump_version, get_locales, is_eme_free_enabled, is_partner_enabled, product_to_appname
 from shipit_api.admin.tasks import (
     ArtifactNotFound,
@@ -29,7 +28,7 @@ from shipit_api.admin.tasks import (
     rendered_hook_payload,
 )
 from shipit_api.common.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
-from shipit_api.common.models import DisabledProduct, Phase, Release, Signoff
+from shipit_api.common.models import DisabledProduct, Phase, Release, Signoff, XPIRelease
 from shipit_api.public.api import get_disabled_products, list_releases
 
 logger = logging.getLogger(__name__)

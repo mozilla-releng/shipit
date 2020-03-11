@@ -2,5 +2,5 @@
 
 # (re)generate public API schema file
 pushd `dirname $0`
-python ../src/cli_common/openapi_subset.py ../src/shipit_api/api.yml ../src/shipit_api/api_public.yml
+python ../src/cli_common/openapi_subset.py ../src/shipit_api/admin/api.yml ../src/shipit_api/public/api.yml
 popd
