@@ -38,8 +38,6 @@ PULSE_PORT = config("PULSE_PORT", default=5671, cast=int)
 PULSE_VIRTUAL_HOST = config("PULSE_VIRTUAL_HOST", default="/")
 SENTRY_DSN = config("SENTRY_DSN", default=None)
 CORS_ORIGINS = config("CORS_ORIGINS", default=None)
-IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT = config("IRC_NOTIFICATIONS_OWNERS_PER_PRODUCT", default=None)
-IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT = config("IRC_NOTIFICATIONS_CHANNELS_PER_PRODUCT", default=None)
 PRODUCT_DETAILS_GIT_REPO_URL = config("PRODUCT_DETAILS_GIT_REPO_URL", default=None)
 
 if APP_CHANNEL not in supported_channels:
@@ -137,3 +135,28 @@ for xpi_type in ["privileged", "system"]:
 
 # append scopes with scope prefix and add admin group of users
 AUTH0_AUTH_SCOPES = {f"{SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
+
+# fmt: off
+if APP_CHANNEL == "production":
+    MATRIX_NOTIFICATIONS_OWNERS_PER_PRODUCT = {
+        "thunderbird": ["rjl", "wsmwk"],
+        "default": ["sheriffduty", "ciduty", "releaseduty"]
+    }
+    MATRIX_NOTIFICATIONS_ROOMS_PER_PRODUCT = {
+        "thunderbird": [
+            "!tBWwNyfeKqGvkNpdDL:mozilla.org"  # #releaseduty:mozilla.org
+            "!xPTYfLywxFMryjbnJl:mozilla.org"  # #tbdrivers:mozilla.org
+        ],
+        "default": [
+            "!tBWwNyfeKqGvkNpdDL:mozilla.org"  # #releaseduty:mozilla.org
+        ],
+    }
+elif APP_CHANNEL == "dev":
+    MATRIX_NOTIFICATIONS_OWNERS_PER_PRODUCT = {"default": ["here"]}
+    MATRIX_NOTIFICATIONS_ROOMS_PER_PRODUCT = {
+        "default": [
+            "!wGgsWXnVncJLSBYmuf:mozilla.org",  # #releaseduty-dev:mozilla.org
+        ],
+    }
+
+# fmt: on
