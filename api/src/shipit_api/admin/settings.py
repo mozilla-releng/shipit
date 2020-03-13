@@ -144,11 +144,11 @@ if APP_CHANNEL == "production":
     }
     MATRIX_NOTIFICATIONS_ROOMS_PER_PRODUCT = {
         "thunderbird": [
-            "!tBWwNyfeKqGvkNpdDL:mozilla.org"  # #releaseduty:mozilla.org
-            "!xPTYfLywxFMryjbnJl:mozilla.org"  # #tbdrivers:mozilla.org
+            "!tBWwNyfeKqGvkNpdDL:mozilla.org",  # #releaseduty:mozilla.org
+            "!xPTYfLywxFMryjbnJl:mozilla.org",  # #tbdrivers:mozilla.org
         ],
         "default": [
-            "!tBWwNyfeKqGvkNpdDL:mozilla.org"  # #releaseduty:mozilla.org
+            "!tBWwNyfeKqGvkNpdDL:mozilla.org",  # #releaseduty:mozilla.org
         ],
     }
 elif APP_CHANNEL == "dev":
