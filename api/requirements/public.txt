@@ -5,9 +5,8 @@
 #
 #    pip-compile-multi
 #
-alembic==1.4.1 \
-    --hash=sha256:791a5686953c4b366d3228c5377196db2f534475bb38d26f70eb69668efd9028 \
-    # via flask-migrate
+alembic==1.4.2 \
+    --hash=sha256:035ab00497217628bf5d0be82d664d8713ab13d37b630084da8e1f98facf4dbf    # via flask-migrate
 attrs==19.3.0 \
     --hash=sha256:08a96c641c3a74e44eb59afb61a24f2cb9f4d7188748e76ba4bb5edfa3cb7d1c \
     --hash=sha256:f7b7ce16570fe9965acd6d30101a28f62fb4a7f9e926b3bbc9b61f8b04247e72 \
