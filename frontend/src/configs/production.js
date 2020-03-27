@@ -53,16 +53,6 @@ module.exports = {
       appName: 'browser',
       branches: [
         {
-          prettyName: 'Beta',
-          project: 'mozilla-esr68',
-          branch: 'releases/mozilla-esr68',
-          repo: 'https://hg.mozilla.org/releases/mozilla-esr68',
-          enableReleaseEta: false,
-          productKey: 'fennec_beta',
-          versionFile: 'mobile/android/config/version-files/beta/version_display.txt',
-          disableable: true,
-        },
-        {
           prettyName: 'Release',
           project: 'mozilla-esr68',
           branch: 'releases/mozilla-esr68',
