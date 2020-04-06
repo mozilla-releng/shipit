@@ -145,10 +145,9 @@ flask-login==0.5.0 \
 flask-oidc==1.4.0 \
     --hash=sha256:0c12151139d47a562e1c5ae203fb9dbc759fe7474cc01e0238bef828ece58f4e \
     # via -r base.in
-httplib2==0.17.0 \
-    --hash=sha256:79751cc040229ec896aa01dced54de0cd0bf042f928e84d5761294422dde4454 \
-    --hash=sha256:de96d0a49f46d0ee7e0aae80141d37b8fcd6a68fb05d02e0b82c128592dd8261 \
-    # via oauth2client
+httplib2==0.17.1 \
+    --hash=sha256:4e26d60a6b37ff0e8401e976f13667cb3746dfa1b50833003b7f138042b54247 \
+    --hash=sha256:b81b2cd2248285168a4359f2acf24521a4099b5853e790309c45dcb90ee4b3c6    # via oauth2client
 json-e==4.0.1 \
     --hash=sha256:7d84242c94c4a475b08e185a265bed810346daf8399a5b5d05b7b19eba774356 \
     # via -r base.in
