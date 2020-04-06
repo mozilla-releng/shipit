@@ -45,7 +45,9 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # day).
 # We could have used the in-tree version, but there can be race conditions,
 # e.g. version bumped, but still no builds available.
-FIREFOX_NIGHTLY = "76.0a1"
+FIREFOX_NIGHTLY = "77.0a1"
+# Fennec Nightly users have been migrated to Fenix, thus we don't need to bump
+# the following numbers anymore.
 FENNEC_NIGHTLY = "68.7a1"
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
