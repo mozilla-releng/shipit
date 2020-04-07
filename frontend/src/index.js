@@ -10,6 +10,8 @@ import {
 } from './config';
 
 const root = document.getElementById('root');
+// To stop the footer from covering content
+root.style.paddingBottom = '52.6px';
 const load = () => {
   render(
     <App
