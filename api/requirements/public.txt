@@ -215,10 +215,9 @@ urllib3==1.25.8 \
     --hash=sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc \
     --hash=sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc \
     # via requests, sentry-sdk
-werkzeug==1.0.0 \
-    --hash=sha256:169ba8a33788476292d04186ab33b01d6add475033dfc07215e6d219cc077096 \
-    --hash=sha256:6dc65cf9091cf750012f56f2cad759fa9e879f511b5ff8685e456b4e3bf90d16 \
-    # via flask
+werkzeug==1.0.1 \
+    --hash=sha256:2de2a5db0baeae7b2d2664949077c2ac63fbd16d98da0ff71837f7d1dea3fd43 \
+    --hash=sha256:6c80b1e5ad3665290ea39320b91e1be1e0d5f60652b964a3070216de83d2e47c    # via flask
 
 # WARNING: The following packages were not pinned, but pip requires them to be
 # pinned when the requirements file includes hashes. Consider using the --allow-unsafe flag.
