@@ -211,10 +211,9 @@ swagger-ui-bundle==0.0.6 \
     --hash=sha256:c5373b683487b1b914dccd23bcd9a3016afa2c2d1cda10f8713c0a9af0f91dd3 \
     --hash=sha256:f776811855092c086dbb08216c8810a84accef8c76c796a135caa13645c5cc68 \
     # via connexion
-urllib3==1.25.8 \
-    --hash=sha256:2f3db8b19923a873b3e5256dc9c2dedfa883e33d87c690d9c7913e1f40673cdc \
-    --hash=sha256:87716c2d2a7121198ebcb7ce7cccf6ce5e9ba539041cfbaeecfb641dc0bf6acc \
-    # via requests, sentry-sdk
+urllib3==1.25.9 \
+    --hash=sha256:3018294ebefce6572a474f0604c2021e33b3fd8006ecd11d62107a5d2a963527 \
+    --hash=sha256:88206b0eb87e6d677d424843ac5209e3fb9d0190d0ee169599165ec25e9d9115    # via requests, sentry-sdk
 werkzeug==1.0.0 \
     --hash=sha256:169ba8a33788476292d04186ab33b01d6add475033dfc07215e6d219cc077096 \
     --hash=sha256:6dc65cf9091cf750012f56f2cad759fa9e879f511b5ff8685e456b4e3bf90d16 \
