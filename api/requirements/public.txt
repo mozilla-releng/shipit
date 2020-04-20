@@ -121,10 +121,9 @@ markupsafe==1.1.1 \
     --hash=sha256:e249096428b3ae81b08327a63a485ad0878de3fb939049038579ac0ef61e17e7 \
     --hash=sha256:e8313f01ba26fbbe36c7be1966a7b7424942f670f38e666995b88d012765b9be \
     # via jinja2, mako
-mozilla-version==0.5.0 \
-    --hash=sha256:c36dff62d62e098dfde83a010600ac342d00fbaa14a056ea17ed48fe31aa7ef3 \
-    --hash=sha256:ed7f7c6804eb46ea27d5f608144769d08b112b1844e18663adbc6b5f87c5ad63 \
-    # via -r public.in
+mozilla-version==0.5.1 \
+    --hash=sha256:9975a1122cba65bc67e9d9301fab8b02d4b4b75106b55293c743f7042eda3917 \
+    --hash=sha256:a9d50c09ab821b043f8182f256e876c81e59c86e8bbbd2f1d735810a882e3c16    # via -r public.in
 openapi-spec-validator==0.2.8 \
     --hash=sha256:0caacd9829e9e3051e830165367bf58d436d9487b29a09220fa7edb9f47ff81b \
     --hash=sha256:d4da8aef72bf5be40cf0df444abd20009a41baf9048a8e03750c07a934f1bdd8 \
