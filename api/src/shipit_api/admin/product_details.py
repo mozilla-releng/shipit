@@ -150,23 +150,23 @@ def create_index_listing_html(folder: pathlib.Path, items: typing.Set[pathlib.Pa
         def write(x):
             return html.write(f"{x}{os.linesep}")
 
-        write(f"<!doctype html>")
-        write(f"<html>")
+        write("<!doctype html>")
+        write("<html>")
         write(f"  <head>")
         write(f"    <title>Index of {folder}</title>")
-        write(f"  </head>")
-        write(f"  <body>")
+        write("  </head>")
+        write("  <body>")
         write(f"    <h1>Index of {folder}</h1>")
-        write(f"    <ul>")
+        write("    <ul>")
         if folder != folder.parent:
             write(f'      <li><a href="{folder.parent}"> Parent Directory</a></li>')
         for item in sorted(items):
             is_dir = item.suffix not in [".json", ".html"]
             itemStr = is_dir and f"{item.name}/" or f"{item.name}"
             write(f'      <li><a href="{itemStr}"> {itemStr}</a></li>')
-        write(f"    </ul>")
-        write(f"  </body>")
-        write(f"</html>")
+        write("    </ul>")
+        write("  </body>")
+        write("</html>")
 
         return html.getvalue()
 
@@ -1058,7 +1058,7 @@ async def rebuild(
             status=None,
         ),
     ]
-    logger.info(f"Getting locales from hg.mozilla.org for each release from database")
+    logger.info("Getting locales from hg.mozilla.org for each release from database")
     # use limit_per_host=50 since hg.mozilla.org doesn't like too many connections
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=50), timeout=aiohttp.ClientTimeout(total=30)) as session:
         raise_on_failure = git_branch in ["production", "staging"]
