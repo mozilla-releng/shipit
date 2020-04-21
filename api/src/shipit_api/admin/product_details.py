@@ -152,7 +152,7 @@ def create_index_listing_html(folder: pathlib.Path, items: typing.Set[pathlib.Pa
 
         write("<!doctype html>")
         write("<html>")
-        write(f"  <head>")
+        write("  <head>")
         write(f"    <title>Index of {folder}</title>")
         write("  </head>")
         write("  <body>")
@@ -1033,7 +1033,7 @@ async def rebuild(
 
     # get all the releases from the database from (including)
     # breakpoint_version on
-    logger.info(f"Getting old releases from the database")
+    logger.info("Getting old releases from the database")
     releases = get_releases_from_db(db_session, breakpoint_version)
     # Also fetch latest nightly builds with their L10N info
     nightly_builds = [
