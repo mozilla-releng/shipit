@@ -35,6 +35,14 @@ tasks:
           # TODO: switch to dev
           then: 'https://api.shipit.staging.mozilla-releng.net'
           else: ''
+      shipit_public_api_url:
+        $if: 'release_channel == "production"'
+        then: 'https://shipitapi-public.services.mozilla.com'
+        else:
+          $if: 'release_channel == "dev"'
+          # TODO: switch to dev
+          then: 'https://public-dev.shipitapi.nonprod.cloudops.mozgcp.net'
+          else: ''
       # Github events have this stuff in different places...
       repo_url:
         $if: 'tasks_for == "github-pull-request"'
@@ -189,6 +197,7 @@ tasks:
                       RELEASE_CHANNEL: ${release_channel}
                       WEBSITE_BUCKET: '${ui_bucket}'
                       SHIPIT_API_URL: '${shipit_api_url}'
+                      SHIPIT_PUBLIC_API_URL: '${shipit_public_api_url}'
                       # To avoid env conditions with TASKCLUSTER_ROOT_URL
                       FRONTEND_TASKCLUSTER_ROOT_URL: 'https://firefox-ci-tc.services.mozilla.com'
                     maxRunTime: 3600

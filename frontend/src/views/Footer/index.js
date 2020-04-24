@@ -2,7 +2,7 @@ import React from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { object } from 'prop-types';
 
-import config, { SHIPIT_API_URL } from '../../config';
+import config, { SHIPIT_API_URL, SHIPIT_PUBLIC_API_URL } from '../../config';
 import ProductDisabler from '../../components/ProductDisabler';
 import { getApiHeaders } from '../../components/api';
 
@@ -26,7 +26,7 @@ export default class Navigation extends React.Component {
 
   getDisabledProducts = async () => {
     try {
-      const req = await fetch(`${SHIPIT_API_URL}/disabled-products`);
+      const req = await fetch(`${SHIPIT_PUBLIC_API_URL}/disabled-products`);
       const disabledProducts = await req.json();
       this.setState({
         loaded: true,
