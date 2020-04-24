@@ -4,7 +4,7 @@ import { object } from 'prop-types';
 import ReactInterval from 'react-interval';
 import { Queue } from 'taskcluster-client-web';
 import libUrls from 'taskcluster-lib-urls';
-import config, { SHIPIT_API_URL, TASKCLUSTER_ROOT_URL } from '../../config';
+import config, { SHIPIT_API_URL, SHIPIT_PUBLIC_API_URL, TASKCLUSTER_ROOT_URL } from '../../config';
 import { getApiHeaders, getShippedReleases } from '../../components/api';
 
 const statusStyles = {
@@ -46,7 +46,7 @@ export default class ListReleases extends React.Component {
 
   getReleases = async () => {
     try {
-      const req = await fetch(`${SHIPIT_API_URL}/releases`);
+      const req = await fetch(`${SHIPIT_PUBLIC_API_URL}/releases`);
       const releases = await req.json();
       let message = '';
       if (releases.length === 0) {
