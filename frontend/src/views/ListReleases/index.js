@@ -344,11 +344,10 @@ class TaskProgress extends React.Component {
   }
 
   syncPhases = async () => {
-    const { releaseName, phases, allowPhaseSkipping } = this.props;
+    const { phases, allowPhaseSkipping } = this.props;
     const phasesWithStatus = await Promise.all(phases.map(async (phase, idx, arr) => {
       const status = await phaseStatus(phase, idx, arr, allowPhaseSkipping);
-      const signoffs = await phaseSignOffs(releaseName, phase.name);
-      return { ...phase, status, signoffs };
+      return { ...phase, status };
     }));
     const tasksInProgress = phasesWithStatus.some(phase =>
       submittedTaskStatuses.includes(phase.status));
@@ -364,7 +363,7 @@ class TaskProgress extends React.Component {
     return (
       <ProgressBar style={{ height: '40px', padding: '3px' }}>
         {phasesWithStatus.map(({
-          name, submitted, actionTaskId, status, signoffs,
+          name, submitted, actionTaskId, status,
         }) => (
           <ProgressBar
             key={name}
@@ -377,7 +376,6 @@ class TaskProgress extends React.Component {
               submitted={submitted}
               status={status}
               tasksInProgress={tasksInProgress}
-              signoffs={signoffs}
               releaseName={releaseName}
               taskGroupUrl={`${taskGroupUrlPrefix}/${actionTaskId}`}
             />}
@@ -401,11 +399,14 @@ class TaskLabel extends React.PureComponent {
       errorMsg: null,
       selectedSignoff: null,
       inProgress: false,
+      signoffs: null,
     };
   }
 
-  open = () => {
-    this.setState({ showModal: true });
+  open = async () => {
+    const { releaseName, name } = this.props;
+    const signoffs = await phaseSignOffs(releaseName, name);
+    this.setState({ showModal: true, signoffs });
   };
 
   close = () => {
@@ -477,8 +478,8 @@ class TaskLabel extends React.PureComponent {
 
 
   renderSignoffs = () => {
-    const { signoffs } = this.props.signoffs;
-    if (signoffs.length === 0) {
+    const { signoffs } = this.state;
+    if (!signoffs) {
       return <div>No signoffs required</div>;
     }
     return (
