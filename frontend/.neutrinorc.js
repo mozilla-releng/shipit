@@ -2,6 +2,7 @@ fs = require('fs');
 
 const envs = {
     SHIPIT_API_URL: process.env.SHIPIT_API_URL,
+    SHIPIT_PUBLIC_API_URL: process.env.SHIPIT_PUBLIC_API_URL,
     RELEASE_CHANNEL: process.env.RELEASE_CHANNEL,
     FRONTEND_TASKCLUSTER_ROOT_URL: process.env.FRONTEND_TASKCLUSTER_ROOT_URL,
     SENTRY_DSN: process.env.SENTRY_DSN || null,
