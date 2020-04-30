@@ -132,7 +132,7 @@ def list_xpis(owner, repo, revision):
         repo_url = config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-repository"]
         xpi_owner, xpi_repo = extract_github_repo_owner_and_name(repo_url)
         # convert "master" into a stable ref
-        ref = config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-ref"]
+        ref = xpi.get("branch", config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-ref"])
         commit = ref_to_commit(xpi_owner, xpi_repo, ref)
         package = get_package_json(xpi_owner, xpi_repo, commit)
         xpis.append(
