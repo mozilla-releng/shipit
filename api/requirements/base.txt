@@ -32,10 +32,9 @@ amqp==2.5.2 \
     --hash=sha256:6e649ca13a7df3faacdc8bbb280aa9a6602d22fd9d545336077e573a1f4ff3b8 \
     --hash=sha256:77f1aef9410698d20eaeac5b73a87817365f457a507d82edf292e12cbb83b08d \
     # via kombu
-arrow==0.15.5 \
-    --hash=sha256:5390e464e2c5f76971b60ffa7ee29c598c7501a294bc9f5e6dadcb251a5d027b \
-    --hash=sha256:70729bcc831da496ca3cb4b7e89472c8e2d27d398908155e0796179f6d2d41ee \
-    # via -r base.in
+arrow==0.15.6 \
+    --hash=sha256:a24c1de90850f6fb2033fd6bf8a11f281e84cb54825e5eabdda219e673b52aac \
+    --hash=sha256:eb5d339f00072cc297d7de252a2e75f272085d1231a3723f1026d1fa91367118    # via -r base.in
 async-timeout==3.0.1 \
     --hash=sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f \
     --hash=sha256:4291ca197d287d274d0b6cb5d6f8f8f82d434ed288f962539ff18cc9012f9ea3 \
