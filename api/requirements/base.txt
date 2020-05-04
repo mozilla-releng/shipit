@@ -256,11 +256,10 @@ taskcluster-urls==12.1.0 \
     --hash=sha256:1dc740c32c7beb31e11ed7ccf9da2d47a504acdb3170c8900649433b0fd16fb2 \
     --hash=sha256:4a62c776aeba6d45044789a8845ec4d8521bc1bb6ebfc86d79ee759bcdd4f2f7 \
     # via taskcluster
-taskcluster==29.0.1 \
-    --hash=sha256:59955ebf085980d3ffbc8edac548ab479c9423af6c7f8ae502c312d16615e7ee \
-    --hash=sha256:8eaa33c600843272618f1998a38d4dcf9d374a5604882d9a53c3acd1e8af4fe5 \
-    --hash=sha256:ee37d56c3d8c83722e66ef6ca4a54ce1916ef2e452c05672f9935b65d969a433 \
-    # via -r base.in
+taskcluster==29.3.0 \
+    --hash=sha256:1f75471680f5997f4a4f8c67fec96c6efec49c1f80fca7a10063912eeae894c8 \
+    --hash=sha256:286e171402aa20c79953cce18d4712c952c249352844c1fc42ea5f6cac470bdc \
+    --hash=sha256:919bd01dd99df758a5cb4744eec3846905e0d829cb5ef302cf3179af662bab72    # via -r base.in
 typed-ast==1.4.1 \
     --hash=sha256:0666aa36131496aed8f7be0410ff974562ab7eeac11ef351def9ea6fa28f6355 \
     --hash=sha256:0c2c07682d61a629b68433afb159376e24e5b2fd4641d35424e462169c0a7919 \
