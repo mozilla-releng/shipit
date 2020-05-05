@@ -51,10 +51,10 @@ FIREFOX_NIGHTLY = "78.0a1"
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
-LAST_SOFTFREEZE_DATE = "2020-04-27"
+LAST_SOFTFREEZE_DATE = "2020-04-30"
 LAST_MERGE_DATE = "2020-05-04"
 LAST_RELEASE_DATE = "2020-05-05"
-NEXT_SOFTFREEZE_DATE = "2020-05-25"
+NEXT_SOFTFREEZE_DATE = "2020-05-28"
 NEXT_MERGE_DATE = "2020-06-01"
 NEXT_RELEASE_DATE = "2020-06-02"
 
