@@ -37,9 +37,10 @@ paths:
       - name: status
         in: query
         style: form
-        description: >
-            Defaults to listing only "scheduled" releases. Currently supported
-            values are "scheduled", "shipped", and "aborted".
+        description: 'Defaults to listing only "scheduled" releases. Currently supported
+          values are "scheduled", "shipped", and "aborted".
+
+          '
         explode: false
         schema:
           type: array
@@ -109,6 +110,29 @@ paths:
             application/json:
               schema:
                 type: object
+  /signoff/{name}/{phase}:
+    get:
+      summary: Get phase signoff requirements and status
+      operationId: shipit_api.public.api.get_phase_signoff
+      parameters:
+      - name: name
+        in: path
+        description: release name
+        required: true
+        schema:
+          type: string
+      - name: phase
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Retruns phase signoff representation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signoffs'
 components:
   schemas:
     Phase:
