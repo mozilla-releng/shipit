@@ -506,5 +506,11 @@ SIGNOFFS = {
                 {"name": "XPI admin", "description": "Promote XPI", "permissions": "xpi_system_signoff"},
             ],
         },
+        "mozillaonline-privileged": {
+            "promote": [
+                {"name": "MozillaOnline XPI admin", "description": "Promote XPI", "permissions": "xpi_mozillaonline-privileged_signoff"},
+                {"name": "MozillaOnline XPI admin 2", "description": "Promote XPI", "permissions": "xpi_mozillaonline-privileged_signoff"},
+            ],
+        },
     },
 }
