@@ -483,28 +483,28 @@ SIGNOFFS = {
     #             {
     #                 'name': '[relman] Ship Fennec',
     #                 'description': 'Publish Firefox for Android to Play Store',
-    #                 # TODO: this group includes releng/relman/qa/etc, need to split or switch to real scopes
-    #                 'permissions': 'vpn_cloudops_shipit',
+    #                 'permissions': 'firefox-signoff',  # a group from GROUPS in settings.py
     #             },
     #             {
     #                 'name': '[releng] Ship Fennec',
     #                 'description': 'Publish Firefox for Android to Play Store',
-    #                 # XXX: stands for the LDAP group for now
-    #                 'permissions': 'releng',
+    #                 'permissions': 'admin',  # a group from GROUPS in settings.py
     #             },
     #         ],
     #     },
     # },
-    # "xpi": {
-    #     "privileged": {
-    #         "promote": [
-    #             {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
-    #             {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
-    #         ],
-    #     },
-    #     "system": [
-    #         {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
-    #         {"name": "[releng#1] Promote", "description": "Promote XPI", "permissions": "releng"},
-    #     ],
-    # },
+    "xpi": {
+        "privileged": {
+            "promote": [
+                {"name": "Releng", "description": "Promote XPI", "permissions": "admin"},
+                {"name": "XPI admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
+            ],
+        },
+        "system": {
+            "promote": [
+                {"name": "Releng", "description": "Promote XPI", "permissions": "admin"},
+                {"name": "XPI admin", "description": "Promote XPI", "permissions": "xpi_system_signoff"},
+            ],
+        },
+    },
 }

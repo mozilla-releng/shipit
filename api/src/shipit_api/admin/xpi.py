@@ -144,6 +144,12 @@ def phase_signoff(name, phase, body):
     if who in [s.completed_by for s in phase_obj.signoffs]:
         abort(409, f"Already signed off by {who}")
 
+    # signoff.permissions corresponds to the group in settings.py
+    groups = current_app.config.get("GROUPS", {})
+    group = groups.get(signoff.permissions, [])
+    if who not in group:
+        abort(401, f"User `{who} is not in the `{signoff.permissions}` group")
+
     signoff.completed = datetime.datetime.utcnow()
     signoff.signed = True
     signoff.completed_by = who

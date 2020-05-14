@@ -475,41 +475,38 @@ class TaskLabel extends React.PureComponent {
     }
   };
 
-
-  renderSignoffs = () => {
-    const { signoffs } = this.props.signoffs;
-    if (signoffs.length === 0) {
-      return <div>No signoffs required</div>;
-    }
-    return (
-      <div>
-        <ControlLabel>Sign off as</ControlLabel>
-        <FormGroup>
-          {signoffs.map(s => (
-            <Radio
-              key={s.uid}
-              name="signoff"
-              disabled={s.signed}
-              onClick={() => this.setState({ selectedSignoff: s.uid })}
-            >
-              {s.name} - {s.description}
-              {s.signed && <small> (completed by: {s.completed_by})</small>}
-            </Radio>
-          ))}
-        </FormGroup>
-      </div>
-    );
-  };
+  renderSignoffs = signoffs => (
+    <div>
+      <ControlLabel>Sign off as</ControlLabel>
+      <FormGroup>
+        {signoffs.map(s => (
+          <Radio
+            key={s.uid}
+            name="signoff"
+            disabled={s.signed}
+            onClick={() => this.setState({ selectedSignoff: s.uid })}
+          >
+            {s.name} - {s.description}
+            {s.signed && <small> (completed by: {s.completed_by})</small>}
+          </Radio>
+        ))}
+      </FormGroup>
+    </div>
+  );
 
   renderBody = () => {
     const { inProgress, submitted, errorMsg } = this.state;
+    const { signoffs } = this.props.signoffs;
+    const signoffRequired = signoffs && signoffs.length > 0;
+
     if (errorMsg) {
       return (
         <div>
-          <p>{errorMsg}</p>
+          <h4>{errorMsg}</h4>
         </div>
       );
     }
+
     if (inProgress) {
       return (
         <div>
@@ -517,20 +514,29 @@ class TaskLabel extends React.PureComponent {
         </div>
       );
     }
+
     if (!submitted) {
+      if (signoffRequired) {
+        return (
+          <div>
+            <h4>Phase will be signed off</h4>
+            {this.renderSignoffs(signoffs)}
+          </div>
+        );
+      }
+
       return (
         <div>
-          <h4>Are you sure?</h4>
-          <p>Action will be scheduled</p>
-          {this.renderSignoffs()}
+          <h4>Phase will be scheduled</h4>
         </div>
       );
     }
-    return (
-      <div>
-        Action task has been submitted.
-      </div>
-    );
+
+    if (signoffRequired) {
+      return <h4>Phase signed off</h4>;
+    }
+
+    return <h4>Phase submitted</h4>;
   };
 
   render() {
@@ -551,7 +557,7 @@ class TaskLabel extends React.PureComponent {
           <Button bsStyle="primary" disabled={tasksInProgress} onClick={this.open}>{name}</Button>
           <Modal show={this.state.showModal} onHide={this.close}>
             <Modal.Header closeButton>
-              <Modal.Title>Do eeet</Modal.Title>
+              <Modal.Title>Schedule Phase</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {this.renderBody()}
@@ -564,7 +570,7 @@ class TaskLabel extends React.PureComponent {
                     bsStyle="danger"
                     disabled={!this.context.authController.userSession || this.state.inProgress}
                   >
-                    Do eeet!
+                    Schedule Phase
                   </Button>
                   <Button onClick={this.close} bsStyle="primary">Close</Button>
                 </div>

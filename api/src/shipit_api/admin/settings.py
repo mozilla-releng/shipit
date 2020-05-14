@@ -72,8 +72,8 @@ GROUPS = {
         "sfraser@mozilla.com",
         "tprince@mozilla.com",
     ],
-    "firefox-signoff": ["rkothari@mozilla.com", "ehenry@mozilla.com", "jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
-    "fenix-signoff": ["rkothari@mozilla.com", "ehenry@mozilla.com", "jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
+    "firefox-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
+    "fenix-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
     # We use 2 separate groups for privileged and system addon type
     "xpi_privileged_signoff": ["rdalal@mozilla.com", "mcooper@mozilla.com", "awagner@mozilla.com", "mbanner@mozilla.com", "dharvey@mozilla.com"],
