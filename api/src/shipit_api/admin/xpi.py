@@ -148,7 +148,7 @@ def phase_signoff(name, phase, body):
     groups = current_app.config.get("GROUPS", {})
     group = groups.get(signoff.permissions, [])
     if who not in group:
-        abort(401, f"User `{who} is not in the `{signoff.permissions}` group")
+        abort(401, f"User `{who}` is not in the `{signoff.permissions}` group")
 
     signoff.completed = datetime.datetime.utcnow()
     signoff.signed = True
