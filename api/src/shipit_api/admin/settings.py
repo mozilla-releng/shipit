@@ -58,26 +58,28 @@ OIDC_USER_INFO_ENABLED = True
 OIDC_CLIENT_SECRETS = create_auth0_secrets_file(AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, AUTH_DOMAIN)
 
 # XXX: scopes/groups are hardcoded for now
+ADMIN_GROUP = [
+    "asasaki@mozilla.com",
+    "bhearsum@mozilla.com",
+    "catlee@mozilla.com",
+    "jlorenzo@mozilla.com",
+    "jlund@mozilla.com",
+    "jwood@mozilla.com",
+    "mtabara@mozilla.com",
+    "nthomas@mozilla.com",
+    "raliiev@mozilla.com",
+    "sfraser@mozilla.com",
+    "tprince@mozilla.com",
+]
 GROUPS = {
-    "admin": [
-        "asasaki@mozilla.com",
-        "bhearsum@mozilla.com",
-        "catlee@mozilla.com",
-        "jlorenzo@mozilla.com",
-        "jlund@mozilla.com",
-        "jwood@mozilla.com",
-        "mtabara@mozilla.com",
-        "nthomas@mozilla.com",
-        "raliiev@mozilla.com",
-        "sfraser@mozilla.com",
-        "tprince@mozilla.com",
-    ],
+    "admin": ADMIN_GROUP,
     "firefox-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "fenix-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
-    # We use 2 separate groups for privileged and system addon type
+    # We use 3 separate groups for privileged, mozillaonline-privileged, and system addon type
     "xpi_privileged_signoff": ["rdalal@mozilla.com", "mcooper@mozilla.com", "awagner@mozilla.com", "mbanner@mozilla.com", "dharvey@mozilla.com"],
     "xpi_system_signoff": ["rdalal@mozilla.com", "mcooper@mozilla.com"],
+    "xpi_mozillaonline-privileged_signoff": ["bzhao@mozilla.com", "jxia@mozilla.com", "yliu@mozilla.com"] + ADMIN_GROUP,
 }
 
 AUTH0_AUTH_SCOPES = dict()
@@ -121,7 +123,7 @@ AUTH0_AUTH_SCOPES.update({"rebuild_product_details": [], "update_release_status"
 AUTH0_AUTH_SCOPES.update({"github": GROUPS["fenix-signoff"] + GROUPS["xpi_privileged_signoff"] + GROUPS["xpi_system_signoff"]})
 
 # XPI scopes
-for xpi_type in ["privileged", "system"]:
+for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
     AUTH0_AUTH_SCOPES.update(
         {f"add_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"], f"abandon_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"]}
     )
