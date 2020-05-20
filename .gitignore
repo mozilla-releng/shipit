@@ -5,7 +5,7 @@ build/
 dist/
 node_modules/
 yarn-error.log
-
+.eslintcache
 .coverage
 .tox
 .eggs
