@@ -71,22 +71,9 @@ ADMIN_GROUP = [
     "sfraser@mozilla.com",
     "tprince@mozilla.com",
 ]
-XPI_PRIVILEGED_ADMIN_GROUP = [
-    "rdalal@mozilla.com",
-    "mcooper@mozilla.com",
-    "awagner@mozilla.com",
-    "mbanner@mozilla.com",
-    "dharvey@mozilla.com"
-]
-XPI_SYSTEM_ADMIN_GROUP = [
-    "rdalal@mozilla.com",
-    "mcooper@mozilla.com"
-]
-XPI_MOZILLAONLINE_PRIVILEGED_GROUP = [
-    "bzhao@mozilla.com",
-    "jxia@mozilla.com",
-    "yliu@mozilla.com"
-]
+XPI_PRIVILEGED_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com", "awagner@mozilla.com", "mbanner@mozilla.com", "dharvey@mozilla.com"]
+XPI_SYSTEM_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com"]
+XPI_MOZILLAONLINE_PRIVILEGED_GROUP = ["bzhao@mozilla.com", "jxia@mozilla.com", "yliu@mozilla.com"]
 GROUPS = {
     "admin": ADMIN_GROUP,
     "firefox-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
