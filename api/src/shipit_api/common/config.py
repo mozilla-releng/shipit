@@ -494,22 +494,26 @@ SIGNOFFS = {
     #     },
     # },
     "xpi": {
+        # XXX split `privileged` into `privileged-internal` and `privileged-studies`.
+        #     The latter will have stricter QA signoff requirements.
         "privileged": {
             "promote": [
-                {"name": "Releng", "description": "Promote XPI", "permissions": "admin"},
-                {"name": "XPI admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
+                {"name": "Privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
+                {"name": "Privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
             ],
         },
+        # XXX replace the 2nd `system` signoff with `xpi_system_qa_signoff` once
+        #     that team is defined and granted access to shipit
         "system": {
             "promote": [
-                {"name": "Releng", "description": "Promote XPI", "permissions": "admin"},
-                {"name": "XPI admin", "description": "Promote XPI", "permissions": "xpi_system_signoff"},
+                {"name": "System addon admin", "description": "Promote XPI", "permissions": "xpi_system_signoff"},
+                {"name": "System addon admin", "description": "Promote XPI", "permissions": "xpi_system_signoff"},
             ],
         },
         "mozillaonline-privileged": {
             "promote": [
-                {"name": "MozillaOnline XPI admin", "description": "Promote XPI", "permissions": "xpi_mozillaonline-privileged_signoff"},
-                {"name": "MozillaOnline XPI admin 2", "description": "Promote XPI", "permissions": "xpi_mozillaonline-privileged_signoff"},
+                {"name": "MozillaOnline privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_mozillaonline-privileged_signoff"},
+                {"name": "Privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
             ],
         },
     },
