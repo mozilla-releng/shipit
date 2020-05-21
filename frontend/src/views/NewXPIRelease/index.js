@@ -98,13 +98,13 @@ export default class NewXPIelease extends React.Component {
 
   handleXPIRevision = async (revision) => {
     this.setState({ xpiRevision: revision.revision });
-    this.guessBuildId();
     const xpiVersion = await this.getXPIVersion(
       this.state.xpiOwner,
       this.state.xpiRepo,
       revision.revision,
     );
-    this.setState({ xpiVersion });
+    const buildNumber = await this.guessNextBuildNumber(this.state.xpiName, xpiVersion);
+    this.setState({ xpiVersion, buildNumber });
   };
 
   defaultState = () => ({
@@ -136,15 +136,10 @@ export default class NewXPIelease extends React.Component {
     this.setState({ xpis });
   };
 
-  guessBuildId = async () => {
-    const buildNumbers = await getXPIBuildNumbers(
-      this.state.xpiName,
-      this.state.xpiRevision,
-    );
+  guessNextBuildNumber = async (xpiName, xpiVersion) => {
+    const buildNumbers = await getXPIBuildNumbers(xpiName, xpiVersion);
     const nextBuildNumber = buildNumbers.length !== 0 ? Math.max(...buildNumbers) + 1 : 1;
-    this.setState({
-      buildNumber: nextBuildNumber,
-    });
+    return nextBuildNumber;
   };
 
   close = () => {

@@ -34,8 +34,8 @@ async def _create_consumer(user, password, exchange, topic, callback):
     exchange_name = exchange
     if exchange.startswith(f"exchange/{user}/"):
         exchange_name = exchange[len(f"exchange/{user}/") :]
-    elif exchange.startswith(f"exchange/"):
-        exchange_name = exchange[len(f"exchange/") :]
+    elif exchange.startswith("exchange/"):
+        exchange_name = exchange[len("exchange/") :]
 
     # full exchange name should start with "exchange/"
     if not exchange.startswith("exchange/"):

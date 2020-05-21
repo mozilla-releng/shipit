@@ -29,7 +29,7 @@ def init_database(app):
         if os.path.isdir(migrations_dir):
             # Needed to init potential migrations later on
             # Use a separate alembic_version table per app
-            options = {f"version_table": "{app.import_name}_alembic_version"}
+            options = {"version_table": f"{app.import_name}_alembic_version"}
             migrate.init_app(app, directory=migrations_dir, **options)
 
             logger.info("Starting migrations %s", app.name)
