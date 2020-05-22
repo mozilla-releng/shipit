@@ -125,7 +125,9 @@ AUTH0_AUTH_SCOPES.update({"rebuild_product_details": [], "update_release_status"
 
 # Github scopes
 # The following scope gives permission to all github queries, inlcuding private repos
-AUTH0_AUTH_SCOPES.update({"github": GROUPS["fenix-signoff"] + GROUPS["xpi_privileged_signoff"] + GROUPS["xpi_system_signoff"]})
+AUTH0_AUTH_SCOPES.update(
+    {"github": GROUPS["fenix-signoff"] + GROUPS["xpi_privileged_signoff"] + GROUPS["xpi_system_signoff"] + GROUPS["xpi_mozillaonline-privileged_signoff"]}
+)
 
 # XPI scopes
 for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
