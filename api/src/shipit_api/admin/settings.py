@@ -71,15 +71,20 @@ ADMIN_GROUP = [
     "sfraser@mozilla.com",
     "tprince@mozilla.com",
 ]
+XPI_PRIVILEGED_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com", "awagner@mozilla.com", "mbanner@mozilla.com", "dharvey@mozilla.com"]
+XPI_SYSTEM_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com"]
+XPI_MOZILLAONLINE_PRIVILEGED_GROUP = ["bzhao@mozilla.com", "jxia@mozilla.com", "yliu@mozilla.com"]
 GROUPS = {
     "admin": ADMIN_GROUP,
     "firefox-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "fenix-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
-    # We use 3 separate groups for privileged, mozillaonline-privileged, and system addon type
-    "xpi_privileged_signoff": ["rdalal@mozilla.com", "mcooper@mozilla.com", "awagner@mozilla.com", "mbanner@mozilla.com", "dharvey@mozilla.com"],
-    "xpi_system_signoff": ["rdalal@mozilla.com", "mcooper@mozilla.com"],
-    "xpi_mozillaonline-privileged_signoff": ["bzhao@mozilla.com", "jxia@mozilla.com", "yliu@mozilla.com"] + ADMIN_GROUP,
+    # XPI signoffs. These are in flux.
+    # Adding Releng as a backup to all of these, for bus factor. Releng should
+    # only sign off if requested by someone in the appropriate group.
+    "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_GROUP + ADMIN_GROUP,
+    "xpi_system_signoff": XPI_SYSTEM_ADMIN_GROUP + ADMIN_GROUP,
+    "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_GROUP + ADMIN_GROUP,
 }
 
 AUTH0_AUTH_SCOPES = dict()
