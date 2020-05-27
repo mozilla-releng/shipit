@@ -48,7 +48,7 @@ def add_release(body):
         abort(400, str(e))
 
     logger.info("New release of %s", release.name)
-    notify_via_matrix("xpi", f"New release of {release.name}")
+    notify_via_matrix("xpi", "New release created")
     return release.json, 201
 
 
@@ -93,7 +93,7 @@ def schedule_phase(name, phase):
     phase = do_schedule_phase(session, phase)
     url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{phase.task_id}")
     logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
-    notify_via_matrix("xpi", f"Phase {phase.name} of {phase.release.name} started by {phase.completed_by}. - {url}")
+    notify_via_matrix("xpi", f"Phase {phase.name} started by {phase.completed_by}. - {url}")
     return phase.json
 
 
@@ -111,7 +111,7 @@ def abandon_release_xpi(name):
     release.status = "aborted"
     session.commit()
     logger.info("Canceled release %s", release.name)
-    notify_via_matrix("xpi", f"Canceled release {release.name}")
+    notify_via_matrix("xpi", "Canceled release")
     return release.json
 
 
@@ -163,6 +163,6 @@ def phase_signoff(name, phase, body):
 
     release = phase_obj.release
     logger.info("Phase %s of %s signed off by %s", phase, release.name, who)
-    notify_via_matrix("xpi", f"Phase {phase} of {release.name} signed off by {who}")
+    notify_via_matrix("xpi", f"Phase {phase} signed off by {who}")
 
     return dict(signoffs=signoffs)

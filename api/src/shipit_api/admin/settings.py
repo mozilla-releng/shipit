@@ -149,6 +149,7 @@ AUTH0_AUTH_SCOPES = {f"{SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"]
 if APP_CHANNEL == "production":
     MATRIX_NOTIFICATIONS_OWNERS_PER_PRODUCT = {
         "thunderbird": ["rjl", "wsmwk"],
+        "xpi": ["XPI"],
         "default": ["sheriffduty", "ciduty", "releaseduty"]
     }
     MATRIX_NOTIFICATIONS_ROOMS_PER_PRODUCT = {
