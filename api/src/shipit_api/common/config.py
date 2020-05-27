@@ -68,7 +68,7 @@ FIREFOX_AURORA = ""
 
 # IOS versions
 IOS_BETA_VERSION = ""
-IOS_VERSION = "12.1"
+IOS_VERSION = "24.1"
 
 # Thunderbird configs
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
