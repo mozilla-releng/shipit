@@ -74,6 +74,7 @@ ADMIN_GROUP = [
 XPI_PRIVILEGED_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com", "awagner@mozilla.com", "mbanner@mozilla.com", "dharvey@mozilla.com"]
 XPI_SYSTEM_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com"]
 XPI_MOZILLAONLINE_PRIVILEGED_GROUP = ["bzhao@mozilla.com", "jxia@mozilla.com", "yliu@mozilla.com"]
+XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP = ["awagner@mozilla.com", "mkaply@mozilla.com"]
 GROUPS = {
     "admin": ADMIN_GROUP,
     "firefox-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
@@ -85,6 +86,7 @@ GROUPS = {
     "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_GROUP + ADMIN_GROUP,
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_GROUP + ADMIN_GROUP,
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_GROUP + ADMIN_GROUP,
+    "xpi_mozillaonline-privileged_admin_signoff": XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP + ADMIN_GROUP,
 }
 
 AUTH0_AUTH_SCOPES = dict()
@@ -126,13 +128,26 @@ AUTH0_AUTH_SCOPES.update({"rebuild_product_details": [], "update_release_status"
 # Github scopes
 # The following scope gives permission to all github queries, inlcuding private repos
 AUTH0_AUTH_SCOPES.update(
-    {"github": GROUPS["fenix-signoff"] + GROUPS["xpi_privileged_signoff"] + GROUPS["xpi_system_signoff"] + GROUPS["xpi_mozillaonline-privileged_signoff"]}
+    {
+        "github": list(
+            set(
+                GROUPS["fenix-signoff"]
+                + GROUPS["xpi_privileged_signoff"]
+                + GROUPS["xpi_system_signoff"]
+                + GROUPS["xpi_mozillaonline-privileged_signoff"]
+                + GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
+            )
+        )
+    }
 )
 
 # XPI scopes
 for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
     AUTH0_AUTH_SCOPES.update(
-        {f"add_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"], f"abandon_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"]}
+        {
+            f"add_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+            f"abandon_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+        }
     )
     for phase in ["build", "promote"]:
         AUTH0_AUTH_SCOPES.update(

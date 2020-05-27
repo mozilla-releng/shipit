@@ -512,8 +512,8 @@ SIGNOFFS = {
         },
         "mozillaonline-privileged": {
             "promote": [
-                {"name": "MozillaOnline privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_mozillaonline-privileged_signoff"},
-                {"name": "Privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
+                {"name": "MozillaOnline privileged webextension team", "description": "Promote XPI", "permissions": "xpi_mozillaonline-privileged_signoff"},
+                {"name": "MozillaOnline privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_mozillaonline-privileged_admin_signoff"},
             ],
         },
     },
