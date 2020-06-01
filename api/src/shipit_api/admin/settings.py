@@ -152,8 +152,8 @@ for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
     for phase in ["build", "promote"]:
         AUTH0_AUTH_SCOPES.update(
             {
-                f"schedule_phase/xpi/{xpi_type}/{phase}": GROUPS[f"xpi_{xpi_type}_signoff"],
-                f"phase_signoff/xpi/{xpi_type}/{phase}": GROUPS[f"xpi_{xpi_type}_signoff"],
+                f"schedule_phase/xpi/{xpi_type}/{phase}": GROUPS[f"xpi_{xpi_type}_signoff"]+ GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+                f"phase_signoff/xpi/{xpi_type}/{phase}": GROUPS[f"xpi_{xpi_type}_signoff"]+ GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
             }
         )
 
