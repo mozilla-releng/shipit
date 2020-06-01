@@ -47,10 +47,9 @@ flask-migrate==2.5.3 \
     --hash=sha256:4dc4a5cce8cbbb06b8dc963fd86cf8136bd7d875aabe2d840302ea739b243732 \
     --hash=sha256:a69d508c2e09d289f6e55a417b3b8c7bfe70e640f53d2d9deb0d056a384f37ee \
     # via -r public.in
-flask-sqlalchemy==2.4.1 \
-    --hash=sha256:0078d8663330dc05a74bc72b3b6ddc441b9a744e2f56fe60af1a5bfc81334327 \
-    --hash=sha256:6974785d913666587949f7c2946f7001e4fa2cb2d19f4e69ead02e4b8f50b33d \
-    # via flask-migrate
+flask-sqlalchemy==2.4.3 \
+    --hash=sha256:0b656fbf87c5f24109d859bafa791d29751fabbda2302b606881ae5485b557a5 \
+    --hash=sha256:fcfe6df52cd2ed8a63008ca36b86a51fa7a4b70cef1c39e5625f722fca32308e    # via flask-migrate
 flask-talisman==0.7.0 \
     --hash=sha256:468131464a249274ed226efc21b372518f442487e58918ccab8357eaa638fd1f \
     --hash=sha256:eaa754f4b771dfbe473843391d69643b79e3a38c865790011ac5e4179c68e3ec \
