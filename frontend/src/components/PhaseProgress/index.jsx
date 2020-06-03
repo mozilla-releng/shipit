@@ -21,6 +21,7 @@ import config from '../../config';
 import { schedulePhase, phaseSignOff } from '../api';
 import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
+import { phasePrettyName } from '../text';
 
 export default function PhaseProgress({ release, readOnly, xpi }) {
   const { fetchReleases } = useContext(ReleaseContext);
@@ -70,32 +71,6 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
         handleClose({ refresh: true });
       }
     }
-  };
-
-  const phasePrettyName = name => {
-    if (name === 'promote_firefox_rc') {
-      return 'Promote RC';
-    }
-
-    if (name === 'ship_firefox_rc') {
-      return 'Ship RC';
-    }
-
-    if (name === 'ship_fennec_rc') {
-      return 'Ship RC';
-    }
-
-    if (name === 'ship_fennec_release_rc') {
-      return 'Ship Release to RC';
-    }
-
-    if (name === 'ship_fennec_release') {
-      return 'Ship Fennec to Release';
-    }
-
-    const firstTerm = name.split('_')[0];
-
-    return firstTerm.charAt(0).toUpperCase() + firstTerm.slice(1);
   };
 
   const renderPhase = (phase, idx, phases, allowPhaseSkipping) => {
