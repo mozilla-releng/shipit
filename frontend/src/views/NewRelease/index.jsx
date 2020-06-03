@@ -18,7 +18,6 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, DateTimePicker } from '@material-ui/pickers';
 import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Dashboard from '../../components/Dashboard';
 import config from '../../config';
@@ -271,18 +270,12 @@ export default function NewRelease() {
             className={classes.formControl}
             helperText="Coma-separated list of versions with build number, e.g. 59.0b8build7."
           />
-          <FormControlLabel
-            label={partialFieldEnabled ? 'Disable' : 'Enable'}
-            labelPlacement="end"
-            control={
-              <Switch
-                checked={partialFieldEnabled}
-                onChange={() => {
-                  setPartialFieldEnabled(!partialFieldEnabled);
-                  handlePartials('');
-                }}
-              />
-            }
+          <Switch
+            checked={partialFieldEnabled}
+            onChange={() => {
+              setPartialFieldEnabled(!partialFieldEnabled);
+              handlePartials('');
+            }}
           />
         </Grid>
       );
