@@ -44,7 +44,7 @@ export default function ReleaseProgress({
   const cancelRelease = async releaseName => {
     const result = await cancelAction(
       releaseName,
-      xpi ? '/xpi/releases' : undefined
+      xpi ? '/xpi/releases' : '/releases'
     );
 
     if (!result.error) {

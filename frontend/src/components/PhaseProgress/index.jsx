@@ -53,7 +53,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
         release.name,
         phase.name,
         selectedSignoffUID,
-        xpi ? '/xpi/signoff' : undefined
+        xpi ? '/xpi/signoff' : '/signoff'
       );
 
       if (!result.error) {
@@ -63,7 +63,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
       const result = await schedulePhaseAction(
         release.name,
         phase.name,
-        xpi ? '/xpi/releases' : undefined
+        xpi ? '/xpi/releases' : '/releases'
       );
 
       if (!result.error) {

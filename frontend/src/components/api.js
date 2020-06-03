@@ -331,7 +331,7 @@ export async function getPendingReleases(
   return releases;
 }
 
-export async function schedulePhase(releaseName, phaseName, url = '/releases') {
+export async function schedulePhase(releaseName, phaseName, url) {
   const req = await axios.put(
     `${url}/${releaseName}/${phaseName}`,
     {},
@@ -343,7 +343,7 @@ export async function schedulePhase(releaseName, phaseName, url = '/releases') {
   return req.data;
 }
 
-export async function cancelRelease(releaseName, url = '/releases') {
+export async function cancelRelease(releaseName, url) {
   const req = await axios.delete(`${url}/${releaseName}`, {
     authRequired: true,
   });
@@ -351,12 +351,7 @@ export async function cancelRelease(releaseName, url = '/releases') {
   return req.data;
 }
 
-export async function phaseSignOff(
-  releaseName,
-  phaseName,
-  signoffUID,
-  url = '/signoff'
-) {
+export async function phaseSignOff(releaseName, phaseName, signoffUID, url) {
   const req = await axios.put(
     `${url}/${releaseName}/${phaseName}`,
     // The UID is sent as a quoted string, what requires the headers to be set
