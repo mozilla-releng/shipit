@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { makeStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import menuItems from './menuItems';
 import Link from '../../utils/Link';
@@ -15,11 +16,6 @@ import { CONTENT_MAX_WIDTH, APP_BAR_HEIGHT } from '../../utils/constants';
 const useStyles = makeStyles(theme => ({
   appbar: {
     height: APP_BAR_HEIGHT,
-  },
-  appbarBottom: {
-    height: APP_BAR_HEIGHT,
-    top: 'auto',
-    bottom: 0,
   },
   title: {
     textDecoration: 'none',
@@ -84,7 +80,9 @@ export default function Dashboard(props) {
           </nav>
         </Toolbar>
       </AppBar>
-      <main className={classes.main}>{children}</main>
+      <Paper square elevation={0}>
+        <main className={classes.main}>{children}</main>
+      </Paper>
       {!disabled && <Footer />}
     </Fragment>
   );

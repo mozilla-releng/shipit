@@ -73,7 +73,7 @@ export default function ProductDisabler({
     */
 
   return (
-    <AppBar className={classes.appBar}>
+    <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
         <Typography color="inherit" variant="subtitle1" noWrap>
           Automated Release Status
