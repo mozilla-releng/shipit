@@ -117,7 +117,7 @@ tasks:
                     cd shipit/frontend &&
                     git checkout ${head_sha} &&
                     yarn install &&
-                    yarn test
+                    yarn test --passWithNoTests
               metadata:
                 name: Ship-it Frontend tests (${release_channel})
                 description: Ship-it Frontend tests (${release_channel})

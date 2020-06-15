@@ -138,6 +138,7 @@ def list_xpis(owner, repo, revision):
         xpis.append(
             {
                 "revision": commit,
+                "branch": xpi.get("branch", "master"),
                 "version": package["version"],
                 "xpi_name": xpi["name"],
                 "owner": xpi_owner,
