@@ -1,5 +1,7 @@
 import 'date-fns';
 import React, { useState, useContext } from 'react';
+import ReactTimeAgo from 'react-time-ago';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import TextField from '@material-ui/core/TextField';
@@ -35,6 +37,9 @@ const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 500,
+  },
+  lessImportantData: {
+    color: theme.palette.grey[500],
   },
 }));
 
@@ -214,6 +219,24 @@ export default function NewRelease() {
     );
   };
 
+  const getBranchLabel = branch => {
+    const label = [branch.prettyName];
+
+    if (branch.date) {
+      label.push(
+        <Box
+          component="span"
+          m={1}
+          className={classes.lessImportantData}
+          key={branch.branch}>
+          updated <ReactTimeAgo date={branch.date} />
+        </Box>
+      );
+    }
+
+    return label;
+  };
+
   const renderBranchesSelect = () => {
     let branches;
 
@@ -236,7 +259,7 @@ export default function NewRelease() {
             onChange={event => handleBranch(event.target.value)}>
             {branches.map(branch => (
               <MenuItem value={branch} key={branch.branch}>
-                {branch.prettyName}
+                {getBranchLabel(branch)}
               </MenuItem>
             ))}
           </Select>

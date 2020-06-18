@@ -106,11 +106,16 @@ export async function getBranches(repo) {
     const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
     const rawData = await getGithubBranches(repoOwner, repoName);
 
-    branches = rawData.map(branchName => ({
-      branch: branchName,
-      prettyName: branchName,
+    branches = rawData.map(branch => ({
+      branch: branch.name,
+      date: new Date(branch.committer_date),
+      prettyName: branch.name,
+      project: repoName,
       repo,
     }));
+
+    branches.sort((a, b) => b.date - a.date); // Most recent first
+    branches = branches.slice(0, 10); // Only take the 10 most recent branches
   }
 
   return branches;
