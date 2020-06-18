@@ -79,9 +79,10 @@ export async function getPushes(repo, branch) {
     const rawData = await getGithubCommits(repoOwner, repoName, branch);
 
     latestPushes = rawData.map(commit => ({
+      author: commit.author,
       date: new Date(commit.committer_date),
-      node: commit.revision,
       desc: commit.message,
+      node: commit.revision,
     }));
   }
 

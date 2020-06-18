@@ -100,11 +100,15 @@ def list_github_commits(owner, repo, branch, limit=10):
               history(first: %(limit)s) {
                 edges {
                   node {
-                    messageHeadline
-                    oid
+                    author {
+                      email
+                      name
+                    }
                     committer {
                       date
                     }
+                    messageHeadline
+                    oid
                   }
                 }
               }
@@ -118,7 +122,15 @@ def list_github_commits(owner, repo, branch, limit=10):
     )
     commits = query_api(query)
     edges = commits["data"]["repository"]["ref"]["target"]["history"]["edges"]
-    return [{"committer_date": e["node"]["committer"]["date"], "message": e["node"]["messageHeadline"], "revision": e["node"]["oid"]} for e in edges]
+    return [
+        {
+            "author": "{} <{}>".format(e["node"]["author"]["name"], e["node"]["author"]["email"]),
+            "committer_date": e["node"]["committer"]["date"],
+            "message": e["node"]["messageHeadline"],
+            "revision": e["node"]["oid"],
+        }
+        for e in edges
+    ]
 
 
 def get_xpi_manifest(owner, repo, ref):
