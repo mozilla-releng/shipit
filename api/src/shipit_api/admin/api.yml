@@ -347,7 +347,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
+                  type: object
   /github/commits/{owner}/{repo}:
     get:
       summary: List git commits in a Github repo

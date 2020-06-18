@@ -77,6 +77,11 @@ def list_github_branches(owner, repo, limit=100):
         refs(first: %(limit)s, refPrefix: "refs/heads/") {
           nodes {
             name
+            target {
+              ... on Commit {
+                committedDate
+              }
+            }
           }
         }
       }
@@ -86,7 +91,7 @@ def list_github_branches(owner, repo, limit=100):
     )
     content = query_api(query)
     nodes = content["data"]["repository"]["refs"]["nodes"]
-    return [node["name"] for node in nodes]
+    return [{"committer_date": node["target"]["committedDate"], "name": node["name"]} for node in nodes]
 
 
 def list_github_commits(owner, repo, branch, limit=10):
