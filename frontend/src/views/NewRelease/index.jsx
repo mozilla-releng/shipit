@@ -270,13 +270,15 @@ export default function NewRelease() {
             className={classes.formControl}
             helperText="Coma-separated list of versions with build number, e.g. 59.0b8build7."
           />
-          <Switch
-            checked={partialFieldEnabled}
-            onChange={() => {
-              setPartialFieldEnabled(!partialFieldEnabled);
-              handlePartials('');
-            }}
-          />
+          {selectedProduct.canTogglePartials && (
+            <Switch
+              checked={partialFieldEnabled}
+              onChange={() => {
+                setPartialFieldEnabled(!partialFieldEnabled);
+                handlePartials('');
+              }}
+            />
+          )}
         </Grid>
       );
     }
