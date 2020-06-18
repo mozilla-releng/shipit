@@ -22,7 +22,7 @@ import Switch from '@material-ui/core/Switch';
 import Dashboard from '../../components/Dashboard';
 import config from '../../config';
 import maybeShorten from '../../components/text';
-import { getPushes, getVersion } from '../../components/vcs';
+import { getBranches, getPushes, getVersion } from '../../components/vcs';
 import { AuthContext } from '../../utils/AuthContext';
 import {
   guessBuildNumber,
@@ -42,6 +42,7 @@ export default function NewRelease() {
   const classes = useStyles();
   const authContext = useContext(AuthContext);
   const [selectedProduct, setSelectedProduct] = useState('');
+  const [selectedRepository, setSelectedRepository] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
   const [revision, setRevision] = useState('');
   const [version, setVersion] = useState('');
@@ -83,6 +84,14 @@ export default function NewRelease() {
   const handleProduct = product => {
     reset();
     setSelectedProduct(product);
+  };
+
+  const handleRepository = async repository => {
+    reset();
+    const repo = repository;
+
+    repo.branches = await getBranches(repository.repo);
+    setSelectedRepository(repo);
   };
 
   const handleBranch = async branch => {
@@ -183,15 +192,45 @@ export default function NewRelease() {
     );
   };
 
-  const renderBranchesSelect = () => {
+  const renderRepositoriesSelect = () => {
     return (
-      selectedProduct.branches && (
+      selectedProduct.repositories && (
+        <FormControl className={classes.formControl}>
+          <InputLabel>Repositories</InputLabel>
+          <Select
+            value={selectedRepository}
+            onChange={event => handleRepository(event.target.value)}>
+            {selectedProduct.repositories.map(repository => (
+              <MenuItem value={repository} key={repository.repo}>
+                {repository.prettyName}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )
+    );
+  };
+
+  const renderBranchesSelect = () => {
+    let branches;
+
+    if (selectedProduct.branches && selectedProduct.branches.length > 0) {
+      branches = selectedProduct.branches;
+    } else if (
+      selectedRepository.branches &&
+      selectedRepository.branches.length > 0
+    ) {
+      branches = selectedRepository.branches;
+    }
+
+    return (
+      branches && (
         <FormControl className={classes.formControl}>
           <InputLabel>Branch</InputLabel>
           <Select
             value={selectedBranch}
             onChange={event => handleBranch(event.target.value)}>
-            {selectedProduct.branches.map(branch => (
+            {branches.map(branch => (
               <MenuItem value={branch} key={branch.branch}>
                 {branch.prettyName}
               </MenuItem>
@@ -385,7 +424,19 @@ export default function NewRelease() {
       </Typography>
       {renderProductsSelect()}
       <Collapse
-        in={selectedProduct.branches && selectedProduct.branches.length > 0}>
+        in={
+          selectedProduct.repositories &&
+          selectedProduct.repositories.length > 0
+        }>
+        {renderRepositoriesSelect()}
+      </Collapse>
+      <Collapse
+        in={
+          (selectedRepository &&
+            selectedRepository.branches &&
+            selectedRepository.branches.length > 0) ||
+          (selectedProduct.branches && selectedProduct.branches.length > 0)
+        }>
         {renderBranchesSelect()}
       </Collapse>
       <Collapse in={selectedBranch.repo && selectedBranch.repo.length > 0}>

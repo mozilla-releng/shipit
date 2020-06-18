@@ -22,9 +22,16 @@ function extractGithubRepoOwnerAndName(repo) {
   return { repoOwner: parts[1], repoName: parts[2] };
 }
 
-export async function getGithubCommits(repoOwner, repoName, branch) {
-  const url = `/github/commits/${repoOwner}/${repoName}/${branch}`;
+export async function getGithubBranches(repoOwner, repoName) {
+  const url = `/github/branches/${repoOwner}/${repoName}`;
   const req = await axios.get(url, { authRequired: true });
+
+  return req.data;
+}
+
+export async function getGithubCommits(repoOwner, repoName, branch) {
+  const url = `/github/commits/${repoOwner}/${repoName}`;
+  const req = await axios.get(url, { authRequired: true, params: { branch } });
 
   return req.data;
 }
@@ -79,6 +86,27 @@ export async function getPushes(repo, branch) {
   }
 
   return latestPushes;
+}
+
+export async function getBranches(repo) {
+  checkRepoIsSupported(repo);
+
+  let branches;
+
+  if (isHgRepo(repo)) {
+    throw new Error('Not implemented');
+  } else if (isGitHubRepo(repo)) {
+    const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
+    const rawData = await getGithubBranches(repoOwner, repoName);
+
+    branches = rawData.map(branchName => ({
+      branch: branchName,
+      prettyName: branchName,
+      repo,
+    }));
+  }
+
+  return branches;
 }
 
 /**
