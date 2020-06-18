@@ -52,6 +52,7 @@ export default function NewRelease() {
   const [suggestedRevisions, setSuggestedRevisions] = useState(null);
   const [releaseEta, setReleaseEta] = useState(null);
   const [open, setOpen] = useState(false);
+  const [getBranchesState, getBranchesAction] = useAction(getBranches);
   const [getPushesState, getPushesAction] = useAction(getPushes);
   const [submitReleaseState, submitReleaseAction] = useAction(submitRelease);
   const [guessPartialVersionsState, guessPartialVersionsAction] = useAction(
@@ -62,10 +63,11 @@ export default function NewRelease() {
     guessBuildNumber
   );
   const loading =
+    getBranchesState.loading ||
     getPushesState.loading ||
-    guessPartialVersionsState.loading ||
     getVersionState.loading ||
-    guessBuildNumberState.loading;
+    guessBuildNumberState.loading ||
+    guessPartialVersionsState.loading;
   const revisionPretty = rev =>
     `${rev.date.toDateString()} - ${rev.node.substring(0, 8)} - ${
       rev.author
@@ -89,8 +91,9 @@ export default function NewRelease() {
   const handleRepository = async repository => {
     reset();
     const repo = repository;
+    const branches = await getBranchesAction(repository.repo);
 
-    repo.branches = await getBranches(repository.repo);
+    repo.branches = branches.data;
     setSelectedRepository(repo);
   };
 
@@ -224,7 +227,8 @@ export default function NewRelease() {
     }
 
     return (
-      branches && (
+      (getBranchesState.loading && <Spinner loading />) ||
+      (branches && (
         <FormControl className={classes.formControl}>
           <InputLabel>Branch</InputLabel>
           <Select
@@ -237,7 +241,7 @@ export default function NewRelease() {
             ))}
           </Select>
         </FormControl>
-      )
+      ))
     );
   };
 
@@ -432,6 +436,7 @@ export default function NewRelease() {
       </Collapse>
       <Collapse
         in={
+          getBranchesState.loading ||
           (selectedRepository &&
             selectedRepository.branches &&
             selectedRepository.branches.length > 0) ||
