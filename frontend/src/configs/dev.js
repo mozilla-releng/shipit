@@ -119,11 +119,10 @@ module.exports = {
       product: 'fenix',
       prettyName: 'Fenix',
       appName: 'fenix',
-      branches: [
+      repositories: [
         {
-          prettyName: "Johan's fork master branch",
+          prettyName: "Johan's fork",
           project: 'fenix',
-          branch: 'master',
           repo: 'https://github.com/JohanLorenzo/fenix',
           enableReleaseEta: false,
         },
