@@ -12,9 +12,9 @@ import requests
 import yaml
 
 from backend_common.taskcluster import get_service
-from shipit_api.admin.github import extract_github_repo_owner_and_name
+from shipit_api.admin.github import extract_github_repo_owner_and_name, is_github_url
 from shipit_api.admin.release import is_rc
-from shipit_api.common.config import SUPPORTED_FLAVORS
+from shipit_api.common.config import SUPPORTED_FLAVORS, SUPPORTED_MOBILE_REPO_NAMES
 
 
 class UnsupportedFlavor(Exception):
@@ -27,12 +27,15 @@ class ArtifactNotFound(Exception):
 
 
 def get_trust_domain(repo_url, project, product):
-    if product == "fenix":
-        repo_owner, _ = extract_github_repo_owner_and_name(repo_url)
+    if is_github_url(repo_url):
+        repo_owner, repo_name = extract_github_repo_owner_and_name(repo_url)
         if repo_owner == "mozilla-mobile":
-            return "project.mobile.fenix"
+            return "mobile"
+        elif repo_name in SUPPORTED_MOBILE_REPO_NAMES:
+            # fenix forks don't pollute the mobile namespace, for instance
+            return "garbage.mobile"
         else:
-            return "garbage.project.mobile.fenix"
+            raise UnsupportedFlavor('Unable to know what to do with repo_owner "{repo_owner}" and repo_name "{repo_name}"')
     elif "comm" in project:
         return "comm"
     elif "xpi" in project:
@@ -44,10 +47,11 @@ def get_trust_domain(repo_url, project, product):
 @lru_cache(maxsize=2048)
 def find_decision_task_id(repo_url, project, revision, product):
     trust_domain = get_trust_domain(repo_url, project, product)
-    if repo_url.startswith("https://github.com"):
+    if trust_domain.endswith("mobile"):
         # XXX "project" is a gecko-centric term which is translated into a branch in the git world.
         branch = project
-        decision_task_route = f"{trust_domain}.v2.branch.{branch}.revision.{revision}.taskgraph.decision"
+        _, repo_name = extract_github_repo_owner_and_name(repo_url)
+        decision_task_route = f"{trust_domain}.v2.{repo_name}.branch.{branch}.revision.{revision}.taskgraph.decision"
     else:
         decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.decision"
     index = get_service("index")

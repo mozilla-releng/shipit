@@ -221,3 +221,16 @@ def get_single_item_from_sequence(
     if append_sequence_to_error_message:
         error_message = "{}. Given: {}".format(error_message, sequence)
     raise ErrorClass(error_message)
+
+
+def is_github_url(url):
+    """Tell if a given URL matches a Github one.
+    Args:
+        url (str): The URL to test. It can be None.
+    Returns:
+        bool: False if the URL is not a string or if it doesn't match a Github URL
+    """
+    if isinstance(url, str):
+        return url.startswith(("https://github.com/", "ssh://github.com/"))
+    else:
+        return False
