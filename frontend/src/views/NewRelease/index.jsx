@@ -270,13 +270,15 @@ export default function NewRelease() {
             className={classes.formControl}
             helperText="Coma-separated list of versions with build number, e.g. 59.0b8build7."
           />
-          <Switch
-            checked={partialFieldEnabled}
-            onChange={() => {
-              setPartialFieldEnabled(!partialFieldEnabled);
-              handlePartials('');
-            }}
-          />
+          {selectedProduct.canTogglePartials && (
+            <Switch
+              checked={partialFieldEnabled}
+              onChange={() => {
+                setPartialFieldEnabled(!partialFieldEnabled);
+                handlePartials('');
+              }}
+            />
+          )}
         </Grid>
       );
     }
@@ -389,7 +391,7 @@ export default function NewRelease() {
       <Collapse in={selectedBranch.repo && selectedBranch.repo.length > 0}>
         {renderRevisionInput()}
         {renderReleaseEta()}
-        {renderPartials()}
+        {selectedProduct.enablePartials && renderPartials()}
         <Collapse in={version !== '' && buildNumber !== 0}>
           {renderReleaseInfo()}
         </Collapse>
