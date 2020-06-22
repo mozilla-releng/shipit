@@ -391,7 +391,7 @@ export default function NewRelease() {
       <Collapse in={selectedBranch.repo && selectedBranch.repo.length > 0}>
         {renderRevisionInput()}
         {renderReleaseEta()}
-        {renderPartials()}
+        {selectedProduct.enablePartials && renderPartials()}
         <Collapse in={version !== '' && buildNumber !== 0}>
           {renderReleaseInfo()}
         </Collapse>
