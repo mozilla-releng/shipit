@@ -102,7 +102,12 @@ export async function getVersion(repo, revision, appName, versionFile) {
     authRequired = true;
   }
 
-  const res = await axios.get(url, { authRequired });
+  // default transformResponse tries to parse the response. Sometimes version
+  // strings become integers, "78.0" becomes 78. Return the value as is instead.
+  const res = await axios.get(url, {
+    authRequired,
+    transformResponse: [data => data],
+  });
 
   if (res.status === 200) {
     const version = res.data;
