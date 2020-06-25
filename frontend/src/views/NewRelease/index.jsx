@@ -268,7 +268,7 @@ export default function NewRelease() {
             value={partialVersions}
             onChange={event => handlePartials(event.target.value)}
             className={classes.formControl}
-            helperText="Coma-separated list of versions with build number, e.g. 59.0b8build7."
+            helperText="Comma-separated list of versions with build number, e.g. 59.0b8build7."
           />
           {selectedProduct.canTogglePartials && (
             <Switch
