@@ -71,7 +71,15 @@ ADMIN_GROUP = [
     "sfraser@mozilla.com",
     "tprince@mozilla.com",
 ]
-XPI_PRIVILEGED_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com", "awagner@mozilla.com", "mbanner@mozilla.com", "dharvey@mozilla.com"]
+XPI_PRIVILEGED_ADMIN_GROUP = [
+    "awagner@mozilla.com",
+    "dharvey@mozilla.com",
+    "jkerim@mozilla.com",
+    "mbanner@mozilla.com",
+    "mcooper@mozilla.com",
+    "rdalal@mozilla.com",
+    "ttran@mozilla.com",
+]
 XPI_SYSTEM_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com"]
 XPI_MOZILLAONLINE_PRIVILEGED_GROUP = ["bzhao@mozilla.com", "jxia@mozilla.com", "yliu@mozilla.com"]
 XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP = ["awagner@mozilla.com", "mkaply@mozilla.com"]
