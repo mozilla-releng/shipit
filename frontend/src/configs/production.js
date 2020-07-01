@@ -122,6 +122,8 @@ module.exports = {
           project: 'comm-esr78',
           branch: 'releases/comm-esr78',
           repo: 'https://hg.mozilla.org/releases/comm-esr78',
+          alternativeBranch: 'releases/comm-esr68',
+          alternativeRepo: 'https://hg.mozilla.org/releases/comm-esr68',
           enableReleaseEta: false,
           disableable: false,
         },
