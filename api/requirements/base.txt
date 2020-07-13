@@ -426,10 +426,9 @@ rsa==4.6 \
     --hash=sha256:109ea5a66744dd859bf16fe904b8d8b627adafb9408753161e766a92e7d681fa \
     --hash=sha256:23778f5523461cf86ae075f9482a99317f362bca752ae57cb118044066f4026f \
     # via oauth2client
-sentry-sdk[flask]==0.14.4 \
-    --hash=sha256:0e5e947d0f7a969314aa23669a94a9712be5a688ff069ff7b9fc36c66adc160c \
-    --hash=sha256:799a8bf76b012e3030a881be00e97bc0b922ce35dde699c6537122b751d80e2c \
-    # via -r public.in
+sentry-sdk[flask]==0.16.1 \
+    --hash=sha256:2f023ff348359ec5f0b73a840e8b08e6a8d3b2613a98c57d11c222ef43879237 \
+    --hash=sha256:380a280cfc7c4ade5912294e6d9aa71ce776b5fca60a3782e9331b0bcd2866bf    # via -r public.in
 six==1.15.0 \
     --hash=sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259 \
     --hash=sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced \
