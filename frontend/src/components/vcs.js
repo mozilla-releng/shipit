@@ -29,6 +29,12 @@ export async function getGithubCommits(repoOwner, repoName, branch) {
   return req.data;
 }
 
+export async function getLatestGithubCommit(repoOwner, repoName, branch) {
+  const commits = await getGithubCommits(repoOwner, repoName, branch);
+
+  return commits[0];
+}
+
 export async function getXpis(owner, repo, commit) {
   const url = `/github/xpis/${owner}/${repo}/${commit}`;
   const req = await axios.get(url, { authRequired: true });
