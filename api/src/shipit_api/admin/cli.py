@@ -90,9 +90,9 @@ async def download_product_details(url: str, download_dir: str):
 @click.option("--folder-in-repo", type=str, required=True, default="public/")
 @click.option(
     "--channel",
-    type=click.Choice(["development", "master", "testing", "staging", "production"]),
+    type=click.Choice(["development", "main", "testing", "staging", "production"]),
     required=True,
-    default=os.environ.get("RELEASE_CHANNEL", "master"),
+    default=os.environ.get("RELEASE_CHANNEL", "main"),
 )
 @click.option("--breakpoint-version", default=BREAKPOINT_VERSION, type=int)
 @click.option("--clean-working-copy", is_flag=True)
@@ -102,7 +102,7 @@ async def rebuild_product_details(
 ):
     configure_logging()
     if channel == "development":
-        channel = "master"
+        channel = "main"
     engine = sqlalchemy.create_engine(database_url)
     session = sqlalchemy.orm.sessionmaker(bind=engine)()
     click.echo("Product details are building ...")
@@ -118,7 +118,7 @@ def get_taskcluster_headers(request_url, method, content, taskcluster_client_id,
 
 
 @click.command(name="shipit-import")
-@click.option("--api-from", default="https://shipit-api.mozilla-releng.net")
+@click.option("--api-from", default="https://api.shipit.staging.mozilla-releng.net")
 @flask.cli.with_appcontext
 def shipit_import(api_from):
     configure_logging()
@@ -147,7 +147,7 @@ def shipit_import(api_from):
 
 
 @click.command(name="trigger-product-details")
-@click.option("--base-url", default="https://api.shipit.staging.mozilla-releng.net")
+@click.option("--base-url", default="https://shipit-api.mozilla-releng.net")
 @click.option("--taskcluster-client-id", help="Taskcluster Client ID", required=True, prompt=True)
 @click.option("--taskcluster-access-token", help="Taskcluster Access token", required=True, prompt=True, hide_input=True)
 def trigger_product_details(base_url: str, taskcluster_client_id: str, taskcluster_access_token: str):

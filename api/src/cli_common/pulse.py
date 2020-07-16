@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 async def _create_consumer(user, password, exchange, topic, callback):
     """
     Create an async consumer for Mozilla pulse queues
-    Inspired by : https://github.com/mozilla-releng/fennec-aurora-task-creator/blob/master/fennec_aurora_task_creator/worker.py  # noqa
+    Inspired by : https://github.com/mozilla-releng/fennec-aurora-task-creator
     """
     assert isinstance(user, str)
     assert isinstance(password, str)
