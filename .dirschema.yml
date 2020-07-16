@@ -2,10 +2,6 @@ repos:
   schema: https://raw.githubusercontent.com/mozilla-releng/releng-dirschemas/master/repo.yaml
   projects:
     - /
-pyup:
-  schema: https://raw.githubusercontent.com/mozilla-releng/releng-dirschemas/master/pyup.yaml
-  projects:
-    - /
 docker-compose:
   schema: https://raw.githubusercontent.com/mozilla-releng/releng-dirschemas/master/docker-compose.yaml
   projects:
