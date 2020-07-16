@@ -74,7 +74,7 @@ IOS_VERSION = "24.1"
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
 LATEST_THUNDERBIRD_NIGHTLY_VERSION = "80.0a1"
 # TODO: Need to update this every cycle
-THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr68"
+THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr78"
 THUNDERBIRD_BETA_BRANCH = "releases/comm-beta"
 
 # Mixed
