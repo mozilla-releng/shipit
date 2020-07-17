@@ -19,7 +19,12 @@ import Dashboard from '../../components/Dashboard';
 import config from '../../config';
 import { getXPIBuildNumbers, submitXPIRelease } from '../../components/api';
 import useAction from '../../hooks/useAction';
-import { getGithubCommits, getXpis, getXPIVersion } from '../../components/vcs';
+import {
+  getLatestGithubCommit,
+  getGithubCommits,
+  getXpis,
+  getXPIVersion,
+} from '../../components/vcs';
 import maybeShorten from '../../components/text';
 
 const useStyles = makeStyles(theme => ({
@@ -31,7 +36,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function NewXPIelease() {
   const classes = useStyles();
-  const [manifestCommits, fetchManifestCommits] = useAction(getGithubCommits);
+  const [manifestCommit, fetchManifestCommit] = useAction(
+    getLatestGithubCommit
+  );
   const [xpis, fetchXpis] = useAction(getXpis);
   const [xpiCommits, fetchXpiCommits] = useAction(getGithubCommits);
   const [xpiVersion, fetchXpiVersion] = useAction(getXPIVersion);
@@ -47,79 +54,27 @@ export default function NewXPIelease() {
     xpiCommits.loading ||
     xpiVersion.loading ||
     buildNumbers.loading ||
-    manifestCommits.loading;
+    manifestCommit.loading;
   const revisionPretty = commit =>
     `${maybeShorten(commit.revision, 8, '')} - ${maybeShorten(
       commit.message,
       45
     )}`;
-
-  useEffect(() => {
+  const init = async () => {
     const { owner, repo, branch } = config.XPI_MANIFEST;
+    const manifestCommit = await fetchManifestCommit(owner, repo, branch);
+    const { revision } = manifestCommit.data;
 
-    fetchManifestCommits(owner, repo, branch);
-  }, []);
-
-  const handleManifestCommitChange = async revision => {
-    // This will trigger value change and handleManifestCommitInputChange
-    setSelectedManifestCommit(revision);
-  };
-
-  const handleManifestCommitInputChange = async revision => {
     setSelectedManifestCommit(revision);
     setSelectedXpi('');
     setSelectedXpiRevision('');
     setBuildNumber(0);
-    const { owner, repo } = config.XPI_MANIFEST;
-
     await fetchXpis(owner, repo, revision);
   };
 
-  const renderManifestCommistSelect = () => {
-    if (manifestCommits.loading) {
-      return <Spinner loading />;
-    }
-
-    if (manifestCommits.error) {
-      return (
-        <Typography variant="h6" component="h3">
-          {manifestCommits.error.toString()}
-        </Typography>
-      );
-    }
-
-    if (manifestCommits.data) {
-      return (
-        <FormControl className={classes.formControl}>
-          <Autocomplete
-            className={classes.formControl}
-            freeSolo
-            forcePopupIcon
-            options={manifestCommits.data || []}
-            getOptionLabel={commit => commit.revision}
-            onChange={(_event, value) =>
-              value && handleManifestCommitChange(value.revision)
-            }
-            onInputChange={(_event, value) =>
-              handleManifestCommitInputChange(value)
-            }
-            renderOption={option => revisionPretty(option)}
-            renderInput={params => (
-              <TextField
-                {...params}
-                inputProps={{
-                  ...params.inputProps,
-                  value: selectedManifestCommit,
-                }}
-                label="Manifest commits"
-                variant="outlined"
-              />
-            )}
-          />
-        </FormControl>
-      );
-    }
-  };
+  useEffect(() => {
+    init();
+  }, []);
 
   const handleXpiSelect = async xpi => {
     setSelectedXpiRevision('');
@@ -250,6 +205,9 @@ export default function NewXPIelease() {
         <Typography component="h3" variant="h6">
           Build #: {buildNumber}
         </Typography>
+        <Typography component="h3" variant="h6">
+          Manifest revision: {selectedManifestCommit}
+        </Typography>
       </React.Fragment>
     );
   };
@@ -345,7 +303,6 @@ export default function NewXPIelease() {
       <Typography variant="h6" component="h2">
         Create XPI Release
       </Typography>
-      {renderManifestCommistSelect()}
       <Collapse in={selectedManifestCommit !== ''}>
         {renderXpiSelect()}
       </Collapse>
