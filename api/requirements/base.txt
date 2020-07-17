@@ -476,10 +476,9 @@ swagger-ui-bundle==0.0.6 \
     --hash=sha256:c5373b683487b1b914dccd23bcd9a3016afa2c2d1cda10f8713c0a9af0f91dd3 \
     --hash=sha256:f776811855092c086dbb08216c8810a84accef8c76c796a135caa13645c5cc68 \
     # via connexion
-taskcluster-urls==12.1.0 \
-    --hash=sha256:1dc740c32c7beb31e11ed7ccf9da2d47a504acdb3170c8900649433b0fd16fb2 \
-    --hash=sha256:4a62c776aeba6d45044789a8845ec4d8521bc1bb6ebfc86d79ee759bcdd4f2f7 \
-    # via taskcluster
+taskcluster-urls==13.0.1 \
+    --hash=sha256:5e25e7e6818e8877178b175ff43d2e6548afad72694aa125f404a7329ece0973 \
+    --hash=sha256:b25e122ecec249c4299ac7b20b08db76e3e2025bdaeb699a9d444556de5fd367    # via taskcluster
 taskcluster==34.0.1 \
     --hash=sha256:42615a5d45c86bc1b4819dcfbb02512a4638a2b57d95e1cc29186b43e78c89b3 \
     --hash=sha256:ce158f537800f865a3abfcb943d92af3ed1294ed783c1318feb5688f23f2b959 \
