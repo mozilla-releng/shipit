@@ -149,9 +149,8 @@ httplib2==0.18.1 \
     --hash=sha256:8af66c1c52c7ffe1aa5dc4bcd7c769885254b0756e6e69f953c7f0ab49a70ba3 \
     --hash=sha256:ca2914b015b6247791c4866782fa6042f495b94401a0f0bd3e1d6e0ba2236782 \
     # via oauth2client
-json-e==4.1.0 \
-    --hash=sha256:c229bdf364c4e268494556ea5cc7f9e9aa35c1736971dd0a91bc79c6b574d53c \
-    # via -r base.in
+json-e==4.2.0 \
+    --hash=sha256:bb7189f02e28639ecb96ac72a6d773243ee906fcbc23bbad1cf051e10efbc351    # via -r base.in
 kombu==4.6.11 \
     --hash=sha256:be48cdffb54a2194d93ad6533d73f69408486483d189fe9f5990ee24255b0e0a \
     --hash=sha256:ca1b45faac8c0b18493d02a8571792f3c40291cf2bcf1f55afed3d8f3aa7ba74 \
