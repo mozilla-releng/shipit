@@ -1,0 +1,37 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - shipit_taskgraph.transforms.docker_push:transforms
+    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.task:transforms
+
+job-defaults:
+    worker-type: b-linux
+    run:
+        using: run-task
+        cache-dotcache: false
+        checkout:
+            shipit: {}
+        cwd: '{checkout}'
+
+jobs:
+    frontend:
+        description: "Push to shipit-ui bucket."
+        worker:
+            docker-image: {in-tree: node14}
+            max-run-time: 3600
+            env:
+                DEPLOY_SECRET_URL: http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy
+        dependencies:
+              tests: tests-frontend-node-14
+        run:
+            command:
+                - sh
+                - -lxce
+                - >-
+                  cd frontend && ./scripts/deploy
