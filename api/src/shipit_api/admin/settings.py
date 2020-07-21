@@ -71,8 +71,8 @@ ADMIN_GROUP = [
     "sfraser@mozilla.com",
     "tprince@mozilla.com",
 ]
+XPI_PRIVILEGED_BUILD_GROUP = ["amarchesini@mozilla.com"]
 XPI_PRIVILEGED_ADMIN_GROUP = [
-    "amarchesini@mozilla.com",
     "awagner@mozilla.com",
     "dharvey@mozilla.com",
     "jkerim@mozilla.com",
@@ -92,6 +92,8 @@ GROUPS = {
     # XPI signoffs. These are in flux.
     # Adding Releng as a backup to all of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
+    "xpi_privileged_build": XPI_PRIVILEGED_BUILD_GROUP,
+    # ADMIN_GROUP has to be added in order for multiple signoffs to work
     "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_GROUP + ADMIN_GROUP,
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_GROUP + ADMIN_GROUP,
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_GROUP + ADMIN_GROUP,
@@ -141,6 +143,7 @@ AUTH0_AUTH_SCOPES.update(
         "github": list(
             set(
                 GROUPS["fenix-signoff"]
+                + GROUPS["xpi_privileged_build"]
                 + GROUPS["xpi_privileged_signoff"]
                 + GROUPS["xpi_system_signoff"]
                 + GROUPS["xpi_mozillaonline-privileged_signoff"]
@@ -152,19 +155,35 @@ AUTH0_AUTH_SCOPES.update(
 
 # XPI scopes
 for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
+    # "build", "signoff", and "admin_signoff" groups can create and cancel releases
     AUTH0_AUTH_SCOPES.update(
         {
-            f"add_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
-            f"abandon_release/xpi/{xpi_type}": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+            f"add_release/xpi/{xpi_type}": GROUPS.get(f"xpi_{xpi_type}_build", [])
+            + GROUPS[f"xpi_{xpi_type}_signoff"]
+            + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+            f"abandon_release/xpi/{xpi_type}": GROUPS.get(f"xpi_{xpi_type}_build", [])
+            + GROUPS[f"xpi_{xpi_type}_signoff"]
+            + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
         }
     )
-    for phase in ["build", "promote"]:
-        AUTH0_AUTH_SCOPES.update(
-            {
-                f"schedule_phase/xpi/{xpi_type}/{phase}": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
-                f"phase_signoff/xpi/{xpi_type}/{phase}": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
-            }
-        )
+    # "build", "signoff", and "admin_signoff" groups can schedule the "build" phase
+    AUTH0_AUTH_SCOPES.update(
+        {
+            f"schedule_phase/xpi/{xpi_type}/build": GROUPS.get(f"xpi_{xpi_type}_build", [])
+            + GROUPS[f"xpi_{xpi_type}_signoff"]
+            + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+            f"phase_signoff/xpi/{xpi_type}/build": GROUPS.get(f"xpi_{xpi_type}_build", [])
+            + GROUPS[f"xpi_{xpi_type}_signoff"]
+            + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+        }
+    )
+    # Only "signoff", and "admin_signoff" groups can schedule the "promote" phase
+    AUTH0_AUTH_SCOPES.update(
+        {
+            f"schedule_phase/xpi/{xpi_type}/promote": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+            f"phase_signoff/xpi/{xpi_type}/promote": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+        }
+    )
 
 # append scopes with scope prefix and add admin group of users
 AUTH0_AUTH_SCOPES = {f"{SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
