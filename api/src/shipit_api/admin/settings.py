@@ -93,6 +93,7 @@ GROUPS = {
     # Adding Releng as a backup to all of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
     "xpi_privileged_build": XPI_PRIVILEGED_BUILD_GROUP,
+    # ADMIN_GROUP has to be added in order for multiple signoffs to work
     "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_GROUP + ADMIN_GROUP,
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_GROUP + ADMIN_GROUP,
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_GROUP + ADMIN_GROUP,
