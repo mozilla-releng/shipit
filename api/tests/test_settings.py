@@ -5,7 +5,7 @@ def flatten(lst):
     return [item for sublist in lst for item in sublist]
 
 
-def test_somethig(monkeypatch):
+def test_scopes(monkeypatch):
     FAKE_ENV = dict(
         APP_CHANNEL="development",
         TASKCLUSTER_ROOT_URL="fake",
