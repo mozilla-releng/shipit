@@ -322,7 +322,33 @@ paths:
           description: OK
         405:
           description: Invalid input
-  /github/commits/{owner}/{repo}/{branch}:
+  /github/branches/{owner}/{repo}:
+    get:
+      summary: List git branches of a Github repo
+      operationId: shipit_api.admin.github.list_github_branches
+      parameters:
+      - name: owner
+        in: path
+        required: true
+        description: repo owner
+        schema:
+          type: string
+      - name: repo
+        in: path
+        required: true
+        description: repo name
+        schema:
+          type: string
+      responses:
+        200:
+          description: List of git branches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+  /github/commits/{owner}/{repo}:
     get:
       summary: List git commits in a Github repo
       operationId: shipit_api.admin.github.list_github_commits
@@ -340,7 +366,7 @@ paths:
         schema:
           type: string
       - name: branch
-        in: path
+        in: query
         required: true
         description: branch name
         schema:

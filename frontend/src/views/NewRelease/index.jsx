@@ -1,5 +1,7 @@
 import 'date-fns';
 import React, { useState, useContext } from 'react';
+import ReactTimeAgo from 'react-time-ago';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
 import TextField from '@material-ui/core/TextField';
@@ -22,7 +24,7 @@ import Switch from '@material-ui/core/Switch';
 import Dashboard from '../../components/Dashboard';
 import config from '../../config';
 import maybeShorten from '../../components/text';
-import { getPushes, getVersion } from '../../components/vcs';
+import { getBranches, getPushes, getVersion } from '../../components/vcs';
 import { AuthContext } from '../../utils/AuthContext';
 import {
   guessBuildNumber,
@@ -36,12 +38,16 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(1),
     minWidth: 500,
   },
+  lessImportantData: {
+    color: theme.palette.grey[500],
+  },
 }));
 
 export default function NewRelease() {
   const classes = useStyles();
   const authContext = useContext(AuthContext);
   const [selectedProduct, setSelectedProduct] = useState('');
+  const [selectedRepository, setSelectedRepository] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
   const [revision, setRevision] = useState('');
   const [version, setVersion] = useState('');
@@ -51,6 +57,7 @@ export default function NewRelease() {
   const [suggestedRevisions, setSuggestedRevisions] = useState(null);
   const [releaseEta, setReleaseEta] = useState(null);
   const [open, setOpen] = useState(false);
+  const [getBranchesState, getBranchesAction] = useAction(getBranches);
   const [getPushesState, getPushesAction] = useAction(getPushes);
   const [submitReleaseState, submitReleaseAction] = useAction(submitRelease);
   const [guessPartialVersionsState, guessPartialVersionsAction] = useAction(
@@ -61,10 +68,11 @@ export default function NewRelease() {
     guessBuildNumber
   );
   const loading =
+    getBranchesState.loading ||
     getPushesState.loading ||
-    guessPartialVersionsState.loading ||
     getVersionState.loading ||
-    guessBuildNumberState.loading;
+    guessBuildNumberState.loading ||
+    guessPartialVersionsState.loading;
   const revisionPretty = rev =>
     `${rev.date.toDateString()} - ${rev.node.substring(0, 8)} - ${
       rev.author
@@ -83,6 +91,15 @@ export default function NewRelease() {
   const handleProduct = product => {
     reset();
     setSelectedProduct(product);
+  };
+
+  const handleRepository = async repository => {
+    reset();
+    const repo = { ...repository };
+    const branches = await getBranchesAction(repo.repo);
+
+    repo.branches = branches.data;
+    setSelectedRepository(repo);
   };
 
   const handleBranch = async branch => {
@@ -183,22 +200,71 @@ export default function NewRelease() {
     );
   };
 
-  const renderBranchesSelect = () => {
+  const renderRepositoriesSelect = () => {
     return (
-      selectedProduct.branches && (
+      selectedProduct.repositories && (
         <FormControl className={classes.formControl}>
-          <InputLabel>Branch</InputLabel>
+          <InputLabel>Repositories</InputLabel>
           <Select
-            value={selectedBranch}
-            onChange={event => handleBranch(event.target.value)}>
-            {selectedProduct.branches.map(branch => (
-              <MenuItem value={branch} key={branch.branch}>
-                {branch.prettyName}
+            value={selectedRepository}
+            onChange={event => handleRepository(event.target.value)}>
+            {selectedProduct.repositories.map(repository => (
+              <MenuItem value={repository} key={repository.repo}>
+                {repository.prettyName}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
       )
+    );
+  };
+
+  const getBranchLabel = branch => {
+    const label = [branch.prettyName];
+
+    if (branch.date) {
+      label.push(
+        <Box
+          component="span"
+          m={1}
+          className={classes.lessImportantData}
+          key={branch.branch}>
+          updated <ReactTimeAgo date={branch.date} />
+        </Box>
+      );
+    }
+
+    return label;
+  };
+
+  const renderBranchesSelect = () => {
+    let branches;
+
+    if (selectedProduct.branches && selectedProduct.branches.length > 0) {
+      branches = selectedProduct.branches;
+    } else if (
+      selectedRepository.branches &&
+      selectedRepository.branches.length > 0
+    ) {
+      branches = selectedRepository.branches;
+    }
+
+    return (
+      (getBranchesState.loading && <Spinner loading />) ||
+      (branches && (
+        <FormControl className={classes.formControl}>
+          <InputLabel>Branch</InputLabel>
+          <Select
+            value={selectedBranch}
+            onChange={event => handleBranch(event.target.value)}>
+            {branches.map(branch => (
+              <MenuItem value={branch} key={branch.branch}>
+                {getBranchLabel(branch)}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ))
     );
   };
 
@@ -385,7 +451,20 @@ export default function NewRelease() {
       </Typography>
       {renderProductsSelect()}
       <Collapse
-        in={selectedProduct.branches && selectedProduct.branches.length > 0}>
+        in={
+          selectedProduct.repositories &&
+          selectedProduct.repositories.length > 0
+        }>
+        {renderRepositoriesSelect()}
+      </Collapse>
+      <Collapse
+        in={
+          getBranchesState.loading ||
+          (selectedRepository &&
+            selectedRepository.branches &&
+            selectedRepository.branches.length > 0) ||
+          (selectedProduct.branches && selectedProduct.branches.length > 0)
+        }>
         {renderBranchesSelect()}
       </Collapse>
       <Collapse in={selectedBranch.repo && selectedBranch.repo.length > 0}>
