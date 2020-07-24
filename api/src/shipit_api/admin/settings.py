@@ -71,7 +71,7 @@ ADMIN_GROUP = [
     "sfraser@mozilla.com",
     "tprince@mozilla.com",
 ]
-XPI_PRIVILEGED_BUILD_GROUP = ["amarchesini@mozilla.com"]
+XPI_PRIVILEGED_BUILD_GROUP = ["amarchesini@mozilla.com", "ibicking@mozilla.com"]
 XPI_PRIVILEGED_ADMIN_GROUP = [
     "awagner@mozilla.com",
     "dharvey@mozilla.com",
