@@ -7,7 +7,7 @@ tasks:
     - $let:
           taskgraph:
               branch: taskgraph
-              revision: 27326e6ab26152368e02598bc01175f1fc67b527
+              revision: 4a40baa4b47e49ce03f73b2708461ff9395866b3
               repository:
                   name: shipit
                   description: Shipit

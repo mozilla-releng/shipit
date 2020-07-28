@@ -12,11 +12,11 @@ from voluptuous import (
     Optional,
 )
 
-PUSH_TAGS = ("dev", "production")
+DEPLOYMENT_BRANCHES = ("dev", "production")
 
 shipit_schema = {
-    Optional('docker_tag'): Any(basestring, None),
-    Optional('push_docker_image'): Any(True, False, None),
+    Optional("deployment_branch"): Any(basestring, None),
+    Optional("deploy"): Any(True, False, None),
 }
 
 extend_parameters_schema(shipit_schema)
@@ -26,8 +26,8 @@ def get_decision_parameters(graph_config, parameters):
     """Add repo-specific decision parameters.
     """
     if parameters["tasks_for"] == "github-pull-request":
-        parameters["docker_tag"] = "github-pull-request"
+        parameters["deployment_branch"] = "github-pull-request"
     elif parameters["head_ref"].startswith("refs/heads/"):
-        parameters["docker_tag"] = parameters["head_ref"].replace("refs/heads/", "")
-        if parameters["docker_tag"] in PUSH_TAGS and parameters["level"] == "3":
-            parameters["push_docker_image"] = True
+        parameters["deployment_branch"] = parameters["head_ref"].replace("refs/heads/", "")
+        if parameters["deployment_branch"] in DEPLOYMENT_BRANCHES and parameters["level"] == "3":
+            parameters["deploy"] = True

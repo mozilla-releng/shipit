@@ -2,27 +2,23 @@
 set -e
 
 test $DOCKER_REPO
-test $DOCKER_TAG
+test $DEPLOYMENT_BRANCH
 test $DEPLOY_SECRET_URL
-test $IMAGE_URL
-
+test $MOZ_FETCHES_DIR
 
 echo "=== Generating dockercfg ==="
-mkdir -m 700 /root/.docker
-wget -O- $DEPLOY_SECRET_URL | jq '.secret.docker.skopeo' > /root/.docker/config.json
-chmod 600 /root/.docker/config.json
-
-echo "==== Getting image ==="
-wget -O /workspace/image.tar.zst $IMAGE_URL
-unzstd /workspace/image.tar.zst
-
+mkdir -m 700 $HOME/.docker
+curl $DEPLOY_SECRET_URL | jq '.secret.docker.skopeo' > $HOME/.docker/config.json
+chmod 600 $HOME/.docker/config.json
 
 echo "=== Pushing to docker hub ==="
-DOCKER_ARCHIVE_TAG="${DOCKER_TAG}-$(date +%Y%m%d%H%M%S)"
-skopeo --authfile /root/.docker/config.json --insecure-policy copy docker-archive:/workspace/image.tar docker://$DOCKER_REPO:$DOCKER_TAG
-skopeo inspect docker://$DOCKER_REPO:$DOCKER_TAG
-skopeo --authfile /root/.docker/config.json --insecure-policy copy docker-archive:/workspace/image.tar docker://$DOCKER_REPO:$DOCKER_ARCHIVE_TAG
+DOCKER_ARCHIVE_TAG="${DEPLOYMENT_BRANCH}-$(date +%Y%m%d%H%M%S)"
+unzstd $MOZ_FETCHES_DIR/image.tar.zst
+skopeo copy docker-archive:$MOZ_FETCHES_DIR/image.tar docker://$DOCKER_REPO:$DEPLOYMENT_BRANCH
+# Print the digest to make the cloudops tooling work
+skopeo inspect docker://$DOCKER_REPO:$DEPLOYMENT_BRANCH
+skopeo copy docker-archive:$MOZ_FETCHES_DIR/image.tar docker://$DOCKER_REPO:$DOCKER_ARCHIVE_TAG
 skopeo inspect docker://$DOCKER_REPO:$DOCKER_ARCHIVE_TAG
 
 echo "=== Clean up ==="
-rm -rf /root/.docker
+rm -rf $HOME/.docker

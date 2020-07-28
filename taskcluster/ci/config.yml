@@ -33,14 +33,14 @@ workers:
             worker-type: 'b-linux'
 deploy:
     dev:
-        website-bucket: "relengstatic-staging-shipitfrontend-static-website"
+        frontend-bucket: "relengstatic-staging-shipitfrontend-static-website"
         frontend-taskcluster-root-url: "https://firefox-ci-tc.services.mozilla.com"
         shipit-public-api-url: "https://public-dev.shipitapi.nonprod.cloudops.mozgcp.net"
         shipit-api-url: "https://api.shipit.staging.mozilla-releng.net"
-        extra-scopes: ["secrets:get:project/releng/shipit/deploy"]
+        secret: project/releng/shipit/deploy
     production:
-        website-bucket: "relengstatic-prod-shipitfrontend-static-website"
+        frontend-bucket: "relengstatic-prod-shipitfrontend-static-website"
         frontend-taskcluster-root-url: "https://firefox-ci-tc.services.mozilla.com"
         shipit-public-api-url: "https://shipitapi-public.services.mozilla.com"
         shipit-api-url: "https://shipit-api.mozilla-releng.net"
-        extra-scopes: ["secrets:get:project/releng/shipit/deploy"]
+        secret: project/releng/shipit/deploy
