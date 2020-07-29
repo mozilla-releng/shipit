@@ -81,6 +81,7 @@ module.exports = {
       product: 'fenix',
       prettyName: 'Fenix',
       appName: 'fenix',
+      branches: [],
       repositories: [
         {
           prettyName: "Johan's fork",
