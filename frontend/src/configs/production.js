@@ -61,26 +61,6 @@ module.exports = {
       enablePartials: true,
     },
     {
-      product: 'fennec',
-      prettyName: 'Firefox Mobile',
-      // TODO: The actual appName is `mobile/android` but it gets the version
-      // from `browser`.
-      appName: 'browser',
-      branches: [
-        {
-          prettyName: 'Release',
-          project: 'mozilla-esr68',
-          branch: 'releases/mozilla-esr68',
-          repo: 'https://hg.mozilla.org/releases/mozilla-esr68',
-          productKey: 'fennec_release',
-          versionFile:
-            'mobile/android/config/version-files/release/version_display.txt',
-          disableable: false,
-        },
-      ],
-      enablePartials: false,
-    },
-    {
       product: 'devedition',
       prettyName: 'Firefox Developer Edition',
       appName: 'browser',
