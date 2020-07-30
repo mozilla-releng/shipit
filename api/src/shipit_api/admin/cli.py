@@ -92,7 +92,7 @@ async def download_product_details(url: str, download_dir: str):
     "--channel",
     type=click.Choice(["development", "main", "testing", "staging", "production"]),
     required=True,
-    default=os.environ.get("RELEASE_CHANNEL", "main"),
+    default=os.environ.get("DEPLOYMENT_BRANCH", "main"),
 )
 @click.option("--breakpoint-version", default=BREAKPOINT_VERSION, type=int)
 @click.option("--clean-working-copy", is_flag=True)
