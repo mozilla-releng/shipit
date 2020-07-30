@@ -3,8 +3,15 @@
 set -o errexit -o pipefail
 set -e
 
-export AWS_ACCESS_KEY_ID=$(curl ${DEPLOY_SECRET} | python3 -c "import json, sys; a = json.load(sys.stdin); print(a['secret']['frontend_config']['${RELEASE_CHANNEL}']['aws']['access_key'])")
-export AWS_SECRET_ACCESS_KEY=$(curl ${DEPLOY_SECRET} | python3 -c "import json, sys; a = json.load(sys.stdin); print(a['secret']['frontend_config']['${RELEASE_CHANNEL}']['aws']['secret_key'])")
+test $SHIPIT_API_URL
+test $SHIPIT_PUBLIC_API_URL
+test $FRONTEND_TASKCLUSTER_ROOT_URL
+test $FRONTEND_BUCKET
+test $DEPLOY_SECRET_URL
+test $DEPLOYMENT_BRANCH
+
+export AWS_ACCESS_KEY_ID=$(curl ${DEPLOY_SECRET_URL} | jq -r ".secret.frontend_config.${DEPLOYMENT_BRANCH}.aws.access_key")
+export AWS_SECRET_ACCESS_KEY=$(curl ${DEPLOY_SECRET_URL} | jq -r ".secret.frontend_config.${DEPLOYMENT_BRANCH}.aws.secret_key")
 
 HEADERS=$(cat <<EOF
 { \
@@ -19,6 +26,7 @@ HEADERS=$(cat <<EOF
 EOF
 )
 
+yarn install
 yarn build
 
 cp scripts/404.html build/404.html
@@ -31,4 +39,4 @@ SYNC_OPTIONS=(
 )
 aws s3 sync \
     "${SYNC_OPTIONS[@]}" \
-    ./build/ "s3://${WEBSITE_BUCKET}/"
+    ./build/ "s3://${FRONTEND_BUCKET}/"

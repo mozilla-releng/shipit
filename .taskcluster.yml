@@ -1,215 +1,267 @@
+---
 version: 1
+reporting: checks-v1
 policy:
-  pullRequests: public
+    pullRequests: public
 tasks:
-  $let:
-    release_channel:
-      $if: 'tasks_for == "github-pull-request"'
-      then: 'PR'
-      else:
-        $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/production", "refs/heads/dev"]'
-        then: '${event.ref[11:]}'
-        else: 'none'
-  in:
-    $let:
-      python_version: 'py38'
-      # Dependabot, and possibly other things creating pull requests
-      # can set `user` to something that can't be used in an e-mail
-      # address, so we simply make this static to workaround.
-      owner_email: 'release+shipit-ci@mozilla.com'
-      ui_bucket:
-        # The production bucket name doesn't match the branch name,
-        # but the other environments do.
-        $if: 'release_channel == "production"'
-        then: 'relengstatic-prod-shipitfrontend-static-website'
-        else:
-          $if: 'release_channel == "dev"'
-          # TODO: switch to dev
-          then: 'relengstatic-staging-shipitfrontend-static-website'
-          else: ''
-      shipit_api_url:
-        $if: 'release_channel == "production"'
-        then: 'https://shipit-api.mozilla-releng.net'
-        else:
-          $if: 'release_channel == "dev"'
-          # TODO: switch to dev
-          then: 'https://api.shipit.staging.mozilla-releng.net'
-          else: ''
-      shipit_public_api_url:
-        $if: 'release_channel == "production"'
-        then: 'https://shipitapi-public.services.mozilla.com'
-        else:
-          $if: 'release_channel == "dev"'
-          # TODO: switch to dev
-          then: 'https://public-dev.shipitapi.nonprod.cloudops.mozgcp.net'
-          else: ''
-      # Github events have this stuff in different places...
-      repo_url:
-        $if: 'tasks_for == "github-pull-request"'
-        then: '${event.pull_request.head.repo.html_url}'
-        else: '${event.repository.html_url}'
-      head_sha: {
-        $if: 'tasks_for == "github-push"',
-        then: '${event.after}',
-        else: {
-          $if: 'tasks_for == "github-pull-request"',
-          then: '${event.pull_request.head.sha}',
-          # Assume release event
-          else: '${event.release.tag_name}',
-        }
-      }
-      push_docker_image:
-        $if: 'tasks_for == "github-pull-request"'
-        then: '0'
-        else:
-          $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev", "refs/heads/production"]'
-          then: '1'
-          else: '0'
-      worker_level:
-        $if: 'tasks_for == "github-pull-request"'
-        then: 't'
-        else:
-          $if: 'tasks_for == "github-push" && event.ref in ["refs/heads/dev", "refs/heads/production"]'
-          then: '3'
-          else: 't'
-    in:
-      $flattenDeep:
-        - $if: '(tasks_for == "github-pull-request" && event["action"] in ["edited", "opened", "reopened", "synchronize"]) || tasks_for == "github-push"'
+    - $let:
+          taskgraph:
+              branch: taskgraph
+              revision: 4a40baa4b47e49ce03f73b2708461ff9395866b3
+              repository:
+                  name: shipit
+                  description: Shipit
+          trustDomain: releng
+          canonicalRepo: https://github.com/mozilla-releng/shipit
+      in:
+          $if: 'tasks_for in ["github-pull-request", "github-push", "action", "cron"]'
           then:
-            - $map: [['py38', 'python:3.8'], ['check', 'python:3.8']]
-              each(py):
-                taskId: "${as_slugid(py[0])}"
-                created: {$fromNow: ''}
-                deadline: {$fromNow: '2 hours'}
-                provisionerId: releng-t
-                workerType: linux
-                payload:
-                  maxRunTime: 1200
-                  image: {$eval: 'py[1]'}
-                  command:
-                    - /bin/bash
-                    - -c
-                    - >-
-                      git clone ${repo_url} shipit &&
-                      cd shipit/api &&
-                      git checkout ${head_sha} &&
-                      pip install tox &&
-                      tox -e ${py[0]}
-                metadata:
-                  name: Ship-it API ${py[0]} tests (${release_channel})
-                  description: Ship-it API ${py[0]} tests (${release_channel})
-                  owner: ${owner_email}
-                  source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
+              $let:
+                  # Github events have this stuff in different places...
+                  ownerEmail:
+                      $if: 'tasks_for == "github-push"'
+                      then: '${event.pusher.email}'
+                      # Assume Pull Request
+                      else:
+                          $if: 'tasks_for == "github-pull-request"'
+                          then: '${event.pull_request.user.login}@users.noreply.github.com'
+                          else:
+                              $if: 'tasks_for in ["cron", "action"]'
+                              then: '${tasks_for}@noreply.mozilla.org'
+                  baseRepoUrl:
+                      $if: 'tasks_for == "github-push"'
+                      then: '${event.repository.html_url}'
+                      else:
+                          $if: 'tasks_for == "github-pull-request"'
+                          then: '${event.pull_request.base.repo.html_url}'
+                          else:
+                              $if: 'tasks_for in ["cron", "action"]'
+                              then: '${repository.url}'
+                  repoUrl:
+                      $if: 'tasks_for == "github-push"'
+                      then: '${event.repository.html_url}'
+                      else:
+                          $if: 'tasks_for == "github-pull-request"'
+                          then: '${event.pull_request.head.repo.html_url}'
+                          else:
+                              $if: 'tasks_for in ["cron", "action"]'
+                              then: '${repository.url}'
+                  project:
+                      $if: 'tasks_for == "github-push"'
+                      then: '${event.repository.name}'
+                      else:
+                          $if: 'tasks_for == "github-pull-request"'
+                          then: '${event.pull_request.head.repo.name}'
+                          else:
+                              $if: 'tasks_for in ["cron", "action"]'
+                              then: '${repository.project}'
+                  head_branch:
+                      $if: 'tasks_for == "github-pull-request"'
+                      then: ${event.pull_request.head.ref}
+                      else:
+                          $if: 'tasks_for == "github-push"'
+                          then: ${event.ref}
+                          else:
+                              $if: 'tasks_for in ["cron", "action"]'
+                              then: '${push.branch}'
+                  head_sha:
+                      $if: 'tasks_for == "github-push"'
+                      then: '${event.after}'
+                      else:
+                          $if: 'tasks_for == "github-pull-request"'
+                          then: '${event.pull_request.head.sha}'
+                          else:
+                              $if: 'tasks_for in ["cron", "action"]'
+                              then: '${push.revision}'
+                  ownTaskId:
+                      $if: '"github" in tasks_for'
+                      then: {$eval: as_slugid("decision_task")}
+                      else:
+                          $if: 'tasks_for in ["cron", "action"]'
+                          then: '${ownTaskId}'
+                  repositoryPrefix: '${uppercase(taskgraph.repository.name)}'
+              in:
+                  $let:
+                      level:
+                          $if: 'tasks_for in ["github-push", "cron", "action"] && repoUrl == canonicalRepo'
+                          then: 3
+                          else: 1
+                  in:
+                      taskId:
+                          $if: 'tasks_for != "action"'
+                          then: '${ownTaskId}'
+                      taskGroupId:
+                          $if: 'tasks_for == "action"'
+                          then:
+                              '${action.taskGroupId}'
+                          else:
+                              '${ownTaskId}'  # same as taskId; this is how automation identifies a decision task
+                      schedulerId: '${trustDomain}-level-${level}'
+                      created: {$fromNow: ''}
+                      deadline: {$fromNow: '1 day'}
+                      expires: {$fromNow: '1 year 1 second'}  # 1 second so artifacts expire first, despite rounding errors
+                      metadata:
+                          $merge:
+                              - owner: "${ownerEmail}"
+                                source: '${repoUrl}/raw/${head_sha}/.taskcluster.yml'
+                              - $if: 'tasks_for in ["github-push", "github-pull-request"]'
+                                then:
+                                    name: "Decision Task"
+                                    description: 'The task that creates all of the other tasks in the task graph'
+                                else:
+                                    $if: 'tasks_for == "action"'
+                                    then:
+                                        name: "Action: ${action.title}"
+                                        description: '${action.description}'
+                                    else:
+                                        name: "Decision Task for cron job ${cron.job_name}"
+                                        description: 'Created by a [cron task](https://firefox-ci-tc.services.mozilla.com/tasks/${cron.task_id})'
+                      provisionerId: "${trustDomain}-${level}"
+                      workerType: "decision"
+                      tags:
+                          $if: 'tasks_for in ["github-push", "github-pull-request"]'
+                          then:
+                              kind: decision-task
+                          else:
+                              $if: 'tasks_for == "action"'
+                              then:
+                                  kind: 'action-callback'
+                              else:
+                                  $if: 'tasks_for == "cron"'
+                                  then:
+                                      kind: cron-task
+                      routes:
+                          $flatten:
+                              - checks
+                              - $if: 'tasks_for == "github-push"'
+                                then:
+                                    - "index.${trustDomain}.v2.${project}.revision.${head_sha}.taskgraph.decision"
+                                else: []
+                      scopes:
+                          # `https://` is 8 characters so, ${repoUrl[8:]} is the repository without the protocol.
+                          $if: 'tasks_for == "github-push"'
+                          then:
+                              $let:
+                                  short_head_branch:
+                                      $if: 'head_branch[:10] == "refs/tags/"'
+                                      then: {$eval: 'head_branch[10:]'}
+                                      else:
+                                          $if: 'head_branch[:11] == "refs/heads/"'
+                                          then: {$eval: 'head_branch[11:]'}
+                                          else: ${head_branch}
+                              in:
+                                  - 'assume:repo:${repoUrl[8:]}:branch:${short_head_branch}'
 
-            - taskId: {$eval: as_slugid("ui tests")}
-              created: {$fromNow: ''}
-              deadline: {$fromNow: '2 hours'}
-              provisionerId: releng-t
-              workerType: linux
-              payload:
-                maxRunTime: 1200
-                image: node:10
-                command:
-                  - /bin/bash
-                  - -c
-                  - >-
-                    git clone ${repo_url} shipit &&
-                    cd shipit/frontend &&
-                    git checkout ${head_sha} &&
-                    yarn install &&
-                    yarn test --passWithNoTests
-              metadata:
-                name: Ship-it Frontend tests (${release_channel})
-                description: Ship-it Frontend tests (${release_channel})
-                owner: ${owner_email}
-                source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
+                          else:
+                              $if: 'tasks_for == "github-pull-request"'
+                              then:
+                                  - 'assume:repo:github.com/${event.pull_request.base.repo.full_name}:pull-request'
+                              else:
+                                  $if: 'tasks_for == "action"'
+                                  then:
+                                      # when all actions are hooks, we can calculate this directly rather than using a variable
+                                      - '${action.repo_scope}'
+                                  else:
+                                      - 'assume:repo:${repoUrl[8:]}:cron:${cron.job_name}'
 
-            - $map: [['admin', 'Dockerfile', 'mozilla/releng-shipit-admin'], ['public', 'Dockerfile.public', 'mozilla/releng-shipit-public']]
-              each(env):
-                taskId: "${as_slugid(env[0])}"
-                dependencies:
-                  - '${as_slugid(python_version)}'
-                  - '${as_slugid("check")}'
-                created: {$fromNow: ''}
-                deadline: {$fromNow: '24 hours'}
-                provisionerId: 'releng-${worker_level}'
-                workerType: linux
-                routes: []
-                payload:
-                  maxRunTime: 3600
-                  # we need to run really old docker version because taskcluster is using
-                  # really old version in their setup
-                  # image: docker:stable
-                  image: 'docker:1.6.2'
-                  env:
-                    DOCKERFILE: '${env[1]}'
-                    DOCKERHUB_EMAIL: 'release+dockerhub+services@mozilla.com'
-                    DOCKERHUB_USER: 'mozillarelengservices'
-                    DOCKER_REPO: '${env[2]}'
-                    DOCKER_TAG: '${release_channel}'
-                    GIT_HEAD_REV: '${head_sha}'
-                    PUSH_DOCKER_IMAGE: '${push_docker_image}'
-                    REPO_URL: '${repo_url}'
-                    SECRET_URL: 'http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy'
-                  command:
-                    - sh
-                    - -lxce
-                    - >-
-                      cd /tmp &&
-                      wget ${repo_url}/archive/${head_sha}.tar.gz &&
-                      tar zxf ${head_sha}.tar.gz &&
-                      find . &&
-                      mv shipit-${head_sha} /src &&
-                      cd /src/api &&
-                      ./docker.d/generate_version_json.sh &&
-                      ./docker.d/build_image.sh &&
-                      ./docker.d/push_image.sh
-                  features:
-                    dind: true
-                    taskclusterProxy: true
-                scopes:
-                  $if: 'push_docker_image == "0"'
-                  then: []
-                  else:
-                    - 'secrets:get:project/releng/shipit/deploy'
-                metadata:
-                  name: Ship-it API (${env[0]}) docker build (${release_channel})
-                  description: Ship-it API (${env[0]}) docker build (${release_channel})
-                  owner: ${owner_email}
-                  source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
+                      requires: all-completed
+                      priority: lowest
+                      retries: 5
 
-            - $if: 'release_channel in ["dev", "production"]'
-              then:
-                - taskId: {$eval: as_slugid("ui-deploy")}
-                  created: {$fromNow: ''}
-                  deadline: {$fromNow: '2 hours'}
-                  provisionerId: 'releng-${worker_level}'
-                  workerType: linux
-                  scopes:
-                    $if: 'push_docker_image == "0"'
-                    then: []
-                    else:
-                      - 'secrets:get:project/releng/shipit/deploy'
-                  routes: []
-                  payload:
-                    env:
-                      DEPLOY_SECRET: http://taskcluster/secrets/v1/secret/project/releng/shipit/deploy
-                      RELEASE_CHANNEL: ${release_channel}
-                      WEBSITE_BUCKET: '${ui_bucket}'
-                      SHIPIT_API_URL: '${shipit_api_url}'
-                      SHIPIT_PUBLIC_API_URL: '${shipit_public_api_url}'
-                      # To avoid env conditions with TASKCLUSTER_ROOT_URL
-                      FRONTEND_TASKCLUSTER_ROOT_URL: 'https://firefox-ci-tc.services.mozilla.com'
-                    maxRunTime: 3600
-                    image: "node:current"
-                    command:
-                      - "/bin/bash"
-                      - "-c"
-                      - "apt-get -q --yes update && apt-get -q --yes install awscli && git clone ${repo_url} shipit && cd shipit/frontend && git checkout ${head_sha} && yarn install && bash ./scripts/deploy"
-                    features:
-                      taskclusterProxy: true
-                  metadata:
-                    name: Ship-it UI deploy (${release_channel})
-                    description: Ship-it UI deploy (${release_channel})
-                    owner: ${owner_email}
-                    source: '${repo_url}/raw/${head_sha}/.taskcluster.yml'
+                      payload:
+                          env:
+                              # run-task uses these to check out the source; the inputs
+                              # to `mach taskgraph decision` are all on the command line.
+                              $merge:
+                                  - ${repositoryPrefix}_BASE_REPOSITORY: '${baseRepoUrl}'
+                                    ${repositoryPrefix}_HEAD_REPOSITORY: '${repoUrl}'
+                                    ${repositoryPrefix}_HEAD_REF: '${head_branch}'
+                                    ${repositoryPrefix}_HEAD_REV: '${head_sha}'
+                                    ${repositoryPrefix}_REPOSITORY_TYPE: git
+                                    TASKGRAPH_BASE_REPOSITORY: https://hg.mozilla.org/ci/taskgraph
+                                    TASKGRAPH_HEAD_REPOSITORY: https://hg.mozilla.org/ci/${taskgraph.branch}
+                                    TASKGRAPH_HEAD_REV: '${taskgraph.revision}'
+                                    TASKGRAPH_REPOSITORY_TYPE: hg
+                                    REPOSITORIES: {$json: {'${taskgraph.repository.name}': '${taskgraph.repository.description}', taskgraph: "Taskgraph"}}
+                                    HG_STORE_PATH: /builds/worker/checkouts/hg-store
+                                  - $if: 'tasks_for in ["github-pull-request"]'
+                                    then:
+                                        ${repositoryPrefix}_PULL_REQUEST_NUMBER: '${event.pull_request.number}'
+                                  - $if: 'tasks_for == "action"'
+                                    then:
+                                        ACTION_TASK_GROUP_ID: '${action.taskGroupId}'  # taskGroupId of the target task
+                                        ACTION_TASK_ID: {$json: {$eval: 'taskId'}}  # taskId of the target task (JSON-encoded)
+                                        ACTION_INPUT: {$json: {$eval: 'input'}}
+                                        ACTION_CALLBACK: '${action.cb_name}'
+                          features:
+                              taskclusterProxy: true
+                              chainOfTrust: true
+                          # Note: This task is built server side without the context or tooling that
+                          # exist in tree so we must hard code the hash
+                          image: mozillareleases/taskgraph:decision-21bef1bc0f11e62c7a23384584f9f8f0d96e95eef192e5bb599fc82ba55c81a7@sha256:d29af306b09cd00a63f982e8caeb53dbec7efd7bb3ae64ce3cef9cd889b750e6
+                          maxRunTime: 1800
+
+                          command:
+                              - /usr/local/bin/run-task
+                              - '--${taskgraph.repository.name}-checkout=/builds/worker/checkouts/src'
+                              - '--taskgraph-checkout=/builds/worker/checkouts/taskgraph'
+                              - '--task-cwd=/builds/worker/checkouts/src'
+                              - '--'
+                              - bash
+                              - -cx
+                              - $let:
+                                    extraArgs: {$if: 'tasks_for == "cron"', then: '${cron.quoted_args}', else: ''}
+                                in:
+                                    $if: 'tasks_for == "action"'
+                                    then: >
+                                        PIP_IGNORE_INSTALLED=0 pip install --user /builds/worker/checkouts/taskgraph &&
+                                        cd /builds/worker/checkouts/src &&
+                                        ln -s /builds/worker/artifacts artifacts &&
+                                        ~/.local/bin/taskgraph action-callback
+                                    else: >
+                                        PIP_IGNORE_INSTALLED=0 pip install --user /builds/worker/checkouts/taskgraph &&
+                                        ln -s /builds/worker/artifacts artifacts &&
+                                        ~/.local/bin/taskgraph decision
+                                        --pushlog-id='0'
+                                        --pushdate='0'
+                                        --project='${project}'
+                                        --message=""
+                                        --owner='${ownerEmail}'
+                                        --level='${level}'
+                                        --base-repository="${'$'+repositoryPrefix}_BASE_REPOSITORY"
+                                        --head-repository="${'$'+repositoryPrefix}_HEAD_REPOSITORY"
+                                        --head-ref="${'$'+repositoryPrefix}_HEAD_REF"
+                                        --head-rev="${'$'+repositoryPrefix}_HEAD_REV"
+                                        --repository-type="${'$'+repositoryPrefix}_REPOSITORY_TYPE"
+                                        --tasks-for='${tasks_for}'
+                                        ${extraArgs}
+
+                          artifacts:
+                              'public':
+                                  type: 'directory'
+                                  path: '/builds/worker/artifacts'
+                                  expires: {$fromNow: '1 year'}
+                              'public/docker-contexts':
+                                      type: 'directory'
+                                      path: '/builds/worker/checkouts/src/docker-contexts'
+                                      # This needs to be at least the deadline of the
+                                      # decision task + the docker-image task deadlines.
+                                      # It is set to a week to allow for some time for
+                                      # debugging, but they are not useful long-term.
+                                      expires: {$fromNow: '7 day'}
+
+                      extra:
+                          $merge:
+                              - $if: 'tasks_for == "action"'
+                                then:
+                                    parent: '${action.taskGroupId}'
+                                    action:
+                                        name: '${action.name}'
+                                        context:
+                                            taskGroupId: '${action.taskGroupId}'
+                                            taskId: {$eval: 'taskId'}
+                                            input: {$eval: 'input'}
+                              - $if: 'tasks_for == "cron"'
+                                then:
+                                    cron: {$json: {$eval: 'cron'}}
+                              - tasks_for: '${tasks_for}'

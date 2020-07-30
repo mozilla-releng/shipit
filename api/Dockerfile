@@ -1,3 +1,5 @@
+# WARNING: Update taskcluster/docker/k8s-image/Dockerfile file when you update
+# this one. Or better, find a way to use the same Dockerfile
 FROM python:3.8
 
 RUN groupadd --gid 10001 app && \
