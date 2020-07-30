@@ -273,9 +273,9 @@ inflection==0.5.0 \
     --hash=sha256:88b101b2668a1d81d6d72d4c2018e53bc6c7fc544c987849da1c7f77545c3bc9 \
     --hash=sha256:f576e85132d34f5bf7df5183c2c6f94cfb32e528f53065345cf71329ba0b8924 \
     # via connexion
-isort==5.2.1 \
-    --hash=sha256:761a8f490d8bbcd3549b5618ed423468bbdece603cce44b290ee274c9a360893 \
-    --hash=sha256:a4401d357b0f7a9064781da345e6e2f075ebc09fbebf605740163140d5ac418c    # via -r test.in
+isort==5.2.2 \
+    --hash=sha256:96b27045e3187b9bdde001143b79f9b10a462f372bff7062302818013b6c86f3 \
+    --hash=sha256:aea484023188ef1c38256dd24afa96e914adafe3a911a1786800a74e433006d1    # via -r test.in
 itsdangerous==1.1.0 \
     --hash=sha256:321b033d07f2a4136d3ec762eac9f16a10ccd60f53c0c91af90217ace7ba1f19 \
     --hash=sha256:b12271b2047cb23eeb98c8b5622e2e5c5e9abd9784a153e9d8ef9cb4dd09d749 \
