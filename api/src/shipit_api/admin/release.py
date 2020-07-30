@@ -13,7 +13,6 @@ from shipit_api.common.product import Product
 # If version has two parts with no trailing specifiers like "rc", we
 # consider it a 'final' release for which we only create a _RELEASE tag.
 FINAL_RELEASE_REGEX = r"^\d+\.\d+$"
-_FENNEC_RC_REGEX = r"^68\.\d+\.0$"
 
 
 # TODO: Reland https://github.com/mozilla/release-services/pull/2262. It was backed out because of
@@ -42,10 +41,6 @@ def is_final_release(version):
     return bool(re.match(FINAL_RELEASE_REGEX, version))
 
 
-def _is_fennec_rc_release(product, version):
-    return product == "fennec_release" and bool(re.match(_FENNEC_RC_REGEX, version))
-
-
 def is_beta(version):
     return parse_version(version)["point"] == "b"
 
@@ -56,7 +51,7 @@ def is_esr(version):
 
 def is_rc(product, version, partial_updates):
     if not is_beta(version) and not is_esr(version):
-        if is_final_release(version) or _is_fennec_rc_release(product, version):
+        if is_final_release(version):
             # version supports rc flavor
             # now validate that the product itself supports rc flavor
             if SUPPORTED_FLAVORS.get(f"{product}_rc"):

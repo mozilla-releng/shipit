@@ -46,17 +46,17 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # day).
 # We could have used the in-tree version, but there can be race conditions,
 # e.g. version bumped, but still no builds available.
-FIREFOX_NIGHTLY = "80.0a1"
+FIREFOX_NIGHTLY = "81.0a1"
 
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
-LAST_SOFTFREEZE_DATE = "2020-04-30"
-LAST_MERGE_DATE = "2020-05-04"
-LAST_RELEASE_DATE = "2020-05-05"
-NEXT_SOFTFREEZE_DATE = "2020-05-28"
-NEXT_MERGE_DATE = "2020-06-01"
-NEXT_RELEASE_DATE = "2020-06-02"
+LAST_SOFTFREEZE_DATE = "2020-07-23"
+LAST_MERGE_DATE = "2020-07-27"
+LAST_RELEASE_DATE = "2020-07-28"
+NEXT_SOFTFREEZE_DATE = "2020-08-20"
+NEXT_MERGE_DATE = "2020-08-24"
+NEXT_RELEASE_DATE = "2020-08-25"
 
 # Fennec Nightly users have been migrated to Fenix, thus we don't need to bump
 # the following numbers anymore.
@@ -72,7 +72,7 @@ IOS_VERSION = "24.1"
 
 # Thunderbird configs
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
-LATEST_THUNDERBIRD_NIGHTLY_VERSION = "80.0a1"
+LATEST_THUNDERBIRD_NIGHTLY_VERSION = "81.0a1"
 # TODO: Need to update this every cycle
 THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr78"
 THUNDERBIRD_BETA_BRANCH = "releases/comm-beta"
@@ -451,12 +451,6 @@ SUPPORTED_FLAVORS = {
         {"name": "push_firefox", "in_previous_graph_ids": True},
         {"name": "ship_firefox", "in_previous_graph_ids": True},
     ],
-    "fennec": [{"name": "promote_fennec", "in_previous_graph_ids": True}, {"name": "ship_fennec", "in_previous_graph_ids": True}],
-    "fennec_rc": [
-        {"name": "promote_fennec", "in_previous_graph_ids": True},
-        {"name": "ship_fennec_rc", "in_previous_graph_ids": True},
-        {"name": "ship_fennec", "in_previous_graph_ids": True},
-    ],
     "devedition": [
         {"name": "promote_devedition", "in_previous_graph_ids": True},
         {"name": "push_devedition", "in_previous_graph_ids": True},
@@ -466,12 +460,6 @@ SUPPORTED_FLAVORS = {
         {"name": "promote_thunderbird", "in_previous_graph_ids": True},
         {"name": "push_thunderbird", "in_previous_graph_ids": True},
         {"name": "ship_thunderbird", "in_previous_graph_ids": True},
-    ],
-    "fennec_release": [{"name": "promote_fennec_release", "in_previous_graph_ids": True}, {"name": "ship_fennec_release", "in_previous_graph_ids": True}],
-    "fennec_release_rc": [
-        {"name": "promote_fennec_release", "in_previous_graph_ids": True},
-        {"name": "ship_fennec_release_rc", "in_previous_graph_ids": True},
-        {"name": "ship_fennec_release", "in_previous_graph_ids": True},
     ],
     "fenix": [{"name": "ship", "in_previous_graph_ids": True}],
 }

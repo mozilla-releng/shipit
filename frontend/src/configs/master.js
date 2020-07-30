@@ -36,24 +36,6 @@ module.exports = {
       enablePartials: true,
     },
     {
-      product: 'fennec',
-      prettyName: 'Firefox Mobile',
-      // TODO: The actual appName is `mobile/android` but it gets the version
-      // from `browser`.
-      appName: 'browser',
-      branches: [
-        {
-          prettyName: 'Maple Beta',
-          project: 'maple',
-          branch: 'projects/maple',
-          repo: 'https://hg.mozilla.org/projects/maple',
-          enableReleaseEta: false,
-          disableable: false,
-        },
-      ],
-      enablePartials: false,
-    },
-    {
       product: 'devedition',
       prettyName: 'Firefox Developer Edition',
       appName: 'browser',
