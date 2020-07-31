@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import menuItems from './menuItems';
 import Link from '../../utils/Link';
 import UserMenu from './UserMenu';
+import SettingsMenu from './SettingsMenu';
 import Button from '../Button';
 import Footer from '../../views/Footer';
 import { CONTENT_MAX_WIDTH, APP_BAR_HEIGHT } from '../../utils/constants';
@@ -76,6 +77,7 @@ export default function Dashboard(props) {
                 <Button color="inherit">{menuItem.value}</Button>
               </Link>
             ))}
+            <SettingsMenu disabled={disabled} />
             <UserMenu />
           </nav>
         </Toolbar>
