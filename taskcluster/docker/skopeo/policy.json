@@ -1,6 +1,9 @@
 {
     "default": [{"type": "reject"}],
     "transports": {
+        "oci": {
+            "": [{"type": "insecureAcceptAnything"}]
+        },
         "docker-archive": {
             "": [{"type": "insecureAcceptAnything"}]
         },
