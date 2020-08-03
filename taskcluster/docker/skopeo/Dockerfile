@@ -15,6 +15,18 @@ RUN ["/usr/local/go/bin/go", "build", \
     "./cmd/skopeo"]
 
 
+FROM golang:1.14 as umoci
+
+WORKDIR /go/src/
+RUN ["/usr/bin/git", "clone", "--no-checkout", "--depth=1", "--branch=v0.4.6", "https://github.com/opencontainers/umoci", "."]
+RUN ["/usr/bin/git", "checkout", "5efa06acfb3bb4e65d2711cf5255970948e047cf"]
+ENV GO111MODULE=on CGO_ENABLED=0
+RUN ["/usr/local/go/bin/go", "build", \
+    "-mod=vendor", "-o", "out/umoci", \
+    "-ldflags", "-extldflags \"-static\" -w -s", \
+    "./cmd/umoci"]
+
+
 FROM debian:buster
 
 # %include-run-task
@@ -29,6 +41,7 @@ COPY push_image.sh /usr/local/bin/
 COPY policy.json /etc/containers/policy.json
 RUN chmod a+x /usr/local/bin/push_image.sh
 COPY --from=skopeo /go/src/out/skopeo /usr/local/bin/
+COPY --from=umoci /go/src/out/umoci /usr/local/bin/
 
 # Add worker user
 RUN mkdir /builds && \
