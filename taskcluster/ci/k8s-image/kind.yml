@@ -6,6 +6,7 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
+    - shipit_taskgraph.transforms.version_json:transforms
     - taskgraph.transforms.docker_image:transforms
     - taskgraph.transforms.cached_tasks:transforms
     - taskgraph.transforms.task:transforms
@@ -16,8 +17,18 @@ jobs:
         args:
             PYTHON_VERSION: "3.8"
             APP_TYPE: admin
+            # Use plain text "<self>" instead of using {"task-reference":
+            # "<self>"}, because the docker_image transform expects args to be
+            # {basestring: basestring}. Bracket-style templates will be
+            # evaluated by the docker_image transform.
+            TASK_ID: "<self>"
     shipit-public:
         definition: shipit
         args:
             PYTHON_VERSION: "3.8"
             APP_TYPE: public
+            # Use plain text "<self>" instead of using {"task-reference":
+            # "<self>"}, because the docker_image transform expects args to be
+            # {basestring: basestring}. Bracket-style templates will be
+            # evaluated by the docker_image transform.
+            TASK_ID: "<self>"

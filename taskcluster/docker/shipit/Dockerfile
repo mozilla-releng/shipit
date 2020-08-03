@@ -22,6 +22,14 @@ ADD topsrcdir/api/docker.d/init.sh /app/docker.d/
 
 RUN APP_TYPE=$APP_TYPE pip install /app/src && rm -rf /app/src
 
+ARG TASK_ID
+ARG APP_VERSION
+ARG VCS_HEAD_REV
+ARG VCS_HEAD_REPOSITORY
+ARG TASKCLUSTER_ROOT_URL
+
+RUN echo "{\"commit\": \"$VCS_HEAD_REV\", \"version\": \"$APP_VERSION\", \"source\": \"$VCS_HEAD_REPOSITORY\", \"build\": \"$TASKCLUSTER_ROOT_URL/tasks/$TASK_ID\"}" > /app/version.json
+
 ENV FLASK_APP shipit_api.$APP_TYPE.flask:app
 ENV WEB_CONCURRENCY=3
 USER app
