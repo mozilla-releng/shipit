@@ -23,11 +23,11 @@ def test_scopes(monkeypatch):
     from shipit_api.admin.settings import (
         AUTH0_AUTH_SCOPES,
         GROUPS,
-        XPI_PRIVILEGED_BUILD_GROUP,
-        XPI_PRIVILEGED_ADMIN_GROUP,
-        XPI_SYSTEM_ADMIN_GROUP,
-        XPI_MOZILLAONLINE_PRIVILEGED_GROUP,
         XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP,
+        XPI_MOZILLAONLINE_PRIVILEGED_GROUP,
+        XPI_PRIVILEGED_ADMIN_GROUP,
+        XPI_PRIVILEGED_BUILD_GROUP,
+        XPI_SYSTEM_ADMIN_GROUP,
     )
 
     # make sure the admin group has all scopes
