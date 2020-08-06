@@ -63,7 +63,7 @@ module.exports = {
         PORT: port,
         SHIPIT_API_URL,
         SHIPIT_PUBLIC_API_URL,
-        RELEASE_CHANNEL: process.env.RELEASE_CHANNEL,
+        DEPLOYMENT_BRANCH: process.env.DEPLOYMENT_BRANCH,
       },
     }),
     (neutrino) => {

@@ -36,44 +36,6 @@ module.exports = {
       canTogglePartials: true,
     },
     {
-      product: 'fennec',
-      prettyName: 'Firefox Mobile',
-      // TODO: The actual appName is `mobile/android` but it gets the version
-      // from `browser`.
-      appName: 'browser',
-      branches: [
-        {
-          prettyName: 'Maple Beta',
-          project: 'maple',
-          branch: 'projects/maple',
-          repo: 'https://hg.mozilla.org/projects/maple',
-          enableReleaseEta: false,
-          alternativeBranch: 'releases/mozilla-beta',
-          disableable: false,
-        },
-        {
-          prettyName: 'Try',
-          project: 'try',
-          branch: 'try',
-          repo: 'https://hg.mozilla.org/try',
-          enableReleaseEta: false,
-          disableable: false,
-        },
-        {
-          prettyName: 'Try Release',
-          project: 'maple',
-          branch: 'try',
-          repo: 'https://hg.mozilla.org/try',
-          enableReleaseEta: false,
-          productKey: 'fennec_release',
-          versionFile:
-            'mobile/android/config/version-files/release/version_display.txt',
-          disableable: false,
-        },
-      ],
-      enablePartials: false,
-    },
-    {
       product: 'devedition',
       prettyName: 'Firefox Developer Edition',
       appName: 'browser',
@@ -119,6 +81,7 @@ module.exports = {
       product: 'fenix',
       prettyName: 'Fenix',
       appName: 'fenix',
+      branches: [],
       repositories: [
         {
           prettyName: "Johan's fork",

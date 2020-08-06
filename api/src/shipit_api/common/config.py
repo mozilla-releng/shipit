@@ -451,12 +451,6 @@ SUPPORTED_FLAVORS = {
         {"name": "push_firefox", "in_previous_graph_ids": True},
         {"name": "ship_firefox", "in_previous_graph_ids": True},
     ],
-    "fennec": [{"name": "promote_fennec", "in_previous_graph_ids": True}, {"name": "ship_fennec", "in_previous_graph_ids": True}],
-    "fennec_rc": [
-        {"name": "promote_fennec", "in_previous_graph_ids": True},
-        {"name": "ship_fennec_rc", "in_previous_graph_ids": True},
-        {"name": "ship_fennec", "in_previous_graph_ids": True},
-    ],
     "devedition": [
         {"name": "promote_devedition", "in_previous_graph_ids": True},
         {"name": "push_devedition", "in_previous_graph_ids": True},
@@ -466,12 +460,6 @@ SUPPORTED_FLAVORS = {
         {"name": "promote_thunderbird", "in_previous_graph_ids": True},
         {"name": "push_thunderbird", "in_previous_graph_ids": True},
         {"name": "ship_thunderbird", "in_previous_graph_ids": True},
-    ],
-    "fennec_release": [{"name": "promote_fennec_release", "in_previous_graph_ids": True}, {"name": "ship_fennec_release", "in_previous_graph_ids": True}],
-    "fennec_release_rc": [
-        {"name": "promote_fennec_release", "in_previous_graph_ids": True},
-        {"name": "ship_fennec_release_rc", "in_previous_graph_ids": True},
-        {"name": "ship_fennec_release", "in_previous_graph_ids": True},
     ],
     "fenix": [{"name": "ship", "in_previous_graph_ids": True}],
 }

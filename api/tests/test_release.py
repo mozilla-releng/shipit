@@ -27,24 +27,13 @@ def test_is_esr(version, result):
     "product, version, partial_updates, result",
     (
         ("firefox", "41.0esr", None, False),
-        ("fennec", "56.0b3", None, False),
         ("firefox", "57.0", {"56.0b1": [], "55.0": []}, True),
         ("firefox", "57.0", {"56.0": [], "55.0": []}, True),
         ("thunderbird", "57.0", {"56.0": [], "55.0": []}, False),
         ("firefox", "64.0", None, True),
         ("thunderbird", "64.0", None, False),
-        ("fennec", "64.0", None, True),
         ("firefox", "64.0.1", None, False),
         ("thunderbird", "64.0.1", None, False),
-        # Fennec on the 68 branch is a special case
-        ("fennec_release", "68.0", None, True),
-        ("fennec_beta", "68.0b1", None, False),
-        ("fennec", "68.0b1", None, False),
-        ("fennec_release", "68.2.0", None, True),
-        ("fennec", "68.2.0", None, False),
-        ("fennec_release", "68.2.1", None, False),
-        ("fennec_release", "68.3.0", None, True),
-        ("fennec_release", "68.3.1", None, False),
     ),
 )
 def test_is_rc(product, version, partial_updates, result):

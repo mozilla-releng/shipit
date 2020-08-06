@@ -1,0 +1,53 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+kind-dependencies:
+    - docker-image
+
+transforms:
+    - shipit_taskgraph.transforms.substitute_version:transforms
+    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.task:transforms
+
+job-defaults:
+    run-on-tasks-for: ["action", "github-pull-request", "github-push"]
+    attributes:
+        code-review: true
+    worker-type: t-linux
+    run:
+        using: run-task
+        cache-dotcache: false
+        checkout:
+            shipit: {}
+        cwd: '{checkout}'
+
+jobs:
+    api-python:
+        description: "{name} tox-py{substitute_version}"
+        substitute-versions:
+            - 38
+        worker:
+            docker-image: {in-tree: 'python{substitute_version}'}
+            max-run-time: 1800
+        run:
+            command:
+                - sh
+                - -lxce
+                - >-
+                  cd api && tox -e py{substitute_version},check
+    frontend-node:
+        description: "{name} node{substitute_version}"
+        substitute-versions:
+            - 14
+        worker:
+            docker-image: {in-tree: 'node{substitute_version}'}
+            max-run-time: 1800
+        run:
+            command:
+                - sh
+                - -lxce
+                - >-
+                  cd frontend && yarn install && yarn lint && yarn test --passWithNoTests && yarn build

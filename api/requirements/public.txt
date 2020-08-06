@@ -129,10 +129,10 @@ mozilla-version==0.5.2 \
     --hash=sha256:782f81f469b30c3a5a9fb73edfbe1ab9e37a6b3c072ac58c77ec73b6773f2ef7 \
     --hash=sha256:dbf49b2dc666542d83b933ed4db91ecb5b761f0c76bf421c2099c51189465f1e \
     # via -r public.in
-openapi-spec-validator==0.2.8 \
-    --hash=sha256:0caacd9829e9e3051e830165367bf58d436d9487b29a09220fa7edb9f47ff81b \
-    --hash=sha256:d4da8aef72bf5be40cf0df444abd20009a41baf9048a8e03750c07a934f1bdd8 \
-    --hash=sha256:e489c7a273284bc78277ac22791482e8058d323b4a265015e9fcddf6a8045bcd \
+openapi-spec-validator==0.2.9 \
+    --hash=sha256:6dd75e50c94f1bb454d0e374a56418e7e06a07affb2c7f1df88564c5d728dac3 \
+    --hash=sha256:79381a69b33423ee400ae1624a461dae7725e450e2e306e32f2dd8d16a4d85cb \
+    --hash=sha256:ec1b01a00e20955a527358886991ae34b4b791b253027ee9f7df5f84b59d91c7 \
     # via connexion
 psycopg2==2.8.5 \
     --hash=sha256:132efc7ee46a763e68a815f4d26223d9c679953cd190f1f218187cb60decf535 \
@@ -181,9 +181,10 @@ requests==2.24.0 \
     --hash=sha256:b3559a131db72c33ee969480840fff4bb6dd111de7dd27c8ee1f820f4f00231b \
     --hash=sha256:fe75cc94a9443b9246fc7049224f75604b113c36acb93f87b80ed42c44cbb898 \
     # via connexion
-sentry-sdk[flask]==0.16.2 \
-    --hash=sha256:2de15b13836fa3522815a933bd9c887c77f4868071043349f94f1b896c1bcfb8 \
-    --hash=sha256:38bb09d0277117f76507c8728d9a5156f09a47ac5175bb8072513859d19a593b    # via -r public.in
+sentry-sdk[flask]==0.16.3 \
+    --hash=sha256:21b17d6aa064c0fb703a7c00f77cf6c9c497cf2f83345c28892980a5e742d116 \
+    --hash=sha256:4fc97114c77d005467b9b1a29f042e2bc01923cb683b0ef0bbda46e79fa12532 \
+    # via -r public.in
 six==1.15.0 \
     --hash=sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259 \
     --hash=sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced \
@@ -224,10 +225,12 @@ sqlalchemy==1.3.18 \
     # via -r public.in, alembic, flask-sqlalchemy
 swagger-ui-bundle==0.0.8 \
     --hash=sha256:f5255f786cde67a2638111f4a7d04355836743198a83c4ecbe815d9fc384b0c8 \
-    --hash=sha256:f5691167f2e9f73ecbe8229a89454ae5ea958f90bb0d4583ed7adaae598c4122    # via connexion
+    --hash=sha256:f5691167f2e9f73ecbe8229a89454ae5ea958f90bb0d4583ed7adaae598c4122 \
+    # via connexion
 urllib3==1.25.10 \
     --hash=sha256:91056c15fa70756691db97756772bb1eb9678fa585d9184f24534b100dc60f4a \
-    --hash=sha256:e7983572181f5e1522d9c98453462384ee92a0be7fac5f1413a1e35c56cc0461    # via requests, sentry-sdk
+    --hash=sha256:e7983572181f5e1522d9c98453462384ee92a0be7fac5f1413a1e35c56cc0461 \
+    # via requests, sentry-sdk
 werkzeug==1.0.1 \
     --hash=sha256:2de2a5db0baeae7b2d2664949077c2ac63fbd16d98da0ff71837f7d1dea3fd43 \
     --hash=sha256:6c80b1e5ad3665290ea39320b91e1be1e0d5f60652b964a3070216de83d2e47c \
