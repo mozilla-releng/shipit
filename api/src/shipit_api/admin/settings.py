@@ -72,10 +72,7 @@ ADMIN_GROUP = [
     "tprince@mozilla.com",
 ]
 
-XPI_PRIVILEGED_BUILD_GROUP = [
-    "amarchesini@mozilla.com",
-    "ibicking@mozilla.com"
-]
+XPI_PRIVILEGED_BUILD_GROUP = ["amarchesini@mozilla.com", "ibicking@mozilla.com"]
 XPI_PRIVILEGED_ADMIN_GROUP = [
     "awagner@mozilla.com",
     "pkewisch@mozilla.com",
@@ -108,12 +105,9 @@ GROUPS = {
     "xpi_privileged_build": XPI_PRIVILEGED_BUILD_GROUP,
     "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_GROUP + ADMIN_GROUP,
     "xpi_privileged_admin_signoff": XPI_PRIVILEGED_ADMIN_GROUP,
-
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_GROUP + ADMIN_GROUP,
-
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_GROUP + ADMIN_GROUP,
     "xpi_mozillaonline-privileged_admin_signoff": XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP + ADMIN_GROUP,
-
     "xpi_normandy-privileged_signoff": XPI_NORMANDY_PRIVILEGED_GROUP + ADMIN_GROUP,
 }
 
