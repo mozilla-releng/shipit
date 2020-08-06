@@ -484,11 +484,9 @@ SIGNOFFS = {
     #     },
     # },
     "xpi": {
-        # XXX split `privileged` into `privileged-internal` and `privileged-studies`.
-        #     The latter will have stricter QA signoff requirements.
         "privileged": {
             "promote": [
-                {"name": "Privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
+                {"name": "Add-on Review Team", "description": "Promote XPI", "permissions": "xpi_privileged_admin_signoff"},
                 {"name": "Privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
             ],
         },
@@ -508,6 +506,12 @@ SIGNOFFS = {
                     "description": "Promote XPI",
                     "permissions": "xpi_mozillaonline-privileged_admin_signoff",
                 },
+            ],
+        },
+        "normandy-privileged": {
+            "promote": [
+                {"name": "Normandy privileged admin", "description": "Promote XPI", "permissions": "xpi_normandy-privileged_signoff"},
+                {"name": "Normandy privileged admin", "description": "Promote XPI", "permissions": "xpi_normandy-privileged_signoff"},
             ],
         },
     },
