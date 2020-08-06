@@ -71,9 +71,18 @@ ADMIN_GROUP = [
     "sfraser@mozilla.com",
     "tprince@mozilla.com",
 ]
-XPI_PRIVILEGED_BUILD_GROUP = ["amarchesini@mozilla.com", "ibicking@mozilla.com"]
+
+XPI_PRIVILEGED_BUILD_GROUP = [
+    "amarchesini@mozilla.com",
+    "ibicking@mozilla.com"
+]
 XPI_PRIVILEGED_ADMIN_GROUP = [
     "awagner@mozilla.com",
+    "pkewisch@mozilla.com",
+    "jvillalobos@mozilla.com",
+]
+
+XPI_NORMANDY_PRIVILEGED_GROUP = [
     "dharvey@mozilla.com",
     "jkerim@mozilla.com",
     "mbanner@mozilla.com",
@@ -81,23 +90,31 @@ XPI_PRIVILEGED_ADMIN_GROUP = [
     "rdalal@mozilla.com",
     "ttran@mozilla.com",
 ]
+
 XPI_SYSTEM_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com"]
+
 XPI_MOZILLAONLINE_PRIVILEGED_GROUP = ["bzhao@mozilla.com", "jxia@mozilla.com", "yliu@mozilla.com"]
 XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP = ["awagner@mozilla.com", "mkaply@mozilla.com"]
+
 GROUPS = {
     "admin": ADMIN_GROUP,
     "firefox-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "fenix-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
     # XPI signoffs. These are in flux.
-    # Adding Releng as a backup to all of these, for bus factor. Releng should
+    # Adding Releng as a backup to most of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
-    "xpi_privileged_build": XPI_PRIVILEGED_BUILD_GROUP,
     # ADMIN_GROUP has to be added in order for multiple signoffs to work
+    "xpi_privileged_build": XPI_PRIVILEGED_BUILD_GROUP,
     "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_GROUP + ADMIN_GROUP,
+    "xpi_privileged_admin_signoff": XPI_PRIVILEGED_ADMIN_GROUP,
+
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_GROUP + ADMIN_GROUP,
+
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_GROUP + ADMIN_GROUP,
     "xpi_mozillaonline-privileged_admin_signoff": XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP + ADMIN_GROUP,
+
+    "xpi_normandy-privileged_signoff": XPI_NORMANDY_PRIVILEGED_GROUP + ADMIN_GROUP,
 }
 
 AUTH0_AUTH_SCOPES = dict()
@@ -148,13 +165,14 @@ AUTH0_AUTH_SCOPES.update(
                 + GROUPS["xpi_system_signoff"]
                 + GROUPS["xpi_mozillaonline-privileged_signoff"]
                 + GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
+                + GROUPS["xpi_normandy-privileged_signoff"]
             )
         )
     }
 )
 
 # XPI scopes
-for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
+for xpi_type in ["privileged", "system", "mozillaonline-privileged", "normandy-privileged"]:
     # "build", "signoff", and "admin_signoff" groups can create and cancel releases
     AUTH0_AUTH_SCOPES.update(
         {
