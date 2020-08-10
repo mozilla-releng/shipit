@@ -9,43 +9,24 @@ kind-dependencies:
     - k8s-image
 
 transforms:
-    - shipit_taskgraph.transforms.deploy_secret:transforms
-    - shipit_taskgraph.transforms.docker_push:transforms
-    - taskgraph.transforms.job:transforms
+    - shipit_taskgraph.transforms.cloudops_deploy:transforms
     - taskgraph.transforms.task:transforms
 
 job-defaults:
-    worker-type: b-linux
-    worker:
-        taskcluster-proxy: true
-        docker-image: {in-tree: skopeo}
-        max-run-time: 3600
     dependencies:
-          tests-js: tests-frontend-node-14
-          tests-api: tests-api-python-38
-    run:
-        using: run-task
-        checkout: false
-        cache-dotcache: false
-        command:
-            - /usr/local/bin/push_image.sh
-    fetches:
-        k8s-image:
-            - artifact: image.tar.zst
-              extract: false
+        tests-js: tests-frontend-node-14
+        tests-api: tests-api-python-38
+    project: shipitapi
+    image-task-id: {task-reference: "<k8s-image>"}
 
 jobs:
     shipit-admin:
         description: "Push to shipit-admin repository."
         dependencies:
-              k8s-image: build-docker-image-shipit-admin
-        worker:
-            env:
-                DOCKER_REPO: docker.io/mozilla/releng-shipit-admin
+            k8s-image: build-docker-image-shipit-admin
+        variant: admin
     shipit-public:
         description: "Push to shipit-public repository."
         dependencies:
-              k8s-image: build-docker-image-shipit-public
-        worker:
-            env:
-                DOCKER_REPO: docker.io/mozilla/releng-shipit-public
+            k8s-image: build-docker-image-shipit-public
+        variant: public
