@@ -74,6 +74,7 @@ XPI_PRIVILEGED_ADMIN_GROUP = [
 ]
 
 XPI_NORMANDY_PRIVILEGED_GROUP = [
+    "ahounsel@mozilla.com",
     "dharvey@mozilla.com",
     "jkerim@mozilla.com",
     "mbanner@mozilla.com",
