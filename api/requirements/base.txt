@@ -34,9 +34,9 @@ amqp==2.6.1 \
     --hash=sha256:70cdb10628468ff14e57ec2f751c7aa9e48e7e3651cfd62d431213c0c4e58f21 \
     --hash=sha256:aa7f313fb887c91f15474c1229907a04dac0b8135822d6603437803424c0aa59 \
     # via kombu
-arrow==0.15.8 \
-    --hash=sha256:271b8e05174d48e50324ed0dc5d74796c839c7e579a4f21cf1a7394665f9e94f \
-    --hash=sha256:edc31dc051db12c95da9bac0271cd1027b8e36912daf6d4580af53b23e62721a \
+arrow==0.16.0 \
+    --hash=sha256:92aac856ea5175c804f7ccb96aca4d714d936f1c867ba59d747a8096ec30e90a \
+    --hash=sha256:98184d8dd3e5d30b96c2df4596526f7de679ccb467f358b82b0f686436f3a6b8 \
     # via -r base.in
 async-timeout==3.0.1 \
     --hash=sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f \
@@ -234,7 +234,8 @@ jsonschema==3.2.0 \
     # via connexion, openapi-spec-validator
 kombu==5.0.0 \
     --hash=sha256:60a4e6feeab5a6cabb0dccdad49e9a7df0e8435f1bab1914fd7d1a1c46538373 \
-    --hash=sha256:7c949fe33573a971f06c8836ca025390088f3747533b78438f9a57344a142b59    # via -r base.in
+    --hash=sha256:7c949fe33573a971f06c8836ca025390088f3747533b78438f9a57344a142b59 \
+    # via -r base.in
 mako==1.1.3 \
     --hash=sha256:8195c8c1400ceb53496064314c6736719c6f25e7479cd24c77be3d9361cddc27 \
     --hash=sha256:93729a258e4ff0747c876bd9e20df1b9758028946e976324ccd2d68245c7b6a9 \
@@ -481,7 +482,8 @@ taskcluster-urls==13.0.1 \
 taskcluster==36.0.0 \
     --hash=sha256:0bcc8e033cedba0e3a1bd61d7f4343ed32f0b2395193bed04c404d0995f8d1eb \
     --hash=sha256:40befd65f8f87f4e16295adbdab582117c38eb49f487a184a9e7541dabf3558e \
-    --hash=sha256:ec268fbcf08c0b1e31018ec6b1bf9b9d99640ab7764db725fbaf8f9a3bcc37c5    # via -r base.in
+    --hash=sha256:ec268fbcf08c0b1e31018ec6b1bf9b9d99640ab7764db725fbaf8f9a3bcc37c5 \
+    # via -r base.in
 typed-ast==1.4.1 \
     --hash=sha256:0666aa36131496aed8f7be0410ff974562ab7eeac11ef351def9ea6fa28f6355 \
     --hash=sha256:0c2c07682d61a629b68433afb159376e24e5b2fd4641d35424e462169c0a7919 \
