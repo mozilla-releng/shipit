@@ -45,6 +45,7 @@ test_requirements = ["pytest"]
 packages = find_packages("src", include=["backend_common", "cli_common"]) + find_namespace_packages("src", include=["shipit_api.common", "shipit_api.public"])
 name = "shipit_api-public"
 req_file = "public.txt"
+entry_points = None
 
 # In order to separate the public and admin apps, use `APP_TYPE` environment
 # variable as a most portable way to parameterize setup.py
@@ -52,6 +53,14 @@ if os.environ.get("APP_TYPE") == "admin":
     packages.extend(find_namespace_packages("src", include=["shipit_api.admin"]))
     name = "shipit_api-admin"
     req_file = "base.txt"
+    entry_points = {
+        "console_scripts": [
+            "shipit_upload_product_details = shipit_api.admin.cli:upload_product_details",
+            "shipit_rebuild_product_details = shipit_api.admin.cli:rebuild_product_details",
+            "shipit_import = shipit_api.admin.cli:shipit_import",
+            "shipit_trigger_product_details = shipit_api.admin.cli:trigger_product_details",
+        ]
+    }
 
 setup(
     author="Mozilla Release Engineering",
@@ -65,6 +74,7 @@ setup(
         "Programming Language :: Python :: 3.8",
     ],
     description="Ship It API",
+    entry_points=entry_points,
     install_requires=get_requirements(req_file),
     license="MPL2.0",
     long_description=readme + "\n\n" + history,
