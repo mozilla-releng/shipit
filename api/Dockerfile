@@ -11,7 +11,9 @@ COPY requirements/ /app/requirements/
 RUN pip install -r requirements/base.txt
 
 COPY . /app
-RUN APP_TYPE="admin" pip install -e .
+# Ideally this would be `pip install -e`, but that breaks
+# the entry points that we require
+RUN APP_TYPE="admin" pip install .
 
 ENV FLASK_APP shipit_api.admin.flask:app
 ENV WEB_CONCURRENCY=3
