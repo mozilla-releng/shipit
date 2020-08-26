@@ -410,3 +410,15 @@ export async function submitXPIRelease(
 
   return req.data;
 }
+
+export async function rebuildProductDetails() {
+  const req = await axios.post(
+    '/product-details',
+    {},
+    {
+      authRequired: true,
+    }
+  );
+
+  return req.data;
+}
