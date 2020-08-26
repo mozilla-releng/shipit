@@ -55,7 +55,7 @@ if os.environ.get("APP_TYPE") == "admin":
     req_file = "base.txt"
     entry_points = {
         "console_scripts": [
-            "shipit_upload_product_details = shipit_api.admin.cli:upload_product_details",
+            "shipit_upload_product_details = shipit_api.admin.cli:download_product_details",
             "shipit_rebuild_product_details = shipit_api.admin.cli:rebuild_product_details",
             "shipit_import = shipit_api.admin.cli:shipit_import",
             "shipit_trigger_product_details = shipit_api.admin.cli:trigger_product_details",
