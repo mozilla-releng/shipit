@@ -292,8 +292,8 @@ jinja2==2.11.2 \
     --hash=sha256:89aab215427ef59c34ad58735269eb58b1a5808103067f7bb9d5836c651b3bb0 \
     --hash=sha256:f0a4641d3cf955324a89c04f3d94663aa4d638abe8f733ecd3582848e1c37035 \
     # via flask, swagger-ui-bundle
-json-e==4.2.0 \
-    --hash=sha256:bb7189f02e28639ecb96ac72a6d773243ee906fcbc23bbad1cf051e10efbc351 \
+json-e==4.3.0 \
+    --hash=sha256:00559fe9451cc059aa4997e801e19f421c7d6393e2a9b37e621cd1031b6d496a \
     # via -r base.in
 jsonschema==3.2.0 \
     --hash=sha256:4e5b3cf8216f577bee9ce139cbe72eca3ea4f292ec60928ff24758ce626cd163 \
