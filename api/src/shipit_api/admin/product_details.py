@@ -259,9 +259,9 @@ def get_old_product_details(directory: str) -> ProductDetails:
 
 def get_releases_from_db(db_session: sqlalchemy.orm.Session, breakpoint_version: int) -> typing.List[shipit_api.common.models.Release]:
     """
-     SELECT *
-     FROM shipit_api_releases as r
-     WHERE cast(split_part(r.version, '.', 1) as int) > 20;
+    SELECT *
+    FROM shipit_api_releases as r
+    WHERE cast(split_part(r.version, '.', 1) as int) > 20;
     """
     Release = shipit_api.common.models.Release
     query = db_session.query(Release)
@@ -314,27 +314,27 @@ def get_releases(
     breakpoint_version: int, products: Products, releases: typing.List[shipit_api.common.models.Release], old_product_details: ProductDetails
 ) -> Releases:
     """This file holds historical information about all Firefox, Firefox for
-       Mobile (aka Fennec), Firefox Dev Edition and Thunderbird releases we
-       shipped in the past.
+    Mobile (aka Fennec), Firefox Dev Edition and Thunderbird releases we
+    shipped in the past.
 
-       This function will output to the following files:
-        - all.json
-        - devedition.json
-        - firefox.json
-        - mobile_android.json
-        - thunderbird.json
+    This function will output to the following files:
+     - all.json
+     - devedition.json
+     - firefox.json
+     - mobile_android.json
+     - thunderbird.json
 
-       Example:::
+    Example:::
 
-           "firefox-58.0": {
-               "category":           "major",
-               "product":            "firefox",
-               "build_number":       6,
-               "description":        "",
-               "is_security_driven": false,
-               "version":            "58.0",
-               "date":               "2018-01-23",
-           }
+        "firefox-58.0": {
+            "category":           "major",
+            "product":            "firefox",
+            "build_number":       6,
+            "description":        "",
+            "is_security_driven": false,
+            "version":            "58.0",
+            "date":               "2018-01-23",
+        }
     """
     details = dict()
 
@@ -391,29 +391,29 @@ def get_release_history(
     old_product_details: ProductDetails,
 ) -> ReleasesHistory:
     """This file contains all the Product release dates for releases in that
-       category.
+    category.
 
-       This function will output to the following files:
-        - firefox_history_development_releases.json
-        - firefox_history_major_releases.json
-        - firefox_history_stability_releases.json
-        - mobile_history_development_releases.json
-        - mobile_history_major_releases.json
-        - mobile_history_stability_releases.json
-        - thunderbird_history_development_releases.json
-        - thunderbird_history_major_releases.json
-        - thunderbird_history_stability_releases.json
+    This function will output to the following files:
+     - firefox_history_development_releases.json
+     - firefox_history_major_releases.json
+     - firefox_history_stability_releases.json
+     - mobile_history_development_releases.json
+     - mobile_history_major_releases.json
+     - mobile_history_stability_releases.json
+     - thunderbird_history_development_releases.json
+     - thunderbird_history_major_releases.json
+     - thunderbird_history_stability_releases.json
 
-       Example:::
+    Example:::
 
-           {
-               ...
-               "59.0b11": "2018-02-20",
-               "59.0b12": "2018-02-23",
-               "59.0b13": "2018-02-27",
-               "59.0b14": "2018-03-02",
-               ...
-           }
+        {
+            ...
+            "59.0b11": "2018-02-20",
+            "59.0b12": "2018-02-23",
+            "59.0b13": "2018-02-27",
+            "59.0b14": "2018-03-02",
+            ...
+        }
     """
     if Product.DEVEDITION is product:
         raise click.ClickException(f'We don\'t generate product history for "{product.value}" product.')
@@ -498,31 +498,31 @@ def get_primary_builds(
     old_product_details: ProductDetails,
 ) -> PrimaryBuilds:
     """This file contains all the Thunderbird builds we provide per locale. The
-       filesize fields have the same value for all lcoales, this is not a bug,
-       we are keeping these fields with this schema for historical reasons only
-       but no longer populate them with fresh data.
+    filesize fields have the same value for all lcoales, this is not a bug,
+    we are keeping these fields with this schema for historical reasons only
+    but no longer populate them with fresh data.
 
-       This function will output to the following files:
-        - firefox_primary_builds.json
-        - thunderbird_primary_builds.json
+    This function will output to the following files:
+     - firefox_primary_builds.json
+     - thunderbird_primary_builds.json
 
-       Example:::
+    Example:::
 
-           {
-               "el": {
-                   "52.6.0": {
-                       "Windows": {
-                           "filesize": 25.1,
-                       },
-                       "OS X": {
-                           "filesize": 50.8,
-                       },
-                       "Linux": {
-                           "filesize": 31.8,
-                       },
-                   },
-               }
-           }
+        {
+            "el": {
+                "52.6.0": {
+                    "Windows": {
+                        "filesize": 25.1,
+                    },
+                    "OS X": {
+                        "filesize": 50.8,
+                    },
+                    "Linux": {
+                        "filesize": 31.8,
+                    },
+                },
+            }
+        }
     """
 
     if product is Product.FIREFOX:
@@ -619,27 +619,27 @@ def get_firefox_esr_next_version(releases: typing.List[shipit_api.common.models.
 def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]) -> FirefoxVersions:
     """All the versions we ship for Firefox for Desktop
 
-       This function will output to the following files:
-        - firefox_versions.json
+    This function will output to the following files:
+     - firefox_versions.json
 
-       Example:::
-           {
-               "FIREFOX_NIGHTLY":                        "60.0a1",
-               "FIREFOX_AURORA":                         "",
-               "FIREFOX_ESR":                            "52.6.0esr",
-               "FIREFOX_ESR_NEXT":                       "",
-               "LATEST_FIREFOX_DEVEL_VERSION":           "59.0b14",
-               "FIREFOX_DEVEDITION":                     "59.0b14",
-               "LATEST_FIREFOX_OLDER_VERSION":           "3.6.28",
-               "LATEST_FIREFOX_RELEASED_DEVEL_VERSION":  "59.0b14",
-               "LATEST_FIREFOX_VERSION":                 "58.0.2",
-               "LAST_SOFTFREEZE_DATE":                   "2019-03-11",
-               "LAST_MERGE_DATE":                        "2019-03-18",
-               "LAST_RELEASE_DATE":                      "2019-03-19",
-               "NEXT_SOFTFREEZE_DATE":                   "2019-05-06",
-               "NEXT_MERGE_DATE":                        "2019-05-13",
-               "NEXT_RELEASE_DATE":                      "2019-05-14"
-           }
+    Example:::
+        {
+            "FIREFOX_NIGHTLY":                        "60.0a1",
+            "FIREFOX_AURORA":                         "",
+            "FIREFOX_ESR":                            "52.6.0esr",
+            "FIREFOX_ESR_NEXT":                       "",
+            "LATEST_FIREFOX_DEVEL_VERSION":           "59.0b14",
+            "FIREFOX_DEVEDITION":                     "59.0b14",
+            "LATEST_FIREFOX_OLDER_VERSION":           "3.6.28",
+            "LATEST_FIREFOX_RELEASED_DEVEL_VERSION":  "59.0b14",
+            "LATEST_FIREFOX_VERSION":                 "58.0.2",
+            "LAST_SOFTFREEZE_DATE":                   "2019-03-11",
+            "LAST_MERGE_DATE":                        "2019-03-18",
+            "LAST_RELEASE_DATE":                      "2019-03-19",
+            "NEXT_SOFTFREEZE_DATE":                   "2019-05-06",
+            "NEXT_MERGE_DATE":                        "2019-05-13",
+            "NEXT_RELEASE_DATE":                      "2019-05-14"
+        }
     """
 
     return dict(
@@ -665,22 +665,22 @@ def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]
 
 def get_regions(old_product_details: ProductDetails) -> ProductDetails:
     """The files in this folder store the localized names for countries. The
-       data was extracted from our Gecko localization files and converted to
-       JSON as we needed it for projects that needed to associate product and
-       regional data. Those files are updated by the l10n-drivers team.
+    data was extracted from our Gecko localization files and converted to
+    JSON as we needed it for projects that needed to associate product and
+    regional data. Those files are updated by the l10n-drivers team.
 
-       This function will output to the following files:
-        - regions.json
+    This function will output to the following files:
+     - regions.json
 
-       Example:::
+    Example:::
 
-           {
-               "af": "Afghanistan",
-               "za": "Afrique du Sud",
-               "qz": "Akrotiri",
-               "al": "Albanie",
-               ...
-           }
+        {
+            "af": "Afghanistan",
+            "za": "Afrique du Sud",
+            "qz": "Akrotiri",
+            "al": "Albanie",
+            ...
+        }
     """
     regions: ProductDetails = dict()
     for file_, content in old_product_details.items():
@@ -695,29 +695,29 @@ def get_l10n(
     old_product_details: ProductDetails,
 ) -> ProductDetails:
     """This folder contains the l10n changeset per locale used for each build.
-       The translation of our products is done in separate l10n repositories,
-       each locale provides a good known version of their translations through
-       a sign off process with l10n-drivers and these changeset per locale are
-       used to build Firefox, Thunderbird and Fennec.
+    The translation of our products is done in separate l10n repositories,
+    each locale provides a good known version of their translations through
+    a sign off process with l10n-drivers and these changeset per locale are
+    used to build Firefox, Thunderbird and Fennec.
 
-       This function will output to the following files:
-        - l10n/<file>.json
+    This function will output to the following files:
+     - l10n/<file>.json
 
-       Example for l10n/Firefox-58.0-build6.json file:::
-           {
-               "locales": {
-                   "pa-IN": {
-                       "changeset": "5634ac6e7d9b",
-                   },
-                   "gd": {
-                       "changeset": "da7de9b6e635",
-                   },
-                   …
-               },
-               "submittedAt": "2018-01-18T22:53:08+00:00",
-               "shippedAt": "2018-01-23T13:20:26+00:00",
-               "name": "Firefox-58.0-build6",
-           }
+    Example for l10n/Firefox-58.0-build6.json file:::
+        {
+            "locales": {
+                "pa-IN": {
+                    "changeset": "5634ac6e7d9b",
+                },
+                "gd": {
+                    "changeset": "da7de9b6e635",
+                },
+                …
+            },
+            "submittedAt": "2018-01-18T22:53:08+00:00",
+            "shippedAt": "2018-01-23T13:20:26+00:00",
+            "name": "Firefox-58.0-build6",
+        }
     """
     # populate with old data first, stripping the '1.0/' prefix
     data: ProductDetails = {file_.replace("1.0/", ""): content for file_, content in old_product_details.items() if file_.startswith("1.0/l10n/")}
@@ -739,26 +739,26 @@ def get_l10n(
 def get_languages(old_product_details: ProductDetails) -> Languages:
     """List of all the supported BCP-47 locales with their English and native names.
 
-       This function will output to the following files:
-        - languages.json
+    This function will output to the following files:
+     - languages.json
 
-       Example:::
+    Example:::
 
-           {
-               "cs": {
-                   "English": "Czech",
-                   "native":  "Čeština",
-               },
-               "csb": {
-                   "English": "Kashubian",
-                   "native":  "Kaszëbsczi",
-               },
-               "cy": {
-                   "English": "Welsh",
-                   "native":  "Cymraeg",
-               },
-               ...
-           }
+        {
+            "cs": {
+                "English": "Czech",
+                "native":  "Čeština",
+            },
+            "csb": {
+                "English": "Kashubian",
+                "native":  "Kaszëbsczi",
+            },
+            "cy": {
+                "English": "Welsh",
+                "native":  "Cymraeg",
+            },
+            ...
+        }
 
     """
     languages = old_product_details.get("1.0/languages.json")
@@ -775,78 +775,78 @@ def get_languages(old_product_details: ProductDetails) -> Languages:
 
 def get_mobile_details(releases: typing.List[shipit_api.common.models.Release]) -> MobileDetails:
     """This file contains all the release information for Firefox for Android
-       and Firefox for iOS. We are keeping this file around for backward
-       compatibility with consumers and only the version numbers are updated
-       today. The builds, beta_builds and alpha_builds sections are static.
+    and Firefox for iOS. We are keeping this file around for backward
+    compatibility with consumers and only the version numbers are updated
+    today. The builds, beta_builds and alpha_builds sections are static.
 
-       If you are interested in getting the version number we ship per channel
-       use mobile_versions.json instead of this file.
+    If you are interested in getting the version number we ship per channel
+    use mobile_versions.json instead of this file.
 
-       This function will output to the following files:
-        - mobile_details.json
+    This function will output to the following files:
+     - mobile_details.json
 
-       Example:::
-           {
-               "nightly_version": "60.0a1",
-               "alpha_version": "60.0a1",
-               "beta_version": "59.0b13",
-               "version": "58.0.2",
-               "ios_beta_version": "9.1",
-               "ios_version": "9.0",
-               "builds": [
-                       {
-                           "locale": {
-                               "code": "ar",
-                               "english": "Arabic",
-                               "native": "\u0639\u0631\u0628\u064a"
-                           }
-                       },
-                       {
-                           "locale": {
-                               "code": "be",
-                               "english": "Belarusian",
-                               "native": "\u0411\u0435\u043b\u0430\u0440\u0443\u0441\u043a\u0430\u044f"
-                           }
-                       },
-                       …
-                   ],
-               "beta_builds": [
-                   {
-                       "locale": {
-                           "code": "cs",
-                           "english": "Czech",
-                           "native": "\u010ce\u0161tina"
-                       },
-                       "download": {
-                           "android": "market://details?id=org.mozilla.firefox_beta"
-                       }
-                   },
-                   {
-                       "locale": {
-                           "code": "de",
-                           "english": "German",
-                           "native": "Deutsch"
-                       },
-                       "download": {
-                           "android": "market://details?id=org.mozilla.firefox_beta"
-                       }
-                   },
-                   …
-               ],
-               "alpha_builds": [
-                   {
-                       "locale": {
-                           "code": "en-US",
-                           "english": "English (US)",
-                           "native": "English (US)"
-                       },
-                       "download": {
-                           "android": "market://details?id=org.mozilla.firefox"
-                       }
-                   }
-               ]
-               },
-           }
+    Example:::
+        {
+            "nightly_version": "60.0a1",
+            "alpha_version": "60.0a1",
+            "beta_version": "59.0b13",
+            "version": "58.0.2",
+            "ios_beta_version": "9.1",
+            "ios_version": "9.0",
+            "builds": [
+                    {
+                        "locale": {
+                            "code": "ar",
+                            "english": "Arabic",
+                            "native": "\u0639\u0631\u0628\u064a"
+                        }
+                    },
+                    {
+                        "locale": {
+                            "code": "be",
+                            "english": "Belarusian",
+                            "native": "\u0411\u0435\u043b\u0430\u0440\u0443\u0441\u043a\u0430\u044f"
+                        }
+                    },
+                    …
+                ],
+            "beta_builds": [
+                {
+                    "locale": {
+                        "code": "cs",
+                        "english": "Czech",
+                        "native": "\u010ce\u0161tina"
+                    },
+                    "download": {
+                        "android": "market://details?id=org.mozilla.firefox_beta"
+                    }
+                },
+                {
+                    "locale": {
+                        "code": "de",
+                        "english": "German",
+                        "native": "Deutsch"
+                    },
+                    "download": {
+                        "android": "market://details?id=org.mozilla.firefox_beta"
+                    }
+                },
+                …
+            ],
+            "alpha_builds": [
+                {
+                    "locale": {
+                        "code": "en-US",
+                        "english": "English (US)",
+                        "native": "English (US)"
+                    },
+                    "download": {
+                        "android": "market://details?id=org.mozilla.firefox"
+                    }
+                }
+            ]
+            },
+        }
     """
     mobile_versions = get_mobile_versions(releases)
     mobile_details = json.loads(shipit_api.common.config.MOBILE_DETAILS_TEMPLATE)
@@ -857,19 +857,19 @@ def get_mobile_details(releases: typing.List[shipit_api.common.models.Release]) 
 def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release]) -> MobileVersions:
     """This file contains all the versions we ship for Firefox for Android
 
-       This function will output to the following files:
-        - mobile_versions.json
+    This function will output to the following files:
+     - mobile_versions.json
 
-       Example:::
+    Example:::
 
-           {
-               "nightly_version": "60.0a1",
-               "alpha_version": "60.0a1",
-               "beta_version": "59.0b13",
-               "version": "58.0.2",
-               "ios_beta_version": "9.1",
-               "ios_version": "9.0",
-           }
+        {
+            "nightly_version": "60.0a1",
+            "alpha_version": "60.0a1",
+            "beta_version": "59.0b13",
+            "version": "58.0.2",
+            "ios_beta_version": "9.1",
+            "ios_version": "9.0",
+        }
     """
     return dict(
         ios_beta_version=shipit_api.common.config.IOS_BETA_VERSION,
@@ -888,17 +888,17 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release])
 def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Release]) -> ThunderbirdVersions:
     """
 
-       This function will output to the following files:
-        - thunderbird_versions.json
+    This function will output to the following files:
+     - thunderbird_versions.json
 
-       Example:::
+    Example:::
 
-           {
-               "LATEST_THUNDERBIRD_VERSION":         "52.6.0",
-               "LATEST_THUNDERBIRD_ALPHA_VERSION":   "54.0a2",
-               "LATEST_THUNDERBIRD_DEVEL_VERSION":   "59.0b2",
-               "LATEST_THUNDERBIRD_NIGHTLY_VERSION": "60.0a1"
-           }
+        {
+            "LATEST_THUNDERBIRD_VERSION":         "52.6.0",
+            "LATEST_THUNDERBIRD_ALPHA_VERSION":   "54.0a2",
+            "LATEST_THUNDERBIRD_DEVEL_VERSION":   "59.0b2",
+            "LATEST_THUNDERBIRD_NIGHTLY_VERSION": "60.0a1"
+        }
     """
     return dict(
         LATEST_THUNDERBIRD_VERSION=get_latest_version(releases, shipit_api.common.config.THUNDERBIRD_RELEASE_BRANCH, Product.THUNDERBIRD),
@@ -911,12 +911,12 @@ def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Rele
 def get_thunderbird_beta_builds() -> typing.Dict:
     """This file is empty and not used today.
 
-       This function will output to the following files:
-        - thunderbird_beta_builds.json
+    This function will output to the following files:
+     - thunderbird_beta_builds.json
 
-       Example:::
+    Example:::
 
-           {}
+        {}
     """
     return dict()
 

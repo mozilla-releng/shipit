@@ -28,8 +28,7 @@ def hide_secrets(text, secrets):
 
 
 def run(command, stream=False, handle_stream_line=None, log_command=True, log_output=True, secrets=[], **kwargs):
-    """Run a command through subprocess
-    """
+    """Run a command through subprocess"""
 
     if type(command) is str:
         command_as_string = command
@@ -73,8 +72,7 @@ def run(command, stream=False, handle_stream_line=None, log_command=True, log_ou
 
 
 def run_check(command, **kwargs):
-    """Run a command through subprocess and check for output
-    """
+    """Run a command through subprocess and check for output"""
 
     if type(command) is str:
         command_as_string = command
