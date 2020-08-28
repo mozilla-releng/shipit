@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class Api:
     """TODO: add description
-       TODO: annotate class
+    TODO: annotate class
     """
 
     def __init__(self, app):
@@ -54,8 +54,7 @@ class Api:
         pass_context_arg_name=None,
         options=None,
     ):
-        """Adds an API to the application based on a swagger file
-        """
+        """Adds an API to the application based on a swagger file"""
 
         app = self.__app
 

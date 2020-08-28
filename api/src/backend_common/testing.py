@@ -52,8 +52,7 @@ requests_mock = responses.RequestsMock(assert_all_requests_are_fired=False)
 
 
 def build_header(client_id, ext_data=None):
-    """Build a fake Hawk header to share client id & scopes.
-    """
+    """Build a fake Hawk header to share client id & scopes."""
 
     out = collections.OrderedDict({"id": client_id, "ts": int(time.time()), "nonce": random.randint(0, 100000)})
     if ext_data is not None:
@@ -70,7 +69,7 @@ def build_header(client_id, ext_data=None):
 def parse_header(header):
     """Parse a fake Hawk header
 
-       Extract client id and ext data
+    Extract client id and ext data
     """
     if not header.startswith("Hawk "):
         raise Exception("Missing Hawk prefix")
@@ -96,8 +95,7 @@ def parse_header(header):
 
 
 def mock_auth_taskcluster(request):
-    """Mock the hawk header validation from Taskcluster.
-    """
+    """Mock the hawk header validation from Taskcluster."""
     payload = json.loads(request.body)
     try:
         # Parse fake hawk header
@@ -129,7 +127,7 @@ def mock_auth_taskcluster(request):
 def mock_auth_auth0(request):
     """Mock the auth0 userinfo endpoint.
 
-       Currently used to validate access tokens and get user info
+    Currently used to validate access tokens and get user info
     """
 
     # request is a PreparedRequest not a Request object, so
@@ -150,8 +148,7 @@ def mock_auth_auth0(request):
 
 
 def configure_app(app):
-    """Configure flask application and ensure all mocks are in place
-    """
+    """Configure flask application and ensure all mocks are in place"""
 
     if hasattr(app, "db"):
         app.db.drop_all()
@@ -160,8 +157,7 @@ def configure_app(app):
 
 @pytest.fixture(autouse=True)
 def client(app):
-    """A Flask test client for uplift/backend with mockups enabled.
-    """
+    """A Flask test client for uplift/backend with mockups enabled."""
     with app.test_client() as client:
         with requests_mock:
 

@@ -27,8 +27,7 @@ from shipit_api.common.models import Release
 
 
 def coroutine(f):
-    """A generic function to create a main asyncio loop
-    """
+    """A generic function to create a main asyncio loop"""
     coroutine_f = asyncio.coroutine(f)
 
     @functools.wraps(coroutine_f)
@@ -63,8 +62,7 @@ async def download_json_file(session, url, file_):
 @click.option("--url", default="https://ship-it.mozilla.org")
 @coroutine
 async def download_product_details(url: str, download_dir: str):
-    """Download product details from `url` to `download_dir`.
-    """
+    """Download product details from `url` to `download_dir`."""
     configure_logging()
 
     async with aiohttp.ClientSession() as session:

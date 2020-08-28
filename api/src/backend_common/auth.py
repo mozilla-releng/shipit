@@ -222,7 +222,7 @@ class Auth(object):
 
     def require_permissions(self, permissions):
         """Decorator to check if user has required permissions or set of
-           permissions
+        permissions
         """
 
         def decorator(method):
@@ -316,8 +316,7 @@ def parse_header_auth0(request):
 
 @auth.login_manager.request_loader
 def parse_header(request):
-    """Parse header and try to authenticate
-    """
+    """Parse header and try to authenticate"""
     user = parse_header_auth0(request)
     if user != NO_AUTH:
         return user

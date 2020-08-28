@@ -12,8 +12,7 @@ import backend_common
 
 @pytest.fixture(scope="session")
 def app():
-    """Load shipit_api in test mode
-    """
+    """Load shipit_api in test mode"""
     import shipit_api
 
     config = backend_common.testing.get_app_config(
