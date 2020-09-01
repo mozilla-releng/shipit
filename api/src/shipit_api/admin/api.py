@@ -96,11 +96,14 @@ def add_release(body):
             # revision, we still use the correct version.
             "version": release.version,
             "release_eta": release.release_eta,
+            "release_enable_emefree": is_eme_free_enabled(release.product, release.version),
         }
-        if not is_partner_enabled(release.product, release.version):
-            common_input["release_enable_partners"] = False
-        if not is_eme_free_enabled(release.product, release.version):
-            common_input["release_enable_emefree"] = False
+        partners_enabled = is_partner_enabled(release.product, release.version)
+        if int(release.version.split(".")[0]) >= 81:
+            common_input["release_enable_partner_repack"] = partners_enabled
+            common_input["release_enable_partner_attribution"] = partners_enabled
+        else:
+            common_input["release_enable_partners"] = partners_enabled
         if release.partial_updates:
             common_input["partial_updates"] = release.partial_updates
 
