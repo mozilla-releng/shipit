@@ -229,10 +229,9 @@ jsonschema==3.2.0 \
     --hash=sha256:4e5b3cf8216f577bee9ce139cbe72eca3ea4f292ec60928ff24758ce626cd163 \
     --hash=sha256:c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a \
     # via connexion, openapi-spec-validator
-kombu==5.0.1 \
-    --hash=sha256:2e9a346a2875f95becaf1bfaa52112a377a773fc0b2632173531f6bd46435975 \
-    --hash=sha256:a8602251e78d9a4a7d5e8341e4621d378e8e72be9b205e6502e198294bc6bc0b \
-    # via -r base.in
+kombu==5.0.2 \
+    --hash=sha256:6dc509178ac4269b0e66ab4881f70a2035c33d3a622e20585f965986a5182006 \
+    --hash=sha256:f4965fba0a4718d47d470beeb5d6446e3357a62402b16c510b6a2f251e05ac3c    # via -r base.in
 mako==1.1.3 \
     --hash=sha256:8195c8c1400ceb53496064314c6736719c6f25e7479cd24c77be3d9361cddc27 \
     --hash=sha256:93729a258e4ff0747c876bd9e20df1b9758028946e976324ccd2d68245c7b6a9 \
