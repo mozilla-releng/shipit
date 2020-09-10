@@ -327,10 +327,8 @@ openapi-spec-validator==0.2.9 \
     --hash=sha256:79381a69b33423ee400ae1624a461dae7725e450e2e306e32f2dd8d16a4d85cb \
     --hash=sha256:ec1b01a00e20955a527358886991ae34b4b791b253027ee9f7df5f84b59d91c7 \
     # via connexion
-pamqp==2.3.0 \
-    --hash=sha256:2f81b5c186f668a67f165193925b6bfd83db4363a6222f599517f29ecee60b02 \
-    --hash=sha256:5cd0f5a85e89f20d5f8e19285a1507788031cfca4a9ea6f067e3cf18f5e294e8 \
-    # via aioamqp
+pamqp==3.0.1 \
+    --hash=sha256:0a9b49bde3f554ec49b47ebdb789133979985f24d5f4698935ed589a2d4392a4    # via aioamqp
 psycopg2==2.8.5 \
     --hash=sha256:132efc7ee46a763e68a815f4d26223d9c679953cd190f1f218187cb60decf535 \
     --hash=sha256:2327bf42c1744a434ed8ed0bbaa9168cac7ee5a22a9001f6fc85c33b8a4a14b7 \
