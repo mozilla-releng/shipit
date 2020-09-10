@@ -408,9 +408,8 @@ pycparser==2.20 \
     --hash=sha256:2d475327684562c3a96cc71adf7dc8c4f0565175cf86b6d7a404ff4c771f15f0 \
     --hash=sha256:7582ad22678f0fcd81102833f60ef8d0e57288b6b5fb00323d101be910e35705 \
     # via cffi
-pyrsistent==0.16.0 \
-    --hash=sha256:28669905fe725965daa16184933676547c5bb40a5153055a8dee2a4bd7933ad3 \
-    # via jsonschema
+pyrsistent==0.17.2 \
+    --hash=sha256:27515d2d5db0629c7dadf6fbe76973eb56f098c1b01d36de42eb69220d2c19e4    # via jsonschema
 python-dateutil==2.8.1 \
     --hash=sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c \
     --hash=sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a \
