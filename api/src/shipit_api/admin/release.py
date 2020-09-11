@@ -94,7 +94,7 @@ def is_partner_enabled(product, version, min_version=60):
     major_version = int(version.split(".")[0])
     if product == "firefox" and major_version >= min_version:
         if is_beta(version):
-            if get_beta_num(version) >= 8:
+            if get_beta_num(version) >= 5:
                 return True
         elif is_esr(version):
             return True
