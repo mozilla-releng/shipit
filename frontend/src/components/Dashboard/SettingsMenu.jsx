@@ -72,7 +72,7 @@ function SettingsMenu({ user, disabled }) {
           key="rebuild"
           title="Rebuild product-details"
           onClick={() => setShowModal(true)}>
-          Rebuild prooduct-details
+          Rebuild product-details
         </MenuItem>
       </Menu>
       <Dialog open={showModal} onClose={() => setShowModal(false)}>
