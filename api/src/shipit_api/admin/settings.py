@@ -98,7 +98,8 @@ GROUPS = {
     "admin": ADMIN_GROUP,
     "firefox-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "fenix-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
-    "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org"],
+    "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org",
+                            "justdave@thunderbird.net"],
     # XPI signoffs. These are in flux.
     # Adding Releng as a backup to most of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
@@ -204,7 +205,7 @@ AUTH0_AUTH_SCOPES = {f"{SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"]
 # fmt: off
 if APP_CHANNEL == "production":
     MATRIX_NOTIFICATIONS_OWNERS_PER_PRODUCT = {
-        "thunderbird": ["rjl", "wsmwk"],
+        "thunderbird": ["rjl", "wsmwk", "justdave"],
         "default": ["sheriffduty", "ciduty", "releaseduty"]
     }
     MATRIX_NOTIFICATIONS_ROOMS_PER_PRODUCT = {
