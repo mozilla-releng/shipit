@@ -98,8 +98,7 @@ GROUPS = {
     "admin": ADMIN_GROUP,
     "firefox-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "fenix-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
-    "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org",
-                            "justdave@thunderbird.net"],
+    "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org", "justdave@thunderbird.net"],
     # XPI signoffs. These are in flux.
     # Adding Releng as a backup to most of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
