@@ -219,9 +219,9 @@ coverage==5.3 \
     --hash=sha256:cedb2f9e1f990918ea061f28a0f0077a07702e3819602d3507e2ff98c8d20636 \
     --hash=sha256:e8caf961e1b1a945db76f1b5fa9c91498d15f545ac0ababbe575cfab185d3bd8 \
     # via -r test.in, pytest-cov
-dockerflow==2020.6.0 \
-    --hash=sha256:0336428bc7baba97b96eefcb56edd6dc244aacabef0bd48e1d3121f79297ebe4 \
-    --hash=sha256:39af796e973858a8d37a0264fd6843f41b16851a5eab2ed4e1f5872954dcc4c4 \
+dockerflow==2020.10.0 \
+    --hash=sha256:226086becc436b5a1995348e26c4fb2ad1d4e5dbc10dffec0c675c9a43306c8b \
+    --hash=sha256:36787fa016e5505d71d60c36cd4e0de7b2d1e50059160bd4e93ceb62bb40d3f8 \
     # via -r public.in
 dpath==2.0.1 \
     --hash=sha256:bea06b5f4ff620a28dfc9848cf4d6b2bfeed34238edeb8ebe815c433b54eb1fa \

@@ -168,9 +168,9 @@ connexion[swagger-ui]==2.7.0 \
     --hash=sha256:1ccfac57d4bb7adf4295ba6f5e48f5a1f66057df6a0713417766c9b5235182ee \
     --hash=sha256:5439e9659a89c4380d93a07acfbf3380d70be4130574de8881e5f0dfec7ad0e2 \
     # via -r public.in
-dockerflow==2020.6.0 \
-    --hash=sha256:0336428bc7baba97b96eefcb56edd6dc244aacabef0bd48e1d3121f79297ebe4 \
-    --hash=sha256:39af796e973858a8d37a0264fd6843f41b16851a5eab2ed4e1f5872954dcc4c4 \
+dockerflow==2020.10.0 \
+    --hash=sha256:226086becc436b5a1995348e26c4fb2ad1d4e5dbc10dffec0c675c9a43306c8b \
+    --hash=sha256:36787fa016e5505d71d60c36cd4e0de7b2d1e50059160bd4e93ceb62bb40d3f8 \
     # via -r public.in
 flask-cors==3.0.9 \
     --hash=sha256:6bcfc100288c5d1bcb1dbb854babd59beee622ffd321e444b05f24d6d58466b8 \
