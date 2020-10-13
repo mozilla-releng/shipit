@@ -59,11 +59,14 @@ OIDC_CLIENT_SECRETS = create_auth0_secrets_file(AUTH_CLIENT_ID, AUTH_CLIENT_SECR
 
 # XXX: scopes/groups are hardcoded for now
 ADMIN_GROUP = [
+    "ahalberstadt@mozilla.com",
     "asasaki@mozilla.com",
     "bhearsum@mozilla.com",
-    "catlee@mozilla.com",
+    "cdawson@mozilla.com",
     "jlorenzo@mozilla.com",
+    "jmaher@mozilla.com",
     "mtabara@mozilla.com",
+    "sclements@mozilla.com",
 ]
 
 # Please ping awagner before making changes to this group
