@@ -666,10 +666,10 @@ taskcluster-urls==13.0.1 \
     --hash=sha256:b25e122ecec249c4299ac7b20b08db76e3e2025bdaeb699a9d444556de5fd367 \
     --hash=sha256:f66dcbd6572a6216ab65949f0fa0b91f2df647918028436c384e6af5cd12ae2b \
     # via taskcluster
-taskcluster==37.1.0 \
-    --hash=sha256:30d7a15544a69fe9161bef5f5facedbb01de384cd9a89dcd16131dbcf8f5ae09 \
-    --hash=sha256:660e9ff10821a39f6ed5e72c99a36ebf3654b1a639aed3b3361eb83ea3a85f9a \
-    --hash=sha256:67332fcb93ab662712a74ade9fcc3fcf30333913f23c53f50fb42974ae262ea0 \
+taskcluster==37.3.0 \
+    --hash=sha256:39a5fbf403b1f0eda0a09b0788aaa05a185525559f800915aaaef5a2d49072c6 \
+    --hash=sha256:6450208f59c46fa367c2ec004dba1befc34a1a63c351175682361203d7954c1a \
+    --hash=sha256:c6a18f9febecf6912d708ad4c00c81b0a33d763d14c9583a0eef78f633a2419a \
     # via -r base.in
 toml==0.10.1 \
     --hash=sha256:926b612be1e5ce0634a2ca03470f95169cf16f939018233a670519cb4ac58b0f \
