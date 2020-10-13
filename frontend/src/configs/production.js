@@ -36,17 +36,6 @@ module.exports = {
           disableable: false,
         },
         {
-          prettyName: 'ESR68',
-          project: 'mozilla-esr68',
-          branch: 'releases/mozilla-esr68',
-          repo: 'https://hg.mozilla.org/releases/mozilla-esr68',
-          enableReleaseEta: true,
-          numberOfPartials: 5,
-          alternativeBranch: 'releases/mozilla-esr60',
-          alternativeRepo: 'https://hg.mozilla.org/releases/mozilla-esr60',
-          disableable: false,
-        },
-        {
           prettyName: 'ESR78',
           project: 'mozilla-esr78',
           branch: 'releases/mozilla-esr78',
