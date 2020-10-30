@@ -27,9 +27,9 @@ aiohttp[speedups]==3.6.2 \
     --hash=sha256:ae55bac364c405caa23a4f2d6cfecc6a0daada500274ffca4a9230e7129eac59 \
     --hash=sha256:b778ce0c909a2653741cb4b1ac7015b5c130ab9c897611df43ae6a58523cb965 \
     # via -r base.in, aioresponses, taskcluster
-aioresponses==0.7.0 \
-    --hash=sha256:505d5017572b431f305914820ffc5d000a60517cfa80546de8be3d4e2d786f06 \
-    --hash=sha256:9e15d782da2a1fbda88eb917867dcfad0f3202f60e9b1eb7810446e242b2a244 \
+aioresponses==0.7.1 \
+    --hash=sha256:88eeb32256ef0af57450647277d3118ce8005682f06f27b23c5e2f8fcc0384b9 \
+    --hash=sha256:f65bba2be1e9a4997ee166bc0161a50be0fef7350ad09e6afdb2adccf74dfefe \
     # via -r test.in
 alembic==1.4.3 \
     --hash=sha256:4e02ed2aa796bd179965041afa092c55b51fb077de19d61835673cc80672c01c \
