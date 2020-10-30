@@ -515,10 +515,10 @@ taskcluster-urls==13.0.1 \
     --hash=sha256:b25e122ecec249c4299ac7b20b08db76e3e2025bdaeb699a9d444556de5fd367 \
     --hash=sha256:f66dcbd6572a6216ab65949f0fa0b91f2df647918028436c384e6af5cd12ae2b \
     # via taskcluster
-taskcluster==37.5.1 \
-    --hash=sha256:61119041b7a707e7ccfdf5b89c6b1e5de9033630f41d63cd4d9e3c4de9fcbeaf \
-    --hash=sha256:94aa5713336bf78a154af1d709159f9ef6a144f99cb4534534bb19f337bda58e \
-    --hash=sha256:f545952c8a2f0b44f0a33889420367846f1d0253c77d3d0d96130c15c8a84133 \
+taskcluster==38.0.1 \
+    --hash=sha256:c91ea678679f55c575838488b4ee26ce45b032e2739a652c9b1b68eed2c6d2fa \
+    --hash=sha256:f2dedb41348b9924c20bf5e7f7932f181eb9b90849cf96a03edf5379ed3de3f5 \
+    --hash=sha256:f9ae7b9fdf39a1971e5eafc5af3198c2cb0e5916f81f0b5b127634f9e42a8e41 \
     # via -r base.in
 typed-ast==1.4.1 \
     --hash=sha256:0666aa36131496aed8f7be0410ff974562ab7eeac11ef351def9ea6fa28f6355 \
