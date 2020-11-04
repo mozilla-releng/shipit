@@ -134,6 +134,7 @@ def get_product_mozilla_version(product: Product, version: str) -> typing.Option
         Product.DEVEDITION: mozilla_version.gecko.DeveditionVersion,
         Product.FIREFOX: mozilla_version.gecko.FirefoxVersion,
         Product.FENNEC: mozilla_version.gecko.FennecVersion,
+        Product.FENIX: mozilla_version.gecko.FenixVersion,
         Product.THUNDERBIRD: mozilla_version.gecko.ThunderbirdVersion,
     }.get(product)
 
@@ -199,6 +200,7 @@ async def fetch_l10n_data(
         Product.FIREFOX: "browser/locales/l10n-changesets.json",
         Product.DEVEDITION: "browser/locales/l10n-changesets.json",
         Product.FENNEC: "mobile/locales/l10n-changesets.json",
+        Product.FENIX: "mobile/locales/l10n-changesets.json",
         Product.THUNDERBIRD: "mail/locales/l10n-changesets.json",
     }[Product(release.product)]
     url = f"{shipit_api.common.config.HG_PREFIX}/{release.branch}/raw-file/{release.revision}/{url_file}"
@@ -344,7 +346,7 @@ def get_releases(
         # get release details from the JSON files up to breakpoint_version
         #
         product_file = f"1.0/{product.value}.json"
-        if product is Product.FENNEC:
+        if product in [Product.FENNEC, Product.FENIX]:
             product_file = "1.0/mobile_android.json"
 
         old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details[product_file].get("releases", dict()))  # noqa
@@ -437,7 +439,7 @@ def get_release_history(
     # l10n info, branches, etc). Instead of creating a special case per
     # exception, we just serve the data as is.
     product_file = f"1.0/{product.value}_history_{product_category.name.lower()}_releases.json"
-    if product is Product.FENNEC:
+    if product in [Product.FENNEC, Product.FENIX]:
         product_file = f"1.0/mobile_history_{product_category.name.lower()}_releases.json"
 
     old_history = typing.cast(ReleasesHistory, old_product_details[product_file])
@@ -764,7 +766,7 @@ def get_languages(old_product_details: ProductDetails) -> Languages:
     languages = old_product_details.get("1.0/languages.json")
 
     if languages is None:
-        raise click.ClickException('"1.0/languages.json" does not exists in old product details"')
+        raise click.ClickException('"1.0/languages.json" does not exist in old product details"')
 
     # I can not use isinstance with generics (like Languages) for this reason
     # I'm casting to output type
@@ -874,13 +876,13 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release])
     return dict(
         ios_beta_version=shipit_api.common.config.IOS_BETA_VERSION,
         ios_version=shipit_api.common.config.IOS_VERSION,
-        nightly_version=shipit_api.common.config.FENNEC_NIGHTLY,
-        alpha_version=shipit_api.common.config.FENNEC_NIGHTLY,
+        nightly_version=shipit_api.common.config.FENIX_NIGHTLY,
+        alpha_version=shipit_api.common.config.FENIX_NIGHTLY,
         beta_version=get_latest_version(
-            releases, shipit_api.common.config.FENNEC_BETA_BRANCH, Product.FENNEC, lambda r: mozilla_version.gecko.FennecVersion.parse(r.version).is_beta
+            releases, shipit_api.common.config.FENIX_BETA_BRANCH, Product.FENIX, lambda r: mozilla_version.gecko.FenixVersion.parse(r.version).is_beta
         ),
         version=get_latest_version(
-            releases, shipit_api.common.config.FENNEC_RELEASE_BRANCH, Product.FENNEC, lambda r: mozilla_version.gecko.FennecVersion.parse(r.version).is_release
+            releases, shipit_api.common.config.FENIX_RELEASE_BRANCH, Product.FENIX, lambda r: mozilla_version.gecko.FenixVersion.parse(r.version).is_release
         ),
     )
 
@@ -1074,7 +1076,9 @@ async def rebuild(
 
     # combine old and new data
     product_details: ProductDetails = {
-        "all.json": get_releases(breakpoint_version, [Product.DEVEDITION, Product.FIREFOX, Product.FENNEC, Product.THUNDERBIRD], releases, old_product_details),
+        "all.json": get_releases(
+            breakpoint_version, [Product.DEVEDITION, Product.FIREFOX, Product.FENIX, Product.FENNEC, Product.THUNDERBIRD], releases, old_product_details
+        ),
         "devedition.json": get_releases(breakpoint_version, [Product.DEVEDITION], releases, old_product_details),
         "firefox.json": get_releases(breakpoint_version, [Product.FIREFOX], releases, old_product_details),
         "firefox_history_development_releases.json": get_release_history(
@@ -1087,7 +1091,7 @@ async def rebuild(
         "firefox_primary_builds.json": get_primary_builds(breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details),
         "firefox_versions.json": get_firefox_versions(releases),
         "languages.json": get_languages(old_product_details),
-        "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC], releases, old_product_details),
+        "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC, Product.FENIX], releases, old_product_details),
         "mobile_details.json": get_mobile_details(releases),
         "mobile_history_development_releases.json": get_release_history(
             breakpoint_version, Product.FENNEC, ProductCategory.DEVELOPMENT, releases, old_product_details

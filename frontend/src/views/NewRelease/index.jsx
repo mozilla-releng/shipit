@@ -207,6 +207,7 @@ export default function NewRelease() {
           <InputLabel>Repositories</InputLabel>
           <Select
             value={selectedRepository}
+            renderValue={() => selectedRepository.prettyName}
             onChange={event => handleRepository(event.target.value)}>
             {selectedProduct.repositories.map(repository => (
               <MenuItem value={repository} key={repository.repo}>
