@@ -9,9 +9,6 @@ from os.path import abspath, basename, dirname, join, splitext
 
 from setuptools import find_namespace_packages, find_packages, setup
 
-with open("README.rst") as readme_file:
-    readme = readme_file.read()
-
 with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
@@ -77,7 +74,7 @@ setup(
     entry_points=entry_points,
     install_requires=get_requirements(req_file),
     license="MPL2.0",
-    long_description=readme + "\n\n" + history,
+    long_description="Ship It API" + "\n\n" + history,
     include_package_data=True,
     keywords="shipit_api",
     name=name,

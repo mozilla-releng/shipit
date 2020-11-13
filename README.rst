@@ -1,12 +1,72 @@
 Ship It API and Frontend
 ========================
 
-See ``api`` and ``frontend`` READMEs for more details on each.
-
 
 Local Development
 -----------------
-Use ``docker-compose up`` to run them both. The API will be available at https://localhost:8015. The frontend will be available at https://localhost:8010
+
+First setup
+~~~~~~~~~~~
+
+1. Run ``docker-compose up``. Initializing the database can take some time, the first time. You may have to ``Ctrl+C`` and ``docker-compose up`` a second time to get in a stable state.
+
+2. Go to https://localhost:8015 (the API endpoint), https://localhost:8010 (the frontend one), and https://localhost:8016 (the public API one) and accept the TLS security warning (untrusted certificate). If you don't do so on all 3 ports, you may end up with the API that drops request to the API because of `CORS <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`__.
+
+3. Stop the docker containers.
+
+To run each time
+~~~~~~~~~~~~~~~~
+
+1. Generate and export ``TASKCLUSTER_CLIENT`` and ``TASKCLUSTER_ACCESS_TOKEN``:
+
+   a. Get the latest `Taskcluster shell client <https://github.com/taskcluster/taskcluster/tree/main/clients/client-shell#readme>`__
+
+   b. ``export TASKCLUSTER_ROOT_URL='https://firefox-ci-tc.services.mozilla.com/' && eval $(taskcluster signin)``
+
+   c. This opened a new browser window. Get the token by click on the save icon at the bottom right of the page.
+
+2. Generate and export ``GITHUB_TOKEN``:
+
+   a. Go to https://github.com/settings/tokens and generate a new token that has no scope at all. It will show as ``public access``. This token is just used to fetch commit and branch info.
+
+   b. ``export GITHUB_TOKEN='mytoken'``
+
+3. Run ``docker-compose up``.
+
+You should be all set to kick off some staging releases.
+
+To rebuild product-details
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+product-details rely on a ``pulse queue <https://github.com/mozilla-releng/shipit/blob/df379442c32baa7931767b058840bbb293135010/api/src/shipit_api/admin/api.py#L229>``_, which makes local test tricky.
+This pulse queue is then consumed by ``worker.py <https://github.com/mozilla-releng/shipit/blob/df379442c32baa7931767b058840bbb293135010/api/src/shipit_api/admin/worker.py#L42>``_. Although, there's a
+way to by-pass the need for a pulse queue.
+
+1. ``docker-compose run api bash``
+
+2. ``shipit_rebuild_product_details --database-url="postgres://shipituser:shipitpassword@db/shipitdb" --channel development``
+
+3. This will ask you for some GitHub crendentials. You can provide them if you want to update https://github.com/mozilla-releng/product-details. That said, you can also ``Ctrl+C`` and inspect the content of `/tmp/product-details` in the docker container. Changes are done here before they pushed to the git repo.
+
+⚠️ If you decide to provide GitHub crendentials, remember that GitHub accounts that enabled 2-factor-authentication have to provide a GitHub token
+instead of their regular password. Instructions to generate a token are found above. This time tough, grant the ``public_repo`` scope.
+
+Troubleshooting
+~~~~~~~~~~~~~~~
+
+**"Are you connected to the VPN?"**
+
+You may see the error message ``Error contacting Shipit backend: Error: Network Error. Are you connected to the VPN?``. Be warned this is just a generic message and you don't have to
+be connected to the VPN when locally running the instance. This error message can be misleading. Always look at the Firefox developer console, on the "network" tab to check what error
+message the API actually returned. If you end up getting a CORS error, then redo the "first setup"
+
+**docker-compose up just doesn't manage to start properly**
+
+The easiest way is to purge docker and the local repository.
+
+1. Stop any shipit docker container displayed by ``docker container ls``
+1. Remove any shipit volume displayed by ``docker volume ls``
+1. Purge the local repository of any file not tracked by git: ``git clean -fdx``
 
 Deployed Environments
 ---------------------
@@ -25,6 +85,7 @@ Deploys in response to pushes to the ``production`` branch, if the ``CloudOps St
 - Frontend URL: https://shipit.mozilla-releng.net/
 - Frontend S3 bucket: ``relengstatic-prod-shipitfrontend-static-website``
 - Product Details URL: https://product-details.mozilla.org
+- Logs: https://console.cloud.google.com/logs/query?project=moz-fx-shipitapi-prod-5cb2 (ask CloudOps for access)
 
 When a production deployment begins, Jenkins first deploys to the canary environment. If that deployment succeeds, the deployment proceeds. If it fails, the deployment is aborted.
 
@@ -40,3 +101,4 @@ Deploys in response to pushes to the ``dev`` branch.
 - Frontend S3 bucket: ``relengstatic-staging-shipitfrontend-static-website``
 - Product Details URL: https://product-details.staging.mozilla-releng.net
 - Public API URL: https://public-dev.shipitapi.nonprod.cloudops.mozgcp.net
+- Logs: https://console.cloud.google.com/logs/query?project=moz-fx-shipitapi-nonprod-2690 (ask CloudOps for access)
