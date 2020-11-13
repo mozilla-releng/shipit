@@ -293,7 +293,7 @@ export default function NewRelease() {
         />
         {revision !== '' && (
           <a
-            href={`${config.TREEHERDER_URL}/#/jobs?repo=${selectedBranch.project}&revision=${revision}`}>
+            href={`${config.TREEHERDER_URL}/jobs?repo=${selectedBranch.project}&revision=${revision}`}>
             Treeherder
           </a>
         )}
