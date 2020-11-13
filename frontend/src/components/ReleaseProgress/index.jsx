@@ -95,7 +95,7 @@ export default function ReleaseProgress({
 
     return (
       <Link
-        href={`${config.TREEHERDER_URL}/#/jobs?repo=${release.project}&revision=${release.revision}`}>
+        href={`${config.TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
         {release.name}
       </Link>
     );
