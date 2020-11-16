@@ -575,7 +575,7 @@ def get_primary_builds(
 
 
 def get_latest_version(
-    releases: typing.List[shipit_api.common.models.Release], branch: str, product: Product, filter_closure: typing.Optional[typing.Callable] = None
+    releases: typing.List[shipit_api.common.models.Release], product: Product, branch: str = None, filter_closure: typing.Optional[typing.Callable] = None
 ) -> str:
     """Get latest version
 
@@ -584,7 +584,7 @@ def get_latest_version(
     by version, not by date, because we may publish a correction release
     for old users (this has been done in the past).
     """
-    filtered_releases = [r for r in releases if r.product == product.value and r.branch == branch]
+    filtered_releases = [r for r in releases if r.product == product.value and (r.branch == branch if branch else True)]
     if filter_closure:
         filtered_releases = list(filter(filter_closure, filtered_releases))
     releases_ = sorted(filtered_releases, reverse=True, key=lambda r: get_product_mozilla_version(Product(product), r.version))
@@ -601,7 +601,7 @@ def get_firefox_esr_version(releases: typing.List[shipit_api.common.models.Relea
     have 2 overlapping ESR releases we want to point this to the older version,
     while ESR_NEXT will be pointing to the next release.
     """
-    return get_latest_version(releases, branch, product)
+    return get_latest_version(releases, product, branch)
 
 
 def get_firefox_esr_next_version(releases: typing.List[shipit_api.common.models.Release], branch: str, product: Product, esr_next: typing.Optional[str]) -> str:
@@ -614,7 +614,7 @@ def get_firefox_esr_next_version(releases: typing.List[shipit_api.common.models.
     if not esr_next:
         return ""
     else:
-        return get_latest_version(releases, branch, product)
+        return get_latest_version(releases, product, branch)
 
 
 def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]) -> FirefoxVersions:
@@ -646,14 +646,14 @@ def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]
     return dict(
         FIREFOX_NIGHTLY=shipit_api.common.config.FIREFOX_NIGHTLY,
         FIREFOX_AURORA=shipit_api.common.config.FIREFOX_AURORA,
-        LATEST_FIREFOX_VERSION=get_latest_version(releases, shipit_api.common.config.RELEASE_BRANCH, Product.FIREFOX),
+        LATEST_FIREFOX_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.RELEASE_BRANCH),
         FIREFOX_ESR=get_firefox_esr_version(releases, f"{shipit_api.common.config.ESR_BRANCH_PREFIX}{shipit_api.common.config.CURRENT_ESR}", Product.FIREFOX),
         FIREFOX_ESR_NEXT=get_firefox_esr_next_version(
             releases, f"{shipit_api.common.config.ESR_BRANCH_PREFIX}{shipit_api.common.config.ESR_NEXT}", Product.FIREFOX, shipit_api.common.config.ESR_NEXT
         ),
-        LATEST_FIREFOX_DEVEL_VERSION=get_latest_version(releases, shipit_api.common.config.BETA_BRANCH, Product.FIREFOX),
-        LATEST_FIREFOX_RELEASED_DEVEL_VERSION=get_latest_version(releases, shipit_api.common.config.BETA_BRANCH, Product.FIREFOX),
-        FIREFOX_DEVEDITION=get_latest_version(releases, shipit_api.common.config.BETA_BRANCH, Product.DEVEDITION),
+        LATEST_FIREFOX_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
+        LATEST_FIREFOX_RELEASED_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
+        FIREFOX_DEVEDITION=get_latest_version(releases, Product.DEVEDITION, shipit_api.common.config.BETA_BRANCH),
         LATEST_FIREFOX_OLDER_VERSION=shipit_api.common.config.LATEST_FIREFOX_OLDER_VERSION,
         LAST_SOFTFREEZE_DATE=shipit_api.common.config.LAST_SOFTFREEZE_DATE,
         LAST_MERGE_DATE=shipit_api.common.config.LAST_MERGE_DATE,
@@ -878,10 +878,10 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release])
         nightly_version=shipit_api.common.config.FENIX_NIGHTLY,
         alpha_version=shipit_api.common.config.FENIX_NIGHTLY,
         beta_version=get_latest_version(
-            releases, shipit_api.common.config.FENIX_BETA_BRANCH, Product.FENIX, lambda r: mozilla_version.gecko.FenixVersion.parse(r.version).is_beta
+            releases, Product.FENIX, shipit_api.common.config.FENIX_BETA_BRANCH, lambda r: mozilla_version.gecko.FenixVersion.parse(r.version).is_beta
         ),
         version=get_latest_version(
-            releases, shipit_api.common.config.FENIX_RELEASE_BRANCH, Product.FENIX, lambda r: mozilla_version.gecko.FenixVersion.parse(r.version).is_release
+            releases, Product.FENIX, shipit_api.common.config.FENIX_RELEASE_BRANCH, lambda r: mozilla_version.gecko.FenixVersion.parse(r.version).is_release
         ),
     )
 
@@ -902,8 +902,8 @@ def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Rele
         }
     """
     return dict(
-        LATEST_THUNDERBIRD_VERSION=get_latest_version(releases, shipit_api.common.config.THUNDERBIRD_RELEASE_BRANCH, Product.THUNDERBIRD),
-        LATEST_THUNDERBIRD_DEVEL_VERSION=get_latest_version(releases, shipit_api.common.config.THUNDERBIRD_BETA_BRANCH, Product.THUNDERBIRD),
+        LATEST_THUNDERBIRD_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_RELEASE_BRANCH),
+        LATEST_THUNDERBIRD_DEVEL_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_BETA_BRANCH),
         LATEST_THUNDERBIRD_NIGHTLY_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_NIGHTLY_VERSION,
         LATEST_THUNDERBIRD_ALPHA_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_ALPHA_VERSION,
     )
