@@ -200,17 +200,16 @@ async def fetch_l10n_data(
         Product.FIREFOX: "browser/locales/l10n-changesets.json",
         Product.DEVEDITION: "browser/locales/l10n-changesets.json",
         Product.FENNEC: "mobile/locales/l10n-changesets.json",
-        Product.FENIX: "mobile/locales/l10n-changesets.json",
         Product.THUNDERBIRD: "mail/locales/l10n-changesets.json",
     }[Product(release.product)]
     url = f"{shipit_api.common.config.HG_PREFIX}/{release.branch}/raw-file/{release.revision}/{url_file}"
 
-    # some thunderbird on the betas don't have l10n in the repository
+    # FENIX and some thunderbird on the betas don't have l10n in the repository
     if (
         Product(release.product) is Product.THUNDERBIRD
         and release.branch == "releases/comm-beta"
         and release.revision in ["3e01e0dc6943", "481fea2011e6", "85cb8f907b18", "92950b2fd2dc", "c614b6e7cf58", "e277e3f0ab13", "efd290b55a35", "f87ba53e04ff"]
-    ):
+    ) or Product(release.product) is Product.FENIX:
         return (release, None)
 
     cache_dir = shipit_api.common.config.PRODUCT_DETAILS_CACHE_DIR / "fetch_l10n_data"
