@@ -36,9 +36,7 @@ ESR_NEXT = ""
 LATEST_FIREFOX_OLDER_VERSION = "3.6.28"
 # TODO: move the branch configs to secrets
 RELEASE_BRANCH = "releases/mozilla-release"
-FENNEC_RELEASE_BRANCH = "releases/mozilla-esr68"
 BETA_BRANCH = "releases/mozilla-beta"
-FENNEC_BETA_BRANCH = "releases/mozilla-esr68"
 ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 
 # FIREFOX_NIGHTLY version is hard coded and requires a human to update it after
@@ -60,7 +58,7 @@ NEXT_RELEASE_DATE = "2020-12-15"
 
 # Fennec Nightly users have been migrated to Fenix, thus we don't need to bump
 # the following numbers anymore.
-FENNEC_NIGHTLY = "68.7a1"
+FENIX_NIGHTLY = "84.0a1"
 
 # Aurora has been replaced by Dev Edition, but some 3rd party applications may
 # still rely on this value.
@@ -68,7 +66,7 @@ FIREFOX_AURORA = ""
 
 # IOS versions
 IOS_BETA_VERSION = ""
-IOS_VERSION = "24.1"
+IOS_VERSION = "14.1"
 
 # Thunderbird configs
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"

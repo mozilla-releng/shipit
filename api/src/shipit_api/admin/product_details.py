@@ -22,6 +22,7 @@ import aiohttp
 import arrow
 import backoff
 import click
+import mozilla_version.fenix
 import mozilla_version.gecko
 import mypy_extensions
 import sqlalchemy
@@ -134,6 +135,7 @@ def get_product_mozilla_version(product: Product, version: str) -> typing.Option
         Product.DEVEDITION: mozilla_version.gecko.DeveditionVersion,
         Product.FIREFOX: mozilla_version.gecko.FirefoxVersion,
         Product.FENNEC: mozilla_version.gecko.FennecVersion,
+        Product.FENIX: mozilla_version.fenix.FenixVersion,
         Product.THUNDERBIRD: mozilla_version.gecko.ThunderbirdVersion,
     }.get(product)
 
@@ -195,6 +197,14 @@ async def fetch_l10n_data(
     session: aiohttp.ClientSession, release: shipit_api.common.models.Release, raise_on_failure: bool, use_cache: bool = True
 ) -> typing.Tuple[shipit_api.common.models.Release, typing.Optional[ReleaseL10ns]]:
 
+    # Fenix and some thunderbird on the betas don't have l10n in the repository
+    if (
+        Product(release.product) is Product.THUNDERBIRD
+        and release.branch == "releases/comm-beta"
+        and release.revision in ["3e01e0dc6943", "481fea2011e6", "85cb8f907b18", "92950b2fd2dc", "c614b6e7cf58", "e277e3f0ab13", "efd290b55a35", "f87ba53e04ff"]
+    ) or Product(release.product) is Product.FENIX:
+        return (release, None)
+
     url_file = {
         Product.FIREFOX: "browser/locales/l10n-changesets.json",
         Product.DEVEDITION: "browser/locales/l10n-changesets.json",
@@ -202,14 +212,6 @@ async def fetch_l10n_data(
         Product.THUNDERBIRD: "mail/locales/l10n-changesets.json",
     }[Product(release.product)]
     url = f"{shipit_api.common.config.HG_PREFIX}/{release.branch}/raw-file/{release.revision}/{url_file}"
-
-    # some thunderbird on the betas don't have l10n in the repository
-    if (
-        Product(release.product) is Product.THUNDERBIRD
-        and release.branch == "releases/comm-beta"
-        and release.revision in ["3e01e0dc6943", "481fea2011e6", "85cb8f907b18", "92950b2fd2dc", "c614b6e7cf58", "e277e3f0ab13", "efd290b55a35", "f87ba53e04ff"]
-    ):
-        return (release, None)
 
     cache_dir = shipit_api.common.config.PRODUCT_DETAILS_CACHE_DIR / "fetch_l10n_data"
     cache = cache_dir / hashlib.sha256(url.encode("utf-8")).hexdigest()
@@ -344,7 +346,7 @@ def get_releases(
         # get release details from the JSON files up to breakpoint_version
         #
         product_file = f"1.0/{product.value}.json"
-        if product is Product.FENNEC:
+        if product in [Product.FENNEC, Product.FENIX]:
             product_file = "1.0/mobile_android.json"
 
         old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details[product_file].get("releases", dict()))  # noqa
@@ -437,7 +439,7 @@ def get_release_history(
     # l10n info, branches, etc). Instead of creating a special case per
     # exception, we just serve the data as is.
     product_file = f"1.0/{product.value}_history_{product_category.name.lower()}_releases.json"
-    if product is Product.FENNEC:
+    if product in [Product.FENNEC, Product.FENIX]:
         product_file = f"1.0/mobile_history_{product_category.name.lower()}_releases.json"
 
     old_history = typing.cast(ReleasesHistory, old_product_details[product_file])
@@ -574,7 +576,7 @@ def get_primary_builds(
 
 
 def get_latest_version(
-    releases: typing.List[shipit_api.common.models.Release], branch: str, product: Product, filter_closure: typing.Optional[typing.Callable] = None
+    releases: typing.List[shipit_api.common.models.Release], product: Product, branch: str = None, filter_closure: typing.Optional[typing.Callable] = None
 ) -> str:
     """Get latest version
 
@@ -583,7 +585,7 @@ def get_latest_version(
     by version, not by date, because we may publish a correction release
     for old users (this has been done in the past).
     """
-    filtered_releases = [r for r in releases if r.product == product.value and r.branch == branch]
+    filtered_releases = [r for r in releases if r.product == product.value and (r.branch == branch if branch else True)]
     if filter_closure:
         filtered_releases = list(filter(filter_closure, filtered_releases))
     releases_ = sorted(filtered_releases, reverse=True, key=lambda r: get_product_mozilla_version(Product(product), r.version))
@@ -600,7 +602,7 @@ def get_firefox_esr_version(releases: typing.List[shipit_api.common.models.Relea
     have 2 overlapping ESR releases we want to point this to the older version,
     while ESR_NEXT will be pointing to the next release.
     """
-    return get_latest_version(releases, branch, product)
+    return get_latest_version(releases, product, branch)
 
 
 def get_firefox_esr_next_version(releases: typing.List[shipit_api.common.models.Release], branch: str, product: Product, esr_next: typing.Optional[str]) -> str:
@@ -613,7 +615,7 @@ def get_firefox_esr_next_version(releases: typing.List[shipit_api.common.models.
     if not esr_next:
         return ""
     else:
-        return get_latest_version(releases, branch, product)
+        return get_latest_version(releases, product, branch)
 
 
 def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]) -> FirefoxVersions:
@@ -645,14 +647,14 @@ def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]
     return dict(
         FIREFOX_NIGHTLY=shipit_api.common.config.FIREFOX_NIGHTLY,
         FIREFOX_AURORA=shipit_api.common.config.FIREFOX_AURORA,
-        LATEST_FIREFOX_VERSION=get_latest_version(releases, shipit_api.common.config.RELEASE_BRANCH, Product.FIREFOX),
+        LATEST_FIREFOX_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.RELEASE_BRANCH),
         FIREFOX_ESR=get_firefox_esr_version(releases, f"{shipit_api.common.config.ESR_BRANCH_PREFIX}{shipit_api.common.config.CURRENT_ESR}", Product.FIREFOX),
         FIREFOX_ESR_NEXT=get_firefox_esr_next_version(
             releases, f"{shipit_api.common.config.ESR_BRANCH_PREFIX}{shipit_api.common.config.ESR_NEXT}", Product.FIREFOX, shipit_api.common.config.ESR_NEXT
         ),
-        LATEST_FIREFOX_DEVEL_VERSION=get_latest_version(releases, shipit_api.common.config.BETA_BRANCH, Product.FIREFOX),
-        LATEST_FIREFOX_RELEASED_DEVEL_VERSION=get_latest_version(releases, shipit_api.common.config.BETA_BRANCH, Product.FIREFOX),
-        FIREFOX_DEVEDITION=get_latest_version(releases, shipit_api.common.config.BETA_BRANCH, Product.DEVEDITION),
+        LATEST_FIREFOX_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
+        LATEST_FIREFOX_RELEASED_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
+        FIREFOX_DEVEDITION=get_latest_version(releases, Product.DEVEDITION, shipit_api.common.config.BETA_BRANCH),
         LATEST_FIREFOX_OLDER_VERSION=shipit_api.common.config.LATEST_FIREFOX_OLDER_VERSION,
         LAST_SOFTFREEZE_DATE=shipit_api.common.config.LAST_SOFTFREEZE_DATE,
         LAST_MERGE_DATE=shipit_api.common.config.LAST_MERGE_DATE,
@@ -764,7 +766,7 @@ def get_languages(old_product_details: ProductDetails) -> Languages:
     languages = old_product_details.get("1.0/languages.json")
 
     if languages is None:
-        raise click.ClickException('"1.0/languages.json" does not exists in old product details"')
+        raise click.ClickException('"1.0/languages.json" does not exist in old product details"')
 
     # I can not use isinstance with generics (like Languages) for this reason
     # I'm casting to output type
@@ -874,14 +876,10 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release])
     return dict(
         ios_beta_version=shipit_api.common.config.IOS_BETA_VERSION,
         ios_version=shipit_api.common.config.IOS_VERSION,
-        nightly_version=shipit_api.common.config.FENNEC_NIGHTLY,
-        alpha_version=shipit_api.common.config.FENNEC_NIGHTLY,
-        beta_version=get_latest_version(
-            releases, shipit_api.common.config.FENNEC_BETA_BRANCH, Product.FENNEC, lambda r: mozilla_version.gecko.FennecVersion.parse(r.version).is_beta
-        ),
-        version=get_latest_version(
-            releases, shipit_api.common.config.FENNEC_RELEASE_BRANCH, Product.FENNEC, lambda r: mozilla_version.gecko.FennecVersion.parse(r.version).is_release
-        ),
+        nightly_version=shipit_api.common.config.FENIX_NIGHTLY,
+        alpha_version=shipit_api.common.config.FENIX_NIGHTLY,
+        beta_version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: mozilla_version.fenix.FenixVersion.parse(r.version).is_beta),
+        version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: mozilla_version.fenix.FenixVersion.parse(r.version).is_release),
     )
 
 
@@ -901,8 +899,8 @@ def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Rele
         }
     """
     return dict(
-        LATEST_THUNDERBIRD_VERSION=get_latest_version(releases, shipit_api.common.config.THUNDERBIRD_RELEASE_BRANCH, Product.THUNDERBIRD),
-        LATEST_THUNDERBIRD_DEVEL_VERSION=get_latest_version(releases, shipit_api.common.config.THUNDERBIRD_BETA_BRANCH, Product.THUNDERBIRD),
+        LATEST_THUNDERBIRD_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_RELEASE_BRANCH),
+        LATEST_THUNDERBIRD_DEVEL_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_BETA_BRANCH),
         LATEST_THUNDERBIRD_NIGHTLY_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_NIGHTLY_VERSION,
         LATEST_THUNDERBIRD_ALPHA_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_ALPHA_VERSION,
     )
@@ -1074,7 +1072,9 @@ async def rebuild(
 
     # combine old and new data
     product_details: ProductDetails = {
-        "all.json": get_releases(breakpoint_version, [Product.DEVEDITION, Product.FIREFOX, Product.FENNEC, Product.THUNDERBIRD], releases, old_product_details),
+        "all.json": get_releases(
+            breakpoint_version, [Product.DEVEDITION, Product.FIREFOX, Product.FENIX, Product.FENNEC, Product.THUNDERBIRD], releases, old_product_details
+        ),
         "devedition.json": get_releases(breakpoint_version, [Product.DEVEDITION], releases, old_product_details),
         "firefox.json": get_releases(breakpoint_version, [Product.FIREFOX], releases, old_product_details),
         "firefox_history_development_releases.json": get_release_history(
@@ -1087,7 +1087,7 @@ async def rebuild(
         "firefox_primary_builds.json": get_primary_builds(breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details),
         "firefox_versions.json": get_firefox_versions(releases),
         "languages.json": get_languages(old_product_details),
-        "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC], releases, old_product_details),
+        "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC, Product.FENIX], releases, old_product_details),
         "mobile_details.json": get_mobile_details(releases),
         "mobile_history_development_releases.json": get_release_history(
             breakpoint_version, Product.FENNEC, ProductCategory.DEVELOPMENT, releases, old_product_details
