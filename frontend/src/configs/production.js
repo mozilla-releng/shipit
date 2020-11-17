@@ -99,6 +99,21 @@ module.exports = {
       ],
       enablePartials: true,
     },
+    {
+      product: 'fenix',
+      prettyName: 'Fenix',
+      appName: 'fenix',
+      branches: [],
+      repositories: [
+        {
+          prettyName: 'Official repo',
+          project: 'fenix',
+          repo: 'https://github.com/mozilla-mobile/fenix',
+          enableReleaseEta: false,
+        },
+      ],
+      enablePartials: false,
+    },
   ],
   XPI_MANIFEST: {
     branch: 'master',
