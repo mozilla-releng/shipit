@@ -36,9 +36,7 @@ ESR_NEXT = ""
 LATEST_FIREFOX_OLDER_VERSION = "3.6.28"
 # TODO: move the branch configs to secrets
 RELEASE_BRANCH = "releases/mozilla-release"
-FENIX_RELEASE_BRANCH = "releases/mozilla78"
 BETA_BRANCH = "releases/mozilla-beta"
-FENIX_BETA_BRANCH = "releases/mozilla78"
 ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 
 # FIREFOX_NIGHTLY version is hard coded and requires a human to update it after

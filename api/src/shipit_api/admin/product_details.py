@@ -23,6 +23,7 @@ import arrow
 import backoff
 import click
 import mozilla_version.gecko
+import mozilla_version.fenix
 import mypy_extensions
 import sqlalchemy
 import sqlalchemy.orm
@@ -134,7 +135,7 @@ def get_product_mozilla_version(product: Product, version: str) -> typing.Option
         Product.DEVEDITION: mozilla_version.gecko.DeveditionVersion,
         Product.FIREFOX: mozilla_version.gecko.FirefoxVersion,
         Product.FENNEC: mozilla_version.gecko.FennecVersion,
-        Product.FENIX: mozilla_version.gecko.FenixVersion,
+        Product.FENIX: mozilla_version.fenix.FenixVersion,
         Product.THUNDERBIRD: mozilla_version.gecko.ThunderbirdVersion,
     }.get(product)
 
@@ -196,6 +197,14 @@ async def fetch_l10n_data(
     session: aiohttp.ClientSession, release: shipit_api.common.models.Release, raise_on_failure: bool, use_cache: bool = True
 ) -> typing.Tuple[shipit_api.common.models.Release, typing.Optional[ReleaseL10ns]]:
 
+    # Fenix and some thunderbird on the betas don't have l10n in the repository
+    if (
+        Product(release.product) is Product.THUNDERBIRD
+        and release.branch == "releases/comm-beta"
+        and release.revision in ["3e01e0dc6943", "481fea2011e6", "85cb8f907b18", "92950b2fd2dc", "c614b6e7cf58", "e277e3f0ab13", "efd290b55a35", "f87ba53e04ff"]
+    ) or Product(release.product) is Product.FENIX:
+        return (release, None)
+
     url_file = {
         Product.FIREFOX: "browser/locales/l10n-changesets.json",
         Product.DEVEDITION: "browser/locales/l10n-changesets.json",
@@ -203,14 +212,6 @@ async def fetch_l10n_data(
         Product.THUNDERBIRD: "mail/locales/l10n-changesets.json",
     }[Product(release.product)]
     url = f"{shipit_api.common.config.HG_PREFIX}/{release.branch}/raw-file/{release.revision}/{url_file}"
-
-    # FENIX and some thunderbird on the betas don't have l10n in the repository
-    if (
-        Product(release.product) is Product.THUNDERBIRD
-        and release.branch == "releases/comm-beta"
-        and release.revision in ["3e01e0dc6943", "481fea2011e6", "85cb8f907b18", "92950b2fd2dc", "c614b6e7cf58", "e277e3f0ab13", "efd290b55a35", "f87ba53e04ff"]
-    ) or Product(release.product) is Product.FENIX:
-        return (release, None)
 
     cache_dir = shipit_api.common.config.PRODUCT_DETAILS_CACHE_DIR / "fetch_l10n_data"
     cache = cache_dir / hashlib.sha256(url.encode("utf-8")).hexdigest()
@@ -878,10 +879,10 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release])
         nightly_version=shipit_api.common.config.FENIX_NIGHTLY,
         alpha_version=shipit_api.common.config.FENIX_NIGHTLY,
         beta_version=get_latest_version(
-            releases, Product.FENIX, shipit_api.common.config.FENIX_BETA_BRANCH, lambda r: mozilla_version.gecko.FenixVersion.parse(r.version).is_beta
+            releases, Product.FENIX, filter_closure=lambda r: mozilla_version.fenix.FenixVersion.parse(r.version).is_beta
         ),
         version=get_latest_version(
-            releases, Product.FENIX, shipit_api.common.config.FENIX_RELEASE_BRANCH, lambda r: mozilla_version.gecko.FenixVersion.parse(r.version).is_release
+            releases, Product.FENIX, filter_closure=lambda r: mozilla_version.fenix.FenixVersion.parse(r.version).is_release
         ),
     )
 
