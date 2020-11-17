@@ -22,8 +22,8 @@ import aiohttp
 import arrow
 import backoff
 import click
-import mozilla_version.gecko
 import mozilla_version.fenix
+import mozilla_version.gecko
 import mypy_extensions
 import sqlalchemy
 import sqlalchemy.orm
