@@ -48,12 +48,9 @@ def get_trust_domain(repo_url, project, product):
 def find_decision_task_id(repo_url, project, revision, product):
     trust_domain = get_trust_domain(repo_url, project, product)
     if trust_domain.endswith("mobile"):
-        # XXX "project" is a gecko-centric term which is translated into a branch in the git world.
-        branch = project
-        _, repo_name = extract_github_repo_owner_and_name(repo_url)
-        decision_task_route = f"{trust_domain}.v2.{repo_name}.branch.{branch}.revision.{revision}.taskgraph.decision"
-    else:
-        decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.decision"
+        _, project = extract_github_repo_owner_and_name(repo_url)
+
+    decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.decision"
     index = get_service("index")
     return index.findTask(decision_task_route)["taskId"]
 
