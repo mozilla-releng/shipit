@@ -87,7 +87,7 @@ def add_release(body):
         version=body["version"],
     )
     try:
-        next_version = bump_version(release.version.replace("esr", ""))
+        next_version = bump_version(release.product, release.version)
         common_input = {
             "build_number": release.build_number,
             "next_version": next_version,

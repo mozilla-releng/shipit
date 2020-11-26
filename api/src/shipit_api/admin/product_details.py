@@ -22,16 +22,16 @@ import aiohttp
 import arrow
 import backoff
 import click
-import mozilla_version.fenix
-import mozilla_version.gecko
 import mypy_extensions
 import sqlalchemy
 import sqlalchemy.orm
+from mozilla_version.fenix import FenixVersion
 
 import cli_common.command
 import cli_common.utils
 import shipit_api.common.config
 import shipit_api.common.models
+from shipit_api.admin.release import parse_version
 from shipit_api.common.product import Product, ProductCategory
 
 logger = logging.getLogger(__name__)
@@ -128,20 +128,6 @@ def to_isoformat(d: datetime.datetime) -> str:
 
 def to_format(d: datetime.datetime, format: str) -> str:
     return arrow.get(d).format(format)
-
-
-def get_product_mozilla_version(product: Product, version: str) -> typing.Optional[mozilla_version.gecko.GeckoVersion]:
-    klass = {
-        Product.DEVEDITION: mozilla_version.gecko.DeveditionVersion,
-        Product.FIREFOX: mozilla_version.gecko.FirefoxVersion,
-        Product.FENNEC: mozilla_version.gecko.FennecVersion,
-        Product.FENIX: mozilla_version.fenix.FenixVersion,
-        Product.THUNDERBIRD: mozilla_version.gecko.ThunderbirdVersion,
-    }.get(product)
-
-    if klass:
-        return klass.parse(version)
-    return None
 
 
 def create_index_listing_html(folder: pathlib.Path, items: typing.Set[pathlib.Path]) -> str:
@@ -351,13 +337,8 @@ def get_releases(
 
         old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details[product_file].get("releases", dict()))  # noqa
         for product_with_version in old_releases:
-            # mozilla_version.gecko.GeckoVersion does not parse rc (yet)
-            # https://github.com/mozilla-releng/mozilla-version/pull/40
-            #
-            # version = get_product_mozilla_version(product, product_with_version[len(product.value) + 1:])
-            # if version.major_number >= breakpoint_version:
-            version = int(product_with_version[len(product.value) + 1 :].split(".")[0])
-            if version >= breakpoint_version:
+            version = parse_version(product, product_with_version[len(product.value) + 1 :])
+            if version.major_number >= breakpoint_version:
                 continue
             details[product_with_version] = old_releases[product_with_version]
 
@@ -443,16 +424,11 @@ def get_release_history(
         product_file = f"1.0/mobile_history_{product_category.name.lower()}_releases.json"
 
     old_history = typing.cast(ReleasesHistory, old_product_details[product_file])
-    for product_with_version in old_history:
-        # mozilla_version.gecko.GeckoVersion does not parse rc (yet)
-        # https://github.com/mozilla-releng/mozilla-version/pull/40
-        #
-        # version = get_product_mozilla_version(product, product_with_version[len(product.value) + 1:])
-        # if version.major_number >= breakpoint_version:
-        version = int(product_with_version.split(".")[0])
-        if version >= breakpoint_version:
+    for version_string in old_history:
+        version = parse_version(product, version_string)
+        if version.major_number >= breakpoint_version:
             continue
-        history[product_with_version] = old_history[product_with_version]
+        history[version_string] = old_history[version_string]
 
     #
     # get release history from the database
@@ -464,7 +440,7 @@ def get_release_history(
         if release.status != "shipped":
             continue
 
-        release_version = get_product_mozilla_version(Product(release.product), release.version)
+        release_version = parse_version(release.product, release.version)
         if release_version is None or release_version.major_number < breakpoint_version:
             continue
 
@@ -588,7 +564,7 @@ def get_latest_version(
     filtered_releases = [r for r in releases if r.product == product.value and (r.branch == branch if branch else True)]
     if filter_closure:
         filtered_releases = list(filter(filter_closure, filtered_releases))
-    releases_ = sorted(filtered_releases, reverse=True, key=lambda r: get_product_mozilla_version(Product(product), r.version))
+    releases_ = sorted(filtered_releases, reverse=True, key=lambda r: parse_version(product, r.version))
     if len(releases_) == 0:
         # XXX: should we fallback to old_product_details?
         return ""
@@ -878,8 +854,8 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release])
         ios_version=shipit_api.common.config.IOS_VERSION,
         nightly_version=shipit_api.common.config.FENIX_NIGHTLY,
         alpha_version=shipit_api.common.config.FENIX_NIGHTLY,
-        beta_version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: mozilla_version.fenix.FenixVersion.parse(r.version).is_beta),
-        version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: mozilla_version.fenix.FenixVersion.parse(r.version).is_release),
+        beta_version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: FenixVersion.parse(r.version).is_beta),
+        version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: FenixVersion.parse(r.version).is_release),
     )
 
 
