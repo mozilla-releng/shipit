@@ -337,7 +337,19 @@ def get_releases(
 
         old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details[product_file].get("releases", dict()))  # noqa
         for product_with_version in old_releases:
-            version = parse_version(product, product_with_version[len(product.value) + 1 :])
+            # product_with_version looks like "Fennec-1.0". There is nothing after the version
+            if "-" not in product_with_version:
+                raise ValueError(f'Invalid product_with_version "{product_with_version}". It must contain a -')
+            product_string, version_string = product_with_version.split("-")
+
+            # XXX Both Fennec and Fenix output to mobile_android.json. We don't want to
+            # parse Fennec version number as if it were Fenix because the parser is
+            # strict. So, this skip statement below is to make sure we don't try to
+            # parse version numbers with the wrong parser.
+            if product_string.lower() != product.value.lower():
+                continue
+
+            version = parse_version(product, version_string)
             if version.major_number >= breakpoint_version:
                 continue
             details[product_with_version] = old_releases[product_with_version]
