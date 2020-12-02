@@ -72,10 +72,12 @@ ADMIN_GROUP = [
 # Please ping awagner before making changes to this group
 XPI_PRIVILEGED_BUILD_GROUP = [
     "amarchesini@mozilla.com",
-    "rdalal@mozilla.com",
-    "mcooper@mozilla.com",
-    "mbanner@mozilla.com",
     "dharvey@mozilla.com",
+    "mbanner@mozilla.com",
+    "mcooper@mozilla.com",
+    "rdalal@mozilla.com",
+    "rhelmer@mozilla.com",
+    "than@mozilla.com",
 ]
 XPI_PRIVILEGED_ADMIN_GROUP = [
     "awagner@mozilla.com",
