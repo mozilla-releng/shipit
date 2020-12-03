@@ -92,6 +92,21 @@ module.exports = {
       ],
       enablePartials: false,
     },
+    {
+      product: 'android-components',
+      prettyName: 'Android-Components',
+      appName: 'android-components',
+      branches: [],
+      repositories: [
+        {
+          prettyName: "Aki's fork",
+          project: 'android-components',
+          repo: 'https://github.com/escapewindow/android-components/',
+          enableReleaseEta: false,
+        },
+      ],
+      enablePartials: false,
+    },
   ],
   XPI_MANIFEST: {
     branch: 'master',

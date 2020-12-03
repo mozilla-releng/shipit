@@ -158,6 +158,7 @@ components:
           type: string
           example: firefox
           enum:
+          - android-components
           - devedition
           - fenix
           - fennec
