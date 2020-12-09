@@ -3,12 +3,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import logging
+
 import requests
 from mozilla_version.fenix import FenixVersion  # TODO Move FenixVersion into mozilla.gecko
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 
 from shipit_api.common.config import SUPPORTED_FLAVORS
 from shipit_api.common.product import Product
+
+logger = logging.getLogger(__name__)
 
 _VERSION_CLASS_PER_PRODUCT = {
     Product.DEVEDITION: DeveditionVersion,
@@ -63,11 +67,24 @@ def is_rc(product, version, partial_updates):
 
 
 def bump_version(product, version):
-    """Bump last digit"""
-    gecko_version = parse_version(product, version)
-    number_to_bump = "beta_number" if gecko_version.is_beta else "patch_number"
-    bumped_version = gecko_version.bump(number_to_bump)
-    return str(bumped_version)
+    """Bump most sensible digit based on the current version type"""
+    mozilla_version = parse_version(product, version)
+    number_to_bump = "patch_number"
+
+    for version_type in ("beta", "release_candidate"):
+        try:
+            if getattr(mozilla_version, f"is_{version_type}"):
+                number_to_bump = f"{version_type}_number"
+                break
+        except AttributeError:
+            # some versions (like MavenVersion) can never be betas and don't expose this attribute
+            pass
+
+    logging.debug(f'Bumping {number_to_bump} for version "{version}"')
+    bumped_version = str(mozilla_version.bump(number_to_bump))
+    logging.info(f'Version "{version}" is being bumped to "{bumped_version}"')
+
+    return bumped_version
 
 
 def is_partner_enabled(product, version, min_version=60):
