@@ -459,10 +459,11 @@ SUPPORTED_FLAVORS = {
         {"name": "push_thunderbird", "in_previous_graph_ids": True},
         {"name": "ship_thunderbird", "in_previous_graph_ids": True},
     ],
+    "android-components": [{"name": "ship", "in_previous_graph_ids": True}],
     "fenix": [{"name": "ship", "in_previous_graph_ids": True}],
 }
 
-SUPPORTED_MOBILE_REPO_NAMES = ("fenix",)
+SUPPORTED_MOBILE_REPO_NAMES = ("fenix", "android-components")
 
 SIGNOFFS = {
     # 'projects/maple': {

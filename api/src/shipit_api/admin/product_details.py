@@ -1062,7 +1062,7 @@ async def rebuild(
     product_details: ProductDetails = {
         "all.json": get_releases(
             breakpoint_version, [Product.DEVEDITION, Product.FIREFOX, Product.FENIX, Product.FENNEC, Product.THUNDERBIRD], releases, old_product_details
-        ),
+        ),  # consider adding `android-components` at some point.
         "devedition.json": get_releases(breakpoint_version, [Product.DEVEDITION], releases, old_product_details),
         "firefox.json": get_releases(breakpoint_version, [Product.FIREFOX], releases, old_product_details),
         "firefox_history_development_releases.json": get_release_history(

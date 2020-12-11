@@ -103,6 +103,7 @@ GROUPS = {
     "admin": ADMIN_GROUP,
     "firefox-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com", "shengst@mozilla.com", "telin@mozilla.com"],
     "fenix-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com", "telin@mozilla.com"],
+    "android-components-signoff": ["jcristau@mozilla.com", "pchevrel@mozilla.com", "rvandermeulen@mozilla.com"],
     "thunderbird-signoff": ["vseerror@lehigh.edu", "mozilla@jorgk.com", "thunderbird@calypsoblue.org", "justdave@thunderbird.net"],
     # XPI signoffs. These are in flux.
     # Adding Releng as a backup to most of these, for bus factor. Releng should
@@ -120,7 +121,7 @@ GROUPS = {
 AUTH0_AUTH_SCOPES = dict()
 
 # releng signoff scopes
-for product in ["firefox", "fenix", "fennec", "devedition"]:
+for product in ["android-components", "firefox", "fenix", "fennec", "devedition"]:
     scopes = {f"add_release/{product}": GROUPS["firefox-signoff"], f"abandon_release/{product}": GROUPS["firefox-signoff"]}
     phases = []
     for flavor in [product, f"{product}_rc", f"{product}_release", f"{product}_release_rc", f"{product}_beta"]:
@@ -132,6 +133,7 @@ for product in ["firefox", "fenix", "fennec", "devedition"]:
 # Add scopes for enabling/disabling products
 AUTH0_AUTH_SCOPES.update(
     {
+        "disable_product/android-components": GROUPS["firefox-signoff"],
         "disable_product/firefox": GROUPS["firefox-signoff"],
         "disable_product/fennec": GROUPS["firefox-signoff"],
         "disable_product/devedition": GROUPS["firefox-signoff"],
@@ -159,7 +161,8 @@ AUTH0_AUTH_SCOPES.update(
     {
         "github": list(
             set(
-                GROUPS["fenix-signoff"]
+                GROUPS["android-components-signoff"]
+                + GROUPS["fenix-signoff"]
                 + GROUPS["xpi_privileged_build"]
                 + GROUPS["xpi_privileged_signoff"]
                 + GROUPS["xpi_system_signoff"]

@@ -8,13 +8,15 @@ import logging
 import requests
 from mozilla_version.fenix import FenixVersion  # TODO Move FenixVersion into mozilla.gecko
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
+from mozilla_version.maven import MavenVersion  # TODO To support android-components
 
 from shipit_api.common.config import SUPPORTED_FLAVORS
-from shipit_api.common.product import Product
+from shipit_api.common.product import Product, get_key
 
 logger = logging.getLogger(__name__)
 
 _VERSION_CLASS_PER_PRODUCT = {
+    Product.ANDROID_COMPONENTS: MavenVersion,
     Product.DEVEDITION: DeveditionVersion,
     Product.FENIX: FenixVersion,
     Product.FENNEC: FennecVersion,
@@ -28,7 +30,7 @@ def parse_version(product, version):
         product_enum = product
     else:
         try:
-            product_enum = Product[product.upper()]
+            product_enum = Product[get_key(product)]
         except KeyError:
             raise ValueError(f"Product {product} versions are not supported")
 
@@ -42,7 +44,11 @@ def is_rc(product, version, partial_updates):
     # Release candidates are only expected when the version number matches
     # the release pattern
 
-    if not gecko_version.is_release or gecko_version.patch_number is not None:
+    try:
+        if not gecko_version.is_release or gecko_version.patch_number is not None:
+            return False
+    except AttributeError:
+        # some versions (like MavenVersion) don't expose this attribute
         return False
 
     if SUPPORTED_FLAVORS.get(f"{product}_rc"):
