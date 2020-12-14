@@ -14,24 +14,18 @@ First setup
 
 3. Stop the docker containers.
 
+4. Install ``taskcluster`` mozilla's task execution framework. Get the latest `Taskcluster shell client here <https://github.com/taskcluster/taskcluster/tree/main/clients/client-shell#readme>`__
+
+5.  Go to https://github.com/settings/tokens and generate a new token that has no scope at all. It will show as ``public access``. This token is just used to fetch commit and branch info. **COPY AND STORE THE TOKEN FOR LATER USE**
+
 To run each time
 ~~~~~~~~~~~~~~~~
 
-1. Generate and export ``TASKCLUSTER_CLIENT`` and ``TASKCLUSTER_ACCESS_TOKEN``:
+Run ``./startup.sh`` 
 
-   a. Get the latest `Taskcluster shell client <https://github.com/taskcluster/taskcluster/tree/main/clients/client-shell#readme>`__
 
-   b. ``export TASKCLUSTER_ROOT_URL='https://firefox-ci-tc.services.mozilla.com/' && eval $(taskcluster signin)``
-
-   c. This opened a new browser window. Get the token by click on the save icon at the bottom right of the page.
-
-2. Generate and export ``GITHUB_TOKEN``:
-
-   a. Go to https://github.com/settings/tokens and generate a new token that has no scope at all. It will show as ``public access``. This token is just used to fetch commit and branch info.
-
-   b. ``export GITHUB_TOKEN='mytoken'``
-
-3. Run ``docker-compose up``.
+- `You would need to pass your github token to the script for each startup`
+- `After running the startup script, if you stop the script you can simply run` ``docker-compose up`` `in the same terminal session to restart, this would maintain the environment prepared by the startup script for run and you won't need to provide your github token again unless you close the terminal session.`
 
 You should be all set to kick off some staging releases.
 
