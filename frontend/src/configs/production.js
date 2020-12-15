@@ -114,6 +114,21 @@ module.exports = {
       ],
       enablePartials: false,
     },
+    {
+      product: 'android-components',
+      prettyName: 'Android-Components',
+      appName: 'android-components',
+      branches: [],
+      repositories: [
+        {
+          prettyName: 'Official repo',
+          project: 'android-components',
+          repo: 'https://github.com/mozilla-mobile/android-components',
+          enableReleaseEta: false,
+        },
+      ],
+      enablePartials: false,
+    },
   ],
   XPI_MANIFEST: {
     branch: 'master',
