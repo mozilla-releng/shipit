@@ -45,7 +45,6 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # We could have used the in-tree version, but there can be race conditions,
 # e.g. version bumped, but still no builds available.
 FIREFOX_NIGHTLY = "86.0a1"
-h
 
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
