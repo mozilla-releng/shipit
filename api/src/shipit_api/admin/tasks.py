@@ -35,7 +35,7 @@ def get_trust_domain(repo_url, project, product):
             # fenix forks don't pollute the mobile namespace, for instance
             return "garbage.mobile"
         else:
-            raise UnsupportedFlavor('Unable to know what to do with repo_owner "{repo_owner}" and repo_name "{repo_name}"')
+            raise UnsupportedFlavor(f'Unable to know what to do with repo_owner "{repo_owner}" and repo_name "{repo_name}"')
     elif "comm" in project:
         return "comm"
     elif "xpi" in project:
