@@ -35,6 +35,45 @@ def get_file_from_github(owner, repo, file_path, ref):
     return content["data"]["repository"]["object"]["text"]
 
 
+def get_files_from_github(owner, repo, file_path, ref):
+    query = """query {
+      repository(owner:"%(owner)s", name:"%(repo)s") {
+        object(expression: "%(ref)s:%(file_path)s") {
+          ... on Tree {
+            entries {
+              name
+              type
+              mode
+              object {
+                ... on Blob {
+                  byteSize
+                  isBinary
+                  text
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    """ % dict(
+        owner=owner, repo=repo, ref=ref, file_path=file_path
+    )
+    content = query_api(query)
+
+    entries = content["data"]["repository"]["object"]["entries"]
+    all_manifests = {}
+    for xpi in entries:
+        if not xpi["name"].endswith(".yml"):
+            continue
+        name = xpi["name"].split(".yml")[0]
+        data = yaml.safe_load(xpi["object"]["text"])
+        data["name"] = name
+        assert name not in all_manifests
+        all_manifests[name] = data
+    return all_manifests
+
+
 def query_api(query):
     """ Make a query with a Github auth header, returning the json """
     _require_auth()
@@ -139,8 +178,7 @@ def list_github_commits(owner, repo, branch, limit=10):
 
 
 def get_xpi_manifest(owner, repo, ref):
-    manifest = yaml.safe_load(get_file_from_github(owner, repo, "xpi-manifest.yml", ref))
-    return manifest
+    return get_files_from_github(owner, repo, "manifests", ref)
 
 
 def get_taskgraph_config(owner, repo, ref):
@@ -158,10 +196,10 @@ def get_version_txt(owner, repo, revision):
 
 
 def list_xpis(owner, repo, revision):
-    manifest = get_xpi_manifest(owner, repo, revision)
+    manifests = get_xpi_manifest(owner, repo, revision)
     config = get_taskgraph_config(owner, repo, revision)
     xpis = []
-    for xpi in filter(lambda xpi: xpi["active"], manifest["xpis"]):
+    for xpi in filter(lambda xpi: xpi["active"], [manifests[m] for m in manifests]):
         if current_app.config.get("GITHUB_SKIP_PRIVATE_REPOS") and xpi.get("private-repo"):
             # Skip private repos in localdev and maybe staging
             continue
