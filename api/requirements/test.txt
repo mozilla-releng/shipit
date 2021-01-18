@@ -171,9 +171,9 @@ chardet==3.0.4 \
     --hash=sha256:84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae \
     --hash=sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691 \
     # via aiohttp, requests
-check-manifest==0.45 \
-    --hash=sha256:636b65a3b685374ad429ff22fe213966765b145f08bc560c8d033b604c7bee4c \
-    --hash=sha256:79dfd287348504a6f5195507dd15d0a6f66574feb34d3dbe1b33c80e24d2ceb9 \
+check-manifest==0.46 \
+    --hash=sha256:5895e42a012989bdc51854a02c82c8d6898112a4ab11f2d7878200520b49d428 \
+    --hash=sha256:b59b0e7c7ed3946537677c9ab9b2c2cb7be9b1807fd40bc4dfc1eef31d42cff5 \
     # via -r test.in
 click==7.1.2 \
     --hash=sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a \
