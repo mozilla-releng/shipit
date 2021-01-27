@@ -84,9 +84,9 @@ module.exports = {
       branches: [],
       repositories: [
         {
-          prettyName: "Johan's fork",
-          project: 'fenix',
-          repo: 'https://github.com/JohanLorenzo/fenix',
+          prettyName: 'Staging fork',
+          project: 'staging-fenix',
+          repo: 'https://github.com/mozilla-releng/staging-fenix',
           enableReleaseEta: false,
         },
       ],
@@ -99,9 +99,9 @@ module.exports = {
       branches: [],
       repositories: [
         {
-          prettyName: "Aki's fork",
-          project: 'android-components',
-          repo: 'https://github.com/escapewindow/android-components/',
+          prettyName: 'Staging fork',
+          project: 'staging-android-components',
+          repo: 'https://github.com/mozilla-releng/staging-android-components/',
           enableReleaseEta: false,
         },
       ],
