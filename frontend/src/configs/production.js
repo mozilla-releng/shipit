@@ -103,7 +103,11 @@ module.exports = {
       product: 'fenix',
       prettyName: 'Fenix',
       appName: 'fenix',
-      branches: [],
+      branches: [
+        {
+          branch: '',
+        },
+      ],
       repositories: [
         {
           prettyName: 'Official repo',
@@ -118,7 +122,11 @@ module.exports = {
       product: 'android-components',
       prettyName: 'Android-Components',
       appName: 'android-components',
-      branches: [],
+      branches: [
+        {
+          branch: '',
+        },
+      ],
       repositories: [
         {
           prettyName: 'Official repo',
