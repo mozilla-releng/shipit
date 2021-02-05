@@ -241,7 +241,10 @@ export default function NewRelease() {
   const renderBranchesSelect = () => {
     let branches;
 
-    if (selectedProduct.branches && selectedProduct.branches.length > 0) {
+    if (
+      selectedProduct.branches &&
+      selectedProduct.branches.some(b => !!b.branch)
+    ) {
       branches = selectedProduct.branches;
     } else if (
       selectedRepository.branches &&
