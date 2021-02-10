@@ -1,4 +1,5 @@
 import json
+from functools import lru_cache
 from urllib.parse import unquote, urlparse
 
 import requests
@@ -18,6 +19,7 @@ def _require_auth():
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
 
+@lru_cache(maxsize=10)
 def get_file_from_github(owner, repo, file_path, ref):
     query = """query {
       repository(owner:"%(owner)s", name:"%(repo)s") {
