@@ -73,6 +73,7 @@ ADMIN_GROUP = [
 XPI_PRIVILEGED_BUILD_GROUP = [
     "amarchesini@mozilla.com",
     "aplacitelli@mozilla.com",  # Rally team
+    "bforehand@mozilla.com",
     "dharvey@mozilla.com",
     "mbanner@mozilla.com",
     "mcooper@mozilla.com",
