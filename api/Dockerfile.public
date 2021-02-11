@@ -11,9 +11,8 @@ COPY requirements/ /app/requirements/
 RUN pip install -r requirements/public.txt
 
 COPY docker.d/init.sh /app/docker.d/
-COPY . ./src
-RUN cp -avf ./src/version.json /app/version.json || :
-RUN pip install ./src && rm -rf ./src
+COPY . /app
+RUN pip install -e .
 
 ENV FLASK_APP shipit_api.public.flask:app
 ENV WEB_CONCURRENCY=3

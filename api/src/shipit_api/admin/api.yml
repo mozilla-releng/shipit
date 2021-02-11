@@ -676,6 +676,7 @@ components:
           type: string
           example: firefox
           enum:
+          - android-components
           - devedition
           - fenix
           - fennec
@@ -782,6 +783,7 @@ components:
           type: string
           example: firefox
           enum:
+          - android-components
           - devedition
           - fenix
           - fennec

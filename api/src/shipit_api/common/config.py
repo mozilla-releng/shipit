@@ -44,17 +44,17 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # day).
 # We could have used the in-tree version, but there can be race conditions,
 # e.g. version bumped, but still no builds available.
-FIREFOX_NIGHTLY = "85.0a1"
+FIREFOX_NIGHTLY = "87.0a1"
 
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
-LAST_SOFTFREEZE_DATE = "2020-11-12"
-LAST_MERGE_DATE = "2020-11-16"
-LAST_RELEASE_DATE = "2020-11-16"
-NEXT_SOFTFREEZE_DATE = "2020-12-10"
-NEXT_MERGE_DATE = "2020-12-14"
-NEXT_RELEASE_DATE = "2020-12-15"
+LAST_SOFTFREEZE_DATE = "2021-01-21"
+LAST_MERGE_DATE = "2021-01-25"
+LAST_RELEASE_DATE = "2021-01-26"
+NEXT_SOFTFREEZE_DATE = "2021-02-18"
+NEXT_MERGE_DATE = "2021-02-22"
+NEXT_RELEASE_DATE = "2021-02-23"
 
 # Fennec Nightly users have been migrated to Fenix, thus we don't need to bump
 # the following numbers anymore.
@@ -70,7 +70,7 @@ IOS_VERSION = "14.1"
 
 # Thunderbird configs
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
-LATEST_THUNDERBIRD_NIGHTLY_VERSION = "84.0a1"
+LATEST_THUNDERBIRD_NIGHTLY_VERSION = "87.0a1"
 # TODO: Need to update this every cycle
 THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr78"
 THUNDERBIRD_BETA_BRANCH = "releases/comm-beta"
@@ -459,10 +459,11 @@ SUPPORTED_FLAVORS = {
         {"name": "push_thunderbird", "in_previous_graph_ids": True},
         {"name": "ship_thunderbird", "in_previous_graph_ids": True},
     ],
+    "android-components": [{"name": "ship", "in_previous_graph_ids": True}],
     "fenix": [{"name": "ship", "in_previous_graph_ids": True}],
 }
 
-SUPPORTED_MOBILE_REPO_NAMES = ("fenix",)
+SUPPORTED_MOBILE_REPO_NAMES = ("fenix", "android-components", "staging-fenix", "staging-android-components")
 
 SIGNOFFS = {
     # 'projects/maple': {

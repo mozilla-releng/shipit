@@ -6,8 +6,17 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8015:8015"
+    # Mounting these three specific volumes is done to ensure that autoreloading
+    # changes to python code works without breaking the console scripts that
+    # are installed. If we mount the entire `api` directory, it overwrites
+    # the egg files that are inside the docker containers, which means that
+    # scripts like `shipit_trigger_product_details` do not work.
+    # If we don't volume mount at all, python code changes are not picked up
+    # until we rebuild the docker container
     volumes:
-      - ./api:/app
+      - ./api/src/backend_common:/app/src/backend_common
+      - ./api/src/cli_common:/app/src/cli_common
+      - ./api/src/shipit_api:/app/src/shipit_api
     environment:
       - HOST=0.0.0.0
       - PORT=8015
@@ -39,8 +48,11 @@ services:
       dockerfile: Dockerfile.public
     ports:
       - "8016:8016"
+    # See comment on the api container for the reasoning behind these mounts
     volumes:
-      - ./api:/app
+      - ./api/src/backend_common:/app/src/backend_common
+      - ./api/src/cli_common:/app/src/cli_common
+      - ./api/src/shipit_api:/app/src/shipit_api
     environment:
       - HOST=0.0.0.0
       - PORT=8016

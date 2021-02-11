@@ -103,12 +103,35 @@ module.exports = {
       product: 'fenix',
       prettyName: 'Fenix',
       appName: 'fenix',
-      branches: [],
+      branches: [
+        {
+          branch: '',
+        },
+      ],
       repositories: [
         {
           prettyName: 'Official repo',
           project: 'fenix',
           repo: 'https://github.com/mozilla-mobile/fenix',
+          enableReleaseEta: false,
+        },
+      ],
+      enablePartials: false,
+    },
+    {
+      product: 'android-components',
+      prettyName: 'Android-Components',
+      appName: 'android-components',
+      branches: [
+        {
+          branch: '',
+        },
+      ],
+      repositories: [
+        {
+          prettyName: 'Official repo',
+          project: 'android-components',
+          repo: 'https://github.com/mozilla-mobile/android-components',
           enableReleaseEta: false,
         },
       ],

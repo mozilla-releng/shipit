@@ -74,7 +74,9 @@ def test_is_rc(product, version, partial_updates, result):
         ("firefox", "45.2.1esr", "45.2.2esr"),
         ("fennec", "68.1b2", "68.1b3"),
         ("fenix", "84.0.0-beta.2", "84.0.0-beta.3"),
+        ("fenix", "84.0.0-rc.1", "84.0.0-rc.2"),
         ("fenix", "84.0.0", "84.0.1"),
+        ("android-components", "84.0.0", "84.0.1"),
     ),
 )
 def test_bump_version(product, version, result):
