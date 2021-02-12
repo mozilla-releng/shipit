@@ -11,7 +11,7 @@
     "webpack": "4.46.0",
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.2",
-    "worker-loader": "3.0.7"
+    "worker-loader": "3.0.8"
   },
   "scripts": {
     "build": "dotenv webpack -- --mode production",
