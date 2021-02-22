@@ -74,6 +74,7 @@ XPI_PRIVILEGED_BUILD_GROUP = [
     "amarchesini@mozilla.com",
     "aplacitelli@mozilla.com",  # Rally team
     "dharvey@mozilla.com",
+    "mleplatre@mozilla.com",  # remote-settings-devtools
     "mbanner@mozilla.com",
     "mcooper@mozilla.com",
     "rdalal@mozilla.com",
