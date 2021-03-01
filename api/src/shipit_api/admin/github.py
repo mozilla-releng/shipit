@@ -188,8 +188,11 @@ def get_taskgraph_config(owner, repo, ref):
     return config
 
 
-def get_package_json(owner, repo, revision):
-    package = json.loads(get_file_from_github(owner, repo, "package.json", revision))
+def get_package_json(owner, repo, revision, directory=None):
+    path = "package.json"
+    if directory:
+        path = os.path.join(directory, path)
+    package = json.loads(get_file_from_github(owner, repo, path, revision))
     return package
 
 
@@ -210,7 +213,7 @@ def list_xpis(owner, repo, revision):
         # convert "master" into a stable ref
         ref = xpi.get("branch", config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-ref"])
         commit = ref_to_commit(xpi_owner, xpi_repo, ref)
-        package = get_package_json(xpi_owner, xpi_repo, commit)
+        package = get_package_json(xpi_owner, xpi_repo, commit, directory=xpi.get("directory"))
         xpis.append(
             {
                 "revision": commit,
