@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function NewXPIelease() {
+export default function NewXPIRelease() {
   const classes = useStyles();
   const [manifestCommit, fetchManifestCommit] = useAction(
     getLatestGithubCommit
