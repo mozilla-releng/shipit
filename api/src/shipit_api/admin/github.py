@@ -196,7 +196,7 @@ def get_package_json(owner, repo, revision, directory=None):
         package = json.loads(get_file_from_github(owner, repo, path, revision))
         return package
     except TypeError as exc:
-        current_app.logger.error(f"Can't load package.json from {owner} {repo} {path} {revision}")
+        current_app.logger.error(f"Can't load package.json from {owner} {repo} {path} {revision}: {exc}")
         raise
 
 
