@@ -60,7 +60,11 @@ export async function getXPIVersion(owner, repo, commit, directory) {
 
   const req = await axios.get(url, { authRequired: true });
 
-  return req.data.version;
+  try {
+    return req.data.version;
+  } catch (e) {
+    return 'BROKEN';
+  }
 }
 
 async function getHgPushes(repo) {
