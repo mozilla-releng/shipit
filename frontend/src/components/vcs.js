@@ -63,7 +63,7 @@ export async function getXPIVersion(owner, repo, commit, directory) {
   try {
     return req.data.version;
   } catch (e) {
-    return 'BROKEN';
+    return `${url} is BROKEN`;
   }
 }
 
