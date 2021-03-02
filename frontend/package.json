@@ -35,7 +35,7 @@
     "@material-ui/styles": "4.11.2",
     "@mozilla-frontend-infra/components": "3.0.7",
     "axios": "0.21.1",
-    "date-fns": "2.16.1",
+    "date-fns": "2.18.0",
     "is-absolute-url": "3.0.3",
     "prop-types": "15.7.2",
     "react": "16.14.0",
