@@ -192,8 +192,12 @@ def get_package_json(owner, repo, revision, directory=None):
     path = "package.json"
     if directory:
         path = f"{directory.rstrip('/')}/{path}"
-    package = json.loads(get_file_from_github(owner, repo, path, revision))
-    return package
+    try:
+        package = json.loads(get_file_from_github(owner, repo, path, revision))
+        return package
+    except TypeError as exc:
+        current_app.logger.error(f"Can't load package.json from {owner} {repo} {path} {revision}")
+        raise
 
 
 def get_version_txt(owner, repo, revision):
@@ -213,19 +217,22 @@ def list_xpis(owner, repo, revision):
         # convert "master" into a stable ref
         ref = xpi.get("branch", config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-ref"])
         commit = ref_to_commit(xpi_owner, xpi_repo, ref)
-        package = get_package_json(xpi_owner, xpi_repo, commit, directory=xpi.get("directory"))
-        xpis.append(
-            {
-                "revision": commit,
-                "branch": xpi.get("branch", "master"),
-                "version": package["version"],
-                "xpi_name": xpi["name"],
-                "owner": xpi_owner,
-                "repo": xpi_repo,
-                "manifest_revision": revision,
-                "addon-type": xpi["addon-type"],
-            }
-        )
+        try:
+            package = get_package_json(xpi_owner, xpi_repo, commit, directory=xpi.get("directory"))
+            xpis.append(
+                {
+                    "revision": commit,
+                    "branch": xpi.get("branch", "master"),
+                    "version": package["version"],
+                    "xpi_name": xpi["name"],
+                    "owner": xpi_owner,
+                    "repo": xpi_repo,
+                    "manifest_revision": revision,
+                    "addon-type": xpi["addon-type"],
+                }
+            )
+        except TypeError:
+            continue
 
     return {"xpis": xpis}
 
