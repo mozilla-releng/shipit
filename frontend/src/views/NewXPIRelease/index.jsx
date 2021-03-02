@@ -136,7 +136,8 @@ export default function NewXPIRelease() {
       await fetchXpiVersion(
         selectedXpi.owner,
         selectedXpi.repo,
-        selectedXpi.revision
+        selectedXpi.revision,
+        selectedXpi.directory
       )
     ).data;
     const buildNumber = await guessBuildNumber(selectedXpi.xpi_name, version);
