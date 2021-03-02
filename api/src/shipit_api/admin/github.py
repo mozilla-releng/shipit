@@ -1,5 +1,4 @@
 import json
-import os
 from functools import lru_cache
 from urllib.parse import unquote, urlparse
 
@@ -192,7 +191,7 @@ def get_taskgraph_config(owner, repo, ref):
 def get_package_json(owner, repo, revision, directory=None):
     path = "package.json"
     if directory:
-        path = os.path.join(directory, path)
+        path = f"{directory.rstrip('/')}/{path}"
     package = json.loads(get_file_from_github(owner, repo, path, revision))
     return package
 
