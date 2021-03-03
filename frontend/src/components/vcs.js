@@ -49,22 +49,14 @@ export async function getXpis(owner, repo, commit) {
   return req.data;
 }
 
-export async function getXPIVersion(owner, repo, commit, directory) {
-  let url;
-
+export async function getXPIVersion(owner, repo, commit, directory=None) {
+  let url = `/github/package_json/${owner}/${repo}/${commit}`;
   if (directory) {
-    url = `/github/${directory}/package_json/${owner}/${repo}/${commit}`;
-  } else {
-    url = `/github/package_json/${owner}/${repo}/${commit}`;
+    url = `$url/${directory}`
   }
-
   const req = await axios.get(url, { authRequired: true });
 
-  try {
-    return req.data.version;
-  } catch (e) {
-    return `${url} is BROKEN`;
-  }
+  return req.data.version;
 }
 
 async function getHgPushes(repo) {
