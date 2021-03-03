@@ -49,11 +49,13 @@ export async function getXpis(owner, repo, commit) {
   return req.data;
 }
 
-export async function getXPIVersion(owner, repo, commit, directory=None) {
+export async function getXPIVersion(owner, repo, commit, directory = null) {
   let url = `/github/package_json/${owner}/${repo}/${commit}`;
+
   if (directory) {
-    url = `$url/${directory}`
+    url = `$url/${directory}`;
   }
+
   const req = await axios.get(url, { authRequired: true });
 
   return req.data.version;
