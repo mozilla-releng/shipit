@@ -232,6 +232,7 @@ def list_xpis(owner, repo, revision):
                     "owner": xpi_owner,
                     "repo": xpi_repo,
                     "manifest_revision": revision,
+                    "directory": xpi.get("directory", ""),
                     "addon-type": xpi["addon-type"],
                 }
             )
