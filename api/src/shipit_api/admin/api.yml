@@ -413,7 +413,7 @@ paths:
   /github/package_json/{owner}/{repo}/{revision}/{directory}:
     get:
       summary: Returns contents of package.json from a github repo's root directory
-      operationId: shipit_api.admin.github.get_package_json
+      operationId: shipit_api.admin.github.get_package_json_directory
       parameters:
       - name: owner
         in: path

@@ -199,6 +199,9 @@ def get_package_json(owner, repo, revision, directory=None):
         current_app.logger.error(f"Can't load package.json from {owner} {repo} {path} {revision}: {exc}")
         raise
 
+def get_package_json_directory(owner, repo, revision, directory):
+    return get_package_json(owner, repo, revision, directory=directory)
+
 
 def get_version_txt(owner, repo, revision):
     return get_file_from_github(owner, repo, "version.txt", revision)
