@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function NewXPIelease() {
+export default function NewXPIRelease() {
   const classes = useStyles();
   const [manifestCommit, fetchManifestCommit] = useAction(
     getLatestGithubCommit
@@ -136,7 +136,8 @@ export default function NewXPIelease() {
       await fetchXpiVersion(
         selectedXpi.owner,
         selectedXpi.repo,
-        selectedXpi.revision
+        selectedXpi.revision,
+        selectedXpi.directory
       )
     ).data;
     const buildNumber = await guessBuildNumber(selectedXpi.xpi_name, version);

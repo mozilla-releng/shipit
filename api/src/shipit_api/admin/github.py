@@ -1,5 +1,4 @@
 import json
-import os
 from functools import lru_cache
 from urllib.parse import unquote, urlparse
 
@@ -7,6 +6,7 @@ import requests
 import yaml
 from flask import abort, current_app
 from flask_login import current_user
+from sentry_sdk import capture_exception
 
 from shipit_api.common.config import SCOPE_PREFIX
 
@@ -192,9 +192,17 @@ def get_taskgraph_config(owner, repo, ref):
 def get_package_json(owner, repo, revision, directory=None):
     path = "package.json"
     if directory:
-        path = os.path.join(directory, path)
-    package = json.loads(get_file_from_github(owner, repo, path, revision))
-    return package
+        path = f"{directory.rstrip('/')}/{path}"
+    try:
+        package = json.loads(get_file_from_github(owner, repo, path, revision))
+        return package
+    except TypeError as exc:
+        current_app.logger.error(f"Can't load package.json from {owner} {repo} {path} {revision}: {exc}")
+        raise
+
+
+def get_package_json_directory(owner, repo, revision, directory):
+    return get_package_json(owner, repo, revision, directory=directory)
 
 
 def get_version_txt(owner, repo, revision):
@@ -214,19 +222,23 @@ def list_xpis(owner, repo, revision):
         # convert "master" into a stable ref
         ref = xpi.get("branch", config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-ref"])
         commit = ref_to_commit(xpi_owner, xpi_repo, ref)
-        package = get_package_json(xpi_owner, xpi_repo, commit, directory=xpi.get("directory"))
-        xpis.append(
-            {
-                "revision": commit,
-                "branch": xpi.get("branch", "master"),
-                "version": package["version"],
-                "xpi_name": xpi["name"],
-                "owner": xpi_owner,
-                "repo": xpi_repo,
-                "manifest_revision": revision,
-                "addon-type": xpi["addon-type"],
-            }
-        )
+        try:
+            package = get_package_json(xpi_owner, xpi_repo, commit, directory=xpi.get("directory"))
+            xpis.append(
+                {
+                    "revision": commit,
+                    "branch": xpi.get("branch", "master"),
+                    "version": package["version"],
+                    "xpi_name": xpi["name"],
+                    "owner": xpi_owner,
+                    "repo": xpi_repo,
+                    "manifest_revision": revision,
+                    "directory": xpi.get("directory", ""),
+                    "addon-type": xpi["addon-type"],
+                }
+            )
+        except TypeError as exc:
+            capture_exception(exc)
 
     return {"xpis": xpis}
 

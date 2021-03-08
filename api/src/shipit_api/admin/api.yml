@@ -410,6 +410,42 @@ paths:
             application/json:
               schema:
                 type: object
+  /github/package_json/{owner}/{repo}/{revision}/{directory}:
+    get:
+      summary: Returns contents of package.json from a github repo's root directory
+      operationId: shipit_api.admin.github.get_package_json_directory
+      parameters:
+      - name: owner
+        in: path
+        required: true
+        description: repo owner
+        schema:
+          type: string
+      - name: repo
+        in: path
+        required: true
+        description: repo name
+        schema:
+          type: string
+      - name: revision
+        in: path
+        required: true
+        description: commit revision
+        schema:
+          type: string
+      - name: directory
+        in: path
+        required: true
+        description: directory path
+        schema:
+          type: string
+      responses:
+        200:
+          description: Contents of package.json
+          content:
+            application/json:
+              schema:
+                type: object
   /github/version_txt/{owner}/{repo}/{revision}:
     get:
       summary: Returns contents of version.txt from a github repo's root directory
