@@ -6,6 +6,7 @@ import requests
 import yaml
 from flask import abort, current_app
 from flask_login import current_user
+from sentry_sdk import capture_exception
 
 from shipit_api.common.config import SCOPE_PREFIX
 
@@ -236,8 +237,8 @@ def list_xpis(owner, repo, revision):
                     "addon-type": xpi["addon-type"],
                 }
             )
-        except TypeError:
-            continue
+        except TypeError as exc:
+            capture_exception(exc)
 
     return {"xpis": xpis}
 
