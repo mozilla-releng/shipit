@@ -31,12 +31,12 @@ def get_trust_domain(repo_url, project, product):
         repo_owner, repo_name = extract_github_repo_owner_and_name(repo_url)
         if repo_owner == "mozilla-mobile" or repo_name in SUPPORTED_MOBILE_REPO_NAMES:
             return "mobile"
+        elif repo_owner == "mozilla-extensions" or "xpi" in project:
+            return "xpi"
         else:
             raise UnsupportedFlavor(f'Unable to know what to do with repo_owner "{repo_owner}" and repo_name "{repo_name}"')
     elif "comm" in project:
         return "comm"
-    elif "xpi" in project:
-        return "xpi"
     else:
         return "gecko"
 
@@ -44,7 +44,7 @@ def get_trust_domain(repo_url, project, product):
 @lru_cache(maxsize=2048)
 def find_decision_task_id(repo_url, project, revision, product):
     trust_domain = get_trust_domain(repo_url, project, product)
-    if trust_domain.endswith("mobile"):
+    if trust_domain.endswith(("mobile", "xpi")):
         _, project = extract_github_repo_owner_and_name(repo_url)
 
     decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.decision"
