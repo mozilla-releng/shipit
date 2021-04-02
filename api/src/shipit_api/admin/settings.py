@@ -26,8 +26,8 @@ SECRET_KEY = config("SECRET_KEY_BASE64", cast=base64.b64decode)
 
 # optional
 GITHUB_TOKEN = config("GITHUB_TOKEN", default=None)
-XPI_MANIFEST_OWNER = config("XPI_MANIFEST_OWNER", default=None)
-XPI_MANIFEST_REPO = config("XPI_MANIFEST_REPO", default=None)
+XPI_MANIFEST_OWNER = "mozilla-releng"
+XPI_MANIFEST_REPO = "staging-xpi-manifest"
 GITHUB_SKIP_PRIVATE_REPOS = config("GITHUB_SKIP_PRIVATE_REPOS", default=False, cast=bool)
 PULSE_USER = config("PULSE_USER", default=None)
 PULSE_PASSWORD = config("PULSE_PASSWORD", default=None)
