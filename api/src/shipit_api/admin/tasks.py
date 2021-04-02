@@ -51,7 +51,7 @@ def find_decision_task_id(repo_url, project, revision, product):
     index = get_service("index")
     try:
         return index.findTask(decision_task_route)["taskId"]
-    except exception as exc:
+    except Exception as exc:
         raise Exception(f"route {decision_task_route} exception {exc}")
 
 
