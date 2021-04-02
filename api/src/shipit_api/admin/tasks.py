@@ -44,7 +44,7 @@ def get_trust_domain(repo_url, project, product):
 @lru_cache(maxsize=2048)
 def find_decision_task_id(repo_url, project, revision, product):
     trust_domain = get_trust_domain(repo_url, project, product)
-    if trust_domain.endswith(("mobile", "xpi")):
+    if trust_domain.endswith("mobile"):
         _, project = extract_github_repo_owner_and_name(repo_url)
 
     decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.decision"
