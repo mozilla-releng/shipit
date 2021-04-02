@@ -70,7 +70,7 @@ module.exports = {
   ],
   XPI_MANIFEST: {
     branch: 'master',
-    owner: 'escapewindow',
-    repo: 'test-xpi-manifest',
+    owner: 'mozilla-releng',
+    repo: 'staging-xpi-manifest',
   },
 };
