@@ -7697,10 +7697,10 @@ react-hot-loader@4.13.0:
     shallowequal "^1.1.0"
     source-map "^0.7.3"
 
-react-interval@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.npmjs.org/react-interval/-/react-interval-2.1.1.tgz"
-  integrity sha512-ElqbAlARY9mkcCPxdwbn5deX1Dx6oKEbIWy4Voubbf6+8oVLPdXHxX5fEALkGerIom0T+WBYzdumjrSkgPlEzA==
+react-interval@2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/react-interval/-/react-interval-2.1.2.tgz#c5c925403fc92470fdd1f5b5251de67a94223e12"
+  integrity sha512-WBvr4Bh5d8V+1wcvUolTg1Kt51ObKO4lZZ8HCcoAdqIuJFdkcQITu852hz9E3CtAxT/y80di9P4tdyfljpvSyw==
   dependencies:
     prop-types "^15.6.0"
 

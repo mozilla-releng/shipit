@@ -43,7 +43,7 @@
     "react-dom": "16.14.0",
     "react-helmet": "6.1.0",
     "react-hot-loader": "4.13.0",
-    "react-interval": "2.1.1",
+    "react-interval": "2.1.2",
     "react-router-dom": "5.2.0",
     "react-time-ago": "6.2.2",
     "taskcluster-lib-urls": "13.0.1"
