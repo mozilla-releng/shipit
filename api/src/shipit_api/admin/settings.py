@@ -208,6 +208,13 @@ for xpi_type in ["privileged", "system", "mozillaonline-privileged", "normandy-p
             f"phase_signoff/xpi/{xpi_type}/promote": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
         }
     )
+    # Only "signoff", and "admin_signoff" groups can schedule the "ship" phase
+    AUTH0_AUTH_SCOPES.update(
+        {
+            f"schedule_phase/xpi/{xpi_type}/ship": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+            f"phase_signoff/xpi/{xpi_type}/ship": GROUPS[f"xpi_{xpi_type}_signoff"] + GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+        }
+    )
 
 # append scopes with scope prefix and add admin group of users
 AUTH0_AUTH_SCOPES = {f"{SCOPE_PREFIX}/{scope}": list(set(users + GROUPS["admin"])) for scope, users in AUTH0_AUTH_SCOPES.items()}
