@@ -214,9 +214,9 @@ def list_xpis(owner, repo, revision):
     config = get_taskgraph_config(owner, repo, revision)
     xpis = []
     for xpi in filter(lambda xpi: xpi["active"], [manifests[m] for m in manifests]):
-        # if current_app.config.get("GITHUB_SKIP_PRIVATE_REPOS") and xpi.get("private-repo"):
+        if current_app.config.get("GITHUB_SKIP_PRIVATE_REPOS") and xpi.get("private-repo"):
             # Skip private repos in localdev and maybe staging
-            # continue
+            continue
         repo_url = config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-repository"]
         xpi_owner, xpi_repo = extract_github_repo_owner_and_name(repo_url)
         # convert "master" into a stable ref
