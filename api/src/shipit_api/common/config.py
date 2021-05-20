@@ -488,6 +488,9 @@ SIGNOFFS = {
                 {"name": "Add-on Review Team", "description": "Promote XPI", "permissions": "xpi_privileged_admin_signoff"},
                 {"name": "Privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
             ],
+            "ship": [
+                {"name": "Privileged webextension admin", "description": "Ship XPI", "permissions": "xpi_privileged_signoff"},
+            ],
         },
         # XXX replace the 2nd `system` signoff with `xpi_system_qa_signoff` once
         #     that team is defined and granted access to shipit
@@ -495,6 +498,9 @@ SIGNOFFS = {
             "promote": [
                 {"name": "System addon admin", "description": "Promote XPI", "permissions": "xpi_system_signoff"},
                 {"name": "System addon admin", "description": "Promote XPI", "permissions": "xpi_system_signoff"},
+            ],
+            "ship": [
+                {"name": "System addon admin", "description": "Ship XPI", "permissions": "xpi_system_signoff"},
             ],
         },
         "mozillaonline-privileged": {
@@ -506,11 +512,21 @@ SIGNOFFS = {
                     "permissions": "xpi_mozillaonline-privileged_admin_signoff",
                 },
             ],
+            "ship": [
+                {"name": "MozillaOnline privileged webextension team", "description": "Ship XPI", "permissions": "xpi_mozillaonline-privileged_signoff"},
+                {
+                    "name": "MozillaOnline privileged webextension admin",
+                    "description": "Ship XPI",
+                    "permissions": "xpi_mozillaonline-privileged_admin_signoff",
+                },
+            ],
         },
         "normandy-privileged": {
             "promote": [
                 {"name": "Normandy privileged admin", "description": "Promote XPI", "permissions": "xpi_normandy-privileged_signoff"},
-                {"name": "Normandy privileged admin", "description": "Promote XPI", "permissions": "xpi_normandy-privileged_signoff"},
+            ],
+            "ship": [
+                {"name": "Normandy privileged admin", "description": "Ship XPI", "permissions": "xpi_normandy-privileged_signoff"},
             ],
         },
     },
