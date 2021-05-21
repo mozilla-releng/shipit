@@ -78,7 +78,7 @@ def get_files_from_github(owner, repo, file_path, ref):
 
 
 def query_api(query):
-    """ Make a query with a Github auth header, returning the json """
+    """Make a query with a Github auth header, returning the json"""
     _require_auth()
     if not current_app.config.get("GITHUB_TOKEN"):
         abort(500, "GITHUB_TOKEN is not defined and required in order to query github.com")
