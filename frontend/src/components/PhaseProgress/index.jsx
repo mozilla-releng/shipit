@@ -17,11 +17,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Link from '@material-ui/core/Link';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import config from '../../config';
 import { schedulePhase, phaseSignOff } from '../api';
 import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
 import { phasePrettyName } from '../text';
+import MouseOverPopover from './MouseOverPopover';
 
 export default function PhaseProgress({ release, readOnly, xpi }) {
   const { fetchReleases } = useContext(ReleaseContext);
@@ -98,8 +100,40 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
               inProgress ? { icon: <Spinner loading size={30} /> } : undefined
             }>
             <Link href={`${taskGroupUrlPrefix}/${phase.actionTaskId}`}>
-              {prettyName}
+              {prettyName} task
             </Link>
+            {phase.signoffs && phase.signoffs.length > 0 && (
+              <MouseOverPopover
+                text={
+                  <React.Fragment>
+                    Approved
+                    <InfoOutlinedIcon
+                      fontSize="small"
+                      viewBox="-5 0 30 30"
+                      style={{
+                        position: 'relative',
+                        top: '.35em',
+                      }}
+                    />
+                  </React.Fragment>
+                }
+                fontSize=".80rem"
+                fontWeight={500}
+                position="absolute"
+                popoverContent={
+                  <React.Fragment>
+                    {phase.signoffs.map(signoff => (
+                      <Typography
+                        key={signoff.name}
+                        variant="caption"
+                        display="block">
+                        {`${signoff.completed_by}, ${signoff.name}`}
+                      </Typography>
+                    ))}
+                  </React.Fragment>
+                }
+              />
+            )}
           </StepLabel>
         </Step>
       );
@@ -181,7 +215,9 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
 
   return (
     <React.Fragment>
-      <Stepper alternativeLabel nonLinear={release.allow_phase_skipping}>
+      <Stepper
+        nonLinear={release.allow_phase_skipping}
+        style={{ paddingTop: '40px' }}>
         {release.phases.map((phase, idx) =>
           renderPhase(phase, idx, release.phases, release.allow_phase_skipping)
         )}
