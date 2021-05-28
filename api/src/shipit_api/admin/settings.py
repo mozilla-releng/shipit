@@ -62,8 +62,6 @@ ADMIN_GROUP = [
     "ahalberstadt@mozilla.com",
     "asasaki@mozilla.com",
     "bhearsum@mozilla.com",
-    "cdawson@mozilla.com",
-    "jlorenzo@mozilla.com",
     "jmaher@mozilla.com",
     "mtabara@mozilla.com",
     "sclements@mozilla.com",
@@ -93,11 +91,10 @@ XPI_NORMANDY_PRIVILEGED_GROUP = [
     "jkerim@mozilla.com",
     "mbanner@mozilla.com",
     "mcooper@mozilla.com",
-    "rdalal@mozilla.com",
     "ttran@mozilla.com",
 ]
 
-XPI_SYSTEM_ADMIN_GROUP = ["rdalal@mozilla.com", "mcooper@mozilla.com"]
+XPI_SYSTEM_ADMIN_GROUP = ["mcooper@mozilla.com"]
 
 XPI_MOZILLAONLINE_PRIVILEGED_GROUP = ["bzhao@mozilla.com", "jxia@mozilla.com", "yliu@mozilla.com"]
 XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP = ["awagner@mozilla.com", "mkaply@mozilla.com"]
