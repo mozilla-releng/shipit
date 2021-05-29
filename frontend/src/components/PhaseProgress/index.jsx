@@ -18,6 +18,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Link from '@material-ui/core/Link';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import { makeStyles } from '@material-ui/core/styles';
 import config from '../../config';
 import { schedulePhase, phaseSignOff } from '../api';
 import useAction from '../../hooks/useAction';
@@ -25,7 +26,14 @@ import ReleaseContext from '../../utils/ReleaseContext';
 import { phasePrettyName } from '../text';
 import MouseOverPopover from './MouseOverPopover';
 
+const useStyles = makeStyles({
+  label: {
+    lineHeight: '0.5',
+  },
+});
+
 export default function PhaseProgress({ release, readOnly, xpi }) {
+  const classes = useStyles();
   const { fetchReleases } = useContext(ReleaseContext);
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState({});
@@ -95,6 +103,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
       return (
         <Step key={phase.name} completed={!inProgress}>
           <StepLabel
+            classes={{ label: classes.label }}
             error={taskError}
             StepIconProps={
               inProgress ? { icon: <Spinner loading size={30} /> } : undefined
