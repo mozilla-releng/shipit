@@ -97,11 +97,7 @@ def is_partner_enabled(product, version, min_version=60):
     if product == "firefox":
         firefox_version = FirefoxVersion.parse(version)
         return firefox_version.major_number >= min_version and any(
-            (
-                firefox_version.is_beta and firefox_version.beta_number >= 8,
-                firefox_version.is_release,
-                firefox_version.is_esr,
-            )
+            (firefox_version.is_beta and firefox_version.beta_number >= 8, firefox_version.is_release, firefox_version.is_esr)
         )
 
     return False
@@ -110,12 +106,7 @@ def is_partner_enabled(product, version, min_version=60):
 def is_eme_free_enabled(product, version):
     if product == "firefox":
         firefox_version = FirefoxVersion.parse(version)
-        return any(
-            (
-                firefox_version.is_beta and firefox_version.beta_number >= 8,
-                firefox_version.is_release,
-            )
-        )
+        return any((firefox_version.is_beta and firefox_version.beta_number >= 8, firefox_version.is_release))
 
     return False
 
