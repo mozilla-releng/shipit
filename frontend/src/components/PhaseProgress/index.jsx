@@ -24,7 +24,7 @@ import { schedulePhase, phaseSignOff } from '../api';
 import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
 import { phasePrettyName } from '../text';
-import MouseOverPopover from './MouseOverPopover';
+import MouseOverPopover from '../Shared/MouseOverPopover';
 
 const useStyles = makeStyles({
   label: {
