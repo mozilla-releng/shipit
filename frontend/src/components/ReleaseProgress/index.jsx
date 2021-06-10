@@ -18,6 +18,8 @@ import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
 import { AuthContext } from '../../utils/AuthContext';
 import config from '../../config';
+import { repoUrlBuilder } from '../../utils/helpers';
+import { XPI_MANIFEST_REPO } from '../../utils/constants';
 
 const useStyles = makeStyles(() => ({
   cardActions: {
@@ -90,17 +92,47 @@ export default function ReleaseProgress({
   };
 
   const renderReleaseTitle = (isXPI, release) => {
+    let url = null;
     const trimmedRevision = release.revision.substring(0, 13);
+    const product = config.PRODUCTS.find(
+      product => product.product === release.product
+    );
+    const productBranch =
+      product && product.branches
+        ? product.branches.find(
+            item =>
+              item.branch === release.branch && item.project === release.project
+          )
+        : null;
 
     if (isXPI) {
-      return trimmedRevision;
+      url = repoUrlBuilder(XPI_MANIFEST_REPO, release.revision);
+    } else if (productBranch) {
+      url = repoUrlBuilder(productBranch.repo, release.revision);
     }
 
     return (
-      <Link
-        href={`${config.TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
-        {trimmedRevision}
-      </Link>
+      <React.Fragment>
+        {url ? (
+          <Link target="_blank" href={url}>
+            {trimmedRevision}
+          </Link>
+        ) : (
+          trimmedRevision
+        )}
+
+        {!isXPI && (
+          <span>
+            {' '}
+            .{' '}
+            <Link
+              target="_blank"
+              href={`${config.TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
+              View in Treeherder
+            </Link>
+          </span>
+        )}
+      </React.Fragment>
     );
   };
 
@@ -114,7 +146,7 @@ export default function ReleaseProgress({
         </Typography>
         <Box fontSize=".85rem" fontWeight="fontWeightRegular" display="block">
           Created on {dateCreated.substring(0, dateCreated.length - 18)} (UTC)
-          with revision {renderReleaseTitle(xpi, release)}
+          with {renderReleaseTitle(xpi, release)}
         </Box>
         <PhaseProgress release={release} readOnly={!mutable} xpi={xpi} />
       </CardContent>
