@@ -93,21 +93,29 @@ export default function ReleaseProgress({
 
   const renderReleaseTitle = (isXPI, release) => {
     let url = null;
+    let productBranch = null;
     const trimmedRevision = release.revision.substring(0, 13);
     const product = config.PRODUCTS.find(
       product => product.product === release.product
     );
-    const productBranch =
-      product && product.branches
-        ? product.branches.find(
-            item =>
-              item.branch === release.branch && item.project === release.project
-          )
-        : null;
+
+    if (product && product.branches) {
+      productBranch = product.branches.find(
+        item =>
+          item.branch === release.branch && item.project === release.project
+      );
+    }
+
+    // non-hg or firefox projects are formatted differently in the config files
+    if (!productBranch && product && product.repositories) {
+      productBranch = product.repositories.find(
+        item => item.project === release.product
+      );
+    }
 
     if (isXPI) {
       url = repoUrlBuilder(XPI_MANIFEST_REPO, release.revision);
-    } else if (productBranch) {
+    } else if (productBranch && productBranch.repo) {
       url = repoUrlBuilder(productBranch.repo, release.revision);
     }
 
