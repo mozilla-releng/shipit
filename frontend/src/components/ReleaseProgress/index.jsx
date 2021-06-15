@@ -18,6 +18,7 @@ import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
 import { AuthContext } from '../../utils/AuthContext';
 import config from '../../config';
+import { repoUrlBuilder } from '../../utils/helpers';
 
 const useStyles = makeStyles(() => ({
   cardActions: {
@@ -90,17 +91,55 @@ export default function ReleaseProgress({
   };
 
   const renderReleaseTitle = (isXPI, release) => {
+    let url = null;
+    let productBranch = null;
+    const { PRODUCTS, XPI_MANIFEST, TREEHERDER_URL } = config;
     const trimmedRevision = release.revision.substring(0, 13);
+    const product =
+      PRODUCTS && PRODUCTS.find(product => product.product === release.product);
 
-    if (isXPI) {
-      return trimmedRevision;
+    if (product && product.branches) {
+      productBranch = product.branches.find(
+        item =>
+          item.branch === release.branch && item.project === release.project
+      );
+    }
+
+    // non-hg or firefox projects are formatted differently in the config files
+    if (!productBranch && product && product.repositories) {
+      productBranch = product.repositories.find(
+        item => item.project === release.product
+      );
+    }
+
+    if (isXPI && XPI_MANIFEST.repo) {
+      url = repoUrlBuilder(XPI_MANIFEST.repo, release.revision);
+    } else if (productBranch && productBranch.repo) {
+      url = repoUrlBuilder(productBranch.repo, release.revision);
     }
 
     return (
-      <Link
-        href={`${config.TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
-        {trimmedRevision}
-      </Link>
+      <React.Fragment>
+        {url ? (
+          <Link target="_blank" href={url}>
+            {trimmedRevision}
+          </Link>
+        ) : (
+          trimmedRevision
+        )}
+
+        {!isXPI && TREEHERDER_URL && (
+          <span>
+            {' '}
+            .{' '}
+            <Link
+              target="_blank"
+              href={`${TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
+              View in Treeherder
+            </Link>
+          </span>
+        )}
+      </React.Fragment>
     );
   };
 
@@ -114,7 +153,7 @@ export default function ReleaseProgress({
         </Typography>
         <Box fontSize=".85rem" fontWeight="fontWeightRegular" display="block">
           Created on {dateCreated.substring(0, dateCreated.length - 18)} (UTC)
-          with revision {renderReleaseTitle(xpi, release)}
+          with {renderReleaseTitle(xpi, release)}
         </Box>
         <PhaseProgress release={release} readOnly={!mutable} xpi={xpi} />
       </CardContent>
