@@ -93,10 +93,10 @@ export default function ReleaseProgress({
   const renderReleaseTitle = (isXPI, release) => {
     let url = null;
     let productBranch = null;
+    const { PRODUCTS, XPI_MANIFEST, TREEHERDER_URL } = config;
     const trimmedRevision = release.revision.substring(0, 13);
-    const product = config.PRODUCTS.find(
-      product => product.product === release.product
-    );
+    const product =
+      PRODUCTS && PRODUCTS.find(product => product.product === release.product);
 
     if (product && product.branches) {
       productBranch = product.branches.find(
@@ -112,8 +112,8 @@ export default function ReleaseProgress({
       );
     }
 
-    if (isXPI) {
-      url = repoUrlBuilder(config.XPI_MANIFEST.repo, release.revision);
+    if (isXPI && XPI_MANIFEST.repo) {
+      url = repoUrlBuilder(XPI_MANIFEST.repo, release.revision);
     } else if (productBranch && productBranch.repo) {
       url = repoUrlBuilder(productBranch.repo, release.revision);
     }
@@ -128,13 +128,13 @@ export default function ReleaseProgress({
           trimmedRevision
         )}
 
-        {!isXPI && (
+        {!isXPI && TREEHERDER_URL && (
           <span>
             {' '}
             .{' '}
             <Link
               target="_blank"
-              href={`${config.TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
+              href={`${TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
               View in Treeherder
             </Link>
           </span>
