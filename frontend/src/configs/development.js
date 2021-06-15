@@ -100,7 +100,7 @@ module.exports = {
         {
           prettyName: 'Staging fork',
           project: 'staging-android-components',
-          repo: 'https://github.com/mozilla-releng/staging-android-components/',
+          repo: 'https://github.com/mozilla-releng/staging-android-components',
           enableReleaseEta: false,
         },
       ],
@@ -110,6 +110,7 @@ module.exports = {
   XPI_MANIFEST: {
     branch: 'master',
     owner: 'mozilla-releng',
-    repo: 'staging-xpi-manifest',
+    project: 'staging-xpi-manifest',
+    repo: 'https://github.com/mozilla-releng/staging-xpi-manifest',
   },
 };

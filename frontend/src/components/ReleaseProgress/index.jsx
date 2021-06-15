@@ -19,7 +19,6 @@ import ReleaseContext from '../../utils/ReleaseContext';
 import { AuthContext } from '../../utils/AuthContext';
 import config from '../../config';
 import { repoUrlBuilder } from '../../utils/helpers';
-import { XPI_MANIFEST_REPO } from '../../utils/constants';
 
 const useStyles = makeStyles(() => ({
   cardActions: {
@@ -114,7 +113,7 @@ export default function ReleaseProgress({
     }
 
     if (isXPI) {
-      url = repoUrlBuilder(XPI_MANIFEST_REPO, release.revision);
+      url = repoUrlBuilder(config.XPI_MANIFEST.repo, release.revision);
     } else if (productBranch && productBranch.repo) {
       url = repoUrlBuilder(productBranch.repo, release.revision);
     }
