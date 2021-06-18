@@ -80,7 +80,7 @@ export default function NewXPIRelease() {
     setSelectedXpiRevision('');
     setSelectedXpi(xpi);
     setBuildNumber(0);
-    await fetchXpiCommits(xpi.owner, xpi.project, xpi.branch);
+    await fetchXpiCommits(xpi.owner, xpi.repo, xpi.branch);
   };
 
   const renderXpiSelect = () => {
@@ -132,10 +132,11 @@ export default function NewXPIRelease() {
 
   const handleXpiRevisionInputChange = async revision => {
     setSelectedXpiRevision(revision);
+
     const version = (
       await fetchXpiVersion(
         selectedXpi.owner,
-        selectedXpi.project,
+        selectedXpi.repo,
         selectedXpi.revision,
         selectedXpi.directory
       )
