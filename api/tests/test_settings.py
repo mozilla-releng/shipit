@@ -22,53 +22,63 @@ def test_scopes(monkeypatch):
 
     from shipit_api.admin.settings import (
         AUTH0_AUTH_SCOPES,
-        GROUPS,
-        XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP,
-        XPI_MOZILLAONLINE_PRIVILEGED_GROUP,
-        XPI_PRIVILEGED_ADMIN_GROUP,
-        XPI_PRIVILEGED_BUILD_GROUP,
-        XPI_SYSTEM_ADMIN_GROUP,
+        LDAP_GROUPS,
+        XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP,
+        XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP,
+        XPI_PRIVILEGED_ADMIN_LDAP_GROUP,
+        XPI_PRIVILEGED_BUILD_LDAP_GROUP,
+        XPI_SYSTEM_ADMIN_LDAP_GROUP,
     )
 
-    # make sure the admin group has all scopes
-    assert all([set(GROUPS["admin"]).issubset(entry) for entry in AUTH0_AUTH_SCOPES.values()])
+    # make sure the admin ldap group has all scopes
+    assert all([set(LDAP_GROUPS["admin"]).issubset(entry) for entry in AUTH0_AUTH_SCOPES.values()])
 
-    # github API, for XPI and Fenix groups only
-    github_users = flatten([users for group, users in GROUPS.items() if group.startswith("xpi_") or group.startswith("fenix_")])
-    assert set(github_users).issubset(set(AUTH0_AUTH_SCOPES["project:releng:services/shipit_api/github"]))
+    # github API, for XPI and Fenix ldap groups only
+    github_ldap_groups = flatten(
+        [ldap_groups for ldap_group, ldap_groups in LDAP_GROUPS.items() if ldap_group.startswith("xpi_") or ldap_group.startswith("fenix_")]
+    )
+    assert set(github_ldap_groups).issubset(set(AUTH0_AUTH_SCOPES["project:releng:services/shipit_api/github"]))
 
     # firefox-signoff has no access to TB and XPI
-    firefox_users = GROUPS["firefox-signoff"]
-    tb_users = flatten([users for scope, users in AUTH0_AUTH_SCOPES.items() if "thunderbird" in scope])
-    assert set(firefox_users).isdisjoint(set(tb_users))
-    xpi_users = flatten([users for scope, users in AUTH0_AUTH_SCOPES.items() if "xpi_" in scope])
-    assert set(firefox_users).isdisjoint(set(xpi_users))
+    firefox_ldap_groups = LDAP_GROUPS["firefox-signoff"]
+    tb_ldap_groups = flatten([ldap_groups for scope, ldap_groups in AUTH0_AUTH_SCOPES.items() if "thunderbird" in scope])
+    assert set(firefox_ldap_groups).isdisjoint(set(tb_ldap_groups))
+    xpi_ldap_groups = flatten([ldap_groups for scope, ldap_groups in AUTH0_AUTH_SCOPES.items() if "xpi_" in scope])
+    assert set(firefox_ldap_groups).isdisjoint(set(xpi_ldap_groups))
 
     # thunderbird-signoff has no access to Firefox and XPI
-    tb_users = GROUPS["thunderbird-signoff"]
-    firefox_users = flatten(
-        [users for scope, users in AUTH0_AUTH_SCOPES.items() if "firefox" in scope or "fenix" in scope or "fennec" in scope or "devedition" in scope]
+    tb_ldap_groups = LDAP_GROUPS["thunderbird-signoff"]
+    firefox_ldap_groups = flatten(
+        [
+            ldap_groups
+            for scope, ldap_groups in AUTH0_AUTH_SCOPES.items()
+            if "firefox" in scope or "fenix" in scope or "fennec" in scope or "devedition" in scope
+        ]
     )
-    assert set(firefox_users).isdisjoint(set(tb_users))
+    assert set(firefox_ldap_groups).isdisjoint(set(tb_ldap_groups))
 
-    xpi_users = (
-        XPI_PRIVILEGED_BUILD_GROUP
-        + XPI_PRIVILEGED_ADMIN_GROUP
-        + XPI_SYSTEM_ADMIN_GROUP
-        + XPI_MOZILLAONLINE_PRIVILEGED_GROUP
-        + XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_GROUP
+    xpi_ldap_groups = (
+        XPI_PRIVILEGED_BUILD_LDAP_GROUP
+        + XPI_PRIVILEGED_ADMIN_LDAP_GROUP
+        + XPI_SYSTEM_ADMIN_LDAP_GROUP
+        + XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP
+        + XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP
     )
 
-    # XPI users have no access to Firefox and Thunderbird
-    firefox_users = flatten(
-        [users for scope, users in AUTH0_AUTH_SCOPES.items() if "firefox" in scope or "fenix" in scope or "fennec" in scope or "devedition" in scope]
+    # XPI ldap_groups have no access to Firefox and Thunderbird
+    firefox_ldap_groups = flatten(
+        [
+            ldap_groups
+            for scope, ldap_groups in AUTH0_AUTH_SCOPES.items()
+            if "firefox" in scope or "fenix" in scope or "fennec" in scope or "devedition" in scope
+        ]
     )
-    assert set(firefox_users).isdisjoint(set(xpi_users))
-    tb_users = flatten([users for scope, users in AUTH0_AUTH_SCOPES.items() if "thunderbird" in scope])
-    assert set(xpi_users).isdisjoint(set(tb_users))
+    assert set(firefox_ldap_groups).isdisjoint(set(xpi_ldap_groups))
+    tb_ldap_groups = flatten([ldap_groups for scope, ldap_groups in AUTH0_AUTH_SCOPES.items() if "thunderbird" in scope])
+    assert set(xpi_ldap_groups).isdisjoint(set(tb_ldap_groups))
 
     # xpi_privileged_build has a limited set of scopes
-    scopes = set([scope for scope, users in AUTH0_AUTH_SCOPES.items() if set(XPI_PRIVILEGED_BUILD_GROUP).issubset(set(users))])
+    scopes = set([scope for scope, ldap_groups in AUTH0_AUTH_SCOPES.items() if set(XPI_PRIVILEGED_BUILD_LDAP_GROUP).issubset(set(ldap_groups))])
     expected_scopes = set(
         [
             "project:releng:services/shipit_api/github",

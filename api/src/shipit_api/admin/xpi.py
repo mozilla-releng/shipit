@@ -140,19 +140,20 @@ def phase_signoff(name, phase, body):
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     # Prevent the same user signing off for multiple signoffs
-    who = current_user.get_id()
-    if who in [s.completed_by for s in phase_obj.signoffs]:
-        abort(409, f"Already signed off by {who}")
+    users_ldap = current_user.get_ldap_groups()
+    users_email = current_user.get_email()
+    if users_email in [s.completed_by for s in phase_obj.signoffs]:
+        abort(409, f"Already signed off by {users_email}")
 
     # signoff.permissions corresponds to the group in settings.py
-    groups = current_app.config.get("GROUPS", {})
-    group = groups.get(signoff.permissions, [])
-    if who not in group:
-        abort(401, f"User `{who}` is not in the `{signoff.permissions}` group")
+    ldap_groups = current_app.config.get("LDAP_GROUPS", {})
+    ldap_group = ldap_groups.get(signoff.permissions, [])
+    if not set(users_ldap).intersection(set(ldap_group)):
+        abort(401, f"User `{users_email}` is not in the `{signoff.permissions}`")
 
     signoff.completed = datetime.datetime.utcnow()
     signoff.signed = True
-    signoff.completed_by = who
+    signoff.completed_by = users_email
 
     session.commit()
     signoffs = [s.json for s in phase_obj.signoffs]
@@ -162,7 +163,7 @@ def phase_signoff(name, phase, body):
         schedule_phase(name, phase)
 
     release = phase_obj.release
-    logger.info("Phase %s of %s signed off by %s", phase, release.name, who)
-    notify_via_matrix("xpi", f"Phase {phase} of {release.name} signed off by {who}")
+    logger.info("Phase %s of %s signed off by %s", phase, release.name, users_email)
+    notify_via_matrix("xpi", f"Phase {phase} of {release.name} signed off by {users_email}")
 
     return dict(signoffs=signoffs)
