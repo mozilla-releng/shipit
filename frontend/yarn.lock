@@ -7778,10 +7778,10 @@ react-side-effect@^2.1.0:
   resolved "https://registry.npmjs.org/react-side-effect/-/react-side-effect-2.1.0.tgz"
   integrity sha512-IgmcegOSi5SNX+2Snh1vqmF0Vg/CbkycU9XZbOHJlZ6kMzTmi3yc254oB1WCkgA7OQtIAoLmcSFuHTc/tlcqXg==
 
-react-time-ago@6.2.2:
-  version "6.2.2"
-  resolved "https://registry.yarnpkg.com/react-time-ago/-/react-time-ago-6.2.2.tgz#0dac73632e4e75204eb307193b6d506e584316bb"
-  integrity sha512-8X4GDw3V9sUs4DJtGDkNzasmT2+TPrP911SYlnQpcY8qj4Byk1JwLhgjlhN8zP1ugrTxOUFuEeYi5pZLlYmMpg==
+react-time-ago@6.2.4:
+  version "6.2.4"
+  resolved "https://registry.yarnpkg.com/react-time-ago/-/react-time-ago-6.2.4.tgz#8ce678d2d776af94ff0dc0346c6ab3db65166bf4"
+  integrity sha512-pGFXSJGcn+QQTS42DqBkARX7J/wpFTKEIjVM4UCD1cpKeHFtxmg2Nepehr8vY21j4eyfUMZMcRwUi6pBRcq3Mg==
   dependencies:
     javascript-time-ago "^2.3.3"
     prop-types "^15.7.2"
