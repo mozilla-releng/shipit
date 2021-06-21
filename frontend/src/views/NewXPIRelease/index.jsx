@@ -61,15 +61,15 @@ export default function NewXPIRelease() {
       45
     )}`;
   const init = async () => {
-    const { owner, repo, branch } = config.XPI_MANIFEST;
-    const manifestCommit = await fetchManifestCommit(owner, repo, branch);
+    const { owner, project, branch } = config.XPI_MANIFEST;
+    const manifestCommit = await fetchManifestCommit(owner, project, branch);
     const { revision } = manifestCommit.data;
 
     setSelectedManifestCommit(revision);
     setSelectedXpi('');
     setSelectedXpiRevision('');
     setBuildNumber(0);
-    await fetchXpis(owner, repo, revision);
+    await fetchXpis(owner, project, revision);
   };
 
   useEffect(() => {
@@ -132,6 +132,7 @@ export default function NewXPIRelease() {
 
   const handleXpiRevisionInputChange = async revision => {
     setSelectedXpiRevision(revision);
+
     const version = (
       await fetchXpiVersion(
         selectedXpi.owner,

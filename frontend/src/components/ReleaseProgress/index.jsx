@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Card from '@material-ui/core/Card';
@@ -17,6 +18,7 @@ import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
 import { AuthContext } from '../../utils/AuthContext';
 import config from '../../config';
+import { repoUrlBuilder } from '../../utils/helpers';
 
 const useStyles = makeStyles(() => ({
   cardActions: {
@@ -89,25 +91,70 @@ export default function ReleaseProgress({
   };
 
   const renderReleaseTitle = (isXPI, release) => {
-    if (isXPI) {
-      return release.name;
+    let url = null;
+    let productBranch = null;
+    const { PRODUCTS, XPI_MANIFEST, TREEHERDER_URL } = config;
+    const trimmedRevision = release.revision.substring(0, 13);
+    const product =
+      PRODUCTS && PRODUCTS.find(product => product.product === release.product);
+
+    if (product && product.branches) {
+      productBranch = product.branches.find(
+        item =>
+          item.branch === release.branch && item.project === release.project
+      );
+    }
+
+    // non-hg or firefox projects are formatted differently in the config files
+    if (!productBranch && product && product.repositories) {
+      productBranch = product.repositories.find(
+        item => item.project === release.product
+      );
+    }
+
+    if (isXPI && XPI_MANIFEST.repo) {
+      url = repoUrlBuilder(XPI_MANIFEST.repo, release.revision);
+    } else if (productBranch && productBranch.repo) {
+      url = repoUrlBuilder(productBranch.repo, release.revision);
     }
 
     return (
-      <Link
-        href={`${config.TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
-        {release.name}
-      </Link>
+      <React.Fragment>
+        {url ? (
+          <Link target="_blank" href={url}>
+            {trimmedRevision}
+          </Link>
+        ) : (
+          trimmedRevision
+        )}
+
+        {!isXPI && TREEHERDER_URL && (
+          <span>
+            {' '}
+            .{' '}
+            <Link
+              target="_blank"
+              href={`${TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
+              View in Treeherder
+            </Link>
+          </span>
+        )}
+      </React.Fragment>
     );
   };
+
+  const dateCreated = new Date(release.created).toUTCString();
 
   return (
     <Card key={release.name} style={{ margin: '5px' }}>
       <CardContent>
-        <Typography gutterBottom component="h3" variant="h6">
-          {renderReleaseTitle(xpi, release)}
+        <Typography component="h3" variant="h6">
+          {release.name}
         </Typography>
-
+        <Box fontSize=".85rem" fontWeight="fontWeightRegular" display="block">
+          Created on {dateCreated.substring(0, dateCreated.length - 18)} (UTC)
+          with {renderReleaseTitle(xpi, release)}
+        </Box>
         <PhaseProgress release={release} readOnly={!mutable} xpi={xpi} />
       </CardContent>
       <CardActions className={classes.cardActions}>
