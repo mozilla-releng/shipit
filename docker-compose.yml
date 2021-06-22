@@ -21,7 +21,7 @@ services:
       - HOST=0.0.0.0
       - PORT=8015
       - APP_CHANNEL=development
-      - DATABASE_URL=postgres://shipituser:shipitpassword@db/shipitdb
+      - DATABASE_URL=postgresql://shipituser:shipitpassword@db/shipitdb
       - AUTH_CLIENT_ID=todo
       - AUTH_CLIENT_SECRET=todo
       - AUTH_DOMAIN=auth.mozilla.auth0.com
@@ -57,7 +57,7 @@ services:
       - HOST=0.0.0.0
       - PORT=8016
       - APP_CHANNEL=development
-      - DATABASE_URL=postgres://shipituserreadonly:shipitpasswordreadonly@db/shipitdb
+      - DATABASE_URL=postgresql://shipituserreadonly:shipitpasswordreadonly@db/shipitdb
       - LOG_FORMAT=plain
     depends_on:
       - db

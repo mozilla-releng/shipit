@@ -38,7 +38,7 @@ way to by-pass the need for a pulse queue.
 
 1. ``docker-compose run api bash``
 
-2. ``shipit_rebuild_product_details --database-url="postgres://shipituser:shipitpassword@db/shipitdb" --channel development``
+2. ``shipit_rebuild_product_details --database-url="postgresql://shipituser:shipitpassword@db/shipitdb" --channel development``
 
 3. This will ask you for some GitHub crendentials. You can provide them if you want to update https://github.com/mozilla-releng/product-details. That said, you can also ``Ctrl+C`` and inspect the content of `/tmp/product-details` in the docker container. Changes are done here before they pushed to the git repo.
 

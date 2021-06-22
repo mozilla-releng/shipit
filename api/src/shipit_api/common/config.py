@@ -44,17 +44,17 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # day).
 # We could have used the in-tree version, but there can be race conditions,
 # e.g. version bumped, but still no builds available.
-FIREFOX_NIGHTLY = "90.0a1"
+FIREFOX_NIGHTLY = "91.0a1"
 
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
-LAST_SOFTFREEZE_DATE = "2021-04-15"
-LAST_MERGE_DATE = "2021-04-19"
-LAST_RELEASE_DATE = "2021-04-19"
-NEXT_SOFTFREEZE_DATE = "2021-05-27"
-NEXT_MERGE_DATE = "2021-05-31"
-NEXT_RELEASE_DATE = "2021-06-01"
+LAST_SOFTFREEZE_DATE = "2021-05-27"
+LAST_MERGE_DATE = "2021-05-31"
+LAST_RELEASE_DATE = "2021-06-01"
+NEXT_SOFTFREEZE_DATE = "2021-07-08"
+NEXT_MERGE_DATE = "2021-07-12"
+NEXT_RELEASE_DATE = "2021-07-13"
 
 # Fennec Nightly users have been migrated to Fenix, thus we don't need to bump
 # the following numbers anymore.
@@ -70,7 +70,7 @@ IOS_VERSION = "14.1"
 
 # Thunderbird configs
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
-LATEST_THUNDERBIRD_NIGHTLY_VERSION = "90.0a1"
+LATEST_THUNDERBIRD_NIGHTLY_VERSION = "91.0a1"
 # TODO: Need to update this every cycle
 THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr78"
 THUNDERBIRD_BETA_BRANCH = "releases/comm-beta"
