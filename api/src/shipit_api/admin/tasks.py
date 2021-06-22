@@ -49,7 +49,10 @@ def find_decision_task_id(repo_url, project, revision, product):
 
     decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.decision"
     index = get_service("index")
-    return index.findTask(decision_task_route)["taskId"]
+    try:
+        return index.findTask(decision_task_route)["taskId"]
+    except Exception as exc:
+        raise Exception(f"route {decision_task_route} exception {exc}")
 
 
 def fetch_artifact(task_id, artifact):

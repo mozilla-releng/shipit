@@ -13,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from taskcluster.exceptions import TaskclusterRestFailure
 from werkzeug.exceptions import BadRequest
 
-from backend_common.auth import auth
+from backend_common.auth import AuthType, auth
 from backend_common.taskcluster import get_root_url, get_service
 from shipit_api.admin.release import Product, bump_version, get_locales, is_eme_free_enabled, is_partner_enabled, product_to_appname
 from shipit_api.admin.tasks import (
@@ -64,7 +64,7 @@ def add_release(body):
     branch = body["branch"]
 
     product_disabled = branch in get_disabled_products().get(product, [])
-    if product_disabled:
+    if current_user.type == AuthType.TASKCLUSTER and product_disabled:
         abort(401, "Taskcluster based submissions are disabled")
 
     session = current_app.db.session
@@ -144,7 +144,7 @@ def do_schedule_phase(session, phase):
 
     phase.submitted = True
     completed = datetime.datetime.utcnow()
-    phase.completed_by = current_user.get_email()
+    phase.completed_by = current_user.get_id()
     phase.completed = completed
     # If the previous phases are not submitted, mark them as submitted and they
     # will be calculated as skipped because they don't have taskId associated
@@ -153,7 +153,7 @@ def do_schedule_phase(session, phase):
             break
         if not ph.submitted:
             ph.submitted = True
-            ph.completed_by = current_user.get_email()
+            ph.completed_by = current_user.get_id()
             ph.completed = completed
 
     session.commit()
@@ -279,7 +279,7 @@ def phase_signoff(name, phase, body):
     phase_obj = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
 
     users_ldap = current_user.get_ldap_groups()
-    users_email = current_user.get_email()
+    users_email = current_user.get_id()
     if users_email in [s.completed_by for s in phase_obj.signoffs]:
         abort(409, f"Already signed off by {users_email}")
 

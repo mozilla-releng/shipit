@@ -13,6 +13,7 @@ import flask
 import flask_login
 import flask_oidc
 import requests
+import taskcluster.utils
 from dockerflow.flask import checks
 
 from backend_common.dockerflow import dockerflow
@@ -33,6 +34,7 @@ UNAUTHORIZED_JSON = {
 class AuthType(enum.Enum):
     NONE = None
     ANONYMOUS = "anonymous"
+    TASKCLUSTER = "taskcluster"
     AUTH0 = "auth0"
 
 
@@ -42,7 +44,7 @@ class BaseUser(object):
     type = AuthType.NONE
 
     def __eq__(self, other):
-        return isinstance(other, BaseUser) and self.get_email() == other.get_email()
+        return isinstance(other, BaseUser) and self.get_id() == other.get_id()
 
     @property
     def is_authenticated(self):
@@ -66,12 +68,8 @@ class BaseUser(object):
     def get_ldap_groups(self):
         raise NotImplementedError
 
-    def get_email(self):
-        raise NotImplementedError
-
-    # Flask internals is looking for get_id()
     def get_id(self):
-        return self.get_email()
+        raise NotImplementedError
 
     def has_permissions(self, permissions):
 
@@ -114,8 +112,53 @@ class AnonymousUser(BaseUser):
     def get_ldap_groups(self):
         return "anonymous:"
 
-    def get_email(self):
+    def get_id(self):
         return "anonymous:"
+
+
+# We user TaskclusterUser for scriptworker actions (ship method for xpi manifest)
+class TaskclusterUser(BaseUser):
+
+    type = AuthType.TASKCLUSTER
+
+    def __init__(self, credentials):
+        if not isinstance(credentials, dict):
+            raise Exception("credentials should be a dict")
+
+        if "clientId" not in credentials:
+            raise Exception(f"credentials should contain clientId, {credentials}")
+
+        if not isinstance(credentials["clientId"], str):
+            raise Exception('credentials["clientId"] should be a string')
+
+        if "scopes" not in credentials:
+            raise Exception("credentials should contain scopes")
+
+        if not isinstance(credentials["scopes"], list):
+            raise Exception('credentials["scopes"] should be a list')
+
+        self.credentials = credentials
+
+        logger.info("Init user %s", self.get_id())
+
+    def get_id(self):
+        return self.credentials["clientId"]
+
+    def get_permissions(self):
+        return self.credentials["scopes"]
+
+    def has_permissions(self, permissions):
+        """
+        Check user has some required permissions
+        Using Taskcluster comparison algorithm
+        """
+        if not isinstance(permissions, (tuple, list)):
+            permissions = [permissions]
+
+        if not isinstance(permissions[0], (tuple, list)):
+            permissions = [permissions]
+
+        return taskcluster.utils.scopeMatch(self.get_permissions(), permissions)
 
 
 class Auth0User(BaseUser):
@@ -135,9 +178,9 @@ class Auth0User(BaseUser):
         self.token = token
         self.userinfo = userinfo
 
-        logger.info("Init user %s", self.get_email())
+        logger.info("Init user %s", self.get_id())
 
-    def get_email(self):
+    def get_id(self):
         return self.userinfo["email"]
 
     def get_ldap_groups(self):
@@ -179,7 +222,7 @@ class Auth(object):
 
         with flask.current_app.app_context():
             if not flask_login.current_user.has_permissions(permissions):
-                users_email = flask_login.current_user.get_email()
+                users_email = flask_login.current_user.get_id()
                 user_permissions = flask_login.current_user.get_permissions()
                 diff = " OR ".join([", ".join(set(p).difference(user_permissions)) for p in permissions])
                 logger.info("User %s misses some permissions: %s", users_email, diff)
@@ -211,11 +254,45 @@ class Auth(object):
 
 auth0 = flask_oidc.OpenIDConnect()
 auth = Auth(anonymous_user=AnonymousUser)
+NO_AUTH = object()
 
 
-@auth.login_manager.request_loader
-def parse_header(request):
-    """Parse header and try to authenticate"""
+def parse_header_taskcluster(request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        auth_header = request.headers.get("Authentication")
+    if not auth_header:
+        return NO_AUTH
+    if not auth_header.startswith("Hawk"):
+        return NO_AUTH
+
+    # Get Endpoint configuration
+    if ":" in request.host:
+        host, port = request.host.split(":")
+    else:
+        host = request.host
+        port = request.environ.get("HTTP_X_FORWARDED_PORT")
+        if port is None:
+            port = request.scheme == "https" and 443 or 80
+    method = request.method.lower()
+
+    # Build taskcluster payload
+    payload = {"resource": request.path, "method": method, "host": host, "port": int(port), "authorization": auth_header}
+
+    # Auth with taskcluster
+    auth = get_service("auth")
+    try:
+        resp = auth.authenticateHawk(payload)
+        if not resp.get("status") == "auth-success":
+            raise Exception("Taskcluster rejected the authentication")
+    except Exception as e:
+        logger.info("Taskcluster auth error for payload %s: %s", payload, e)
+        return NO_AUTH
+
+    return TaskclusterUser(resp)
+
+
+def parse_header_auth0(request):
     if "access_token" in request.form:
         token = request.form["access_token"]
     elif "access_token" in request.args:
@@ -223,12 +300,12 @@ def parse_header(request):
     else:
         auth = request.headers.get("Authorization")
         if not auth:
-            return None
+            return NO_AUTH
 
         parts = auth.split()
 
         if parts[0].lower() != "bearer" or len(parts) == 1 or len(parts) > 2:
-            return None
+            return NO_AUTH
 
         token = parts[1]
 
@@ -240,11 +317,23 @@ def parse_header(request):
 
     # Because auth0 returns http 200 even if the token is invalid.
     if response.content == b"Unauthorized" or not response.ok:
-        return None
+        return NO_AUTH
 
     userinfo = json.loads(str(response.content, "utf-8"))
 
     return Auth0User(token, userinfo)
+
+
+@auth.login_manager.request_loader
+def parse_header(request):
+    """Parse header and try to authenticate"""
+    user = parse_header_auth0(request)
+    if user != NO_AUTH:
+        return user
+
+    user = parse_header_taskcluster(request)
+    if user != NO_AUTH:
+        return user
 
 
 def get_permissions():
