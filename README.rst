@@ -12,7 +12,7 @@ First setup
 
 2. Go to https://localhost:8015 (the API endpoint), https://localhost:8010 (the frontend one), and https://localhost:8016 (the public API one) and accept the TLS security warning (untrusted certificate). If you don't do so on all 3 ports, you may end up with the API that drops request to the API because of `CORS <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`__.
 
-3. Stop the docker containers!
+3. Stop the docker containers.
 
 4. Install ``taskcluster`` mozilla's task execution framework. Get the latest `Taskcluster shell client here <https://github.com/taskcluster/taskcluster/tree/main/clients/client-shell#readme>`__
 
