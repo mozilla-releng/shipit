@@ -71,6 +71,7 @@ module.exports = {
   XPI_MANIFEST: {
     branch: 'master',
     owner: 'mozilla-releng',
-    repo: 'staging-xpi-manifest',
+    project: 'staging-xpi-manifest',
+    repo: 'https://github.com/mozilla-releng/staging-xpi-manifest',
   },
 };

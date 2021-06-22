@@ -276,7 +276,7 @@ components:
           description: Human readable signoff name
         description:
           type: string
-          description: Human readable explpanation of the signogg
+          description: Human readable explanation of the signoff
         signed:
           type: boolean
           description: Is the signoff signed off
@@ -286,7 +286,7 @@ components:
           description: Permision required to sign the signoff
         completed_by:
           type: string
-          description: Person who signed off (Auth0 ID)
+          description: Person who signed off (Auth0 ID - email)
           default: ''
         completed:
           type: string

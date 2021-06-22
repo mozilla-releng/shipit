@@ -472,12 +472,12 @@ SIGNOFFS = {
     #             {
     #                 'name': '[relman] Ship Fennec',
     #                 'description': 'Publish Firefox for Android to Play Store',
-    #                 'permissions': 'firefox-signoff',  # a group from GROUPS in settings.py
+    #                 'permissions': 'firefox-signoff',  # an ldap group from LDAP_GROUPS in settings.py
     #             },
     #             {
     #                 'name': '[releng] Ship Fennec',
     #                 'description': 'Publish Firefox for Android to Play Store',
-    #                 'permissions': 'admin',  # a group from GROUPS in settings.py
+    #                 'permissions': 'admin',  # an ldap group from LDAP_GROUPS in settings.py
     #             },
     #         ],
     #     },
