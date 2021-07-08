@@ -124,7 +124,7 @@ def add_release(body):
     return release.json, 201
 
 
-def do_schedule_phase(session, phase):
+def do_schedule_phase(session, phase, additional_shipit_emails=[]):
     if phase.submitted:
         abort(409, "Already submitted!")
 
@@ -136,6 +136,9 @@ def do_schedule_phase(session, phase):
     hooks = get_service("hooks")
     client_id = hooks.options["credentials"]["clientId"].decode("utf-8")
     extra_context = {"clientId": client_id}
+    if len(additional_shipit_emails):
+        extra_context.update({ "additional_shipit_emails": additional_shipit_emails })
+
     try:
         result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], rendered_hook_payload(phase, extra_context=extra_context))
         phase.task_id = result["status"]["taskId"]

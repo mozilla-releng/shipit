@@ -35,6 +35,7 @@ def add_release(body):
     project = current_app.config.get("XPI_MANIFEST_REPO")
     release = XPIRelease(revision=body["revision"], xpi=xpi, build_number=body["build_number"], status="scheduled", xpi_type=xpi_type, project=project)
     try:
+        # add "additional_shipit_emails": [] to common_input
         common_input = {"build_number": release.build_number, "xpi_name": release.xpi_name, "revision": release.xpi_revision, "version": release.xpi_version}
         release.phases = generate_phases(release, common_input, verify_supported_flavors=False)
         session.add(release)
@@ -89,11 +90,22 @@ def schedule_phase(name, phase):
     if not current_user.has_permissions(required_permission):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+    additional_shipit_emails = []
+    # Get email for all signoffs from previous phases and phase scheduler
+    # query release and get all signoffs from XPISignoff and completed_by from XPIRelease
+    # 
+    phases = session.query(XPIPhase).filter(XPIRelease.id == XPIPhase.release_id).filter(XPIRelease.name == name).filter(XPIPhase.completed_by != None).all()
+    if len(phases):
+        for phase in phases:
+            additional_shipit_emails.append(phase.completed_by)
+            additional_shipit_emails = additional_shipit_emails + [signoff.completed_by for signoff in phase.signoffs if signoff.completed_by != None]
 
-    phase = do_schedule_phase(session, phase)
-    url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{phase.task_id}")
-    logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
-    notify_via_matrix("xpi", f"Phase {phase.name} of {phase.release.name} started by {phase.completed_by}. - {url}")
+    additional_shipit_emails = list(set(additional_shipit_emails))
+    logger.info(additional_shipit_emails)
+    # phase = do_schedule_phase(session, phase, addition_shipit_emails)
+    # url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{phase.task_id}")
+    # logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
+    # notify_via_matrix("xpi", f"Phase {phase.name} of {phase.release.name} started by {phase.completed_by}. - {url}")
     return phase.json
 
 
