@@ -112,7 +112,7 @@ def render_action_hook(payload, context, delete_params=[]):
     return rendered_payload
 
 
-def rendered_hook_payload(phase, extra_context={}):
+def rendered_hook_payload(phase, extra_context={}, additional_shipit_emails=[]):
     context = phase.context_json
     previous_graph_ids = context["input"]["previous_graph_ids"]
     # The first ID is always the decision task ID. We need to update the
@@ -126,6 +126,8 @@ def rendered_hook_payload(phase, extra_context={}):
     # filter it out
     resolved_previous_graph_ids = filter(None, resolved_previous_graph_ids)
     context["input"]["previous_graph_ids"] = list(resolved_previous_graph_ids)
+    context["input"]["additional_shipit_emails"] = additional_shipit_emails
+
     if extra_context:
         context.update(extra_context)
     return render_action_hook(phase.task_json["hook_payload"], context)

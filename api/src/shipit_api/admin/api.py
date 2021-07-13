@@ -136,11 +136,9 @@ def do_schedule_phase(session, phase, additional_shipit_emails=[]):
     hooks = get_service("hooks")
     client_id = hooks.options["credentials"]["clientId"].decode("utf-8")
     extra_context = {"clientId": client_id}
-    if len(additional_shipit_emails):
-        extra_context.update({ "additional_shipit_emails": additional_shipit_emails })
 
     try:
-        result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], rendered_hook_payload(phase, extra_context=extra_context))
+        result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], rendered_hook_payload(phase, extra_context=extra_context, additional_shipit_emails=additional_shipit_emails))
         phase.task_id = result["status"]["taskId"]
     except TaskclusterRestFailure as e:
         abort(400, str(e))
