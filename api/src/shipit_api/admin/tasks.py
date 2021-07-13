@@ -126,7 +126,9 @@ def rendered_hook_payload(phase, extra_context={}, additional_shipit_emails=[]):
     # filter it out
     resolved_previous_graph_ids = filter(None, resolved_previous_graph_ids)
     context["input"]["previous_graph_ids"] = list(resolved_previous_graph_ids)
-    context["input"]["additional_shipit_emails"] = additional_shipit_emails
+
+    if len(additional_shipit_emails):
+        context["input"]["additional_shipit_emails"] = additional_shipit_emails
 
     if extra_context:
         context.update(extra_context)

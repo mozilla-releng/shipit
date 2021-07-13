@@ -138,7 +138,9 @@ def do_schedule_phase(session, phase, additional_shipit_emails=[]):
     extra_context = {"clientId": client_id}
 
     try:
-        result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], rendered_hook_payload(phase, extra_context=extra_context, additional_shipit_emails=additional_shipit_emails))
+        result = hooks.triggerHook(
+            hook["hook_group_id"], hook["hook_id"], rendered_hook_payload(phase, extra_context=extra_context, additional_shipit_emails=additional_shipit_emails)
+        )
         phase.task_id = result["status"]["taskId"]
     except TaskclusterRestFailure as e:
         abort(400, str(e))
