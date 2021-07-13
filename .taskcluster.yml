@@ -7,7 +7,7 @@ tasks:
     - $let:
           taskgraph:
               branch: taskgraph
-              revision: 4a40baa4b47e49ce03f73b2708461ff9395866b3
+              revision: 81f2a1a09e9b0fc1b6c66fd452e065440793c175
               repository:
                   name: shipit
                   description: Shipit
@@ -198,7 +198,7 @@ tasks:
                               chainOfTrust: true
                           # Note: This task is built server side without the context or tooling that
                           # exist in tree so we must hard code the hash
-                          image: mozillareleases/taskgraph:decision-21bef1bc0f11e62c7a23384584f9f8f0d96e95eef192e5bb599fc82ba55c81a7@sha256:d29af306b09cd00a63f982e8caeb53dbec7efd7bb3ae64ce3cef9cd889b750e6
+                          image: mozillareleases/taskgraph:decision-cf37a916268ac8d3fead0a9e4c8e1075328c98d65e0b93a9cfbafe7ea2d4ad83@sha256:ed00d6fa2e8265e165f0f842dba1448fee718b9cc3263cdea4f44cbe0e7b9431
                           maxRunTime: 1800
 
                           command:
