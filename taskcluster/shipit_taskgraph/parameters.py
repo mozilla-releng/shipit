@@ -15,7 +15,7 @@ from voluptuous import (
 DEPLOYMENT_BRANCHES = ("dev", "production")
 
 shipit_schema = {
-    Optional("deployment_branch"): Any(basestring, None),
+    Optional("deployment_branch"): Any(str, None),
     Optional("deploy"): Any(True, False, None),
 }
 
