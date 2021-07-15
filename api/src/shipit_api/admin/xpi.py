@@ -80,19 +80,19 @@ def get_phase(name, phase):
 
 
 def schedule_phase(name, phase):
-    additional_shipit_emails = []
+    additional_shipit_emails = set()
     phase_to_schedule = None
     session = current_app.db.session
     phases = session.query(XPIPhase).filter(XPIRelease.id == XPIPhase.release_id).filter(XPIRelease.name == name).all()
 
     # Get email for all signoffs from previous phases and phase scheduler
-    if len(phases):
+    if phases:
         for _phase in phases:
             if _phase.name == phase:
                 phase_to_schedule = _phase
             if _phase.completed_by is not None:
-                additional_shipit_emails.append(_phase.completed_by)
-            additional_shipit_emails = additional_shipit_emails + [signoff.completed_by for signoff in _phase.signoffs if signoff.completed_by is not None]
+                additional_shipit_emails.add(_phase.completed_by)
+            additional_shipit_emails.update({signoff.completed_by for signoff in _phase.signoffs if signoff.completed_by is not None})
 
     if not phase_to_schedule:
         abort(404, f"phase {phase} not found")
@@ -105,7 +105,7 @@ def schedule_phase(name, phase):
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     # remove duplicates
-    additional_shipit_emails = list(set(additional_shipit_emails))
+    additional_shipit_emails = list(additional_shipit_emails)
     scheduled_phase = do_schedule_phase(session, phase_to_schedule, additional_shipit_emails)
     url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{scheduled_phase.task_id}")
     logger.info("Phase %s of %s started by %s. - %s", scheduled_phase.name, scheduled_phase.release.name, scheduled_phase.completed_by, url)
