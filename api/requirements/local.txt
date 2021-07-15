@@ -5,17 +5,333 @@
 #
 #    pip-compile-multi
 #
--r test.txt
+aioamqp==0.14.0
+    # via -r base.in
+aiodns==3.0.0
+    # via aiohttp
+aiohttp[speedups]==3.7.4.post0
+    # via
+    #   -r base.in
+    #   aioresponses
+    #   taskcluster
+aioresponses==0.7.2
+    # via -r test.in
+alembic==1.6.2
+    # via flask-migrate
+amqp==5.0.6
+    # via kombu
+appdirs==1.4.4
+    # via
+    #   black
+    #   virtualenv
+arrow==1.1.0
+    # via -r base.in
+async-timeout==3.0.1
+    # via
+    #   aiohttp
+    #   taskcluster
+attrs==21.2.0
+    # via
+    #   aiohttp
+    #   jsonschema
+    #   mozilla-version
+    #   pytest
+backoff==1.10.0
+    # via -r base.in
+black==21.5b1
+    # via -r test.in
+blinker==1.4
+    # via
+    #   -r base.in
+    #   sentry-sdk
+brotlipy==0.7.0
+    # via aiohttp
+build==0.3.1.post1
+    # via check-manifest
+cchardet==2.1.7
+    # via aiohttp
+certifi==2020.12.5
+    # via
+    #   requests
+    #   sentry-sdk
+cffi==1.14.5
+    # via
+    #   brotlipy
+    #   pycares
+chardet==4.0.0
+    # via
+    #   aiohttp
+    #   requests
+check-manifest==0.46
+    # via -r test.in
+click==8.0.1
+    # via
+    #   black
+    #   clickclick
+    #   flask
+    #   pip-compile-multi
+    #   pip-tools
+clickclick==20.10.2
+    # via connexion
+connexion[swagger-ui]==2.7.0
+    # via -r public.in
+coverage[toml]==5.5
+    # via
+    #   -r test.in
+    #   pytest-cov
 distlib==0.3.1
     # via virtualenv
+dockerflow==2020.10.0
+    # via -r public.in
+dpath==2.0.1
+    # via -r test.in
 filelock==3.0.12
     # via
     #   tox
     #   virtualenv
-tox==3.23.1
-    # via -r requirements/local.in
+flake8==3.9.2
+    # via -r test.in
+flask==2.0.0
+    # via
+    #   -r public.in
+    #   connexion
+    #   flask-cors
+    #   flask-login
+    #   flask-migrate
+    #   flask-oidc
+    #   flask-sqlalchemy
+    #   sentry-sdk
+flask-cors==3.0.10
+    # via -r public.in
+flask-login==0.5.0
+    # via -r base.in
+flask-migrate==3.0.0
+    # via -r public.in
+flask-oidc==1.4.0
+    # via -r base.in
+flask-sqlalchemy==2.5.1
+    # via flask-migrate
+flask-talisman==0.7.0
+    # via -r public.in
+future==0.18.2
+    # via mozilla-version
+greenlet==1.1.0
+    # via sqlalchemy
+gunicorn==20.1.0
+    # via
+    #   -r base.in
+    #   -r public.in
+httplib2==0.19.1
+    # via oauth2client
+idna==2.10
+    # via
+    #   requests
+    #   yarl
+inflection==0.5.1
+    # via connexion
+iniconfig==1.1.1
+    # via pytest
+isodate==0.6.0
+    # via openapi-schema-validator
+isort==5.8.0
+    # via -r test.in
+itsdangerous==2.0.1
+    # via
+    #   flask
+    #   flask-oidc
+jinja2==3.0.1
+    # via
+    #   flask
+    #   swagger-ui-bundle
+json-e==4.4.1
+    # via -r base.in
+jsonschema==3.2.0
+    # via
+    #   connexion
+    #   openapi-schema-validator
+    #   openapi-spec-validator
+kombu==5.0.2
+    # via -r base.in
+mako==1.1.4
+    # via alembic
+markupsafe==2.0.1
+    # via
+    #   jinja2
+    #   mako
+mccabe==0.6.1
+    # via flake8
+mohawk==1.1.0
+    # via
+    #   -r base.in
+    #   taskcluster
+mozilla-version==0.5.3
+    # via -r public.in
+multidict==5.1.0
+    # via
+    #   aiohttp
+    #   yarl
+mypy==0.812
+    # via -r base.in
+mypy-extensions==0.4.3
+    # via
+    #   -r base.in
+    #   black
+    #   mypy
+oauth2client==4.1.3
+    # via flask-oidc
+openapi-schema-validator==0.1.5
+    # via openapi-spec-validator
+openapi-spec-validator==0.3.1
+    # via
+    #   -r test.in
+    #   connexion
+oyaml==1.0
+    # via -r test.in
+packaging==20.9
+    # via
+    #   build
+    #   pytest
+    #   tox
+pamqp==2.3.0
+    # via aioamqp
+pathspec==0.8.1
+    # via black
+pep517==0.10.0
+    # via
+    #   build
+    #   pip-tools
+pip-compile-multi==2.4.1
+    # via -r test.in
+pip-tools==6.1.0
+    # via pip-compile-multi
+pluggy==0.13.1
+    # via
+    #   pytest
+    #   tox
+psycopg2==2.8.6
+    # via
+    #   -r base.in
+    #   -r public.in
+py==1.10.0
+    # via
+    #   pytest
+    #   tox
+pyasn1==0.4.8
+    # via
+    #   oauth2client
+    #   pyasn1-modules
+    #   rsa
+pyasn1-modules==0.2.8
+    # via oauth2client
+pycares==4.0.0
+    # via aiodns
+pycodestyle==2.7.0
+    # via flake8
+pycparser==2.20
+    # via cffi
+pyflakes==2.3.1
+    # via flake8
+pyparsing==2.4.7
+    # via
+    #   httplib2
+    #   packaging
+pyrsistent==0.17.3
+    # via jsonschema
+pytest==6.2.4
+    # via
+    #   -r test.in
+    #   pytest-asyncio
+    #   pytest-cov
+pytest-asyncio==0.15.1
+    # via -r test.in
+pytest-cov==2.12.0
+    # via -r test.in
+python-dateutil==2.8.1
+    # via
+    #   alembic
+    #   arrow
+python-decouple==3.4
+    # via -r public.in
+python-editor==1.0.4
+    # via alembic
+pyyaml==5.4.1
+    # via
+    #   -r base.in
+    #   clickclick
+    #   connexion
+    #   openapi-spec-validator
+    #   oyaml
+regex==2021.4.4
+    # via black
+requests==2.25.1
+    # via
+    #   connexion
+    #   taskcluster
+rsa==4.7.2
+    # via oauth2client
+sentry-sdk[flask]==1.1.0
+    # via -r public.in
+six==1.16.0
+    # via
+    #   flask-cors
+    #   flask-oidc
+    #   flask-talisman
+    #   isodate
+    #   jsonschema
+    #   mohawk
+    #   oauth2client
+    #   openapi-schema-validator
+    #   openapi-spec-validator
+    #   python-dateutil
+    #   taskcluster
+    #   tox
+    #   virtualenv
+slugid==2.0.0
+    # via
+    #   -r public.in
+    #   taskcluster
+sqlalchemy==1.4.15
+    # via
+    #   -r public.in
+    #   alembic
+    #   flask-sqlalchemy
+swagger-ui-bundle==0.0.8
+    # via connexion
+taskcluster==43.2.0
+    # via -r base.in
+taskcluster-urls==13.0.1
+    # via taskcluster
+toml==0.10.2
+    # via
+    #   black
+    #   build
+    #   check-manifest
+    #   coverage
+    #   pep517
+    #   pytest
+    #   tox
+toposort==1.6
+    # via pip-compile-multi
+tox==3.24.0
+    # via -r local.in
+typed-ast==1.4.3
+    # via mypy
+typing-extensions==3.10.0.0
+    # via
+    #   aiohttp
+    #   mypy
+urllib3==1.26.4
+    # via
+    #   requests
+    #   sentry-sdk
+vine==5.0.0
+    # via amqp
 virtualenv==20.4.6
     # via tox
+werkzeug==2.0.1
+    # via flask
+yarl==1.6.3
+    # via aiohttp
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
