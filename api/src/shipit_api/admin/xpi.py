@@ -9,7 +9,7 @@ from taskcluster.exceptions import TaskclusterRestFailure
 from werkzeug.exceptions import BadRequest
 
 from backend_common.taskcluster import get_root_url
-from shipit_api.admin.api import do_schedule_phase, notify_via_matrix
+from shipit_api.admin.api import do_schedule_phase, get_signoff_emails, notify_via_matrix
 from shipit_api.admin.github import get_xpi_type
 from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases
 from shipit_api.common.config import SCOPE_PREFIX
@@ -80,23 +80,17 @@ def get_phase(name, phase):
 
 
 def schedule_phase(name, phase):
-    additional_shipit_emails = set()
-    phase_to_schedule = None
     session = current_app.db.session
     phases = session.query(XPIPhase).filter(XPIRelease.id == XPIPhase.release_id).filter(XPIRelease.name == name).all()
+    phase_to_schedule = list(filter(lambda _phase: _phase.name == phase, phases))
 
     # Get email for all signoffs from previous phases and phase scheduler
-    if phases:
-        for _phase in phases:
-            if _phase.name == phase:
-                phase_to_schedule = _phase
-            if _phase.completed_by is not None:
-                additional_shipit_emails.add(_phase.completed_by)
-            additional_shipit_emails.update({signoff.completed_by for signoff in _phase.signoffs if signoff.completed_by is not None})
+    additional_shipit_emails = get_signoff_emails(phases)
 
     if not phase_to_schedule:
         abort(404, f"phase {phase} not found")
 
+    phase_to_schedule = phase_to_schedule[0]
     # we must require scope which depends on XPI type
     xpi_type = _xpi_type(phase_to_schedule.release.revision, phase_to_schedule.release.xpi_name)
     required_permission = f"{SCOPE_PREFIX}/schedule_phase/xpi/{xpi_type}/{phase_to_schedule.name}"
@@ -104,8 +98,6 @@ def schedule_phase(name, phase):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
-    # remove duplicates
-    additional_shipit_emails = list(additional_shipit_emails)
     scheduled_phase = do_schedule_phase(session, phase_to_schedule, additional_shipit_emails)
     url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{scheduled_phase.task_id}")
     logger.info("Phase %s of %s started by %s. - %s", scheduled_phase.name, scheduled_phase.release.name, scheduled_phase.completed_by, url)

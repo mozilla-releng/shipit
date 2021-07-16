@@ -358,3 +358,14 @@ def _suggest_partials(product, branch, max_partials=3):
             "locales": get_locales(f"{HG_PREFIX}/{release['branch']}", release["revision"], product_to_appname(product)),
         }
     return suggested_partials
+
+
+def get_signoff_emails(phases):
+    additional_shipit_emails = set()
+    if phases:
+        for _phase in phases:
+            if _phase.completed_by is not None:
+                additional_shipit_emails.add(_phase.completed_by)
+            additional_shipit_emails.update({signoff.completed_by for signoff in _phase.signoffs if signoff.completed_by is not None})
+
+    return list(additional_shipit_emails)

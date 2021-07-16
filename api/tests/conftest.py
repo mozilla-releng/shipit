@@ -8,6 +8,7 @@ import os
 import pytest
 
 import backend_common
+from shipit_api.common.models import XPI, XPIRelease
 
 
 @pytest.fixture(scope="session")
@@ -33,3 +34,22 @@ def app():
     with app.app_context():
         backend_common.testing.configure_app(app)
         yield app
+
+
+def mock_generate_phases(release):
+    phases = []
+    for phase in ["build", "promote", "ship"]:
+        phase_obj = release.phase_class(name=phase, task_id="", task={}, context={}, completed_by=None)
+        phase_obj.signoffs = release.phase_signoffs(phase)
+        phases.append(phase_obj)
+    return phases
+
+
+@pytest.fixture
+def test_xpi_release():
+    xpi = XPI(name="staging-public", revision="2c91fa1f75a1e0ff8b16055b944fe1d2fe10175", version="1.0.0")
+    release = XPIRelease(
+        build_number=5, revision="be8a48ca7a82c79cefc8ac10dee182005cdbd3c7", status="scheduled", xpi_type="addon-type", project="staging-xpi-manifest", xpi=xpi
+    )
+    release.phases = mock_generate_phases(release)
+    return release
