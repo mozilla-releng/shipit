@@ -74,7 +74,7 @@ markupsafe==2.0.1
     # via
     #   jinja2
     #   mako
-mozilla-version==0.5.3
+mozilla-version==0.5.4
     # via -r requirements/public.in
 openapi-schema-validator==0.1.5
     # via openapi-spec-validator
