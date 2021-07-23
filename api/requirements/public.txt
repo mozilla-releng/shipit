@@ -43,7 +43,7 @@ flask-migrate==3.0.0
     # via -r public.in
 flask-sqlalchemy==2.5.1
     # via flask-migrate
-flask-talisman==0.7.0
+flask_talisman==0.8.1
     # via -r public.in
 future==0.18.2
     # via mozilla-version
