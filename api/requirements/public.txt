@@ -116,7 +116,7 @@ sqlalchemy==1.4.15
     #   flask-sqlalchemy
 swagger-ui-bundle==0.0.8
     # via connexion
-urllib3==1.26.4
+urllib3==1.26.5
     # via
     #   requests
     #   sentry-sdk
