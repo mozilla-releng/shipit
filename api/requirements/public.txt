@@ -29,7 +29,7 @@ connexion[swagger-ui]==2.7.0
     # via -r public.in
 dockerflow==2020.10.0
     # via -r public.in
-flask==2.0.0
+flask==2.0.1
     # via
     #   -r public.in
     #   connexion
