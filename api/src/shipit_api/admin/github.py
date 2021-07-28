@@ -263,7 +263,7 @@ def extract_github_repo_owner_and_name(url):
     repo_name = parts[1]
 
     if repo_name.endswith(".git"):
-        repo_name = re.sub("\.git$", "", repo_name)
+        repo_name = re.sub("\\.git$", "", repo_name)
     return repo_owner, repo_name
 
 
