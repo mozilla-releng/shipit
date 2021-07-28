@@ -1,8 +1,8 @@
 import json
+import re
 from functools import lru_cache
 from urllib.parse import unquote, urlparse
 
-import re
 import requests
 import yaml
 from flask import abort, current_app
