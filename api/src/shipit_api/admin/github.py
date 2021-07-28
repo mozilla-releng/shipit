@@ -1,4 +1,5 @@
 import json
+import re
 from functools import lru_cache
 from urllib.parse import unquote, urlparse
 
@@ -261,7 +262,9 @@ def extract_github_repo_owner_and_name(url):
     repo_owner = parts[0]
     repo_name = parts[1]
 
-    return repo_owner, repo_name.rstrip(".git")
+    if repo_name.endswith(".git"):
+        repo_name = re.sub("\\.git$", "", repo_name)
+    return repo_owner, repo_name
 
 
 def get_parts_of_url_path(url):
