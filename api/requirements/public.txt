@@ -39,7 +39,7 @@ flask==2.0.0
     #   sentry-sdk
 flask-cors==3.0.10
     # via -r public.in
-flask-migrate==3.0.0
+flask_migrate==3.1.0
     # via -r public.in
 flask-sqlalchemy==2.5.1
     # via flask-migrate
