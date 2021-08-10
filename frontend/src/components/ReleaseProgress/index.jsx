@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -19,7 +19,6 @@ import ReleaseContext from '../../utils/ReleaseContext';
 import { AuthContext } from '../../utils/AuthContext';
 import config from '../../config';
 import { repoUrlBuilder } from '../../utils/helpers';
-import { getXpis } from '../vcs';
 
 const useStyles = makeStyles(() => ({
   cardActions: {
@@ -35,7 +34,6 @@ export default function ReleaseProgress({
   const classes = useStyles();
   const authContext = useContext(AuthContext);
   const mutable = authContext.user && !readOnly;
-  const [xpis, fetchXpis] = useAction(getXpis);
   const [open, setOpen] = useState(false);
   const [cancelState, cancelAction] = useAction(cancelReleaseAPI);
   const { fetchReleases } = useContext(ReleaseContext);
@@ -44,18 +42,6 @@ export default function ReleaseProgress({
   const handleClose = () => {
     setOpen(false);
   };
-
-  const initXpis = async () => {
-    const { owner, project } = config.XPI_MANIFEST;
-
-    await fetchXpis(owner, project, 'HEAD');
-  };
-
-  useEffect(() => {
-    if (config.XPI_MANIFEST) {
-      initXpis();
-    }
-  }, []);
 
   const cancelRelease = async releaseName => {
     const result = await cancelAction(
@@ -107,8 +93,8 @@ export default function ReleaseProgress({
   const renderReleaseTitle = (isXPI, release) => {
     let url = null;
     let productBranch = null;
-    const { PRODUCTS, TREEHERDER_URL } = config;
-    let trimmedRevision = release.revision.substring(0, 13);
+    const { PRODUCTS, XPI_MANIFEST, TREEHERDER_URL } = config;
+    const trimmedRevision = release.revision.substring(0, 13);
     const product =
       PRODUCTS && PRODUCTS.find(product => product.product === release.product);
 
@@ -126,38 +112,8 @@ export default function ReleaseProgress({
       );
     }
 
-    if (isXPI) {
-      if (xpis.loading) {
-        return <Spinner loading />;
-      }
-
-      if (xpis.error) {
-        return (
-          <Typography variant="h6" component="h3">
-            {xpis.error.toString()}
-          </Typography>
-        );
-      }
-
-      if (xpis.data) {
-        trimmedRevision = release.xpi_revision.substring(0, 13);
-        let repo = '';
-        let owner = '';
-
-        xpis.data.xpis.forEach(xpi => {
-          if (xpi.xpi_name === release.xpi_name) {
-            repo = xpi.repo;
-            owner = xpi.owner;
-          }
-        });
-
-        // xpis.data.xpis.forEach(xpi => (repo = xpi.repo));
-
-        url = repoUrlBuilder(
-          `https://github.com/${owner}/${repo}`,
-          release.xpi_revision
-        );
-      }
+    if (isXPI && XPI_MANIFEST.repo) {
+      url = repoUrlBuilder(XPI_MANIFEST.repo, release.revision);
     } else if (productBranch && productBranch.repo) {
       url = repoUrlBuilder(productBranch.repo, release.revision);
     }
