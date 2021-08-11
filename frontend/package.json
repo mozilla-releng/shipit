@@ -36,7 +36,7 @@
     "@mozilla-frontend-infra/components": "3.0.7",
     "axios": "0.21.1",
     "date-fns": "2.16.1",
-    "is-absolute-url": "3.0.3",
+    "is-absolute-url": "4.0.0",
     "prop-types": "15.7.2",
     "react": "16.14.0",
     "react-auth0-components": "1.0.4",
