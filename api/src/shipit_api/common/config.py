@@ -521,13 +521,5 @@ SIGNOFFS = {
                 },
             ],
         },
-        "normandy-privileged": {
-            "promote": [
-                {"name": "Normandy privileged admin", "description": "Promote XPI", "permissions": "xpi_normandy-privileged_signoff"},
-            ],
-            "ship": [
-                {"name": "Normandy privileged admin", "description": "Ship XPI", "permissions": "xpi_normandy-privileged_signoff"},
-            ],
-        },
     },
 }
