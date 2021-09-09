@@ -44,17 +44,17 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # day).
 # We could have used the in-tree version, but there can be race conditions,
 # e.g. version bumped, but still no builds available.
-FIREFOX_NIGHTLY = "93.0a1"
+FIREFOX_NIGHTLY = "94.0a1"
 
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
-LAST_SOFTFREEZE_DATE = "2021-08-05"
-LAST_MERGE_DATE = "2021-08-09"
-LAST_RELEASE_DATE = "2021-08-10"
-NEXT_SOFTFREEZE_DATE = "2021-09-02"
-NEXT_MERGE_DATE = "2021-09-06"
-NEXT_RELEASE_DATE = "2021-09-07"
+LAST_SOFTFREEZE_DATE = "2021-09-02"
+LAST_MERGE_DATE = "2021-09-06"
+LAST_RELEASE_DATE = "2021-09-07"
+NEXT_SOFTFREEZE_DATE = "2021-09-30"
+NEXT_MERGE_DATE = "2021-10-04"
+NEXT_RELEASE_DATE = "2021-10-05"
 
 # Fennec Nightly users have been migrated to Fenix, thus we don't need to bump
 # the following numbers anymore.
@@ -70,9 +70,9 @@ IOS_VERSION = "14.1"
 
 # Thunderbird configs
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
-LATEST_THUNDERBIRD_NIGHTLY_VERSION = "93.0a1"
+LATEST_THUNDERBIRD_NIGHTLY_VERSION = "94.0a1"
 # TODO: Need to update this every cycle
-THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr78"
+THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr91"
 THUNDERBIRD_BETA_BRANCH = "releases/comm-beta"
 
 # Mixed
@@ -519,14 +519,6 @@ SIGNOFFS = {
                     "description": "Ship XPI",
                     "permissions": "xpi_mozillaonline-privileged_admin_signoff",
                 },
-            ],
-        },
-        "normandy-privileged": {
-            "promote": [
-                {"name": "Normandy privileged admin", "description": "Promote XPI", "permissions": "xpi_normandy-privileged_signoff"},
-            ],
-            "ship": [
-                {"name": "Normandy privileged admin", "description": "Ship XPI", "permissions": "xpi_normandy-privileged_signoff"},
             ],
         },
     },
