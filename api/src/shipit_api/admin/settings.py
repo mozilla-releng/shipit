@@ -64,7 +64,6 @@ ADMIN_LDAP_GROUP = ["releng"]
 XPI_PRIVILEGED_BUILD_LDAP_GROUP = ["xpi_privileged_build"]
 
 XPI_PRIVILEGED_ADMIN_LDAP_GROUP = ["xpi_privileged_admin"]
-XPI_NORMANDY_PRIVILEGED_LDAP_GROUP = ["xpi_normandy_admin"]
 XPI_SYSTEM_ADMIN_LDAP_GROUP = ["xpi_system_admin"]
 XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP = ["xpi_mozillaonline_build"]
 XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP = ["xpi_mozillaonline_admin"]
@@ -79,13 +78,12 @@ LDAP_GROUPS = {
     # Adding Releng as a backup to most of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
     # ADMIN_GROUP has to be added in order for multiple signoffs to work
-    "xpi_privileged_build": XPI_PRIVILEGED_BUILD_LDAP_GROUP,
+    "xpi_privileged_build": XPI_PRIVILEGED_BUILD_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_privileged_admin_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP,
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_admin_signoff": XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
-    "xpi_normandy-privileged_signoff": XPI_NORMANDY_PRIVILEGED_LDAP_GROUP + ADMIN_LDAP_GROUP,
 }
 
 AUTH0_AUTH_SCOPES = dict()
@@ -140,14 +138,13 @@ AUTH0_AUTH_SCOPES.update(
                 + LDAP_GROUPS["xpi_system_signoff"]
                 + LDAP_GROUPS["xpi_mozillaonline-privileged_signoff"]
                 + LDAP_GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
-                + LDAP_GROUPS["xpi_normandy-privileged_signoff"]
             )
         )
     }
 )
 
 # XPI scopes
-for xpi_type in ["privileged", "system", "mozillaonline-privileged", "normandy-privileged"]:
+for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
     # "build", "signoff", and "admin_signoff" groups can create and cancel releases
     AUTH0_AUTH_SCOPES.update(
         {
