@@ -19,7 +19,7 @@ jobs:
             APP_TYPE: admin
             # Use plain text "<self>" instead of using {"task-reference":
             # "<self>"}, because the docker_image transform expects args to be
-            # {basestring: basestring}. Bracket-style templates will be
+            # {str: str}. Bracket-style templates will be
             # evaluated by the docker_image transform.
             TASK_ID: "<self>"
     shipit-public:
@@ -29,6 +29,6 @@ jobs:
             APP_TYPE: public
             # Use plain text "<self>" instead of using {"task-reference":
             # "<self>"}, because the docker_image transform expects args to be
-            # {basestring: basestring}. Bracket-style templates will be
+            # {str: str}. Bracket-style templates will be
             # evaluated by the docker_image transform.
             TASK_ID: "<self>"

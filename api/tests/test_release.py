@@ -9,7 +9,9 @@ import pytest
 from mozilla_version.fenix import FenixVersion
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 
+from shipit_api.admin.api import get_signoff_emails
 from shipit_api.admin.release import bump_version, is_eme_free_enabled, is_partner_enabled, is_rc, parse_version
+from shipit_api.common.models import XPISignoff
 from shipit_api.common.product import Product
 
 
@@ -114,3 +116,30 @@ def test_is_partner_enabled(product, version, result):
 )
 def test_is_eme_free_enabled(product, version, result):
     assert is_eme_free_enabled(product, version) == result
+
+
+def test_additional_emails(test_xpi_release):
+    # new release
+    additional_shipit_emails = get_signoff_emails(test_xpi_release.phases)
+    assert len(additional_shipit_emails) == 0
+
+    # build phase completion
+    _phase = filter(lambda _phase: _phase.name == "build", test_xpi_release.phases)
+    phase = list(_phase)[0]
+    phase.completed_by = "releng@mozilla.com"
+    additional_shipit_emails = get_signoff_emails(test_xpi_release.phases)
+    assert len(additional_shipit_emails) == 1
+
+    # build phase signoffs
+    XPISignoff(completed="2021-07-15T23:03:10.179036Z", completed_by="addon-team@mozilla.com", signed=True, phase=phase)
+    additional_shipit_emails = get_signoff_emails(test_xpi_release.phases)
+    assert len(additional_shipit_emails) == 2
+
+    # promote phase completion and signoffs
+    _phase = filter(lambda _phase: _phase.name == "promote", test_xpi_release.phases)
+    phase = list(_phase)[0]
+    phase.completed_by = "special-admin@mozilla.com"
+    XPISignoff(completed="2021-07-15T23:03:10.179036Z", completed_by="addon-team@mozilla.com", signed=True, phase=phase)
+    XPISignoff(completed="2021-07-15T23:03:10.179036Z", completed_by="another-team@mozilla.com", signed=True, phase=phase)
+    additional_shipit_emails = get_signoff_emails(test_xpi_release.phases)
+    assert len(additional_shipit_emails) == 4
