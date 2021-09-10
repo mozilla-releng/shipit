@@ -485,7 +485,6 @@ SIGNOFFS = {
     "xpi": {
         "privileged": {
             "promote": [
-                {"name": "Add-on Review Team", "description": "Promote XPI", "permissions": "xpi_privileged_admin_signoff"},
                 {"name": "Privileged webextension admin", "description": "Promote XPI", "permissions": "xpi_privileged_signoff"},
             ],
             "ship": [
