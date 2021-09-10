@@ -79,8 +79,8 @@ LDAP_GROUPS = {
     # only sign off if requested by someone in the appropriate group.
     # ADMIN_GROUP has to be added in order for multiple signoffs to work
     "xpi_privileged_build": XPI_PRIVILEGED_BUILD_LDAP_GROUP + ADMIN_LDAP_GROUP,
-    "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
-    "xpi_privileged_admin_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
+    "xpi_privileged_signoff": ADMIN_LDAP_GROUP,
+    "xpi_privileged_admin_signoff": ADMIN_LDAP_GROUP,
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_admin_signoff": XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
@@ -171,12 +171,14 @@ for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
     AUTH0_AUTH_SCOPES.update(
         {
             f"schedule_phase/xpi/{xpi_type}/promote": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+            f"phase_signoff/xpi/{xpi_type}/promote": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
         }
     )
     # Only "signoff", and "admin_signoff" groups can schedule the "ship" phase
     AUTH0_AUTH_SCOPES.update(
         {
             f"schedule_phase/xpi/{xpi_type}/ship": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+            f"phase_signoff/xpi/{xpi_type}/ship": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
         }
     )
 
