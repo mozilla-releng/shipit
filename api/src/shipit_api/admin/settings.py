@@ -171,14 +171,12 @@ for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
     AUTH0_AUTH_SCOPES.update(
         {
             f"schedule_phase/xpi/{xpi_type}/promote": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
-            f"phase_signoff/xpi/{xpi_type}/promote": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
         }
     )
     # Only "signoff", and "admin_signoff" groups can schedule the "ship" phase
     AUTH0_AUTH_SCOPES.update(
         {
             f"schedule_phase/xpi/{xpi_type}/ship": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
-            f"phase_signoff/xpi/{xpi_type}/ship": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
         }
     )
 
