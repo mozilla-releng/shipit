@@ -78,7 +78,7 @@ LDAP_GROUPS = {
     # Adding Releng as a backup to most of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
     # ADMIN_GROUP has to be added in order for multiple signoffs to work
-    "xpi_privileged_build": XPI_PRIVILEGED_BUILD_LDAP_GROUP,
+    "xpi_privileged_build": XPI_PRIVILEGED_BUILD_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_privileged_admin_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP,
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
