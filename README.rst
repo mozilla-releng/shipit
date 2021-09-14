@@ -21,7 +21,7 @@ First setup
 To run each time
 ~~~~~~~~~~~~~~~~
 
-Run ``./startup.sh`` 
+Run ``./startup.sh``
 
 
 - `You would need to pass your github token to the script for each startup`
@@ -96,3 +96,19 @@ Deploys in response to pushes to the ``dev`` branch.
 - Product Details URL: https://product-details.staging.mozilla-releng.net
 - Public API URL: https://public-dev.shipitapi.nonprod.cloudops.mozgcp.net
 - Logs: https://console.cloud.google.com/logs/query?project=moz-fx-shipitapi-nonprod-2690 (ask CloudOps for access)
+
+
+FAQ
+---
+
+How to deploy `main` branch to `production`?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+::
+
+    # clone the repo, if not already
+    $ git clone https://github.com/mozilla-releng/shipit.git
+    # (optional) one can run dry-run to check changes beforehand
+    $ git push --dry-run origin main:production
+    # in git, the upstream remote defaults to `origin`
+    $ git push origin main:production
+
