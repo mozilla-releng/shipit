@@ -103,10 +103,12 @@ FAQ
 
 How to deploy `main` branch to `production`?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-``
-$ git clone https://github.com/mozilla-releng/shipit.git
-# the upstream remote defaults to `origin` based in Git
-$ git push origin main:production
-``
+::
 
+    # clone the repo, if not already
+    $ git clone https://github.com/mozilla-releng/shipit.git
+    # in git, the upstream remote defaults to `origin`
+    # (optional) one can run dry-run to check changes beforehand
+    $ git push --dry-run origin main:production
+    $ git push origin main:production
 
