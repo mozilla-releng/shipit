@@ -80,7 +80,7 @@ services:
 
   ui:
     # SSL doesn't work with node:current
-    image: node:10
+    image: node:16
     ports:
       - "8010:8010"
     volumes:
