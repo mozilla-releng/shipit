@@ -23,7 +23,7 @@ PRODUCT_DETAILS_CACHE_DIR = pathlib.Path(tempfile.gettempdir(), "product-details
 # breakpoint version will be served using static files. No related
 # product-details data will be generated if we decide to ship a dot release
 # with major version <= BREAKPOINT_VERSION. This includes Firefox (release,
-# esr, beta, devedition), Fennec and Thunderbird.
+# esr, beta, devedition, pinebuild), Fennec and Thunderbird.
 BREAKPOINT_VERSION = 77
 
 # When there is only one ESR release ESR_NEXT is set to '' and ESR_CURRENT is
@@ -453,6 +453,11 @@ SUPPORTED_FLAVORS = {
         {"name": "promote_devedition", "in_previous_graph_ids": True},
         {"name": "push_devedition", "in_previous_graph_ids": True},
         {"name": "ship_devedition", "in_previous_graph_ids": True},
+    ],
+    "pinebuild": [
+        {"name": "promote_pinebuild", "in_previous_graph_ids": True},
+        {"name": "push_pinebuild", "in_previous_graph_ids": True},
+        {"name": "ship_pinebuild", "in_previous_graph_ids": True},
     ],
     "thunderbird": [
         {"name": "promote_thunderbird", "in_previous_graph_ids": True},

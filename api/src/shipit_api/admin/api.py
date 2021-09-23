@@ -70,7 +70,7 @@ def add_release(body):
     session = current_app.db.session
     partial_updates = body.get("partial_updates")
     if partial_updates == "auto":
-        if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in ["try", "releases/mozilla-beta", "projects/maple"]:
+        if product not in [Product.FIREFOX.value, Product.DEVEDITION.value, Product.PINEBUILD.value] or branch not in ["try", "releases/mozilla-beta", "projects/maple"]:
             abort(400, "Partial suggestion works for automated betas only")
 
         partial_updates = _suggest_partials(product=product, branch=branch)
