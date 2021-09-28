@@ -1072,7 +1072,10 @@ async def rebuild(
     # combine old and new data
     product_details: ProductDetails = {
         "all.json": get_releases(
-            breakpoint_version, [Product.DEVEDITION, Product.PINEBUILD, Product.FIREFOX, Product.FENIX, Product.FENNEC, Product.THUNDERBIRD], releases, old_product_details
+            breakpoint_version,
+            [Product.DEVEDITION, Product.PINEBUILD, Product.FIREFOX, Product.FENIX, Product.FENNEC, Product.THUNDERBIRD],
+            releases,
+            old_product_details,
         ),  # consider adding `android-components` at some point.
         "devedition.json": get_releases(breakpoint_version, [Product.DEVEDITION], releases, old_product_details),
         "pinebuild.json": get_releases(breakpoint_version, [Product.PINEBUILD], releases, old_product_details),
