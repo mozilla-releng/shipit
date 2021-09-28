@@ -7,7 +7,7 @@ from contextlib import nullcontext as does_not_raise
 
 import pytest
 from mozilla_version.fenix import FenixVersion
-from mozilla_version.gecko import DeveditionVersion, PinebuildVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
+from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 
 from shipit_api.admin.api import get_signoff_emails
 from shipit_api.admin.release import bump_version, is_eme_free_enabled, is_partner_enabled, is_rc, parse_version
@@ -20,8 +20,8 @@ from shipit_api.common.product import Product
     (
         ("devedition", "56.0b1", does_not_raise(), DeveditionVersion(56, 0, beta_number=1)),
         (Product.DEVEDITION, "56.0b1", does_not_raise(), DeveditionVersion(56, 0, beta_number=1)),
-        ("pinebuild", "56.0b1", does_not_raise(), PinebuildVersion(56, 0, beta_number=1)),
-        (Product.PINEBUILD, "56.0b1", does_not_raise(), PinebuildVersion(56, 0, beta_number=1)),
+        ("pinebuild", "56.0b1", does_not_raise(), FirefoxVersion(56, 0, beta_number=1)),
+        (Product.PINEBUILD, "56.0b1", does_not_raise(), FirefoxVersion(56, 0, beta_number=1)),
         ("fenix", "84.0.0-beta.2", does_not_raise(), FenixVersion(84, 0, 0, beta_number=2)),
         (Product.FENIX, "84.0.0", does_not_raise(), FenixVersion(84, 0, 0)),
         ("fennec", "68.2b3", does_not_raise(), FennecVersion(68, 2, beta_number=3)),

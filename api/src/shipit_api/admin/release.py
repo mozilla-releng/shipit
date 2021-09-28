@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 _VERSION_CLASS_PER_PRODUCT = {
     Product.ANDROID_COMPONENTS: MavenVersion,
     Product.DEVEDITION: DeveditionVersion,
-    Product.PINEBUILD: PinebuildVersion,
+    Product.PINEBUILD: FirefoxVersion,
     Product.FENIX: FenixVersion,
     Product.FENNEC: FennecVersion,
     Product.FIREFOX: FirefoxVersion,
