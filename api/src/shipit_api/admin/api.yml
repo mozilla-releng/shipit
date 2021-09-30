@@ -307,6 +307,7 @@ paths:
           - firefox
           - fennec
           - devedition
+          - pinebuild
       - name: branch
         in: query
         required: true
@@ -714,6 +715,7 @@ components:
           enum:
           - android-components
           - devedition
+          - pinebuild
           - fenix
           - fennec
           - firefox
@@ -821,6 +823,7 @@ components:
           enum:
           - android-components
           - devedition
+          - pinebuild
           - fenix
           - fennec
           - firefox
@@ -924,6 +927,7 @@ components:
           - firefox
           - fennec
           - devedition
+          - pinebuild
         branch:
           type: string
           example: releases/mozilla-beta

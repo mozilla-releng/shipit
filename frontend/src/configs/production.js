@@ -77,6 +77,22 @@ module.exports = {
       enablePartials: true,
     },
     {
+      product: 'pinebuild',
+      prettyName: 'Firefox pinebuild',
+      appName: 'browser',
+      branches: [
+        {
+          prettyName: 'Beta',
+          project: 'mozilla-beta',
+          branch: 'releases/mozilla-beta',
+          repo: 'https://hg.mozilla.org/releases/mozilla-beta',
+          enableReleaseEta: false,
+          disableable: true,
+        },
+      ],
+      enablePartials: true,
+    },
+    {
       product: 'thunderbird',
       prettyName: 'Thunderbird',
       appName: 'mail',

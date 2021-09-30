@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 _VERSION_CLASS_PER_PRODUCT = {
     Product.ANDROID_COMPONENTS: MavenVersion,
     Product.DEVEDITION: DeveditionVersion,
+    Product.PINEBUILD: FirefoxVersion,
     Product.FENIX: FenixVersion,
     Product.FENNEC: FennecVersion,
     Product.FIREFOX: FirefoxVersion,
@@ -113,7 +114,7 @@ def is_eme_free_enabled(product, version):
 
 def product_to_appname(product):
     """Convert product name to appName"""
-    if product in [Product.FIREFOX.value, Product.DEVEDITION.value]:
+    if product in [Product.FIREFOX.value, Product.DEVEDITION.value, Product.PINEBUILD.value]:
         return "browser"
 
 

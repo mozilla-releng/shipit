@@ -20,6 +20,8 @@ from shipit_api.common.product import Product
     (
         ("devedition", "56.0b1", does_not_raise(), DeveditionVersion(56, 0, beta_number=1)),
         (Product.DEVEDITION, "56.0b1", does_not_raise(), DeveditionVersion(56, 0, beta_number=1)),
+        ("pinebuild", "56.0b1", does_not_raise(), FirefoxVersion(56, 0, beta_number=1)),
+        (Product.PINEBUILD, "56.0b1", does_not_raise(), FirefoxVersion(56, 0, beta_number=1)),
         ("fenix", "84.0.0-beta.2", does_not_raise(), FenixVersion(84, 0, 0, beta_number=2)),
         (Product.FENIX, "84.0.0", does_not_raise(), FenixVersion(84, 0, 0)),
         ("fennec", "68.2b3", does_not_raise(), FennecVersion(68, 2, beta_number=3)),
@@ -59,6 +61,7 @@ def test_parse_version(product, version, expectation, result):
         ("thunderbird", "57.0", {"56.0": [], "56.0b4": [], "55.0": []}, True),
         ("firefox", "70.0b4", {"69.0b15": [], "69.0b16": [], "70.0b3": []}, False),
         ("devedition", "70.0b4", {"70.0b3": [], "70.0b1": [], "70.0b2": []}, False),
+        ("pinebuild", "70.0b4", {"70.0b3": [], "70.0b1": [], "70.0b2": []}, False),
     ),
 )
 def test_is_rc(product, version, partial_updates, result):
