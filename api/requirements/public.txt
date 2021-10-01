@@ -86,7 +86,7 @@ pyrsistent==0.17.3
     # via jsonschema
 python-dateutil==2.8.1
     # via alembic
-python-decouple==3.4
+python-decouple==3.5
     # via -r public.in
 python-editor==1.0.4
     # via alembic
