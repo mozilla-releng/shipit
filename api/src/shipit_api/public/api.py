@@ -20,8 +20,6 @@ logger = logging.getLogger(__name__)
 VERSION_CLASSES = {
     Product.ANDROID_COMPONENTS.value: MavenVersion,
     Product.DEVEDITION.value: DeveditionVersion,
-    # XXX revisit when we know how pinebuild will be versioned
-    Product.PINEBUILD.value: FirefoxVersion,
     Product.FENIX.value: FenixVersion,
     Product.FENNEC.value: FennecVersion,
     Product.FIREFOX.value: FirefoxVersion,

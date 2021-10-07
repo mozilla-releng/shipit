@@ -52,22 +52,6 @@ module.exports = {
       enablePartials: true,
     },
     {
-      product: 'pinebuild',
-      prettyName: 'Firefox pinebuild',
-      appName: 'browser',
-      branches: [
-        {
-          prettyName: 'Maple Beta',
-          project: 'maple',
-          branch: 'projects/maple',
-          repo: 'https://hg.mozilla.org/projects/maple',
-          enableReleaseEta: false,
-          disableable: true,
-        },
-      ],
-      enablePartials: true,
-    },
-    {
       product: 'thunderbird',
       prettyName: 'Thunderbird',
       appName: 'mail',

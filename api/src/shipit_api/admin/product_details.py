@@ -58,7 +58,6 @@ FirefoxVersions = mypy_extensions.TypedDict(
         "FIREFOX_ESR_NEXT": str,
         "LATEST_FIREFOX_DEVEL_VERSION": str,
         "FIREFOX_DEVEDITION": str,
-        "FIREFOX_PINEBUILD": str,
         "LATEST_FIREFOX_OLDER_VERSION": str,
         "LATEST_FIREFOX_RELEASED_DEVEL_VERSION": str,
         "LATEST_FIREFOX_VERSION": str,
@@ -195,7 +194,6 @@ async def fetch_l10n_data(
     url_file = {
         Product.FIREFOX: "browser/locales/l10n-changesets.json",
         Product.DEVEDITION: "browser/locales/l10n-changesets.json",
-        Product.PINEBUILD: "browser/locales/l10n-changesets.json",
         Product.FENNEC: "mobile/locales/l10n-changesets.json",
         Product.THUNDERBIRD: "mail/locales/l10n-changesets.json",
     }[Product(release.product)]
@@ -304,13 +302,12 @@ def get_releases(
     breakpoint_version: int, products: Products, releases: typing.List[shipit_api.common.models.Release], old_product_details: ProductDetails
 ) -> Releases:
     """This file holds historical information about all Firefox, Firefox for
-    Mobile (aka Fennec), Firefox Dev Edition, Pinebuild and Thunderbird
-    releases we shipped in the past.
+    Mobile (aka Fennec), Firefox Dev Edition and Thunderbird releases we
+    shipped in the past.
 
     This function will output to the following files:
      - all.json
      - devedition.json
-     - pinebuild.json
      - firefox.json
      - mobile_android.json
      - thunderbird.json
@@ -414,9 +411,6 @@ def get_release_history(
         }
     """
     if Product.DEVEDITION is product:
-        raise click.ClickException(f'We don\'t generate product history for "{product.value}" product.')
-
-    if Product.PINEBUILD is product:
         raise click.ClickException(f'We don\'t generate product history for "{product.value}" product.')
 
     if ProductCategory.ESR is product_category:
@@ -523,13 +517,12 @@ def get_primary_builds(
 
     if product is Product.FIREFOX:
         firefox_versions = get_firefox_versions(releases)
-        # make sure that Devedition and Pinebuild are included in the list
-        products = [Product.FIREFOX, Product.DEVEDITION, Product.PINEBUILD]
+        # make sure that Devedition is included in the list
+        products = [Product.FIREFOX, Product.DEVEDITION]
         versions = set(
             [
                 firefox_versions["FIREFOX_NIGHTLY"],
                 firefox_versions["FIREFOX_DEVEDITION"],
-                firefox_versions["FIREFOX_PINEBUILD"],
                 firefox_versions["LATEST_FIREFOX_RELEASED_DEVEL_VERSION"],
                 firefox_versions["LATEST_FIREFOX_VERSION"],
                 firefox_versions["FIREFOX_ESR"],
@@ -627,7 +620,6 @@ def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]
             "FIREFOX_ESR_NEXT":                       "",
             "LATEST_FIREFOX_DEVEL_VERSION":           "59.0b14",
             "FIREFOX_DEVEDITION":                     "59.0b14",
-            "FIREFOX_PINEBUILD":                      "59.0b14",
             "LATEST_FIREFOX_OLDER_VERSION":           "3.6.28",
             "LATEST_FIREFOX_RELEASED_DEVEL_VERSION":  "59.0b14",
             "LATEST_FIREFOX_VERSION":                 "58.0.2",
@@ -651,7 +643,6 @@ def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]
         LATEST_FIREFOX_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
         LATEST_FIREFOX_RELEASED_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
         FIREFOX_DEVEDITION=get_latest_version(releases, Product.DEVEDITION, shipit_api.common.config.BETA_BRANCH),
-        FIREFOX_PINEBUILD=get_latest_version(releases, Product.PINEBUILD, shipit_api.common.config.BETA_BRANCH),
         LATEST_FIREFOX_OLDER_VERSION=shipit_api.common.config.LATEST_FIREFOX_OLDER_VERSION,
         LAST_SOFTFREEZE_DATE=shipit_api.common.config.LAST_SOFTFREEZE_DATE,
         LAST_MERGE_DATE=shipit_api.common.config.LAST_MERGE_DATE,
@@ -723,7 +714,6 @@ def get_l10n(
 
     for (release, locales) in releases_l10n.items():
         # XXX: for some reason we didn't generate l10n for devedition in old_product_details
-        # XXX need anything for pinebuild here?
         if Product(release.product) is Product.DEVEDITION:
             continue
         data[f"l10n/{release.name}.json"] = {
@@ -949,7 +939,6 @@ def sanity_checks(product_details: ProductDetails) -> None:
         "FIREFOX_NIGHTLY",
         "FIREFOX_AURORA",
         "FIREFOX_DEVEDITION",
-        "FIREFOX_PINEBUILD",
         "FIREFOX_ESR",
         "FIREFOX_ESR_NEXT",
         "LATEST_FIREFOX_DEVEL_VERSION",
@@ -1072,13 +1061,9 @@ async def rebuild(
     # combine old and new data
     product_details: ProductDetails = {
         "all.json": get_releases(
-            breakpoint_version,
-            [Product.DEVEDITION, Product.PINEBUILD, Product.FIREFOX, Product.FENIX, Product.FENNEC, Product.THUNDERBIRD],
-            releases,
-            old_product_details,
+            breakpoint_version, [Product.DEVEDITION, Product.FIREFOX, Product.FENIX, Product.FENNEC, Product.THUNDERBIRD], releases, old_product_details
         ),  # consider adding `android-components` at some point.
         "devedition.json": get_releases(breakpoint_version, [Product.DEVEDITION], releases, old_product_details),
-        "pinebuild.json": get_releases(breakpoint_version, [Product.PINEBUILD], releases, old_product_details),
         "firefox.json": get_releases(breakpoint_version, [Product.FIREFOX], releases, old_product_details),
         "firefox_history_development_releases.json": get_release_history(
             breakpoint_version, Product.FIREFOX, ProductCategory.DEVELOPMENT, releases, old_product_details

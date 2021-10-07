@@ -5,7 +5,6 @@ import enum
 class Product(enum.Enum):
     ANDROID_COMPONENTS = "android-components"
     DEVEDITION = "devedition"
-    PINEBUILD = "pinebuild"
     FIREFOX = "firefox"
     FENIX = "fenix"
     FENNEC = "fennec"
