@@ -338,7 +338,7 @@ def get_releases(
         if product in [Product.FENNEC, Product.FENIX]:
             product_file = "1.0/mobile_android.json"
 
-        old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details[product_file].get("releases", dict()))  # noqa
+        old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details.get(product_file, {}).get("releases", dict()))  # noqa
         for product_with_version in old_releases:
             # product_with_version looks like "Fennec-1.0". There is nothing after the version
             if "-" not in product_with_version:
@@ -441,7 +441,7 @@ def get_release_history(
     if product in [Product.FENNEC, Product.FENIX]:
         product_file = f"1.0/mobile_history_{product_category.name.lower()}_releases.json"
 
-    old_history = typing.cast(ReleasesHistory, old_product_details[product_file])
+    old_history = typing.cast(ReleasesHistory, old_product_details.get(product_file, {}))
     for version_string in old_history:
         version = parse_version(product, version_string)
         if version.major_number >= breakpoint_version:
