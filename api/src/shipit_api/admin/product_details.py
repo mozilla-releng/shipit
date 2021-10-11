@@ -338,7 +338,7 @@ def get_releases(
         if product in [Product.FENNEC, Product.FENIX]:
             product_file = "1.0/mobile_android.json"
 
-        old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details[product_file].get("releases", dict()))  # noqa
+        old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details.get(product_file, {}).get("releases", dict()))  # noqa
         for product_with_version in old_releases:
             # product_with_version looks like "Fennec-1.0". There is nothing after the version
             if "-" not in product_with_version:
@@ -441,7 +441,7 @@ def get_release_history(
     if product in [Product.FENNEC, Product.FENIX]:
         product_file = f"1.0/mobile_history_{product_category.name.lower()}_releases.json"
 
-    old_history = typing.cast(ReleasesHistory, old_product_details[product_file])
+    old_history = typing.cast(ReleasesHistory, old_product_details.get(product_file, {}))
     for version_string in old_history:
         version = parse_version(product, version_string)
         if version.major_number >= breakpoint_version:
@@ -1005,16 +1005,13 @@ async def rebuild(
         run_check(["git", "clean", "-xfd"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
     else:
         run_check(
-            ["git", "clone", git_repo_url, shipit_api.common.config.PRODUCT_DETAILS_DIR.name],
+            ["git", "clone", "-b", git_branch, git_repo_url, shipit_api.common.config.PRODUCT_DETAILS_DIR.name],
             cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR.parent,
             secrets=secrets,
         )
         run_check(["git", "config", "http.postBuffer", "12M"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
         run_check(["git", "config", "user.email", "release-services+robot@mozilla.com"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
         run_check(["git", "config", "user.name", "Release Services Robot"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
-        # Checkout the branch we are working on
-        logger.info(f"Checkout {git_branch} branch.")
-        run_check(["git", "checkout", "-b", git_branch, f"origin/{git_branch}"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
 
     # XXX: we need to implement how to figure out breakpoint_version from old_product_details
     # if breakpoint_version is not provided we should figure it out from old_product_details
