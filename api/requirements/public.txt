@@ -109,7 +109,7 @@ six==1.16.0
     #   python-dateutil
 slugid==2.0.0
     # via -r public.in
-sqlalchemy==1.4.15
+sqlalchemy==1.4.26
     # via
     #   -r public.in
     #   alembic
