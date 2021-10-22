@@ -88,7 +88,7 @@ async def download_product_details(url: str, download_dir: str):
 @click.option("--folder-in-repo", type=str, required=True, default="public/")
 @click.option(
     "--channel",
-    type=click.Choice(["development", "main", "testing", "staging", "production"]),
+    type=click.Choice(["development", "main", "testing", "dev", "staging", "production"]),
     required=True,
     default=os.environ.get("DEPLOYMENT_BRANCH", "main"),
 )
