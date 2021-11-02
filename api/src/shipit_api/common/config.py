@@ -44,17 +44,17 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # day).
 # We could have used the in-tree version, but there can be race conditions,
 # e.g. version bumped, but still no builds available.
-FIREFOX_NIGHTLY = "95.0a1"
+FIREFOX_NIGHTLY = "96.0a1"
 
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
-LAST_SOFTFREEZE_DATE = "2021-09-30"
-LAST_MERGE_DATE = "2021-10-04"
-LAST_RELEASE_DATE = "2021-10-05"
-NEXT_SOFTFREEZE_DATE = "2021-10-28"
-NEXT_MERGE_DATE = "2021-11-01"
-NEXT_RELEASE_DATE = "2021-11-02"
+LAST_SOFTFREEZE_DATE = "2021-10-28"
+LAST_MERGE_DATE = "2021-11-01"
+LAST_RELEASE_DATE = "2021-11-02"
+NEXT_SOFTFREEZE_DATE = "2021-12-02"
+NEXT_MERGE_DATE = "2021-12-06"
+NEXT_RELEASE_DATE = "2021-12-07"
 
 # Fennec Nightly users have been migrated to Fenix, thus we don't need to bump
 # the following numbers anymore.
