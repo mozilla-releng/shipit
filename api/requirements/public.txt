@@ -80,7 +80,7 @@ openapi-schema-validator==0.1.5
     # via openapi-spec-validator
 openapi-spec-validator==0.3.1
     # via connexion
-psycopg2==2.8.6
+psycopg2==2.9.2
     # via -r public.in
 pyrsistent==0.17.3
     # via jsonschema
