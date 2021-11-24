@@ -12,11 +12,17 @@ import useAction from '../../hooks/useAction';
 import ReleaseProgress from '../../components/ReleaseProgress';
 import ReleaseContext from '../../utils/ReleaseContext';
 import config from '../../config';
+import { getXpis } from '../../components/vcs';
 
 export default function Releases({ recent = false, xpi = false }) {
   let releaseFetcher = null;
+  let xpiFetcher = () => null;
 
   if (xpi) {
+    const { owner, project } = config.XPI_MANIFEST;
+
+    xpiFetcher = async () => getXpis(owner, project, 'HEAD');
+
     // XPI release fetchers
     if (recent) {
       // read-only, aka recent releases
@@ -43,9 +49,11 @@ export default function Releases({ recent = false, xpi = false }) {
   }
 
   const [releases, fetchReleases] = useAction(releaseFetcher);
+  const [xpis, fetchXpis] = useAction(xpiFetcher);
 
   useEffect(() => {
     fetchReleases();
+    fetchXpis();
   }, []);
 
   return (
@@ -54,18 +62,20 @@ export default function Releases({ recent = false, xpi = false }) {
         <Grid container justify="flex-end">
           <Button onClick={async () => fetchReleases()}>Refresh</Button>
         </Grid>
-        {releases.loading && <Spinner loading />}
+        {(releases.loading || (xpi && xpis.loading)) && <Spinner loading />}
 
         {releases.data && releases.data.length < 1 && (
           <h2>No {recent ? 'recent' : 'pending'} releases</h2>
         )}
-        {releases.data &&
+        {(xpi ? xpis && xpis.data : true) &&
+          releases.data &&
           releases.data.map(release => (
             <ReleaseProgress
               release={release}
               key={release.name}
               readOnly={recent}
               xpi={xpi}
+              xpis={xpis}
             />
           ))}
       </Dashboard>
