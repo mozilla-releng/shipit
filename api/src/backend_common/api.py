@@ -6,12 +6,36 @@
 import logging
 import pathlib
 
+from connexion import problem
 from connexion.apis.flask_api import FlaskApi
-from connexion.apps.flask_app import FlaskApp, FlaskJSONEncoder
+from connexion.apps.flask_app import FlaskJSONEncoder
 from connexion.exceptions import ProblemException
-from werkzeug.exceptions import default_exceptions
+from werkzeug.exceptions import HTTPException, InternalServerError, default_exceptions
 
 logger = logging.getLogger(__name__)
+
+
+def common_error_handler(exception=None):
+    """
+    :type exception: Exception
+    """
+    if isinstance(exception, ProblemException):
+        response = problem(
+            status=exception.status,
+            title=exception.title,
+            detail=exception.detail,
+            type=exception.type,
+            instance=exception.instance,
+            headers=exception.headers,
+            ext=exception.ext,
+        )
+    else:
+        if not isinstance(exception, HTTPException):
+            exception = InternalServerError()
+
+        response = problem(title=exception.name, detail=exception.description, status=exception.code, headers=exception.get_headers())
+
+    return FlaskApi.get_response(response)
 
 
 class Api:
@@ -34,9 +58,9 @@ class Api:
         # FlaskApp sets up error handler automatically, but FlaskApi doesn't.
         # We have to set them up manually.
         for error_code in default_exceptions:
-            app.register_error_handler(error_code, FlaskApp.common_error_handler)
+            app.register_error_handler(error_code, common_error_handler)
 
-        app.register_error_handler(ProblemException, FlaskApp.common_error_handler)
+        app.register_error_handler(ProblemException, common_error_handler)
 
     def register(
         self,
