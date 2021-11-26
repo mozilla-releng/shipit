@@ -719,6 +719,7 @@ components:
           - fenix
           - fennec
           - firefox
+          - focus-android
           - thunderbird
         version:
           type: string
@@ -827,6 +828,7 @@ components:
           - fenix
           - fennec
           - firefox
+          - focus-android
           - thunderbird
         version:
           type: string
