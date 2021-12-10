@@ -243,9 +243,9 @@ markupsafe==2.0.1 \
     # via
     #   jinja2
     #   mako
-mozilla-version==0.5.4 \
-    --hash=sha256:a0b9deda224195f173cdc48c5acb7218e15648901750082436b472efeb590bee \
-    --hash=sha256:f5112684b2237bf4f68a754d4cb25e1182b4103761effee735553b7fc966ef7b
+mozilla-version==1.0.0 \
+    --hash=sha256:678093aacc455a49b6feb6eeb922296c191aca4884e815573156b5966b8b051e \
+    --hash=sha256:a6d06ac135dd6f4333b9ac1fd04f41f4ba96e83973dd2ac9f70daf577718b96c
     # via -r requirements/public.in
 openapi-schema-validator==0.1.5 \
     --hash=sha256:215b516d0942f4e8e2446cf3f7d4ff2ed71d102ebddcc30526d8a3f706ab1df6 \
@@ -411,7 +411,6 @@ zipp==3.6.0 \
     # via
     #   importlib-metadata
     #   importlib-resources
-
 # WARNING: The following packages were not pinned, but pip requires them to be
 # pinned when the requirements file includes hashes. Consider using the --allow-unsafe flag.
 # setuptools
