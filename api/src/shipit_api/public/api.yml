@@ -164,8 +164,8 @@ components:
           - fenix
           - fennec
           - firefox
-          - thunderbird
           - focus-android
+          - thunderbird
         version:
           type: string
           example: 56.0b12

@@ -16,4 +16,5 @@ def test_public_api_subset():
     full_api = yaml.safe_load(open(full_api_file))
     public_api = yaml.safe_load(open(public_api_file))
     generated_public_api = extract(full_api, PUBLIC_API_SECTIONS)
-    assert generated_public_api == public_api, "You probably forgot to regenerate src/shipit_api/public/api.yml after changing api.yml"
+    # If this fails, check the diff; each file needs to match exactly, including the ordering of enum values
+    assert generated_public_api == public_api
