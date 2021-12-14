@@ -1,3 +1,4 @@
+import os
 import datetime
 import logging
 
@@ -150,7 +151,7 @@ def phase_signoff(name, phase, body):
     # Prevent the same user signing off for multiple signoffs
     users_ldap = current_user.get_ldap_groups()
     users_email = current_user.get_id()
-    if users_email in [s.completed_by for s in phase_obj.signoffs]:
+    if os.environ.get('APP_CHANNEL') != 'development' and users_email in [s.completed_by for s in phase_obj.signoffs]:
         abort(409, f"Already signed off by {users_email}")
 
     # signoff.permissions corresponds to the group in settings.py
