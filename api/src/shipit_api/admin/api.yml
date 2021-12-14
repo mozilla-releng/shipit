@@ -957,18 +957,16 @@ components:
         build_number:
           type: integer
     XPIRelease:
-      # TODO: fixme
       type: object
       required:
-      - xpi_name
-      - xpi_revision
-      - xpi_version
-      - build_number
-      - name
-      - phases
-      - status
-      - revision
-      type: object
+        - xpi_name
+        - xpi_revision
+        - xpi_version
+        - build_number
+        - name
+        - phases
+        - status
+        - revision
       properties:
         name:
           type: string
