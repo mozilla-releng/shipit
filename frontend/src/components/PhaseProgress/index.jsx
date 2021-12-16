@@ -143,6 +143,15 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                 }
               />
             )}
+            {!inProgress && (
+              <React.Fragment>
+                  <div>
+                    <pre style={{'white-space': 'pre-wrap'}} id="json">
+                        {JSON.stringify(phase.artifacts)}
+                    </pre>
+                  </div>
+              </React.Fragment>
+            )}
           </StepLabel>
         </Step>
       );

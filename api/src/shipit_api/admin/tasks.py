@@ -55,6 +55,33 @@ def find_decision_task_id(repo_url, project, revision, product):
         raise Exception(f"route {decision_task_route} exception {exc}")
 
 
+@lru_cache(maxsize=2048)
+def find_task_group(task_id):
+    queue = get_service("queue")
+    try:
+        return queue.listTaskGroup(task_id)
+    except Exception as exc:
+        raise Exception(f"task {task_id} exception {exc}")
+
+
+@lru_cache(maxsize=2048)
+def find_latest_artifacts(task_id):
+    queue = get_service("queue")
+    try:
+        return queue.listLatestArtifacts(task_id)['artifacts']
+    except Exception as exc:
+        raise Exception(f"task {task_id} exception {exc}")
+
+
+@lru_cache(maxsize=2048)
+def generate_artifact_url(task_id, artifact):
+    queue = get_service("queue")
+    try:
+        return queue.buildUrl("getLatestArtifact", task_id, artifact)
+    except Exception as exc:
+        raise Exception(f"task {task_id} exception {exc}")
+
+
 def fetch_artifact(task_id, artifact):
     try:
         queue = get_service("queue")
