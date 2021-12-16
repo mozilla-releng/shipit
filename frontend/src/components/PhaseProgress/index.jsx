@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import Button from '@material-ui/core/Button';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -100,6 +101,8 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
       const inProgress = submittedTaskStatuses.includes(phase.tcStatus);
       const taskError = errorStatuses.includes(phase.tcStatus);
 
+      console.log(release);
+
       return (
         <Step key={phase.name} completed={!inProgress}>
           <StepLabel
@@ -143,14 +146,35 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                 }
               />
             )}
-            {!inProgress && (
-              <React.Fragment>
-                  <div>
-                    <pre style={{'white-space': 'pre-wrap'}} id="json">
-                        {JSON.stringify(phase.artifacts)}
-                    </pre>
-                  </div>
-              </React.Fragment>
+            {!inProgress && phase.xpiUrl && (
+              <MouseOverPopover
+                text={
+                  <React.Fragment>
+                    <Link href={phase.xpiUrl}>
+                      <CloudDownloadIcon
+                        fontSize="large"
+                        textAlign="center"
+                        style={{
+                          position: 'relative',
+                          top: '.35em',
+                        }}
+                      />
+                    </Link>
+                  </React.Fragment>
+                }
+                fontSize=".80rem"
+                fontWeight={500}
+                position="absolute"
+                marginTop="2rem"
+                marginLeft="1rem"
+                popoverContent={
+                  <React.Fragment>
+                    <Typography variant="caption" display="block">
+                      Add <b>{release.name}</b> to Firefox
+                    </Typography>
+                  </React.Fragment>
+                }
+              />
             )}
           </StepLabel>
         </Step>
