@@ -1,4 +1,3 @@
-import os
 import datetime
 import logging
 from pprint import pp
@@ -67,13 +66,13 @@ def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["s
         raise BadRequest(description="Filtering by build_number without version is not supported.")
     releases = releases.filter(XPIRelease.status.in_(status))
     response = [r.json for r in releases.all()]
-    # Add an xpiUrl for the promote phases in xpi releases.
-    # The xpi's created during this promote phase are signed and can be easily
-    # installed by clicking on these urls.
+    # Add an xpiUrl for the completed promote phases within xpi releases.
+    # The xpi's created during the release's promote phase are signed and
+    # can be installed easily by clicking on the xpiUrl.
     for release in response:
         for phase in release['phases']:
             if phase['name'] == 'promote' and phase['actionTaskId']:
-                # ! mutates the phase json to erich it with the xpiUrl !
+                # ! mutates the phase's json to erich it with the xpiUrl !
                 phase['xpiUrl'] = generate_xpi_url(phase['actionTaskId'], release['xpi_name'])
     return response
 
@@ -161,7 +160,7 @@ def phase_signoff(name, phase, body):
     # Prevent the same user signing off for multiple signoffs
     users_ldap = current_user.get_ldap_groups()
     users_email = current_user.get_id()
-    if os.environ.get('APP_CHANNEL') != 'development' and users_email in [s.completed_by for s in phase_obj.signoffs]:
+    if users_email in [s.completed_by for s in phase_obj.signoffs]:
         abort(409, f"Already signed off by {users_email}")
 
     # signoff.permissions corresponds to the group in settings.py
