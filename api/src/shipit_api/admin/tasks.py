@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
 import copy
 import json
 from functools import lru_cache
@@ -55,31 +56,45 @@ def find_decision_task_id(repo_url, project, revision, product):
         raise Exception(f"route {decision_task_route} exception {exc}")
 
 
-@lru_cache(maxsize=2048)
-def find_task_group(task_id):
+def fetch_group_tasks(task_id):
     queue = get_service("queue")
     try:
-        return queue.listTaskGroup(task_id)
+        return queue.listTaskGroup(task_id)["tasks"]
     except Exception as exc:
         raise Exception(f"task {task_id} exception {exc}")
 
 
 @lru_cache(maxsize=2048)
-def find_latest_artifacts(task_id):
+def generate_artifact_url(task_id, artifact_path):
     queue = get_service("queue")
     try:
-        return queue.listLatestArtifacts(task_id)['artifacts']
+        return queue.buildUrl("getLatestArtifact", task_id, artifact_path)
     except Exception as exc:
         raise Exception(f"task {task_id} exception {exc}")
 
 
-@lru_cache(maxsize=2048)
-def generate_artifact_url(task_id, artifact):
-    queue = get_service("queue")
-    try:
-        return queue.buildUrl("getLatestArtifact", task_id, artifact)
-    except Exception as exc:
-        raise Exception(f"task {task_id} exception {exc}")
+def generate_xpi_url(task_id, xpi_name):
+    """
+    Generates a taskcluster url pointing to a phase's .xpi artifact.
+    Useful for exposing signed system add-ons after a release's promote phase is completed.
+
+    Args:
+        task_id: The task id for the action task associated with the release phase.
+        xpi_name: The xpi name set on the xpi release.
+
+    Returns:
+        A taskcluster url pointing to a phase's .xpi artifact or the empty string.
+    """
+    tasks = fetch_group_tasks(task_id)
+    for task in tasks:
+        task_state = task["status"]["state"]
+        if task_state == "completed":
+            task_id = task["status"]["taskId"]
+            artifact_prefix = task["task"]["extra"]["artifact_prefix"]
+            artifact_path = os.path.join(artifact_prefix, f"{xpi_name}.xpi")
+            artifact_url = generate_artifact_url(task_id, artifact_path)
+            return artifact_url
+    return ""
 
 
 def fetch_artifact(task_id, artifact):

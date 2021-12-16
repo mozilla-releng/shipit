@@ -1,7 +1,7 @@
 import os
 import datetime
 import logging
-from collections import defaultdict
+from pprint import pp
 
 import taskcluster_urls
 from flask import abort, current_app
@@ -13,7 +13,7 @@ from werkzeug.exceptions import BadRequest
 from backend_common.taskcluster import get_root_url
 from shipit_api.admin.api import do_schedule_phase, get_signoff_emails, notify_via_matrix
 from shipit_api.admin.github import get_xpi_type
-from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases, find_task_group, find_latest_artifacts, generate_artifact_url
+from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases, generate_xpi_url
 from shipit_api.common.config import SCOPE_PREFIX
 from shipit_api.common.models import XPI, XPIPhase, XPIRelease, XPISignoff
 
@@ -67,34 +67,14 @@ def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["s
         raise BadRequest(description="Filtering by build_number without version is not supported.")
     releases = releases.filter(XPIRelease.status.in_(status))
     response = [r.json for r in releases.all()]
-    from pprint import pp, pformat
+    # Add an xpiUrl for the promote phases in xpi releases.
+    # The xpi's created during this promote phase are signed and can be easily
+    # installed by clicking on these urls.
     for release in response:
         for phase in release['phases']:
-            action_task_id = phase['actionTaskId']
-            if action_task_id:
-                print('*' * 80)
-                print('release[name]', release['name'])
-                print('phase[name]', phase['name'])
-                print('action_task_id', action_task_id)
-                artifacts = []
-                task_group = find_task_group(action_task_id)
-                tasks = task_group['tasks']
-                print('-' * 80)
-                for task in tasks:
-                    task_id = task['status']['taskId']
-                    latest_artifacts = find_latest_artifacts(task_id)
-                    print('x' * 80)
-                    for latest_artifact in latest_artifacts:
-                        artifact_url = generate_artifact_url(task_id, latest_artifact['name'])
-                        if latest_artifact['name'].endswith('.xpi'):
-                            artifacts.append({
-                                'name': latest_artifact['name'],
-                                'url': artifact_url
-                            })
-                    print('x' * 80)
-                phase['artifacts'] = artifacts
-                print('-' * 80)
-        print('*' * 80)
+            if phase['name'] == 'promote' and phase['actionTaskId']:
+                # ! mutates the phase json to erich it with the xpiUrl !
+                phase['xpiUrl'] = generate_xpi_url(phase['actionTaskId'], release['xpi_name'])
     return response
 
 
