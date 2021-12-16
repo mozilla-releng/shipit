@@ -1,6 +1,5 @@
 import datetime
 import logging
-from pprint import pp
 
 import taskcluster_urls
 from flask import abort, current_app

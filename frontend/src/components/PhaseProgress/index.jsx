@@ -101,8 +101,6 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
       const inProgress = submittedTaskStatuses.includes(phase.tcStatus);
       const taskError = errorStatuses.includes(phase.tcStatus);
 
-      console.log(release);
-
       return (
         <Step key={phase.name} completed={!inProgress}>
           <StepLabel
