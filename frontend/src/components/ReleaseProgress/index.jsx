@@ -30,6 +30,7 @@ export default function ReleaseProgress({
   release,
   readOnly = false,
   xpi = false,
+  xpis = null,
 }) {
   const classes = useStyles();
   const authContext = useContext(AuthContext);
@@ -93,8 +94,8 @@ export default function ReleaseProgress({
   const renderReleaseTitle = (isXPI, release) => {
     let url = null;
     let productBranch = null;
-    const { PRODUCTS, XPI_MANIFEST, TREEHERDER_URL } = config;
-    const trimmedRevision = release.revision.substring(0, 13);
+    const { PRODUCTS, TREEHERDER_URL } = config;
+    let trimmedRevision = release.revision.substring(0, 13);
     const product =
       PRODUCTS && PRODUCTS.find(product => product.product === release.product);
 
@@ -112,8 +113,22 @@ export default function ReleaseProgress({
       );
     }
 
-    if (isXPI && XPI_MANIFEST.repo) {
-      url = repoUrlBuilder(XPI_MANIFEST.repo, release.revision);
+    if (isXPI) {
+      trimmedRevision = release.xpi_revision.substring(0, 13);
+      let repo = '';
+      let owner = '';
+
+      xpis.data.xpis.forEach(xpi => {
+        if (xpi.xpi_name === release.xpi_name) {
+          repo = xpi.repo;
+          owner = xpi.owner;
+        }
+      });
+
+      url = repoUrlBuilder(
+        `https://github.com/${owner}/${repo}`,
+        release.xpi_revision
+      );
     } else if (productBranch && productBranch.repo) {
       url = repoUrlBuilder(productBranch.repo, release.revision);
     }

@@ -42,7 +42,11 @@ export async function getLatestGithubCommit(repoOwner, repoName, branch) {
   return commits[0];
 }
 
-export async function getXpis(owner, repo, commit) {
+export async function getXpis(owner = null, repo = null, commit = null) {
+  if (owner == null || repo == null || commit == null) {
+    return null;
+  }
+
   const url = `/github/xpis/${owner}/${repo}/${commit}`;
   const req = await axios.get(url, { authRequired: true });
 
