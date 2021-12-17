@@ -6,9 +6,10 @@
 import logging
 
 import requests
-from mozilla_version.fenix import FenixVersion  # TODO Move FenixVersion into mozilla.gecko
+from mozilla_version.fenix import FenixVersion  # TODO replace with MobileVersion
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
-from mozilla_version.maven import MavenVersion  # TODO To support android-components
+from mozilla_version.maven import MavenVersion
+from mozilla_version.mobile import MobileVersion
 
 from shipit_api.common.config import SUPPORTED_FLAVORS
 from shipit_api.common.product import Product, get_key
@@ -22,6 +23,7 @@ _VERSION_CLASS_PER_PRODUCT = {
     Product.FENIX: FenixVersion,
     Product.FENNEC: FennecVersion,
     Product.FIREFOX: FirefoxVersion,
+    Product.FOCUS_ANDROID: MobileVersion,
     Product.THUNDERBIRD: ThunderbirdVersion,
 }
 

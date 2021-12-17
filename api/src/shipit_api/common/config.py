@@ -466,9 +466,10 @@ SUPPORTED_FLAVORS = {
     ],
     "android-components": [{"name": "ship", "in_previous_graph_ids": True}],
     "fenix": [{"name": "ship", "in_previous_graph_ids": True}],
+    "focus-android": [{"name": "ship", "in_previous_graph_ids": True}],
 }
 
-SUPPORTED_MOBILE_REPO_NAMES = ("fenix", "android-components", "staging-fenix", "staging-android-components")
+SUPPORTED_MOBILE_REPO_NAMES = ("fenix", "android-components", "staging-fenix", "staging-android-components", "focus-android", "staging-focus-android")
 
 SIGNOFFS = {
     # 'projects/maple': {

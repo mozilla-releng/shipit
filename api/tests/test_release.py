@@ -8,6 +8,7 @@ from contextlib import nullcontext as does_not_raise
 import pytest
 from mozilla_version.fenix import FenixVersion
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
+from mozilla_version.mobile import MobileVersion
 
 from shipit_api.admin.api import get_signoff_emails
 from shipit_api.admin.release import bump_version, is_eme_free_enabled, is_partner_enabled, is_rc, parse_version
@@ -35,6 +36,7 @@ from shipit_api.common.product import Product
         # https://github.com/mozilla/release-services/pull/2265
         # Let's be explicitly failing about it.
         ("fennec_release", "68.1.1", pytest.raises(ValueError), None),
+        (Product.FOCUS_ANDROID, "95.0.1", does_not_raise(), MobileVersion(95, 0, 1)),
     ),
 )
 def test_parse_version(product, version, expectation, result):
@@ -82,6 +84,7 @@ def test_is_rc(product, version, partial_updates, result):
         ("fenix", "84.0.0-rc.1", "84.0.0-rc.2"),
         ("fenix", "84.0.0", "84.0.1"),
         ("android-components", "84.0.0", "84.0.1"),
+        ("focus-android", "95.0.0", "95.0.1"),
     ),
 )
 def test_bump_version(product, version, result):
