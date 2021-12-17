@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import Button from '@material-ui/core/Button';
-import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -130,6 +131,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                 fontSize=".80rem"
                 fontWeight={500}
                 position="absolute"
+                marginLeft=".35em"
                 popoverContent={
                   <React.Fragment>
                     {phase.signoffs.map(signoff => (
@@ -145,34 +147,15 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
               />
             )}
             {!inProgress && phase.xpiUrl && (
-              <MouseOverPopover
-                text={
-                  <React.Fragment>
-                    <Link href={phase.xpiUrl}>
-                      <CloudDownloadIcon
-                        fontSize="large"
-                        textAlign="center"
-                        style={{
-                          position: 'relative',
-                          top: '.35em',
-                        }}
-                      />
-                    </Link>
-                  </React.Fragment>
-                }
+              <Box
                 fontSize=".80rem"
                 fontWeight={500}
-                position="absolute"
                 marginTop="2rem"
-                marginLeft="1rem"
-                popoverContent={
-                  <React.Fragment>
-                    <Typography variant="caption" display="block">
-                      Add <b>{release.name}</b> to Firefox
-                    </Typography>
-                  </React.Fragment>
-                }
-              />
+                position="absolute">
+                <Link href={phase.xpiUrl}>
+                  {release.xpi_name}.xpi
+                </Link>
+              </Box>
             )}
           </StepLabel>
         </Step>
