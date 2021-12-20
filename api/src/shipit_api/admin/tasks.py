@@ -87,8 +87,8 @@ def generate_xpi_url(task_id, xpi_name):
     """
     try:
         tasks = fetch_group_tasks(task_id)
-    except:
-        return ""
+    except Exception as exc:
+        raise Exception(f"task {task_id} exception {exc}")
     for task in tasks:
         task_state = task["status"]["state"]
         if task_state == "completed":
