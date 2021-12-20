@@ -18,6 +18,8 @@ export default function MouseOverPopover({
   fontSize,
   fontWeight,
   position,
+  marginTop,
+  marginLeft,
 }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -40,6 +42,8 @@ export default function MouseOverPopover({
         onMouseLeave={handlePopoverClose}
         fontSize={fontSize}
         fontWeight={fontWeight}
+        marginTop={marginTop}
+        marginLeft={marginLeft}
         position={position}>
         {text}
       </Box>
