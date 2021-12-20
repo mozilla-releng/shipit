@@ -73,7 +73,7 @@ def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["s
         for phase in release["phases"]:
             if phase["name"] == "promote" and phase["actionTaskId"]:
                 # ! mutates the phase's json to erich it with the xpiUrl !
-                phase["xpiUrl"] = generate_xpi_url(phase["actionTaskId"], release["xpi_name"])
+                phase["xpiUrl"] = generate_xpi_url(phase["actionTaskId"])
     return response
 
 

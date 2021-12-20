@@ -64,6 +64,14 @@ def fetch_group_tasks(task_id):
         raise Exception(f"task {task_id} exception {exc}")
 
 
+def fetch_latest_artifacts(task_id):
+    queue = get_service("queue")
+    try:
+        return queue.listLatestArtifacts(task_id)["artifacts"]
+    except Exception as exc:
+        raise Exception(f"task {task_id} exception {exc}")
+
+
 @lru_cache(maxsize=2048)
 def generate_artifact_url(task_id, artifact_path):
     queue = get_service("queue")
@@ -73,7 +81,7 @@ def generate_artifact_url(task_id, artifact_path):
         raise Exception(f"task {task_id} exception {exc}")
 
 
-def generate_xpi_url(task_id, xpi_name):
+def generate_xpi_url(task_id):
     """
     Generates a taskcluster url pointing to a phase's .xpi artifact.
     Useful for exposing signed system add-ons after a release's promote phase is completed.
@@ -87,19 +95,16 @@ def generate_xpi_url(task_id, xpi_name):
     """
     try:
         tasks = fetch_group_tasks(task_id)
+        for task in tasks:
+            task_state = task["status"]["state"]
+            if task_state == "completed":
+                task_id = task["status"]["taskId"]
+                artifacts = fetch_latest_artifacts(task_id)
+                artifact_path = next(artifact["name"] for artifact in artifacts if artifact["name"].endswith(".xpi"))
+                artifact_url = generate_artifact_url(task_id, artifact_path)
+                return artifact_url
     except Exception as exc:
         return ""
-    for task in tasks:
-        task_state = task["status"]["state"]
-        if task_state == "completed":
-            task_id = task["status"]["taskId"]
-            try:
-                artifact_path = task["task"]["payload"]["upstreamArtifacts"][0]["paths"][0]
-            except IndexError as exc:
-                return ""
-            artifact_url = generate_artifact_url(task_id, artifact_path)
-            return artifact_url
-    return ""
 
 
 def fetch_artifact(task_id, artifact):
