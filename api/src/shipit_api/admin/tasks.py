@@ -90,7 +90,10 @@ def generate_xpi_url(task_id, xpi_name):
         task_state = task["status"]["state"]
         if task_state == "completed":
             task_id = task["status"]["taskId"]
-            artifact_prefix = task["task"]["extra"]["artifact_prefix"]
+            try:
+                artifact_prefix = task["task"]["extra"]["artifact_prefix"]
+            except KeyError:
+                return ""
             artifact_path = os.path.join(artifact_prefix, f"{xpi_name}.xpi")
             artifact_url = generate_artifact_url(task_id, artifact_path)
             return artifact_url
