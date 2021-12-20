@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 
 import taskcluster_urls
 from flask import abort, current_app
@@ -142,6 +143,7 @@ def get_phase_signoff(name, phase):
 def phase_signoff(name, phase, body):
     session = current_app.db.session
     signoff = session.query(XPISignoff).filter(XPISignoff.uid == body).first_or_404()
+    dev = os.environ.get("APP_CHANNEL") in ["dev", "development"]
 
     if signoff.signed:
         abort(409, "Already signed off")
@@ -152,20 +154,20 @@ def phase_signoff(name, phase, body):
     # we must require scope which depends on product and phase name
     xpi_type = _xpi_type(phase_obj.release.revision, phase_obj.release.xpi_name)
     required_permission = f"{SCOPE_PREFIX}/phase_signoff/xpi/{xpi_type}/{signoff.phase.name}"
-    if not current_user.has_permissions(required_permission):
+    if not current_user.has_permissions(required_permission) and not dev:
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     # Prevent the same user signing off for multiple signoffs
     users_ldap = current_user.get_ldap_groups()
     users_email = current_user.get_id()
-    if users_email in [s.completed_by for s in phase_obj.signoffs]:
+    if users_email in [s.completed_by for s in phase_obj.signoffs] and not dev:
         abort(409, f"Already signed off by {users_email}")
 
     # signoff.permissions corresponds to the group in settings.py
     ldap_groups = current_app.config.get("LDAP_GROUPS", {})
     ldap_group = ldap_groups.get(signoff.permissions, [])
-    if not set(users_ldap).intersection(set(ldap_group)):
+    if not set(users_ldap).intersection(set(ldap_group)) and not dev:
         abort(401, f"User `{users_email}` is not in the `{signoff.permissions}`")
 
     signoff.completed = datetime.datetime.utcnow()
