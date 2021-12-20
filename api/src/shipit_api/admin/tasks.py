@@ -88,16 +88,15 @@ def generate_xpi_url(task_id, xpi_name):
     try:
         tasks = fetch_group_tasks(task_id)
     except Exception as exc:
-        raise Exception(f"task {task_id} exception {exc}")
+        return ""
     for task in tasks:
         task_state = task["status"]["state"]
         if task_state == "completed":
             task_id = task["status"]["taskId"]
             try:
-                artifact_prefix = task["task"]["extra"]["artifact_prefix"]
-            except KeyError:
+                artifact_path = task["task"]["payload"]["upstreamArtifacts"][0]["paths"][0]
+            except IndexError as exc:
                 return ""
-            artifact_path = os.path.join(artifact_prefix, f"{xpi_name}.xpi")
             artifact_url = generate_artifact_url(task_id, artifact_path)
             return artifact_url
     return ""
