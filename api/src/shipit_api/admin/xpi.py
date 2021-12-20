@@ -69,10 +69,10 @@ def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["s
     # The xpi's created during the release's promote phase are signed and
     # can be installed easily by clicking on the xpiUrl.
     for release in response:
-        for phase in release['phases']:
-            if phase['name'] == 'promote' and phase['actionTaskId']:
+        for phase in release["phases"]:
+            if phase["name"] == "promote" and phase["actionTaskId"]:
                 # ! mutates the phase's json to erich it with the xpiUrl !
-                phase['xpiUrl'] = generate_xpi_url(phase['actionTaskId'], release['xpi_name'])
+                phase["xpiUrl"] = generate_xpi_url(phase["actionTaskId"], release["xpi_name"])
     return response
 
 
