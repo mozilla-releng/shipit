@@ -11,7 +11,7 @@ from werkzeug.exceptions import BadRequest
 from backend_common.taskcluster import get_root_url
 from shipit_api.admin.api import do_schedule_phase, get_signoff_emails, notify_via_matrix
 from shipit_api.admin.github import get_xpi_type
-from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases
+from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases, generate_xpi_url
 from shipit_api.common.config import SCOPE_PREFIX
 from shipit_api.common.models import XPI, XPIPhase, XPIRelease, XPISignoff
 
@@ -64,7 +64,16 @@ def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["s
     elif build_number:
         raise BadRequest(description="Filtering by build_number without version is not supported.")
     releases = releases.filter(XPIRelease.status.in_(status))
-    return [r.json for r in releases.all()]
+    response = [r.json for r in releases.all()]
+    # Add an xpiUrl for the completed promote phases within xpi releases.
+    # The xpi's created during the release's promote phase are signed and
+    # can be installed easily by clicking on the xpiUrl.
+    for release in response:
+        for phase in release["phases"]:
+            if phase["name"] == "promote" and phase["actionTaskId"]:
+                # ! mutates the phase's json to erich it with the xpiUrl !
+                phase["xpiUrl"] = generate_xpi_url(phase["actionTaskId"], release["xpi_name"])
+    return response
 
 
 def get_release(name):

@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -18,6 +19,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Link from '@material-ui/core/Link';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
 import { makeStyles } from '@material-ui/core/styles';
 import config from '../../config';
 import { schedulePhase, phaseSignOff } from '../api';
@@ -129,6 +131,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                 fontSize=".80rem"
                 fontWeight={500}
                 position="absolute"
+                marginTop=".15rem"
                 popoverContent={
                   <React.Fragment>
                     {phase.signoffs.map(signoff => (
@@ -142,6 +145,25 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                   </React.Fragment>
                 }
               />
+            )}
+            {!inProgress && phase.xpiUrl && (
+              <Box
+                fontSize=".80rem"
+                fontWeight={500}
+                marginTop="1.6rem"
+                position="absolute">
+                <Link href={phase.xpiUrl}>
+                  xpi package
+                  <LinkOutlinedIcon
+                    fontSize="small"
+                    viewBox="-5 0 30 30"
+                    style={{
+                      position: 'relative',
+                      top: '.4em',
+                    }}
+                  />
+                </Link>
+              </Box>
             )}
           </StepLabel>
         </Step>
