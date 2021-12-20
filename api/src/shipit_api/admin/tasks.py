@@ -85,7 +85,10 @@ def generate_xpi_url(task_id, xpi_name):
     Returns:
         A taskcluster url pointing to a phase's .xpi artifact or the empty string.
     """
-    tasks = fetch_group_tasks(task_id)
+    try:
+        tasks = fetch_group_tasks(task_id)
+    except:
+        return ""
     for task in tasks:
         task_state = task["status"]["state"]
         if task_state == "completed":
