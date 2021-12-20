@@ -103,7 +103,7 @@ def generate_xpi_url(task_id):
                 artifact_path = next(artifact["name"] for artifact in artifacts if artifact["name"].endswith(".xpi"))
                 artifact_url = generate_artifact_url(task_id, artifact_path)
                 return artifact_url
-    except Exception as exc:
+    except Exception:
         return ""
 
 
