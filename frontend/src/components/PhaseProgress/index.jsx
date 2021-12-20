@@ -131,7 +131,6 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                 fontSize=".80rem"
                 fontWeight={500}
                 position="absolute"
-                marginLeft=".35em"
                 marginTop=".15rem"
                 popoverContent={
                   <React.Fragment>
