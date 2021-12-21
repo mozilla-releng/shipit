@@ -11,8 +11,8 @@ from werkzeug.exceptions import BadRequest
 from backend_common.taskcluster import get_root_url
 from shipit_api.admin.api import do_schedule_phase, get_signoff_emails, notify_via_matrix
 from shipit_api.admin.github import get_xpi_type
-from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases
-from shipit_api.common.config import SCOPE_PREFIX
+from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases, generate_xpi_url
+from shipit_api.common.config import SCOPE_PREFIX, XPI_LAX_SIGN_OFF
 from shipit_api.common.models import XPI, XPIPhase, XPIRelease, XPISignoff
 
 logger = logging.getLogger(__name__)
@@ -64,7 +64,16 @@ def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["s
     elif build_number:
         raise BadRequest(description="Filtering by build_number without version is not supported.")
     releases = releases.filter(XPIRelease.status.in_(status))
-    return [r.json for r in releases.all()]
+    response = [r.json for r in releases.all()]
+    # Add an xpiUrl for the completed promote phases within xpi releases.
+    # The xpi's created during the release's promote phase are signed and
+    # can be installed easily by clicking on the xpiUrl.
+    for release in response:
+        for phase in release["phases"]:
+            if phase["name"] == "promote" and phase["actionTaskId"]:
+                # ! mutates the phase's json to erich it with the xpiUrl !
+                phase["xpiUrl"] = generate_xpi_url(phase["actionTaskId"])
+    return response
 
 
 def get_release(name):
@@ -143,20 +152,20 @@ def phase_signoff(name, phase, body):
     # we must require scope which depends on product and phase name
     xpi_type = _xpi_type(phase_obj.release.revision, phase_obj.release.xpi_name)
     required_permission = f"{SCOPE_PREFIX}/phase_signoff/xpi/{xpi_type}/{signoff.phase.name}"
-    if not current_user.has_permissions(required_permission):
+    if not current_user.has_permissions(required_permission) and not XPI_LAX_SIGN_OFF:
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     # Prevent the same user signing off for multiple signoffs
     users_ldap = current_user.get_ldap_groups()
     users_email = current_user.get_id()
-    if users_email in [s.completed_by for s in phase_obj.signoffs]:
+    if users_email in [s.completed_by for s in phase_obj.signoffs] and not XPI_LAX_SIGN_OFF:
         abort(409, f"Already signed off by {users_email}")
 
     # signoff.permissions corresponds to the group in settings.py
     ldap_groups = current_app.config.get("LDAP_GROUPS", {})
     ldap_group = ldap_groups.get(signoff.permissions, [])
-    if not set(users_ldap).intersection(set(ldap_group)):
+    if not set(users_ldap).intersection(set(ldap_group)) and not XPI_LAX_SIGN_OFF:
         abort(401, f"User `{users_email}` is not in the `{signoff.permissions}`")
 
     signoff.completed = datetime.datetime.utcnow()

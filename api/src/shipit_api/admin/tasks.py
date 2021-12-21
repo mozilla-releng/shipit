@@ -55,6 +55,57 @@ def find_decision_task_id(repo_url, project, revision, product):
         raise Exception(f"route {decision_task_route} exception {exc}")
 
 
+def fetch_group_tasks(task_id):
+    queue = get_service("queue")
+    try:
+        return queue.listTaskGroup(task_id)["tasks"]
+    except Exception as exc:
+        raise Exception(f"task {task_id} exception {exc}")
+
+
+def fetch_latest_artifacts(task_id):
+    queue = get_service("queue")
+    try:
+        return queue.listLatestArtifacts(task_id)["artifacts"]
+    except Exception as exc:
+        raise Exception(f"task {task_id} exception {exc}")
+
+
+@lru_cache(maxsize=2048)
+def generate_artifact_url(task_id, artifact_path):
+    queue = get_service("queue")
+    try:
+        return queue.buildUrl("getLatestArtifact", task_id, artifact_path)
+    except Exception as exc:
+        raise Exception(f"task {task_id} exception {exc}")
+
+
+def generate_xpi_url(task_id):
+    """
+    Generates a taskcluster url pointing to a phase's .xpi artifact.
+    Useful for exposing signed system add-ons after a release's promote phase is completed.
+
+    Args:
+        task_id: The task id for the action task associated with the release phase.
+        xpi_name: The xpi name set on the xpi release.
+
+    Returns:
+        A taskcluster url pointing to a phase's .xpi artifact or the empty string.
+    """
+    try:
+        tasks = fetch_group_tasks(task_id)
+        for task in tasks:
+            task_state = task["status"]["state"]
+            if task_state == "completed":
+                task_id = task["status"]["taskId"]
+                artifacts = fetch_latest_artifacts(task_id)
+                artifact_path = next(artifact["name"] for artifact in artifacts if artifact["name"].endswith(".xpi"))
+                artifact_url = generate_artifact_url(task_id, artifact_path)
+                return artifact_url
+    except Exception:
+        return ""
+
+
 def fetch_artifact(task_id, artifact):
     try:
         queue = get_service("queue")
