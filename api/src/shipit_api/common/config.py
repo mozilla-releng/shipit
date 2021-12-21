@@ -6,6 +6,8 @@
 import pathlib
 import tempfile
 
+from decouple import config
+
 PROJECT_NAME = "shipit/api"
 APP_NAME = "shipit_api"
 SCOPE_PREFIX = f"project:releng:services/{APP_NAME}"
@@ -471,6 +473,7 @@ SUPPORTED_FLAVORS = {
 
 SUPPORTED_MOBILE_REPO_NAMES = ("fenix", "android-components", "staging-fenix", "staging-android-components", "focus-android", "staging-focus-android")
 
+XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
 SIGNOFFS = {
     # 'projects/maple': {
     #     'fennec': {
