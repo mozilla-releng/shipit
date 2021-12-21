@@ -8,7 +8,7 @@ import base64
 from decouple import config
 
 from backend_common.auth import create_auth0_secrets_file
-from shipit_api.common.config import SCOPE_PREFIX, SUPPORTED_FLAVORS
+from shipit_api.common.config import SCOPE_PREFIX, SUPPORTED_FLAVORS, XPI_LAX_SIGN_OFF
 
 # TODO: 1) rename "development" to "local" 2) remove "staging" when fully migrated
 supported_channels = ["dev", "development", "staging", "production"]
@@ -42,6 +42,9 @@ PRODUCT_DETAILS_GIT_REPO_URL = config("PRODUCT_DETAILS_GIT_REPO_URL", default=No
 
 if APP_CHANNEL not in supported_channels:
     raise ValueError(f"APP_CHANNEL should be one of {supported_channels}, `{APP_CHANNEL}` given")
+
+if XPI_LAX_SIGN_OFF and APP_CHANNEL == "production":
+    raise ValueError("XPI_LAX_SIGN_OFF cannot be enabled when the APP_CHANNEL is production!")
 
 # -- DATABASE -----------------------------------------------------------------
 

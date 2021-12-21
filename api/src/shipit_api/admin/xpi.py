@@ -1,6 +1,5 @@
 import datetime
 import logging
-import os
 
 import taskcluster_urls
 from flask import abort, current_app
@@ -13,7 +12,7 @@ from backend_common.taskcluster import get_root_url
 from shipit_api.admin.api import do_schedule_phase, get_signoff_emails, notify_via_matrix
 from shipit_api.admin.github import get_xpi_type
 from shipit_api.admin.tasks import UnsupportedFlavor, generate_phases, generate_xpi_url
-from shipit_api.common.config import SCOPE_PREFIX
+from shipit_api.common.config import SCOPE_PREFIX, XPI_LAX_SIGN_OFF
 from shipit_api.common.models import XPI, XPIPhase, XPIRelease, XPISignoff
 
 logger = logging.getLogger(__name__)
@@ -143,7 +142,6 @@ def get_phase_signoff(name, phase):
 def phase_signoff(name, phase, body):
     session = current_app.db.session
     signoff = session.query(XPISignoff).filter(XPISignoff.uid == body).first_or_404()
-    dev = os.environ.get("APP_CHANNEL") in ["dev", "development"]
 
     if signoff.signed:
         abort(409, "Already signed off")
@@ -154,20 +152,20 @@ def phase_signoff(name, phase, body):
     # we must require scope which depends on product and phase name
     xpi_type = _xpi_type(phase_obj.release.revision, phase_obj.release.xpi_name)
     required_permission = f"{SCOPE_PREFIX}/phase_signoff/xpi/{xpi_type}/{signoff.phase.name}"
-    if not current_user.has_permissions(required_permission) and not dev:
+    if not current_user.has_permissions(required_permission) and not XPI_LAX_SIGN_OFF:
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     # Prevent the same user signing off for multiple signoffs
     users_ldap = current_user.get_ldap_groups()
     users_email = current_user.get_id()
-    if users_email in [s.completed_by for s in phase_obj.signoffs] and not dev:
+    if users_email in [s.completed_by for s in phase_obj.signoffs] and not XPI_LAX_SIGN_OFF:
         abort(409, f"Already signed off by {users_email}")
 
     # signoff.permissions corresponds to the group in settings.py
     ldap_groups = current_app.config.get("LDAP_GROUPS", {})
     ldap_group = ldap_groups.get(signoff.permissions, [])
-    if not set(users_ldap).intersection(set(ldap_group)) and not dev:
+    if not set(users_ldap).intersection(set(ldap_group)) and not XPI_LAX_SIGN_OFF:
         abort(401, f"User `{users_email}` is not in the `{signoff.permissions}`")
 
     signoff.completed = datetime.datetime.utcnow()

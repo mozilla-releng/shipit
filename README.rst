@@ -29,6 +29,13 @@ Run ``./startup.sh``
 
 You should be all set to kick off some staging releases.
 
+To provide all required sign offs on staging xpi releases
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set ``XPI_LAX_SIGN_OFF=true``. This will enable you to run xpi releases in the shipit admin app on your own.
+This is useful when testing patches on your local environment and on shipit's dev/staging environment.
+When running locally add ``XPI_LAX_SIGN_OFF=true`` to the docker-compose.yml file in ``services.api.environment``.
+
 To rebuild product-details
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
