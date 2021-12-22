@@ -96,7 +96,8 @@ def generate_xpi_url(task_id):
         tasks = fetch_group_tasks(task_id)
         for task in tasks:
             task_state = task["status"]["state"]
-            if task_state == "completed":
+            task_kind = task["task"]["tags"]["kind"]
+            if task_state == "completed" and task_kind == "release-signing":
                 task_id = task["status"]["taskId"]
                 artifacts = fetch_latest_artifacts(task_id)
                 artifact_path = next(artifact["name"] for artifact in artifacts if artifact["name"].endswith(".xpi"))
