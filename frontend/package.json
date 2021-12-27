@@ -37,7 +37,7 @@
     "axios": "0.21.4",
     "date-fns": "2.24.0",
     "is-absolute-url": "3.0.3",
-    "prop-types": "15.7.2",
+    "prop-types": "15.8.0",
     "react": "16.14.0",
     "react-auth0-components": "1.0.4",
     "react-dom": "16.14.0",
