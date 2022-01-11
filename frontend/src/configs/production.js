@@ -185,7 +185,7 @@ module.exports = {
     },
   ],
   XPI_MANIFEST: {
-    branch: 'master',
+    branch: 'main',
     owner: 'mozilla-extensions',
     project: 'xpi-manifest',
     repo: 'https://github.com/mozilla-extensions/xpi-manifest',
