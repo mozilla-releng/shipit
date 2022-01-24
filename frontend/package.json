@@ -34,7 +34,7 @@
     "@material-ui/pickers": "3.3.10",
     "@material-ui/styles": "4.11.4",
     "@mozilla-frontend-infra/components": "3.0.7",
-    "axios": "0.21.4",
+    "axios": "0.25.0",
     "date-fns": "2.24.0",
     "is-absolute-url": "3.0.3",
     "prop-types": "15.8.0",
