@@ -88,6 +88,7 @@ LDAP_GROUPS = {
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_admin_signoff": XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
+    "xpi_normandy-privileged_signoff": ADMIN_LDAP_GROUP,
 }
 
 AUTH0_AUTH_SCOPES = dict()
@@ -144,6 +145,7 @@ AUTH0_AUTH_SCOPES.update(
                 + LDAP_GROUPS["xpi_system_signoff"]
                 + LDAP_GROUPS["xpi_mozillaonline-privileged_signoff"]
                 + LDAP_GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
+                + LDAP_GROUPS["xpi_normandy-privileged_signoff"]
                 + LDAP_GROUPS["focus-android-signoff"]
             )
         )
@@ -151,7 +153,7 @@ AUTH0_AUTH_SCOPES.update(
 )
 
 # XPI scopes
-for xpi_type in ["privileged", "system", "mozillaonline-privileged"]:
+for xpi_type in ["privileged", "system", "mozillaonline-privileged", "normandy-privileged"]:
     # "build", "signoff", and "admin_signoff" groups can create and cancel releases
     AUTH0_AUTH_SCOPES.update(
         {
