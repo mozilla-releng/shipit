@@ -23,7 +23,10 @@ def rebuild_product_details(git_repo_url, folder_in_repo, app_channel, breakpoin
     async def rebuild_product_details_async(channel, body, envelope, properties):
         await channel.basic_client_ack(delivery_tag=envelope.delivery_tag)
         logger.info("Marked pulse message as acknowledged.")
-        await rebuild(flask.current_app.db.session, app_channel, git_repo_url, folder_in_repo, breakpoint_version)
+        try:
+            await rebuild(flask.current_app.db.session, app_channel, git_repo_url, folder_in_repo, breakpoint_version)
+        finally:
+            flask.current_app.db.session.rollback()
         logger.info("Product details rebuilt")
 
     return rebuild_product_details_async
