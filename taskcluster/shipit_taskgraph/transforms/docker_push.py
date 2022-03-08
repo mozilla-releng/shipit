@@ -8,7 +8,6 @@ Kubernetes docker image builds.
 
 
 import os
-import six
 
 from taskgraph.transforms.base import TransformSequence
 
@@ -26,7 +25,6 @@ def set_push_environment(config, jobs):
         version_file = os.path.join(config.graph_config.vcs_root, "api",
                                     "version.txt")
         version = open(version_file).read().strip()
-        version_txt = six.ensure_text(version)
 
         env = job["worker"].setdefault("env", {})
         env.update({
@@ -34,6 +32,6 @@ def set_push_environment(config, jobs):
             "VCS_HEAD_REPOSITORY": config.params['head_repository'],
             "VCS_HEAD_REV": config.params['head_rev'],
             # TODO: Figure out if we still need to add the version
-            "APP_VERSION": version_txt,
+            "APP_VERSION": version,
         })
         yield job
