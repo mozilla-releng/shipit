@@ -519,10 +519,9 @@ rsa==4.7.2 \
     --hash=sha256:78f9a9bf4e7be0c5ded4583326e7461e3a3c5aae24073648b4bdfa797d78c9d2 \
     --hash=sha256:9d689e6ca1b3038bc82bf8d23e944b6b6037bc02301a574935b2dd946e0353b9
     # via oauth2client
-taskcluster==44.2.2 \
-    --hash=sha256:0266a6a901e1a2ec838984a7f24e7adb6d58f9f2e221a7f613388f8f23f786fc \
-    --hash=sha256:846d73c597f0f47dd8525c85c8d9bc41111d5200b090690d3f16b2f57c56a2e1 \
-    --hash=sha256:c1b0e82be25b1ed17e07c90b24a382634b2bfce273fdf2682d94568abe10716c
+taskcluster==44.12.3 \
+    --hash=sha256:3476bd3db988ec5c01d866d4578c48865ca123238cfd6c0ebfef1de2b3c1820d \
+    --hash=sha256:d2588ea2e6c83a72a637b10567fd9a7f519119e8833d497d76214bdedfde40f1
     # via -r requirements/base.in
 taskcluster-urls==13.0.1 \
     --hash=sha256:5e25e7e6818e8877178b175ff43d2e6548afad72694aa125f404a7329ece0973 \
