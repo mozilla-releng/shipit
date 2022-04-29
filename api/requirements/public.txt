@@ -42,9 +42,9 @@ connexion2==2.10.0 \
     --hash=sha256:8ebafc4be3a0a5512f6336c8c31f59c762762b0ad1c59c4e8fe1bbb4073ae856 \
     --hash=sha256:d5c21231cb08f1e0b204a1b77161ecef5391b18ecd30ba3731622f5412f28ed1
     # via -r requirements/public.in
-dockerflow==2021.7.0 \
-    --hash=sha256:9f309fdf72a897290878f97cc30fd4bb3609b13cf74bfce4268f5e368e466070 \
-    --hash=sha256:e47bbca06c261a5c3d97e5e0990aa71dafed41b723d0e0009c32e1d2f9b92db4
+dockerflow==2022.1.0 \
+    --hash=sha256:ec723cedb853043a0c7cada32f46f8f7eadfaf6bd7dee718e9a373b6b577d249 \
+    --hash=sha256:f40bad2d465533b1949261e5cd3ffa23fd1dd0c12f32f4e4608040ec6ad502a5
     # via -r requirements/public.in
 flask==2.0.2 \
     --hash=sha256:7b2fb8e934ddd50731893bdcdb00fc8c0315916f9fcd50d22c7cc1a95ab634e2 \
@@ -293,9 +293,9 @@ pyrsistent==0.18.0 \
     --hash=sha256:f3ef98d7b76da5eb19c37fda834d50262ff9167c65658d1d8f974d2e4d90676b \
     --hash=sha256:f4c8cabb46ff8e5d61f56a037974228e978f26bfefce4f61a4b1ac0ba7a2ab72
     # via jsonschema
-python-decouple==3.5 \
-    --hash=sha256:011d3f785367c54a72cf8a07d3a7a48bb8cc1a0f8e6c70353ca5767ebf7c8c9d \
-    --hash=sha256:68e4b3fcc97e24bc90eecc514852d0bf970f4ff031f5f7a6728ddafa9afefcaf
+python-decouple==3.6 \
+    --hash=sha256:2838cdf77a5cf127d7e8b339ce14c25bceb3af3e674e039d4901ba16359968c7 \
+    --hash=sha256:6cf502dc963a5c642ea5ead069847df3d916a6420cad5599185de6bab11d8c2e
     # via -r requirements/public.in
 pyyaml==5.4.1 \
     --hash=sha256:08682f6b72c722394747bddaf0aa62277e02557c0fd1c42cb853016a38f8dedf \
