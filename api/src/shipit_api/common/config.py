@@ -52,7 +52,7 @@ FIREFOX_NIGHTLY = "102.0a1"
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
 LAST_SOFTFREEZE_DATE = "2022-04-28"
-LAST_MERGE_DATE = "2022-05-30"
+LAST_MERGE_DATE = "2022-05-02"
 LAST_RELEASE_DATE = "2022-05-03"
 NEXT_SOFTFREEZE_DATE = "2022-05-26"
 NEXT_MERGE_DATE = "2022-05-30"
