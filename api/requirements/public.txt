@@ -243,9 +243,9 @@ markupsafe==2.0.1 \
     # via
     #   jinja2
     #   mako
-mozilla-version==1.0.0 \
-    --hash=sha256:678093aacc455a49b6feb6eeb922296c191aca4884e815573156b5966b8b051e \
-    --hash=sha256:a6d06ac135dd6f4333b9ac1fd04f41f4ba96e83973dd2ac9f70daf577718b96c
+mozilla-version==1.0.1 \
+    --hash=sha256:9d6f50eb0b362106e468ba84cafd683d56cab153e252c2d272b135b5c65da48e \
+    --hash=sha256:eb913cc47fd244e8767d19eb53c68875ea77740eaf1ca518213c3e4b6b2f050b
     # via -r requirements/public.in
 openapi-schema-validator==0.1.5 \
     --hash=sha256:215b516d0942f4e8e2446cf3f7d4ff2ed71d102ebddcc30526d8a3f706ab1df6 \
