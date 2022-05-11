@@ -67,6 +67,7 @@ ADMIN_LDAP_GROUP = ["releng"]
 XPI_PRIVILEGED_BUILD_LDAP_GROUP = ["xpi_privileged_build"]
 
 XPI_PRIVILEGED_ADMIN_LDAP_GROUP = ["xpi_privileged_admin"]
+XPI_SYSTEM_BUILD_LDAP_GROUP = ["xpi_system_build"]
 XPI_SYSTEM_ADMIN_LDAP_GROUP = ["xpi_system_admin"]
 XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP = ["xpi_mozillaonline_build"]
 XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP = ["xpi_mozillaonline_admin"]
@@ -85,6 +86,7 @@ LDAP_GROUPS = {
     "xpi_privileged_build": XPI_PRIVILEGED_BUILD_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_privileged_admin_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP,
+    "xpi_system_build": XPI_SYSTEM_BUILD_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_system_signoff": XPI_SYSTEM_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_admin_signoff": XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
@@ -142,6 +144,7 @@ AUTH0_AUTH_SCOPES.update(
                 + LDAP_GROUPS["fenix-signoff"]
                 + LDAP_GROUPS["xpi_privileged_build"]
                 + LDAP_GROUPS["xpi_privileged_signoff"]
+                + LDAP_GROUPS["xpi_system_build"]
                 + LDAP_GROUPS["xpi_system_signoff"]
                 + LDAP_GROUPS["xpi_mozillaonline-privileged_signoff"]
                 + LDAP_GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
