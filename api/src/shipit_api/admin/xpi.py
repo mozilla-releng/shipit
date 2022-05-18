@@ -172,12 +172,12 @@ def phase_signoff(name, phase, body):
     signoff.signed = True
     signoff.completed_by = users_email
 
-    session.commit()
     signoffs = [s.json for s in phase_obj.signoffs]
 
     # Schedule the phase when all signoffs are done
     if all([s.signed for s in phase_obj.signoffs]):
         schedule_phase(name, phase)
+    session.commit()
 
     release = phase_obj.release
     logger.info("Phase %s of %s signed off by %s", phase, release.name, users_email)
