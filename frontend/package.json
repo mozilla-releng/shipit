@@ -4,14 +4,14 @@
     "@neutrinojs/jest": "9.5.0",
     "@neutrinojs/react": "9.5.0",
     "dotenv": "16.0.1",
-    "dotenv-cli": "4.0.0",
-    "eslint": "7.18.0",
+    "dotenv-cli": "4.1.1",
+    "eslint": "7.32.0",
     "jest": "26.6.3",
     "neutrino": "9.5.0",
     "webpack": "4.46.0",
     "webpack-cli": "3.3.12",
-    "webpack-dev-server": "3.11.2",
-    "worker-loader": "3.0.7"
+    "webpack-dev-server": "3.11.3",
+    "worker-loader": "3.0.8"
   },
   "scripts": {
     "build": "dotenv webpack -- --mode production",
