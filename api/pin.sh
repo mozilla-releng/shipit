@@ -1,0 +1,3 @@
+#!/bin/bash
+# pip-compile-multi -g requirements/base.in -g requirements/local.in -g requirements/public.in -g requirements/test.in -g requirements/tox.in --upgrade-package check-manifest --upgrade-package aioresponses --upgrade-package black --upgrade-package pytest-asyncio --upgrade-package pytest-cov --upgrade-package dockerflow --upgrade-package taskcluster --upgrade-package python-decouple --upgrade-package mozilla-version --upgrade-package tox
+pip-compile-multi -g requirements/base.in -g requirements/local.in -g requirements/public.in -g requirements/test.in -g requirements/tox.in --upgrade-package mozilla-version
