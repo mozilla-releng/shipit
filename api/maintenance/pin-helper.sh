@@ -9,8 +9,6 @@ fi
 pip install --upgrade pip
 pip install pip-compile-multi
 
-apt-get update
-
 ARGS="-g base -g public -g test -g local -g tox"
 pip-compile-multi -o "$SUFFIX" $ARGS $EXTRA_PCM_ARGS
 chmod 644 requirements/*.txt
