@@ -324,7 +324,7 @@ async function getTcStatus(phase) {
 
       // If there are errors the phase failed
       if (statuses.some(status => isError.includes(status))) {
-        return 'failed';
+        return 'warning';
       }
 
       // If there are no errors but
