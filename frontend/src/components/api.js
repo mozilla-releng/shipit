@@ -287,6 +287,62 @@ async function getTaskStatus(taskId) {
   }
 }
 
+async function getTaskGroup(taskId) {
+  const url = libUrls.api(
+    config.TASKCLUSTER_ROOT_URL,
+    'queue',
+    'v1',
+    `/task-group/${taskId}/list`
+  );
+
+  try {
+    const req = await axios.get(url);
+
+    return req.data;
+  } catch (error) {
+    return null;
+  }
+}
+
+async function getTcStatus(phase) {
+  const inProgress = ['unscheduled', 'pending', 'running'];
+  const isError = ['failed', 'exception'];
+  // This is the status of the phase's decision/action task
+  const status = await getTaskStatus(phase.actionTaskId);
+
+  // Only get the TC status for non-expired tasks
+  if (!status) {
+    return null;
+  }
+
+  // If the decision task is completed, we can check the task graph's task group
+  if (status.status.state === 'completed') {
+    const taskGroup = await getTaskGroup(phase.actionTaskId);
+
+    if (taskGroup) {
+      const statuses = taskGroup.tasks.map(task => task.status.state);
+
+      // If there are errors the phase failed
+      if (statuses.some(status => isError.includes(status))) {
+        return 'failed';
+      }
+
+      // If there are no errors but
+      // some tasks are in progress the phase is running
+      if (statuses.some(status => inProgress.includes(status))) {
+        return 'running';
+      }
+
+      // If all the tasks in the task graph completed the phase is complete
+      if (statuses.every(status => status === 'completed')) {
+        return 'completed';
+      }
+    }
+  }
+
+  return status.status.state;
+}
+
 async function getPhaseSignOffs(releaseName, phaseName, url = '/signoff') {
   const req = await axios.get(`${url}/${releaseName}/${phaseName}`);
 
@@ -310,11 +366,11 @@ export async function getPendingReleases(
           );
 
           if (phase.submitted && phase.actionTaskId) {
-            const status = await getTaskStatus(phase.actionTaskId);
+            const tcStatus = getTcStatus(phase);
 
-            if (status) {
+            if (tcStatus) {
               // Only update the TC status for not expired tasks
-              return { ...phase, tcStatus: status.status.state, signoffs };
+              return { ...phase, tcStatus, signoffs };
             }
 
             return { ...phase, signoffs };
