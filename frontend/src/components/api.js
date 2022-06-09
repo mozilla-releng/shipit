@@ -366,7 +366,7 @@ export async function getPendingReleases(
           );
 
           if (phase.submitted && phase.actionTaskId) {
-            const tcStatus = getTcStatus(phase);
+            const tcStatus = await getTcStatus(phase);
 
             if (tcStatus) {
               // Only update the TC status for not expired tasks
