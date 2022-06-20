@@ -5,7 +5,7 @@
     "@neutrinojs/react": "9.5.0",
     "dotenv": "16.0.1",
     "dotenv-cli": "4.1.1",
-    "eslint": "7.32.0",
+    "eslint": "8.18.0",
     "jest": "26.6.3",
     "neutrino": "9.5.0",
     "webpack": "4.46.0",
