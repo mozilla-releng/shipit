@@ -108,8 +108,6 @@ module.exports = {
           project: 'comm-esr91',
           branch: 'releases/comm-esr91',
           repo: 'https://hg.mozilla.org/releases/comm-esr91',
-          alternativeBranch: 'releases/comm-esr78',
-          alternativeRepo: 'https://hg.mozilla.org/releases/comm-esr78',
           enableReleaseEta: false,
           disableable: false,
         },
