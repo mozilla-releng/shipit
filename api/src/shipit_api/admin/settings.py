@@ -132,7 +132,7 @@ for phase in set(phases):
 AUTH0_AUTH_SCOPES.update(scopes)
 
 # other scopes
-AUTH0_AUTH_SCOPES.update({"rebuild_product_details": [], "update_release_status": []})
+AUTH0_AUTH_SCOPES.update({"rebuild_product_details": LDAP_GROUPS["firefox-signoff"], "update_release_status": []})
 
 # Github scopes
 # The following scope gives permission to all github queries, inlcuding private repos
