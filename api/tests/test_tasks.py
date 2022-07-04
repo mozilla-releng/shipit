@@ -56,8 +56,11 @@ from shipit_api.admin import tasks
             "100.0.1",
             None,
             None,
-            pytest.raises(tasks.UnsupportedFlavor),
-            None,
+            does_not_raise(),
+            [
+                {"name": "promote_firefox", "in_previous_graph_ids": True},
+                {"name": "push_firefox", "in_previous_graph_ids": True},
+            ],
         ),
         (
             ["extra_flavor", "promote_firefox", "push_firefox", "ship_firefox"],
@@ -90,3 +93,24 @@ def test_extract_our_flavors_unsupported_flavor():
         tasks.extract_our_flavors([], "firefox", "100.0.1", None)
 
     tasks.SUPPORTED_FLAVORS = supported_flavors
+
+
+@pytest.mark.parametrize(
+    "avail_flavors, expected_records, expected_text",
+    (
+        (["promote_firefox", "push_firefox", "ship_firefox"], 0, None),
+        (["promote_firefox", "push_firefox"], 1, "Some hardcoded flavors are not in actions.json: {'ship_firefox'}. Product: firefox. Version: 100.0.1"),
+        (
+            ["extra_flavor", "promote_firefox", "push_firefox", "ship_firefox"],
+            1,
+            "Some flavors in actions.json are not hardcoded in shipit: {'extra_flavor'}. Product: firefox. Version: 100.0.1",
+        ),
+    ),
+)
+def test_extract_our_flavors_warnings(caplog, avail_flavors, expected_records, expected_text):
+    tasks.extract_our_flavors(avail_flavors, "firefox", "100.0.1", None)
+
+    assert len(caplog.records) == expected_records
+    if expected_records > 0:
+        assert caplog.records[0].levelname == "WARNING"
+        assert expected_text in caplog.text
