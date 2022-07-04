@@ -19,6 +19,7 @@ from shipit_api.common.config import SUPPORTED_FLAVORS, SUPPORTED_MOBILE_REPO_NA
 
 class UnsupportedFlavor(Exception):
     def __init__(self, description):
+        super().__init__(description)
         self.description = description
 
 
