@@ -5,6 +5,7 @@
 
 import copy
 import json
+import logging
 from functools import lru_cache
 
 import jsone
@@ -15,6 +16,8 @@ from backend_common.taskcluster import get_service
 from shipit_api.admin.github import extract_github_repo_owner_and_name, is_github_url
 from shipit_api.admin.release import is_rc
 from shipit_api.common.config import SUPPORTED_FLAVORS, SUPPORTED_MOBILE_REPO_NAMES
+
+logger = logging.getLogger(__name__)
 
 
 class UnsupportedFlavor(Exception):
@@ -141,10 +144,17 @@ def extract_our_flavors(avail_flavors, product, version, partial_updates, produc
 
     # sanity check
     all_flavors = set([fl["name"] for fl in SUPPORTED_FLAVORS[product_key]])
-    if not set(avail_flavors).issuperset(all_flavors):
-        description = f"Some flavors are not in actions.json: {all_flavors.difference(set(avail_flavors))}."
-        raise UnsupportedFlavor(description=description)
-    return SUPPORTED_FLAVORS[product_key]
+    avail_flavors_set = set(avail_flavors)
+
+    flavors_not_in_actions_json = all_flavors.difference(avail_flavors_set)
+    if flavors_not_in_actions_json:
+        logger.warning(f"Some hardcoded flavors are not in actions.json: {flavors_not_in_actions_json}. Product: {product}. Version: {version}")
+
+    flavors_not_hardcoded = avail_flavors_set.difference(all_flavors)
+    if flavors_not_hardcoded:
+        logger.warning(f"Some flavors in actions.json are not hardcoded in shipit: {flavors_not_hardcoded}. Product: {product}. Version: {version}")
+
+    return [flavor for flavor in SUPPORTED_FLAVORS[product_key] if flavor["name"] in avail_flavors_set]
 
 
 def generate_action_hook(task_group_id, action_name, actions, parameters, input_):
