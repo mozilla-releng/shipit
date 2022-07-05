@@ -164,7 +164,7 @@ def generate_action_hook(task_group_id, action_name, actions, parameters, input_
     return dict(hook_group_id=target_action["hookGroupId"], hook_id=target_action["hookId"], hook_payload=target_action["hookPayload"], context=context)
 
 
-def render_action_hook(payload, context, delete_params=[]):
+def render_action_hook(payload, context, delete_params=()):
     rendered_payload = jsone.render(payload, context)
     # some parameters contain a lot of entries, so we hit the payload
     # size limit. We don't use this parameter in any case, safe to
@@ -175,7 +175,7 @@ def render_action_hook(payload, context, delete_params=[]):
     return rendered_payload
 
 
-def rendered_hook_payload(phase, extra_context={}, additional_shipit_emails=[]):
+def rendered_hook_payload(phase, extra_context=None, additional_shipit_emails=()):
     context = phase.context_json
     previous_graph_ids = context["input"]["previous_graph_ids"]
     # The first ID is always the decision task ID. We need to update the

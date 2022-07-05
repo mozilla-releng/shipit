@@ -128,7 +128,7 @@ def add_release(body):
     return release.json, 201
 
 
-def do_schedule_phase(session, phase, additional_shipit_emails=[]):
+def do_schedule_phase(session, phase, additional_shipit_emails=()):
     if phase.submitted:
         abort(409, "Already submitted!")
 

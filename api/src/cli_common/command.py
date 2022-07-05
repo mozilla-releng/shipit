@@ -27,7 +27,7 @@ def hide_secrets(text, secrets):
     return text
 
 
-def run(command, stream=False, handle_stream_line=None, log_command=True, log_output=True, secrets=[], **kwargs):
+def run(command, stream=False, handle_stream_line=None, log_command=True, log_output=True, secrets=(), **kwargs):
     """Run a command through subprocess"""
 
     if type(command) is str:
