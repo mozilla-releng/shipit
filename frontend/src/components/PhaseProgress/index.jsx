@@ -37,6 +37,9 @@ const useStyles = makeStyles({
 export default function PhaseProgress({ release, readOnly, xpi }) {
   const classes = useStyles();
   const { fetchReleases } = useContext(ReleaseContext);
+  const [disableScheduleOrSignoff, setDisableScheduleOrSignoff] = useState(
+    false
+  );
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState({});
   const [selectedSignoffUID, setSelectedSignoffUID] = useState(null);
@@ -61,6 +64,8 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
   };
 
   const scheduleOrSignoff = async () => {
+    setDisableScheduleOrSignoff(true);
+
     if (phase.signoffs && phase.signoffs.length > 0) {
       const result = await phaseSignOffAction(
         release.name,
@@ -269,6 +274,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             Close
           </Button>
           <Button
+            disabled={disableScheduleOrSignoff}
             onClick={() => scheduleOrSignoff(release.name, phase.name)}
             variant="contained"
             color="primary">
