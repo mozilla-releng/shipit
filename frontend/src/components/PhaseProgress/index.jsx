@@ -73,7 +73,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
         selectedSignoffUID,
         xpi ? '/xpi/signoff' : '/signoff'
       );
-
+      setDisableScheduleOrSignoff(false);
       if (!result.error) {
         handleClose({ refresh: true });
       }
@@ -83,7 +83,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
         phase.name,
         xpi ? '/xpi/releases' : '/releases'
       );
-
+      setDisableScheduleOrSignoff(false);
       if (!result.error) {
         handleClose({ refresh: true });
       }
