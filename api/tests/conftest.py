@@ -7,14 +7,14 @@ import os
 
 import pytest
 
-import backend_common
+import backend_common.testing
 from shipit_api.common.models import XPI, XPIRelease
 
 
 @pytest.fixture(scope="session")
 def app():
     """Load shipit_api in test mode"""
-    import shipit_api
+    import shipit_api.admin
 
     config = backend_common.testing.get_app_config(
         {
@@ -29,7 +29,7 @@ def app():
             "TASKCLUSTER_ACCESS_TOKEN": "something",
         }
     )
-    app = shipit_api.create_app(config)
+    app = shipit_api.admin.create_app(config)
 
     with app.app_context():
         backend_common.testing.configure_app(app)
