@@ -29,15 +29,24 @@ jobs:
         description: "{name} tox-py{substitute_version}"
         substitute-versions:
             - 38
+        attributes:
+            artifact_prefix: public
         worker:
             docker-image: {in-tree: 'python{substitute_version}'}
             max-run-time: 1800
+            artifacts:
+                - type: file
+                  path: /builds/worker/artifacts/coverage.xml
+                  name: public/coverage.xml
+            env:
+                COVERAGE_REPORT_COMMAND: "coverage xml -o /builds/worker/artifacts/coverage.xml"
+                TOX_PARALLEL_NO_SPINNER: "1"
         run:
             command:
                 - sh
                 - -lxce
                 - >-
-                  cd api && tox -e py{substitute_version},check
+                  cd api && tox --parallel -e clean,check,py{substitute_version},report
     frontend-node:
         description: "{name} node{substitute_version}"
         substitute-versions:
