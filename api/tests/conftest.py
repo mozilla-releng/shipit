@@ -27,6 +27,10 @@ def app():
             "TASKCLUSTER_ROOT_URL": "https://something",
             "TASKCLUSTER_CLIENT_ID": "something",
             "TASKCLUSTER_ACCESS_TOKEN": "something",
+            "AUTH0_AUTH_SCOPES": {
+                "project:releng:services/shipit_api/schedule_phase/firefox/promote": "releng",
+                "project:releng:services/shipit_api/schedule_phase/firefox/ship": "releng",
+            },
         }
     )
     app = shipit_api.admin.create_app(config)
