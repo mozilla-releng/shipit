@@ -169,7 +169,9 @@ def do_schedule_phase(session, phase, additional_shipit_emails=()):
 
 def schedule_phase(name, phase):
     session = current_app.db.session
-    phase = session.query(Phase).filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
+    phase = (
+        session.query(Phase).with_for_update().filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
+    )
 
     # we must require scope which depends on product
     required_permission = f"{SCOPE_PREFIX}/schedule_phase/{phase.release.product}/{phase.name}"
