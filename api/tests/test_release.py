@@ -3,16 +3,20 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import json
 from contextlib import nullcontext as does_not_raise
+from unittest import mock
 
 import pytest
 from mozilla_version.fenix import FenixVersion
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 from mozilla_version.mobile import MobileVersion
 
+import backend_common.auth
+import backend_common.taskcluster
 from shipit_api.admin.api import get_signoff_emails
 from shipit_api.admin.release import bump_version, is_eme_free_enabled, is_partner_enabled, is_rc, parse_version
-from shipit_api.common.models import XPISignoff
+from shipit_api.common.models import Release, XPISignoff
 from shipit_api.common.product import Product
 
 
@@ -149,3 +153,58 @@ def test_additional_emails(test_xpi_release):
     XPISignoff(completed="2021-07-15T23:03:10.179036Z", completed_by="another-team@mozilla.com", signed=True, phase=phase)
     additional_shipit_emails = get_signoff_emails(test_xpi_release.phases)
     assert len(additional_shipit_emails) == 4
+
+
+def mock_generate_phases(release):
+    phases = []
+    for phase in ["build", "promote", "ship"]:
+        phase_obj = release.phase_class(
+            name=phase,
+            task_id="",
+            task=json.dumps({"hook_group_id": "", "hook_id": "", "hook_payload": {"decision": ""}}),
+            context=json.dumps({"input": {"previous_graph_ids": [0]}}),
+            completed_by=None,
+        )
+        phase_obj.signoffs = release.phase_signoffs(phase)
+        phases.append(phase_obj)
+    return phases
+
+
+class mocked_hooks:
+    def __init__(self, service):
+        self.options = service.options
+
+    def triggerHook(self, *args):
+        return {"status": {"taskId": 1}}
+
+
+def mocked_get_service(name):
+    service = backend_common.taskcluster.get_service(name)
+    if name == "hooks":
+        return mocked_hooks(service)
+    return service
+
+
+@mock.patch("shipit_api.admin.api.get_service", mocked_get_service)
+def test_schedule_phase(app):
+    release = Release(
+        product="firefox", version="90.0", branch="mozilla-release", revision="0" * 40, build_number=1, release_eta=None, partial_updates=None, status=None
+    )
+    release.phases = mock_generate_phases(release)
+    session = app.db.session
+    session.add(release)
+    session.commit()
+
+    with app.test_client() as client:
+        response = client.put("/releases/Firefox-90.0-build1/promote")
+        assert response.status_code == 401
+    with mock.patch(
+        "shipit_api.admin.api.current_user", backend_common.auth.Auth0User("", {"email": "admin", "https://sso.mozilla.com/claim/groups": "releng"})
+    ):
+        with app.test_client() as client:
+            response = client.put("/releases/Firefox-90.0-build1/promote")
+            assert response.status_code == 200
+    assert [p.name for p in release.phases] == ["build", "promote", "ship"]
+    assert [p.submitted for p in release.phases] == [True, True, False]
+    assert [p.skipped for p in release.phases] == [True, False, False]
+    assert [p.task_id for p in release.phases] == ["", "1", ""]

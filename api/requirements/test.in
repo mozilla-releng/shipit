@@ -13,3 +13,4 @@ pip-compile-multi
 pytest
 pytest-asyncio
 pytest-cov
+responses

@@ -26,7 +26,10 @@ def create_app(project_name, app_name, extensions=[], config=None, redirect_root
     app.__extensions = extensions
 
     if config:
-        app.config.from_pyfile(config)
+        if isinstance(config, str):
+            app.config.from_pyfile(config)
+        else:
+            app.config.from_mapping(config)
 
     for extension_name in EXTENSIONS:
         if app.config.get("TESTING") and extension_name in ["security", "cors"]:
