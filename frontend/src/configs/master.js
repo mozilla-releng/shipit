@@ -16,15 +16,6 @@ module.exports = {
       appName: 'browser',
       branches: [
         {
-          prettyName: 'Maple Beta',
-          project: 'maple',
-          branch: 'projects/maple',
-          repo: 'https://hg.mozilla.org/projects/maple',
-          enableReleaseEta: true,
-          rcBranch: 'releases/mozilla-beta',
-          disableable: true,
-        },
-        {
           prettyName: 'Try',
           project: 'try',
           branch: 'try',
@@ -41,10 +32,10 @@ module.exports = {
       appName: 'browser',
       branches: [
         {
-          prettyName: 'Maple Beta',
-          project: 'maple',
-          branch: 'projects/maple',
-          repo: 'https://hg.mozilla.org/projects/maple',
+          prettyName: 'Try',
+          project: 'try',
+          branch: 'try',
+          repo: 'https://hg.mozilla.org/try',
           enableReleaseEta: false,
           disableable: true,
         },
@@ -57,10 +48,10 @@ module.exports = {
       appName: 'browser',
       branches: [
         {
-          prettyName: 'Maple Beta',
-          project: 'maple',
-          branch: 'projects/maple',
-          repo: 'https://hg.mozilla.org/projects/maple',
+          prettyName: 'Try',
+          project: 'try',
+          branch: 'try',
+          repo: 'https://hg.mozilla.org/try',
           enableReleaseEta: false,
           disableable: true,
         },
