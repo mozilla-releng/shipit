@@ -10,6 +10,8 @@ RUN mkdir /builds && \
 # Declare default working folder
 WORKDIR /builds/worker
 
+# %include-run-task
+
 RUN apt-get update && \
     apt-get install -y \
       gnupg \
