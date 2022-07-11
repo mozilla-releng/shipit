@@ -1,6 +1,6 @@
 # WARNING: Update taskcluster/docker/k8s-image/Dockerfile file when you update
 # this one. Or better, find a way to use the same Dockerfile
-FROM python:3.8
+FROM python:3.9
 
 RUN groupadd --gid 10001 app && \
     useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app

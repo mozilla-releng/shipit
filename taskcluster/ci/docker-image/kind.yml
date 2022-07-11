@@ -11,10 +11,10 @@ transforms:
     - taskgraph.transforms.task:transforms
 
 jobs:
-    python38:
+    python39:
         definition: python
         args:
-            PYTHON_VERSION: "3.8.12"
+            PYTHON_VERSION: "3.9.13"
     node14:
         definition: node
         args:

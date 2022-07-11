@@ -28,7 +28,7 @@ jobs:
     api-python:
         description: "{name} tox-py{substitute_version}"
         substitute-versions:
-            - 38
+            - 39
         worker:
             docker-image: {in-tree: 'python{substitute_version}'}
             max-run-time: 1800
