@@ -33,7 +33,7 @@ FROM debian:buster
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
-    && apt-get dist-upgrade \
+    && apt-get dist-upgrade -y \
     && apt-get install -y jq zstd python3-minimal curl \
     && apt-get clean
 

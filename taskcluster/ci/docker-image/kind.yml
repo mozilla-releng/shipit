@@ -19,4 +19,5 @@ jobs:
         definition: node
         args:
             NODE_VERSION: "14"
+    fetch: {}
     skopeo: {}
