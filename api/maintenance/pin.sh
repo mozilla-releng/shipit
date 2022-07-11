@@ -6,4 +6,4 @@
 set -e
 set -x
 
-docker run -t -v $PWD:/src -w /src python:3.8 maintenance/pin-helper.sh $@
+docker run -t -v $PWD:/src -w /src python:3.9 maintenance/pin-helper.sh $@
