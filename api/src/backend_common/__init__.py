@@ -5,6 +5,7 @@
 
 import importlib
 import logging
+from pathlib import PosixPath
 
 import flask
 
@@ -28,6 +29,8 @@ def create_app(project_name, app_name, extensions=[], config=None, redirect_root
     if config:
         if isinstance(config, str):
             app.config.from_pyfile(config)
+        elif isinstance(config, PosixPath):
+            app.config.from_pyfile(str(config))
         else:
             app.config.from_mapping(config)
 
