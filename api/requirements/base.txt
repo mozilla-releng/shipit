@@ -6,9 +6,9 @@
 #    pip-compile-multi
 #
 -r public.txt
-aioamqp==0.14.0 \
-    --hash=sha256:55fa703a70e71bc958ad546b9ee0c68387cab366c82fc44c0742d6ad0303745a \
-    --hash=sha256:eef5c23a7fedee079d8326406f5c7a5725dfe36c359373da3499fffa16f79915
+aioamqp==0.15.0 \
+    --hash=sha256:0f38cc4db8db6fd062504b7c4b6703c800d2130d14d5492cf47d727de1929740 \
+    --hash=sha256:fcad924d7658e65ef074522a7e9527e0b0adad09b10774340ea9f3fd277452d8
     # via -r requirements/base.in
 aiodns==3.0.0 \
     --hash=sha256:2b19bc5f97e5c936638d28e665923c093d8af2bf3aa88d35c43417fa25d136a2 \
@@ -94,17 +94,17 @@ aiosignal==1.2.0 \
     --hash=sha256:26e62109036cd181df6e6ad646f91f0dcfd05fe16d0cb924138ff2ab75d64e3a \
     --hash=sha256:78ed67db6c7b7ced4f98e495e572106d5c432a93e1ddd1bf475e1dc05f5b7df2
     # via aiohttp
-amqp==5.0.6 \
-    --hash=sha256:03e16e94f2b34c31f8bf1206d8ddd3ccaa4c315f7f6a1879b7b1210d229568c2 \
-    --hash=sha256:493a2ac6788ce270a2f6a765b017299f60c1998f5a8617908ee9be082f7300fb
+amqp==5.1.1 \
+    --hash=sha256:2c1b13fecc0893e946c65cbd5f36427861cffa4ea2201d8f6fca22e2a373b5e2 \
+    --hash=sha256:6f0956d2c23d8fa6e7691934d8c3930eadb44972cbbd1a7ae3a520f735d43359
     # via kombu
-arrow==1.2.1 \
-    --hash=sha256:6b2914ef3997d1fd7b37a71ce9dd61a6e329d09e1c7b44f4d3099ca4a5c0933e \
-    --hash=sha256:c2dde3c382d9f7e6922ce636bf0b318a7a853df40ecb383b29192e6c5cc82840
+arrow==1.2.2 \
+    --hash=sha256:05caf1fd3d9a11a1135b2b6f09887421153b94558e5ef4d090b567b47173ac2b \
+    --hash=sha256:d622c46ca681b5b3e3574fcb60a04e5cc81b9625112d5fb2b44220c36c892177
     # via -r requirements/base.in
-async-timeout==4.0.1 \
-    --hash=sha256:a22c0b311af23337eb05fcf05a8b51c3ea53729d46fb5460af62bee033cec690 \
-    --hash=sha256:b930cb161a39042f9222f6efb7301399c87eeab394727ec5437924a36d6eef51
+async-timeout==4.0.2 \
+    --hash=sha256:2163e1640ddb52b7a8c80d0a67a08587e5d245cc9c553a74a847056bc2976b15 \
+    --hash=sha256:8ca1e4fcf50d07413d66d1a5e416e42cfdf5851c981d679a09851a6853383b3c
     # via
     #   aiohttp
     #   taskcluster
@@ -327,16 +327,16 @@ frozenlist==1.2.0 \
     # via
     #   aiohttp
     #   aiosignal
-httplib2==0.20.2 \
-    --hash=sha256:6b937120e7d786482881b44b8eec230c1ee1c5c1d06bce8cc865f25abbbf713b \
-    --hash=sha256:e404681d2fbcec7506bcb52c503f2b021e95bee0ef7d01e5c221468a2406d8dc
+httplib2==0.20.4 \
+    --hash=sha256:58a98e45b4b1a48273073f905d2961666ecf0fbac4250ea5b47aef259eb5c585 \
+    --hash=sha256:8b6a905cb1c79eefd03f8669fd993c36dc341f7c558f056cb5a33b5c2f458543
     # via oauth2client
 json-e==4.4.3 \
     --hash=sha256:8ed3974faa887ca96a7987298f6550cf2ad35472419a980766b3abe48258de0a
     # via -r requirements/base.in
-kombu==5.2.2 \
-    --hash=sha256:0f5d0763fb916808f617b886697b2be28e6bc35026f08e679697fc814b48a608 \
-    --hash=sha256:d36f0cde6a18d9eb7b6b3aa62a59bfdff7f5724689850e447eca5be8efc9d501
+kombu==5.2.4 \
+    --hash=sha256:37cee3ee725f94ea8bb173eaab7c1760203ea53bbebae226328600f9d2799610 \
+    --hash=sha256:8b213b24293d3417bcf0d2f5537b7f756079e3ea232a8386dcc89a59fd2361a4
     # via -r requirements/base.in
 mohawk==1.1.0 \
     --hash=sha256:3ed296a30453d0b724679e0fd41e4e940497f8e461a9a9c3b7f36e43bab0fa09 \
@@ -455,9 +455,8 @@ oauth2client==4.1.3 \
     --hash=sha256:b8a81cc5d60e2d364f0b1b98f958dbd472887acaf1a5b05e21c28c31a2d6d3ac \
     --hash=sha256:d486741e451287f69568a4d26d70d9acd73a2bbfa275746c535b4209891cccc6
     # via flask-oidc
-pamqp==2.3.0 \
-    --hash=sha256:2f81b5c186f668a67f165193925b6bfd83db4363a6222f599517f29ecee60b02 \
-    --hash=sha256:5cd0f5a85e89f20d5f8e19285a1507788031cfca4a9ea6f067e3cf18f5e294e8
+pamqp==3.2.0 \
+    --hash=sha256:43b8545ef2d5b8aa0a41b3461bba0b2759da1fc403a3cb73341b3fce0592033d
     # via aioamqp
 pyasn1==0.4.8 \
     --hash=sha256:39c7e2ec30515947ff4e87fb6f456dfc6e84857d34be479c9d4a4ba4bf46aa5d \
@@ -507,9 +506,9 @@ pycparser==2.21 \
     --hash=sha256:8ee45429555515e1f6b185e78100aea234072576aa43ab53aefcae078162fca9 \
     --hash=sha256:e644fdec12f7872f86c58ff790da456218b10f863970249516d60a5eaca77206
     # via cffi
-pyparsing==3.0.6 \
-    --hash=sha256:04ff808a5b90911829c55c4e26f75fa5ca8a2f5f36aa3a51f68e27033341d3e4 \
-    --hash=sha256:d9bdec0013ef1eb5a84ab39a3b3868911598afa494f5faa038647101504e2b81
+pyparsing==3.0.9 \
+    --hash=sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb \
+    --hash=sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc
     # via httplib2
 python-dateutil==2.8.2 \
     --hash=sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86 \
@@ -519,9 +518,9 @@ rsa==4.7.2 \
     --hash=sha256:78f9a9bf4e7be0c5ded4583326e7461e3a3c5aae24073648b4bdfa797d78c9d2 \
     --hash=sha256:9d689e6ca1b3038bc82bf8d23e944b6b6037bc02301a574935b2dd946e0353b9
     # via oauth2client
-taskcluster==44.12.3 \
-    --hash=sha256:3476bd3db988ec5c01d866d4578c48865ca123238cfd6c0ebfef1de2b3c1820d \
-    --hash=sha256:d2588ea2e6c83a72a637b10567fd9a7f519119e8833d497d76214bdedfde40f1
+taskcluster==44.18.0 \
+    --hash=sha256:8b2787a71d7646e674ea44011502f53e108b27617d1416bc209962a27c93b7ae \
+    --hash=sha256:e5943a327a68398983b1885dd47be8807256db18ee7347c85104e32f88507c5e
     # via -r requirements/base.in
 taskcluster-urls==13.0.1 \
     --hash=sha256:5e25e7e6818e8877178b175ff43d2e6548afad72694aa125f404a7329ece0973 \
@@ -535,9 +534,7 @@ toml==0.10.2 \
 typing-extensions==4.0.0 \
     --hash=sha256:2cdf80e4e04866a9b3689a51869016d36db0814d84b8d8a568d22781d45d27ed \
     --hash=sha256:829704698b22e13ec9eaf959122315eabb370b0884400e9818334d8b677023d9
-    # via
-    #   async-timeout
-    #   mypy
+    # via mypy
 vine==5.0.0 \
     --hash=sha256:4c9dceab6f76ed92105027c49c823800dd33cacce13bdedc5b914e3514b7fb30 \
     --hash=sha256:7d3b1624a953da82ef63462013bbd271d3eb75751489f9807598e8f340bd637e
