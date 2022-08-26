@@ -480,7 +480,16 @@ SUPPORTED_FLAVORS = {
     ],
 }
 
-SUPPORTED_MOBILE_REPO_NAMES = ("fenix", "android-components", "staging-fenix", "staging-android-components", "focus-android", "staging-focus-android")
+SUPPORTED_MOBILE_REPO_NAMES = (
+    "android-components",  # TODO bug 1797700, remove android-components
+    "fenix",
+    "firefox-android",
+    "focus-android",
+    "staging-android-components",
+    "staging-fenix",
+    "staging-firefox-android",
+    "staging-focus-android",
+)
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
 SIGNOFFS = {
