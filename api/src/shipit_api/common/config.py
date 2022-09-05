@@ -46,6 +46,8 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # day).
 # We could have used the in-tree version, but there can be race conditions,
 # e.g. version bumped, but still no builds available.
+#
+# This version also defines the mobile nightly version (i.e.: Fenix)
 FIREFOX_NIGHTLY = "106.0a1"
 
 # The next 6 dates are information about the current and next release
@@ -57,10 +59,6 @@ LAST_RELEASE_DATE = "2022-08-23"
 NEXT_SOFTFREEZE_DATE = "2022-09-15"
 NEXT_MERGE_DATE = "2022-09-19"
 NEXT_RELEASE_DATE = "2022-09-20"
-
-# Fennec Nightly users have been migrated to Fenix, thus we don't need to bump
-# the following numbers anymore.
-FENIX_NIGHTLY = "84.0a1"
 
 # Aurora has been replaced by Dev Edition, but some 3rd party applications may
 # still rely on this value.

@@ -874,8 +874,8 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release])
     return dict(
         ios_beta_version=shipit_api.common.config.IOS_BETA_VERSION,
         ios_version=shipit_api.common.config.IOS_VERSION,
-        nightly_version=shipit_api.common.config.FENIX_NIGHTLY,
-        alpha_version=shipit_api.common.config.FENIX_NIGHTLY,
+        nightly_version=shipit_api.common.config.FIREFOX_NIGHTLY,
+        alpha_version=shipit_api.common.config.FIREFOX_NIGHTLY,
         beta_version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: FenixVersion.parse(r.version).is_beta),
         version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: FenixVersion.parse(r.version).is_release),
     )
