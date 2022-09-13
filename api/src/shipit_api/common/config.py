@@ -5,6 +5,7 @@
 
 import pathlib
 import tempfile
+from datetime import datetime, timedelta
 
 from decouple import config
 
@@ -59,6 +60,10 @@ LAST_RELEASE_DATE = "2022-08-23"
 NEXT_SOFTFREEZE_DATE = "2022-09-15"
 NEXT_MERGE_DATE = "2022-09-19"
 NEXT_RELEASE_DATE = "2022-09-20"
+
+DATE_FORMAT = "%Y-%m-%d"
+LAST_STRINGFREEZE_DATE = (datetime.strptime(LAST_SOFTFREEZE_DATE, DATE_FORMAT) + timedelta(days=1)).strftime(DATE_FORMAT)
+NEXT_STRINGFREEZE_DATE = (datetime.strptime(NEXT_SOFTFREEZE_DATE, DATE_FORMAT) + timedelta(days=1)).strftime(DATE_FORMAT)
 
 # Aurora has been replaced by Dev Edition, but some 3rd party applications may
 # still rely on this value.
