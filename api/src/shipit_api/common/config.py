@@ -27,14 +27,14 @@ PRODUCT_DETAILS_CACHE_DIR = pathlib.Path(tempfile.gettempdir(), "product-details
 # product-details data will be generated if we decide to ship a dot release
 # with major version <= BREAKPOINT_VERSION. This includes Firefox (release,
 # esr, beta, devedition, pinebuild), Fennec and Thunderbird.
-BREAKPOINT_VERSION = 90
+BREAKPOINT_VERSION = 101
 
 # When there is only one ESR release ESR_NEXT is set to '' and ESR_CURRENT is
 # set to current ESR major version.  When we have 2 ESR releases, ESR_CURRENT
 # should be using the major version of the older release, while ESR_NEXT should
 # be using the major version of the release with greater version.
-CURRENT_ESR = "91"
-ESR_NEXT = "102"
+CURRENT_ESR = "102"
+ESR_NEXT = ""
 # Pre Firefox version
 LATEST_FIREFOX_OLDER_VERSION = "3.6.28"
 # TODO: move the branch configs to secrets
