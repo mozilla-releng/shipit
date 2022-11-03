@@ -106,13 +106,6 @@ module.exports = {
       ],
       repositories: [
         {
-          // TODO bug 1797700, remove the staging-android-components repo
-          prettyName: 'Deprecated fork',
-          project: 'staging-android-components',
-          repo: 'https://github.com/mozilla-releng/staging-android-components',
-          enableReleaseEta: false,
-        },
-        {
           prettyName: 'Staging Android monorepo',
           project: 'staging-firefox-android',
           repo: 'https://github.com/mozilla-releng/staging-firefox-android',

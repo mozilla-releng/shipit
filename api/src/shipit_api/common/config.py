@@ -481,11 +481,9 @@ SUPPORTED_FLAVORS = {
 }
 
 SUPPORTED_MOBILE_REPO_NAMES = (
-    "android-components",  # TODO bug 1797700, remove android-components
     "fenix",
     "firefox-android",
     "focus-android",
-    "staging-android-components",
     "staging-fenix",
     "staging-firefox-android",
     "staging-focus-android",

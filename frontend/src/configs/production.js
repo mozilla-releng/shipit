@@ -133,13 +133,6 @@ module.exports = {
       ],
       repositories: [
         {
-          // TODO bug 1797700, remove the android-components repo
-          prettyName: 'Deprecated repo',
-          project: 'android-components',
-          repo: 'https://github.com/mozilla-mobile/android-components',
-          enableReleaseEta: false,
-        },
-        {
           prettyName: 'Android monorepo',
           project: 'firefox-android',
           repo: 'https://github.com/mozilla-mobile/firefox-android',
