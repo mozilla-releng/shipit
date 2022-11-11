@@ -349,6 +349,18 @@ async function getPhaseSignOffs(releaseName, phaseName, url = '/signoff') {
   return req.data.signoffs;
 }
 
+async function getStatus(release, phase) {
+  const isXPIRelease = 'xpi_name' in release;
+
+  if (isXPIRelease) {
+    return getTcStatus(phase);
+  }
+
+  const status = await getTaskStatus(phase.actionTaskId);
+
+  return status.status.state;
+}
+
 export async function getPendingReleases(
   url = '/releases',
   signoffUrl = '/signoff',
@@ -366,7 +378,7 @@ export async function getPendingReleases(
           );
 
           if (phase.submitted && phase.actionTaskId) {
-            const tcStatus = await getTcStatus(phase);
+            const tcStatus = await getStatus(release, phase);
 
             if (tcStatus) {
               // Only update the TC status for not expired tasks
