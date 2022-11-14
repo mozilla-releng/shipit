@@ -49,17 +49,17 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # e.g. version bumped, but still no builds available.
 #
 # This version also defines the mobile nightly version (i.e.: Fenix)
-FIREFOX_NIGHTLY = "108.0a1"
+FIREFOX_NIGHTLY = "109.0a1"
 
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
-LAST_SOFTFREEZE_DATE = "2022-10-13"
-LAST_MERGE_DATE = "2022-10-17"
-LAST_RELEASE_DATE = "2022-10-18"
-NEXT_SOFTFREEZE_DATE = "2022-11-10"
-NEXT_MERGE_DATE = "2022-11-14"
-NEXT_RELEASE_DATE = "2022-11-15"
+LAST_SOFTFREEZE_DATE = "2022-11-10"
+LAST_MERGE_DATE = "2022-11-14"
+LAST_RELEASE_DATE = "2022-11-15"
+NEXT_SOFTFREEZE_DATE = "2022-12-08"
+NEXT_MERGE_DATE = "2022-12-12"
+NEXT_RELEASE_DATE = "2022-12-13"
 
 DATE_FORMAT = "%Y-%m-%d"
 LAST_STRINGFREEZE_DATE = (datetime.strptime(LAST_SOFTFREEZE_DATE, DATE_FORMAT) + timedelta(days=1)).strftime(DATE_FORMAT)
@@ -75,7 +75,7 @@ IOS_VERSION = "14.1"
 
 # Thunderbird configs
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
-LATEST_THUNDERBIRD_NIGHTLY_VERSION = "108.0a1"
+LATEST_THUNDERBIRD_NIGHTLY_VERSION = "109.0a1"
 # TODO: Need to update this every cycle
 THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr102"
 THUNDERBIRD_BETA_BRANCH = "releases/comm-beta"
