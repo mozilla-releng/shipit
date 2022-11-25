@@ -220,9 +220,9 @@ markupsafe==2.1.1 \
     #   jinja2
     #   mako
     #   werkzeug
-mozilla-version==1.1.0 \
-    --hash=sha256:1a56c1ea668ec10e18c0a2e394a79373b5ec0ea25a33d204ac6382f337cb9f8a \
-    --hash=sha256:1fdd9ed90eeec801852b981e98d5b4f6a69efee32eb5f492db86be97393ce4e9
+mozilla-version==1.2.0 \
+    --hash=sha256:832b651b061d0a7064865947127fb30fa498a621452073291a7cc64cb1425048 \
+    --hash=sha256:b30bc41319ca1cf2496f95ba7ae7b371b03503870abd1f1a942c9f34ef4280b6
     # via -r requirements/public.in
 packaging==21.3 \
     --hash=sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb \
