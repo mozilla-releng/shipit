@@ -6,9 +6,9 @@
 #    pip-compile-multi
 #
 -r test.txt
-distlib==0.3.5 \
-    --hash=sha256:a7f75737c70be3b25e2bee06288cec4e4c221de18455b2dd037fe2a795cab2fe \
-    --hash=sha256:b710088c59f06338ca514800ad795a132da19fda270e3ce4affc74abf955a26c
+distlib==0.3.6 \
+    --hash=sha256:14bad2d9b04d3a36127ac97f30b12a19268f211063d8f8ee4f47108896e11b46 \
+    --hash=sha256:f35c4b692542ca110de7ef0bea44d73981caeb34ca0b9b6b2e6d7790dda8f80e
     # via virtualenv
 filelock==3.8.0 \
     --hash=sha256:55447caa666f2198c5b6b13a26d2084d26fa5b115c00d065664b2124680c4edc \
@@ -16,13 +16,17 @@ filelock==3.8.0 \
     # via
     #   tox
     #   virtualenv
-tox==3.25.1 \
-    --hash=sha256:c138327815f53bc6da4fe56baec5f25f00622ae69ef3fe4e1e385720e22486f9 \
-    --hash=sha256:c38e15f4733683a9cc0129fba078633e07eb0961f550a010ada879e95fb32632
+py==1.11.0 \
+    --hash=sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719 \
+    --hash=sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378
+    # via tox
+tox==3.27.1 \
+    --hash=sha256:b2a920e35a668cc06942ffd1cf3a4fb221a4d909ca72191fb6d84b0b18a7be04 \
+    --hash=sha256:f52ca66eae115fcfef0e77ef81fd107133d295c97c52df337adedb8dfac6ab84
     # via -r requirements/local.in
-virtualenv==20.16.3 \
-    --hash=sha256:4193b7bc8a6cd23e4eb251ac64f29b4398ab2c233531e66e40b19a6b7b0d30c1 \
-    --hash=sha256:d86ea0bb50e06252d79e6c241507cb904fcd66090c3271381372d6221a3970f9
+virtualenv==20.16.7 \
+    --hash=sha256:8691e3ff9387f743e00f6bb20f70121f5e4f596cae754531f2b3b3a1b1ac696e \
+    --hash=sha256:efd66b00386fdb7dbe4822d172303f40cd05e50e01740b19ea42425cbe653e29
     # via tox
 
 # WARNING: The following packages were not pinned, but pip requires them to be
