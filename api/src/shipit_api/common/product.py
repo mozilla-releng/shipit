@@ -11,6 +11,7 @@ class Product(enum.Enum):
     FENNEC = "fennec"
     THUNDERBIRD = "thunderbird"
     FOCUS_ANDROID = "focus-android"
+    FIREFOX_ANDROID = "firefox-android"
 
 
 @enum.unique

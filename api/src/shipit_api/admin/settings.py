@@ -78,6 +78,7 @@ LDAP_GROUPS = {
     "fenix-signoff": ["shipit_mobile"],
     "android-components-signoff": ["shipit_mobile"],
     "thunderbird-signoff": ["shipit_thunderbird"],
+    "firefox-android-signoff": ["shipit_mobile"],
     "focus-android-signoff": ["shipit_mobile"],
     # XPI signoffs. These are in flux.
     # Adding Releng as a backup to most of these, for bus factor. Releng should
@@ -96,7 +97,16 @@ LDAP_GROUPS = {
 AUTH0_AUTH_SCOPES = dict()
 
 # releng signoff scopes
-for product in ["android-components", "firefox", "fenix", "fennec", "devedition", "pinebuild", "focus-android"]:
+for product in [
+    "android-components",
+    "devedition",
+    "fenix",
+    "fennec",
+    "firefox",
+    "firefox-android",
+    "focus-android",
+    "pinebuild",
+]:
     scopes = {f"add_release/{product}": LDAP_GROUPS["firefox-signoff"], f"abandon_release/{product}": LDAP_GROUPS["firefox-signoff"]}
     phases = []
     for flavor in [product, f"{product}_rc", f"{product}_release", f"{product}_release_rc", f"{product}_beta"]:
@@ -110,10 +120,12 @@ AUTH0_AUTH_SCOPES.update(
     {
         "disable_product/android-components": LDAP_GROUPS["firefox-signoff"],
         "disable_product/firefox": LDAP_GROUPS["firefox-signoff"],
+        "disable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
         "disable_product/fennec": LDAP_GROUPS["firefox-signoff"],
         "disable_product/devedition": LDAP_GROUPS["firefox-signoff"],
         "disable_product/pinebuild": LDAP_GROUPS["firefox-signoff"],
         "enable_product/firefox": LDAP_GROUPS["firefox-signoff"],
+        "enable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
         "enable_product/fennec": LDAP_GROUPS["firefox-signoff"],
         "enable_product/devedition": LDAP_GROUPS["firefox-signoff"],
         "enable_product/pinebuild": LDAP_GROUPS["firefox-signoff"],
@@ -142,6 +154,7 @@ AUTH0_AUTH_SCOPES.update(
             set(
                 LDAP_GROUPS["android-components-signoff"]
                 + LDAP_GROUPS["fenix-signoff"]
+                + LDAP_GROUPS["firefox-android-signoff"]
                 + LDAP_GROUPS["xpi_privileged_build"]
                 + LDAP_GROUPS["xpi_privileged_signoff"]
                 + LDAP_GROUPS["xpi_system_build"]

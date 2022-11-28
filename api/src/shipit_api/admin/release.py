@@ -22,6 +22,7 @@ _VERSION_CLASS_PER_PRODUCT = {
     Product.FENIX: FenixVersion,
     Product.FENNEC: FennecVersion,
     Product.FIREFOX: FirefoxVersion,
+    Product.FIREFOX_ANDROID: MobileVersion,
     Product.FOCUS_ANDROID: MobileVersion,
     Product.THUNDERBIRD: ThunderbirdVersion,
 }

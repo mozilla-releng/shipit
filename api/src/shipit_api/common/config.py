@@ -474,6 +474,10 @@ SUPPORTED_FLAVORS = {
         {"name": "promote", "in_previous_graph_ids": True},
         {"name": "ship", "in_previous_graph_ids": True},
     ],
+    "firefox-android": [
+        {"name": "promote", "in_previous_graph_ids": True},
+        {"name": "ship", "in_previous_graph_ids": True},
+    ],
     "focus-android": [
         {"name": "promote", "in_previous_graph_ids": True},
         {"name": "ship", "in_previous_graph_ids": True},
