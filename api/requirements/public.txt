@@ -41,16 +41,16 @@ clickclick==20.10.2 \
 connexion2==2.10.0 \
     --hash=sha256:8ebafc4be3a0a5512f6336c8c31f59c762762b0ad1c59c4e8fe1bbb4073ae856 \
     --hash=sha256:d5c21231cb08f1e0b204a1b77161ecef5391b18ecd30ba3731622f5412f28ed1
-    # via -r requirements/public.in
+    # via -r public.in
 dockerflow==2022.1.0 \
     --hash=sha256:ec723cedb853043a0c7cada32f46f8f7eadfaf6bd7dee718e9a373b6b577d249 \
     --hash=sha256:f40bad2d465533b1949261e5cd3ffa23fd1dd0c12f32f4e4608040ec6ad502a5
-    # via -r requirements/public.in
+    # via -r public.in
 flask==2.0.2 \
     --hash=sha256:7b2fb8e934ddd50731893bdcdb00fc8c0315916f9fcd50d22c7cc1a95ab634e2 \
     --hash=sha256:cb90f62f1d8e4dc4621f52106613488b5ba826b2e1e10a33eac92f723093ab6a
     # via
-    #   -r requirements/public.in
+    #   -r public.in
     #   connexion2
     #   flask-cors
     #   flask-migrate
@@ -59,11 +59,11 @@ flask==2.0.2 \
 flask-cors==3.0.10 \
     --hash=sha256:74efc975af1194fc7891ff5cd85b0f7478be4f7f59fe158102e91abb72bb4438 \
     --hash=sha256:b60839393f3b84a0f3746f6cdca56c1ad7426aa738b70d6c61375857823181de
-    # via -r requirements/public.in
+    # via -r public.in
 flask-migrate==3.1.0 \
     --hash=sha256:57d6060839e3a7f150eaab6fe4e726d9e3e7cffe2150fb223d73f92421c6d1d9 \
     --hash=sha256:a6498706241aba6be7a251078de9cf166d74307bca41a4ca3e403c9d39e2f897
-    # via -r requirements/public.in
+    # via -r public.in
 flask-sqlalchemy==2.5.1 \
     --hash=sha256:2bda44b43e7cacb15d4e05ff3cc1f8bc97936cc464623424102bfc2c35e95912 \
     --hash=sha256:f12c3d4cc5cc7fdcc148b9527ea05671718c3ea45d50c7e732cceb33f574b390
@@ -71,7 +71,7 @@ flask-sqlalchemy==2.5.1 \
 flask-talisman==0.8.1 \
     --hash=sha256:08a25360c771f7a79d6d4db2abfa71f7422e62a714418b671d69d6a201764d05 \
     --hash=sha256:5d502ec0c51bf1755a797b8cffbe4e94f8684af712ba0b56f3d80b79277ef285
-    # via -r requirements/public.in
+    # via -r public.in
 future==0.18.2 \
     --hash=sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d
     # via mozilla-version
@@ -130,7 +130,7 @@ greenlet==1.1.2 \
 gunicorn==20.1.0 \
     --hash=sha256:9dcc4547dbb1cb284accfb15ab5667a0e5d1881cc443e0677b4882a4067a807e \
     --hash=sha256:e0a968b5ba15f8a328fdfd7ab1fcb5af4470c28aaf7e55df02a99bc13138e6e8
-    # via -r requirements/public.in
+    # via -r public.in
 idna==3.3 \
     --hash=sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff \
     --hash=sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d
@@ -238,7 +238,7 @@ markupsafe==2.0.1 \
 mozilla-version==1.1.0 \
     --hash=sha256:1a56c1ea668ec10e18c0a2e394a79373b5ec0ea25a33d204ac6382f337cb9f8a \
     --hash=sha256:1fdd9ed90eeec801852b981e98d5b4f6a69efee32eb5f492db86be97393ce4e9
-    # via -r requirements/public.in
+    # via -r public.in
 openapi-schema-validator==0.1.5 \
     --hash=sha256:215b516d0942f4e8e2446cf3f7d4ff2ed71d102ebddcc30526d8a3f706ab1df6 \
     --hash=sha256:a4b2712020284cee880b4c55faa513fbc2f8f07f365deda6098f8ab943c9f0df \
@@ -260,7 +260,7 @@ psycopg2==2.9.3 \
     --hash=sha256:a81e3866f99382dfe8c15a151f1ca5fde5815fde879348fe5a9884a7c092a305 \
     --hash=sha256:cb10d44e6694d763fa1078a26f7f6137d69f555a78ec85dc2ef716c37447e4b2 \
     --hash=sha256:d3ca6421b942f60c008f81a3541e8faf6865a28d5a9b48544b0ee4f40cac7fca
-    # via -r requirements/public.in
+    # via -r public.in
 pyrsistent==0.16.1 \
     --hash=sha256:aa2ae1c2e496f4d6777f869ea5de7166a8ccb9c2e06ebcf6c7ff1b670c98c5ef
     # via
@@ -269,7 +269,7 @@ pyrsistent==0.16.1 \
 python-decouple==3.6 \
     --hash=sha256:2838cdf77a5cf127d7e8b339ce14c25bceb3af3e674e039d4901ba16359968c7 \
     --hash=sha256:6cf502dc963a5c642ea5ead069847df3d916a6420cad5599185de6bab11d8c2e
-    # via -r requirements/public.in
+    # via -r public.in
 pyyaml==5.4.1 \
     --hash=sha256:08682f6b72c722394747bddaf0aa62277e02557c0fd1c42cb853016a38f8dedf \
     --hash=sha256:0f5f5786c0e09baddcd8b4b45f20a7b5d61a7e7e99846e3c799b05c7c53fa696 \
@@ -308,17 +308,16 @@ requests==2.26.0 \
     --hash=sha256:6c1246513ecd5ecd4528a0906f910e8f0f9c6b8ec72030dc9fd154dc1a6efd24 \
     --hash=sha256:b8aa58f8cf793ffd8782d3d8cb19e66ef36f7aba4353eec859e74678b01b07a7
     # via connexion2
-sentry-sdk[flask]==1.5.0 \
-    --hash=sha256:0db297ab32e095705c20f742c3a5dac62fe15c4318681884053d0898e5abb2f6 \
-    --hash=sha256:789a11a87ca02491896e121efdd64e8fd93327b69e8f2f7d42f03e2569648e88
-    # via -r requirements/public.in
+sentry-sdk[flask]==1.11.1 \
+    --hash=sha256:675f6279b6bb1fea09fd61751061f9a90dca3b5929ef631dd50dc8b3aeb245e9 \
+    --hash=sha256:8b4ff696c0bdcceb3f70bbb87a57ba84fd3168b1332d493fcd16c137f709578c
+    # via -r public.in
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
     # via
     #   flask-cors
     #   flask-talisman
-    #   isodate
     #   jsonschema
     #   openapi-schema-validator
     #   openapi-spec-validator
@@ -326,7 +325,7 @@ six==1.16.0 \
 slugid==2.0.0 \
     --hash=sha256:a950d98b72691178bdd4d6c52743c4a2aa039207cf7a97d71060a111ff9ba297 \
     --hash=sha256:aec8b0e01c4ad32e38e12d609eab3ec912fd129aaf6b2ded0199b56a5f8fd67c
-    # via -r requirements/public.in
+    # via -r public.in
 sqlalchemy==1.4.27 \
     --hash=sha256:015511c52c650eebf1059ed8a21674d9d4ae567ebfd80fc73f8252faccd71864 \
     --hash=sha256:0438bccc16349db2d5203598be6073175ce16d4e53b592d6e6cef880c197333e \
@@ -365,7 +364,7 @@ sqlalchemy==1.4.27 \
     --hash=sha256:fa52534076394af7315306a8701b726a6521b591d95e8f4e5121c82f94790e8d \
     --hash=sha256:fd421a14edf73cfe01e8f51ed8966294ee3b3db8da921cacc88e497fd6e977af
     # via
-    #   -r requirements/public.in
+    #   -r public.in
     #   alembic
     #   flask-sqlalchemy
 urllib3==1.26.11 \
