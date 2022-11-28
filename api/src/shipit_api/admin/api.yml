@@ -719,6 +719,7 @@ components:
           - fenix
           - fennec
           - firefox
+          - firefox-android
           - focus-android
           - thunderbird
         version:
@@ -828,6 +829,7 @@ components:
           - fenix
           - fennec
           - firefox
+          - firefox-android
           - focus-android
           - thunderbird
         version:

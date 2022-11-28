@@ -89,6 +89,8 @@ def test_is_rc(product, version, partial_updates, result):
         ("fenix", "84.0.0", "84.0.1"),
         ("android-components", "84.0.0", "84.0.1"),
         ("focus-android", "95.0.0", "95.0.1"),
+        ("firefox-android", "108.0.0", "108.0.1"),
+        ("firefox-android", "109.0", "109.0.1"),
     ),
 )
 def test_bump_version(product, version, result):
