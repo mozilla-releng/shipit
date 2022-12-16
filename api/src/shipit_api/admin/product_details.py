@@ -191,7 +191,7 @@ async def fetch_l10n_data(
         Product(release.product) is Product.THUNDERBIRD
         and release.branch == "releases/comm-beta"
         and release.revision in ["3e01e0dc6943", "481fea2011e6", "85cb8f907b18", "92950b2fd2dc", "c614b6e7cf58", "e277e3f0ab13", "efd290b55a35", "f87ba53e04ff"]
-    ) or Product(release.product) in (Product.FENIX, Product.ANDROID_COMPONENTS, Product.FOCUS_ANDROID):
+    ) or Product(release.product) in (Product.FENIX, Product.ANDROID_COMPONENTS, Product.FOCUS_ANDROID, Product.FIREFOX_ANDROID):
         return (release, None)
 
     url_file = {
