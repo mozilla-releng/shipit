@@ -150,11 +150,11 @@ def create_index_listing_html(folder: pathlib.Path, items: typing.Set[pathlib.Pa
         write(f"    <h1>Index of {folder}</h1>")
         write("    <ul>")
         if folder != folder.parent:
-            write(f'      <li><a href="{folder.parent}"> Parent Directory</a></li>')
+            write(f'      <li><a href="{folder.parent}">Parent Directory</a></li>')
         for item in sorted(items):
             is_dir = item.suffix not in [".json", ".html"]
             itemStr = is_dir and f"{item.name}/" or f"{item.name}"
-            write(f'      <li><a href="{itemStr}"> {itemStr}</a></li>')
+            write(f'      <li><a href="{itemStr}">{itemStr}</a></li>')
         write("    </ul>")
         write("  </body>")
         write("</html>")
