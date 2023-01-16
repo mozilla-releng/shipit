@@ -358,6 +358,10 @@ async function getStatus(release, phase) {
 
   const status = await getTaskStatus(phase.actionTaskId);
 
+  if (!status) {
+    return null; // expired?
+  }
+
   return status.status.state;
 }
 

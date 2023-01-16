@@ -150,11 +150,11 @@ def create_index_listing_html(folder: pathlib.Path, items: typing.Set[pathlib.Pa
         write(f"    <h1>Index of {folder}</h1>")
         write("    <ul>")
         if folder != folder.parent:
-            write(f'      <li><a href="{folder.parent}"> Parent Directory</a></li>')
+            write(f'      <li><a href="{folder.parent}">Parent Directory</a></li>')
         for item in sorted(items):
             is_dir = item.suffix not in [".json", ".html"]
             itemStr = is_dir and f"{item.name}/" or f"{item.name}"
-            write(f'      <li><a href="{itemStr}"> {itemStr}</a></li>')
+            write(f'      <li><a href="{itemStr}">{itemStr}</a></li>')
         write("    </ul>")
         write("  </body>")
         write("</html>")
@@ -191,7 +191,7 @@ async def fetch_l10n_data(
         Product(release.product) is Product.THUNDERBIRD
         and release.branch == "releases/comm-beta"
         and release.revision in ["3e01e0dc6943", "481fea2011e6", "85cb8f907b18", "92950b2fd2dc", "c614b6e7cf58", "e277e3f0ab13", "efd290b55a35", "f87ba53e04ff"]
-    ) or Product(release.product) in (Product.FENIX, Product.ANDROID_COMPONENTS, Product.FOCUS_ANDROID):
+    ) or Product(release.product) in (Product.FENIX, Product.ANDROID_COMPONENTS, Product.FOCUS_ANDROID, Product.FIREFOX_ANDROID):
         return (release, None)
 
     url_file = {
