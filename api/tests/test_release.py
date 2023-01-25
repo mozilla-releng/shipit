@@ -40,7 +40,7 @@ from shipit_api.common.product import Product
         # https://github.com/mozilla/release-services/pull/2265
         # Let's be explicitly failing about it.
         ("fennec_release", "68.1.1", pytest.raises(ValueError), None),
-        (Product.FOCUS_ANDROID, "95.0.1", does_not_raise(), MobileVersion(95, 0, 1)),
+        (Product.FOCUS_ANDROID, "95.0.1", pytest.raises(ValueError), None),
         (Product.ANDROID_COMPONENTS, "107.0.3", pytest.raises(ValueError), None),
     ),
 )
@@ -88,7 +88,6 @@ def test_is_rc(product, version, partial_updates, result):
         ("fenix", "84.0.0-beta.2", "84.0.0-beta.3"),
         ("fenix", "84.0.0-rc.1", "84.0.0-rc.2"),
         ("fenix", "84.0.0", "84.0.1"),
-        ("focus-android", "95.0.0", "95.0.1"),
         ("firefox-android", "108.0.0", "108.0.1"),
         ("firefox-android", "109.0", "109.0.1"),
     ),

@@ -478,19 +478,13 @@ SUPPORTED_FLAVORS = {
         {"name": "push", "in_previous_graph_ids": True},
         {"name": "ship", "in_previous_graph_ids": True},
     ],
-    "focus-android": [
-        {"name": "promote", "in_previous_graph_ids": True},
-        {"name": "ship", "in_previous_graph_ids": True},
-    ],
 }
 
 SUPPORTED_MOBILE_REPO_NAMES = (
     "fenix",
     "firefox-android",
-    "focus-android",
     "staging-fenix",
     "staging-firefox-android",
-    "staging-focus-android",
 )
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)

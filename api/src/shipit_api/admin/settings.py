@@ -78,7 +78,6 @@ LDAP_GROUPS = {
     "fenix-signoff": ["shipit_mobile"],
     "thunderbird-signoff": ["shipit_thunderbird"],
     "firefox-android-signoff": ["shipit_mobile"],
-    "focus-android-signoff": ["shipit_mobile"],
     # XPI signoffs. These are in flux.
     # Adding Releng as a backup to most of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
@@ -102,7 +101,6 @@ for product in [
     "fennec",
     "firefox",
     "firefox-android",
-    "focus-android",
     "pinebuild",
 ]:
     scopes = {f"add_release/{product}": LDAP_GROUPS["firefox-signoff"], f"abandon_release/{product}": LDAP_GROUPS["firefox-signoff"]}
@@ -158,7 +156,6 @@ AUTH0_AUTH_SCOPES.update(
                 + LDAP_GROUPS["xpi_mozillaonline-privileged_signoff"]
                 + LDAP_GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
                 + LDAP_GROUPS["xpi_normandy-privileged_signoff"]
-                + LDAP_GROUPS["focus-android-signoff"]
             )
         )
     }

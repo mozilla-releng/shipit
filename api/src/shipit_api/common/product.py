@@ -10,7 +10,7 @@ class Product(enum.Enum):
     FENIX = "fenix"
     FENNEC = "fennec"
     THUNDERBIRD = "thunderbird"
-    FOCUS_ANDROID = "focus-android"
+    FOCUS_ANDROID = "focus-android"     # Only used for product details
     FIREFOX_ANDROID = "firefox-android"
 
 

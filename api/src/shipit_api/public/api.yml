@@ -164,7 +164,6 @@ components:
           - fennec
           - firefox
           - firefox-android
-          - focus-android
           - thunderbird
         version:
           type: string

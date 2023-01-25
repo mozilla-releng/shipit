@@ -141,25 +141,6 @@ module.exports = {
       ],
       enablePartials: false,
     },
-    {
-      product: 'focus-android',
-      prettyName: 'Deprecated Focus for Android',
-      appName: 'focus-android',
-      branches: [
-        {
-          branch: '',
-        },
-      ],
-      repositories: [
-        {
-          prettyName: 'Official repo',
-          project: 'focus-android',
-          repo: 'https://github.com/mozilla-mobile/focus-android',
-          enableReleaseEta: false,
-        },
-      ],
-      enablePartials: false,
-    },
   ],
   XPI_MANIFEST: {
     branch: 'main',

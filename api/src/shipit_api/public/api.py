@@ -25,7 +25,6 @@ VERSION_CLASSES = {
     Product.FENNEC.value: FennecVersion,
     Product.FIREFOX.value: FirefoxVersion,
     Product.FIREFOX_ANDROID.value: MobileVersion,
-    Product.FOCUS_ANDROID.value: MobileVersion,
     Product.THUNDERBIRD.value: ThunderbirdVersion,
 }
 
