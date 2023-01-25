@@ -16,7 +16,6 @@ from shipit_api.common.product import Product, get_key
 logger = logging.getLogger(__name__)
 
 _VERSION_CLASS_PER_PRODUCT = {
-    Product.ANDROID_COMPONENTS: MobileVersion,
     Product.DEVEDITION: DeveditionVersion,
     Product.PINEBUILD: FirefoxVersion,
     Product.FENIX: FenixVersion,

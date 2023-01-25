@@ -98,25 +98,6 @@ module.exports = {
       enablePartials: false,
     },
     {
-      product: 'android-components',
-      prettyName: 'Deprecated Android-Components',
-      appName: 'android-components',
-      branches: [
-        {
-          branch: '',
-        },
-      ],
-      repositories: [
-        {
-          prettyName: 'Staging Android monorepo',
-          project: 'staging-firefox-android',
-          repo: 'https://github.com/mozilla-releng/staging-firefox-android',
-          enableReleaseEta: false,
-        },
-      ],
-      enablePartials: false,
-    },
-    {
       product: 'firefox-android',
       prettyName: 'Firefox Android (Android-Components, Focus)',
       appName: 'firefox-android',

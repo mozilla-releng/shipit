@@ -3,7 +3,7 @@ import enum
 
 @enum.unique
 class Product(enum.Enum):
-    ANDROID_COMPONENTS = "android-components"
+    ANDROID_COMPONENTS = "android-components"   # Only used for product details
     DEVEDITION = "devedition"
     PINEBUILD = "pinebuild"
     FIREFOX = "firefox"

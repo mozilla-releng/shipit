@@ -469,7 +469,6 @@ SUPPORTED_FLAVORS = {
         {"name": "push_thunderbird", "in_previous_graph_ids": True},
         {"name": "ship_thunderbird", "in_previous_graph_ids": True},
     ],
-    "android-components": [{"name": "ship", "in_previous_graph_ids": True}],
     "fenix": [
         {"name": "promote", "in_previous_graph_ids": True},
         {"name": "ship", "in_previous_graph_ids": True},

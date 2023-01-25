@@ -18,7 +18,6 @@ from shipit_api.common.product import Product
 logger = logging.getLogger(__name__)
 
 VERSION_CLASSES = {
-    Product.ANDROID_COMPONENTS.value: MobileVersion,
     Product.DEVEDITION.value: DeveditionVersion,
     # XXX revisit when we know how pinebuild will be versioned
     Product.PINEBUILD.value: FirefoxVersion,

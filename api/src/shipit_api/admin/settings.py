@@ -76,7 +76,6 @@ LDAP_GROUPS = {
     "admin": ADMIN_LDAP_GROUP,
     "firefox-signoff": ["shipit_firefox"],
     "fenix-signoff": ["shipit_mobile"],
-    "android-components-signoff": ["shipit_mobile"],
     "thunderbird-signoff": ["shipit_thunderbird"],
     "firefox-android-signoff": ["shipit_mobile"],
     "focus-android-signoff": ["shipit_mobile"],
@@ -98,7 +97,6 @@ AUTH0_AUTH_SCOPES = dict()
 
 # releng signoff scopes
 for product in [
-    "android-components",
     "devedition",
     "fenix",
     "fennec",
@@ -118,7 +116,6 @@ for product in [
 # Add scopes for enabling/disabling products
 AUTH0_AUTH_SCOPES.update(
     {
-        "disable_product/android-components": LDAP_GROUPS["firefox-signoff"],
         "disable_product/firefox": LDAP_GROUPS["firefox-signoff"],
         "disable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
         "disable_product/fennec": LDAP_GROUPS["firefox-signoff"],
@@ -152,8 +149,7 @@ AUTH0_AUTH_SCOPES.update(
     {
         "github": list(
             set(
-                LDAP_GROUPS["android-components-signoff"]
-                + LDAP_GROUPS["fenix-signoff"]
+                LDAP_GROUPS["fenix-signoff"]
                 + LDAP_GROUPS["firefox-android-signoff"]
                 + LDAP_GROUPS["xpi_privileged_build"]
                 + LDAP_GROUPS["xpi_privileged_signoff"]
