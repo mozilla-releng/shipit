@@ -98,7 +98,6 @@ AUTH0_AUTH_SCOPES = dict()
 for product in [
     "devedition",
     "fenix",
-    "fennec",
     "firefox",
     "firefox-android",
     "pinebuild",
@@ -116,12 +115,10 @@ AUTH0_AUTH_SCOPES.update(
     {
         "disable_product/firefox": LDAP_GROUPS["firefox-signoff"],
         "disable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
-        "disable_product/fennec": LDAP_GROUPS["firefox-signoff"],
         "disable_product/devedition": LDAP_GROUPS["firefox-signoff"],
         "disable_product/pinebuild": LDAP_GROUPS["firefox-signoff"],
         "enable_product/firefox": LDAP_GROUPS["firefox-signoff"],
         "enable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
-        "enable_product/fennec": LDAP_GROUPS["firefox-signoff"],
         "enable_product/devedition": LDAP_GROUPS["firefox-signoff"],
         "enable_product/pinebuild": LDAP_GROUPS["firefox-signoff"],
     }

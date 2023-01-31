@@ -161,7 +161,6 @@ components:
           - devedition
           - pinebuild
           - fenix
-          - fennec
           - firefox
           - firefox-android
           - thunderbird
@@ -304,7 +303,6 @@ components:
           example: firefox
           enum:
           - firefox
-          - fennec
           - devedition
           - pinebuild
         branch:

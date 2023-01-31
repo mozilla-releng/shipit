@@ -198,7 +198,6 @@ async def fetch_l10n_data(
         Product.FIREFOX: "browser/locales/l10n-changesets.json",
         Product.DEVEDITION: "browser/locales/l10n-changesets.json",
         Product.PINEBUILD: "browser/locales/l10n-changesets.json",
-        Product.FENNEC: "mobile/locales/l10n-changesets.json",
         Product.THUNDERBIRD: "mail/locales/l10n-changesets.json",
     }[Product(release.product)]
     url = f"{shipit_api.common.config.HG_PREFIX}/{release.branch}/raw-file/{release.revision}/{url_file}"

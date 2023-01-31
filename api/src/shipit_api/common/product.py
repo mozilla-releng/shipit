@@ -8,7 +8,7 @@ class Product(enum.Enum):
     PINEBUILD = "pinebuild"
     FIREFOX = "firefox"
     FENIX = "fenix"
-    FENNEC = "fennec"
+    FENNEC = "fennec"   # Only used for product details
     THUNDERBIRD = "thunderbird"
     FOCUS_ANDROID = "focus-android"     # Only used for product details
     FIREFOX_ANDROID = "firefox-android"
