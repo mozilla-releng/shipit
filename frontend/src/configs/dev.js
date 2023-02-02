@@ -80,7 +80,7 @@ module.exports = {
     },
     {
       product: 'fenix',
-      prettyName: 'Fenix',
+      prettyName: 'Deprecated Fenix',
       appName: 'fenix',
       branches: [
         {
@@ -99,7 +99,7 @@ module.exports = {
     },
     {
       product: 'firefox-android',
-      prettyName: 'Firefox Android (Android-Components, Focus)',
+      prettyName: 'Firefox Android (Android-Components, Fenix, Focus)',
       appName: 'firefox-android',
       branches: [
         {
