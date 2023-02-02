@@ -123,25 +123,6 @@ module.exports = {
       enablePartials: false,
     },
     {
-      product: 'android-components',
-      prettyName: 'Deprecated Android-Components',
-      appName: 'android-components',
-      branches: [
-        {
-          branch: '',
-        },
-      ],
-      repositories: [
-        {
-          prettyName: 'Android monorepo',
-          project: 'firefox-android',
-          repo: 'https://github.com/mozilla-mobile/firefox-android',
-          enableReleaseEta: false,
-        },
-      ],
-      enablePartials: false,
-    },
-    {
       product: 'firefox-android',
       prettyName: 'Firefox Android (Android-Components, Focus)',
       appName: 'firefox-android',
@@ -155,25 +136,6 @@ module.exports = {
           prettyName: 'Android monorepo',
           project: 'firefox-android',
           repo: 'https://github.com/mozilla-mobile/firefox-android',
-          enableReleaseEta: false,
-        },
-      ],
-      enablePartials: false,
-    },
-    {
-      product: 'focus-android',
-      prettyName: 'Deprecated Focus for Android',
-      appName: 'focus-android',
-      branches: [
-        {
-          branch: '',
-        },
-      ],
-      repositories: [
-        {
-          prettyName: 'Official repo',
-          project: 'focus-android',
-          repo: 'https://github.com/mozilla-mobile/focus-android',
           enableReleaseEta: false,
         },
       ],
