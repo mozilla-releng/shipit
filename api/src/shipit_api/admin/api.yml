@@ -476,7 +476,14 @@ paths:
           content:
             text/plain:
               schema:
-                type: string
+                oneOf:
+                  - type: string
+                  # Bug 1815414 text/plain gets parsed as JSON object[1] when
+                  # connexion validates the output. This means "110.0" becomes
+                  # a number. That's why we're accepting both here.
+                  #
+                  # [1] https://github.com/spec-first/connexion/pull/205/files#diff-dfd9a45381cefd560da87f04925f10801539c6d5c45e4f1f3ecb08e06e9fe273R88
+                  - type: number
                 example: 1.0.0
   /github/xpis/{owner}/{repo}/{revision}:
     get:
