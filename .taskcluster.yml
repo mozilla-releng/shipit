@@ -4,7 +4,9 @@ reporting: checks-v1
 policy:
     pullRequests: public
 tasks:
-    - $if: 'tasks_for in ["github-pull-request", "github-push", "action", "cron"]'
+    - $if: >
+          (tasks_for == "github-pull-request" && event.action in ["opened", "reopened", "synchronize"])
+          || (tasks_for in ["github-push", "action", "cron"])
       then:
           $let:
               trustDomain: releng
