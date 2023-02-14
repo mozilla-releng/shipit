@@ -49,17 +49,17 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # e.g. version bumped, but still no builds available.
 #
 # This version also defines the mobile nightly version (i.e.: Fenix)
-FIREFOX_NIGHTLY = "111.0a1"
+FIREFOX_NIGHTLY = "112.0a1"
 
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found: https://wiki.mozilla.org/Release_Management/Calendar
-LAST_SOFTFREEZE_DATE = "2023-01-12"
-LAST_MERGE_DATE = "2023-01-16"
-LAST_RELEASE_DATE = "2023-01-17"
-NEXT_SOFTFREEZE_DATE = "2023-02-09"
-NEXT_MERGE_DATE = "2023-02-13"
-NEXT_RELEASE_DATE = "2023-02-14"
+LAST_SOFTFREEZE_DATE = "2023-02-09"
+LAST_MERGE_DATE = "2023-02-13"
+LAST_RELEASE_DATE = "2023-02-14"
+NEXT_SOFTFREEZE_DATE = "2023-03-09"
+NEXT_MERGE_DATE = "2023-03-13"
+NEXT_RELEASE_DATE = "2023-03-14"
 
 DATE_FORMAT = "%Y-%m-%d"
 LAST_STRINGFREEZE_DATE = (datetime.strptime(LAST_SOFTFREEZE_DATE, DATE_FORMAT) + timedelta(days=1)).strftime(DATE_FORMAT)
