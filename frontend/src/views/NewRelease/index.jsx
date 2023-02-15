@@ -132,11 +132,7 @@ export default function NewRelease() {
       )
     ).data;
     const nextBuildNumber = (
-      await guessBuildNumberAction(
-        selectedProduct.product,
-        selectedBranch.branch,
-        ver
-      )
+      await guessBuildNumberAction(selectedProduct.product, ver)
     ).data;
 
     setVersion(ver);

@@ -10,9 +10,9 @@ import config from '../config';
  * This will fetch all release builds including shipped, aborted, and not
  * started yet.
  */
-export async function getBuildNumbers(product, branch, version) {
+export async function getBuildNumbers(product, version) {
   const res = await axios.get('/releases', {
-    params: { product, branch, version, status: 'shipped,aborted,scheduled' },
+    params: { product, version, status: 'shipped,aborted,scheduled' },
     usePublicApi: true,
   });
   const releases = res.data;
@@ -89,8 +89,8 @@ export async function getRecentXPIReleases(limit = 4) {
   return releases.slice(0, limit);
 }
 
-export async function guessBuildNumber(product, branch, version) {
-  const buildNumbers = await getBuildNumbers(product, branch, version);
+export async function guessBuildNumber(product, version) {
+  const buildNumbers = await getBuildNumbers(product, version);
   const nextBuildNumber =
     buildNumbers.length !== 0 ? Math.max(...buildNumbers) + 1 : 1;
 
