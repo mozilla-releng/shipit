@@ -25,7 +25,7 @@ import click
 import mypy_extensions
 import sqlalchemy
 import sqlalchemy.orm
-from mozilla_version.fenix import FenixVersion
+from mozilla_version.mobile import MobileVersion
 
 import cli_common.command
 import cli_common.utils
@@ -337,7 +337,7 @@ def get_releases(
         # get release details from the JSON files up to breakpoint_version
         #
         product_file = f"1.0/{product.value}.json"
-        if product in [Product.FENNEC, Product.FENIX]:
+        if product in [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID]:
             product_file = "1.0/mobile_android.json"
 
         old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details.get(product_file, {}).get("releases", dict()))  # noqa
@@ -440,7 +440,7 @@ def get_release_history(
     # l10n info, branches, etc). Instead of creating a special case per
     # exception, we just serve the data as is.
     product_file = f"1.0/{product.value}_history_{product_category.name.lower()}_releases.json"
-    if product in [Product.FENNEC, Product.FENIX]:
+    if product in [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID]:
         product_file = f"1.0/mobile_history_{product_category.name.lower()}_releases.json"
 
     old_history = typing.cast(ReleasesHistory, old_product_details.get(product_file, {}))
@@ -882,8 +882,8 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release])
         ios_version=shipit_api.common.config.IOS_VERSION,
         nightly_version=shipit_api.common.config.FIREFOX_NIGHTLY,
         alpha_version=shipit_api.common.config.FIREFOX_NIGHTLY,
-        beta_version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: FenixVersion.parse(r.version).is_beta),
-        version=get_latest_version(releases, Product.FENIX, filter_closure=lambda r: FenixVersion.parse(r.version).is_release),
+        beta_version=get_latest_version(releases, Product.FIREFOX_ANDROID, filter_closure=lambda r: MobileVersion.parse(r.version).is_beta),
+        version=get_latest_version(releases, Product.FIREFOX_ANDROID, filter_closure=lambda r: MobileVersion.parse(r.version).is_release),
     )
 
 
@@ -1093,7 +1093,7 @@ async def rebuild(
         "firefox_primary_builds.json": get_primary_builds(breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details),
         "firefox_versions.json": get_firefox_versions(releases),
         "languages.json": get_languages(old_product_details),
-        "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC, Product.FENIX], releases, old_product_details),
+        "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID], releases, old_product_details),
         "mobile_details.json": get_mobile_details(releases),
         "mobile_history_development_releases.json": get_release_history(
             breakpoint_version, Product.FENNEC, ProductCategory.DEVELOPMENT, releases, old_product_details
