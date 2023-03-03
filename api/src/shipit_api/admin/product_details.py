@@ -345,7 +345,7 @@ def get_releases(
             # product_with_version looks like "Fennec-1.0". There is nothing after the version
             if "-" not in product_with_version:
                 raise ValueError(f'Invalid product_with_version "{product_with_version}". It must contain a -')
-            product_string, version_string = product_with_version.split("-")
+            product_string, version_string = product_with_version.rsplit("-", 1)
 
             # XXX Both Fennec and Fenix output to mobile_android.json. We don't want to
             # parse Fennec version number as if it were Fenix because the parser is
