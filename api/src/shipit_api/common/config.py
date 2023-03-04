@@ -26,7 +26,7 @@ PRODUCT_DETAILS_CACHE_DIR = pathlib.Path(tempfile.gettempdir(), "product-details
 # breakpoint version will be served using static files. No related
 # product-details data will be generated if we decide to ship a dot release
 # with major version <= BREAKPOINT_VERSION. This includes Firefox (release,
-# esr, beta, devedition, pinebuild), Fennec and Thunderbird.
+# esr, beta, devedition, pinebuild), and Thunderbird.
 BREAKPOINT_VERSION = 101
 
 # When there is only one ESR release ESR_NEXT is set to '' and ESR_CURRENT is
@@ -469,49 +469,20 @@ SUPPORTED_FLAVORS = {
         {"name": "push_thunderbird", "in_previous_graph_ids": True},
         {"name": "ship_thunderbird", "in_previous_graph_ids": True},
     ],
-    "android-components": [{"name": "ship", "in_previous_graph_ids": True}],
-    "fenix": [
-        {"name": "promote", "in_previous_graph_ids": True},
-        {"name": "ship", "in_previous_graph_ids": True},
-    ],
     "firefox-android": [
         {"name": "promote", "in_previous_graph_ids": True},
         {"name": "push", "in_previous_graph_ids": True},
         {"name": "ship", "in_previous_graph_ids": True},
     ],
-    "focus-android": [
-        {"name": "promote", "in_previous_graph_ids": True},
-        {"name": "ship", "in_previous_graph_ids": True},
-    ],
 }
 
 SUPPORTED_MOBILE_REPO_NAMES = (
-    "fenix",
     "firefox-android",
-    "focus-android",
-    "staging-fenix",
     "staging-firefox-android",
-    "staging-focus-android",
 )
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
 SIGNOFFS = {
-    # 'projects/maple': {
-    #     'fennec': {
-    #         'ship_fennec': [
-    #             {
-    #                 'name': '[relman] Ship Fennec',
-    #                 'description': 'Publish Firefox for Android to Play Store',
-    #                 'permissions': 'firefox-signoff',  # an ldap group from LDAP_GROUPS in settings.py
-    #             },
-    #             {
-    #                 'name': '[releng] Ship Fennec',
-    #                 'description': 'Publish Firefox for Android to Play Store',
-    #                 'permissions': 'admin',  # an ldap group from LDAP_GROUPS in settings.py
-    #             },
-    #         ],
-    #     },
-    # },
     "xpi": {
         "privileged": {
             "promote": [

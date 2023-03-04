@@ -3,14 +3,10 @@ import enum
 
 @enum.unique
 class Product(enum.Enum):
-    ANDROID_COMPONENTS = "android-components"
     DEVEDITION = "devedition"
     PINEBUILD = "pinebuild"
     FIREFOX = "firefox"
-    FENIX = "fenix"
-    FENNEC = "fennec"
     THUNDERBIRD = "thunderbird"
-    FOCUS_ANDROID = "focus-android"
     FIREFOX_ANDROID = "firefox-android"
 
 
