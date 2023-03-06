@@ -6,8 +6,7 @@
 import logging
 
 import requests
-from mozilla_version.fenix import FenixVersion  # TODO replace with MobileVersion
-from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
+from mozilla_version.gecko import DeveditionVersion, FirefoxVersion, ThunderbirdVersion
 from mozilla_version.mobile import MobileVersion
 
 from shipit_api.common.config import SUPPORTED_FLAVORS
@@ -16,14 +15,10 @@ from shipit_api.common.product import Product, get_key
 logger = logging.getLogger(__name__)
 
 _VERSION_CLASS_PER_PRODUCT = {
-    Product.ANDROID_COMPONENTS: MobileVersion,
     Product.DEVEDITION: DeveditionVersion,
     Product.PINEBUILD: FirefoxVersion,
-    Product.FENIX: FenixVersion,
-    Product.FENNEC: FennecVersion,
     Product.FIREFOX: FirefoxVersion,
     Product.FIREFOX_ANDROID: MobileVersion,
-    Product.FOCUS_ANDROID: MobileVersion,
     Product.THUNDERBIRD: ThunderbirdVersion,
 }
 
@@ -37,7 +32,11 @@ def parse_version(product, version):
         except KeyError:
             raise ValueError(f"Product {product} versions are not supported")
 
-    VersionClass = _VERSION_CLASS_PER_PRODUCT[product_enum]
+    try:
+        VersionClass = _VERSION_CLASS_PER_PRODUCT[product_enum]
+    except KeyError:
+        raise ValueError(f"Product {product} versions are not supported")
+
     return VersionClass.parse(version)
 
 
