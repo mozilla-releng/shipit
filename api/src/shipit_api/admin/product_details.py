@@ -134,7 +134,6 @@ def to_format(d: datetime.datetime, format: str) -> str:
 
 
 def create_index_listing_html(folder: pathlib.Path, items: typing.Set[pathlib.Path]) -> str:
-
     folder = "/" / folder  # noqa : T484 Unsupported left operand type for / ("str")
     with io.StringIO() as html:
 
@@ -185,7 +184,6 @@ def create_index_listing(product_details: ProductDetails) -> ProductDetails:
 async def fetch_l10n_data(
     session: aiohttp.ClientSession, release: shipit_api.common.models.Release, raise_on_failure: bool, use_cache: bool = True
 ) -> typing.Tuple[shipit_api.common.models.Release, typing.Optional[ReleaseL10ns]]:
-
     # Fenix and some thunderbird on the betas don't have l10n in the repository
     if (
         Product(release.product) is Product.THUNDERBIRD
@@ -231,7 +229,6 @@ async def fetch_l10n_data(
 
 
 def get_old_product_details(directory: str) -> ProductDetails:
-
     if not os.path.isdir(directory):
         return dict()
 
@@ -263,7 +260,6 @@ def get_releases_from_db(db_session: sqlalchemy.orm.Session, breakpoint_version:
 
 
 def get_product_categories(product: Product, version: str) -> typing.List[ProductCategory]:
-
     # typically, these are dot releases that are considered major
     SPECIAL_FIREFOX_MAJORS = ["14.0.1"]
     SPECIAL_THUNDERBIRD_MAJORS = ["14.0.1", "38.0.1"]
@@ -294,7 +290,7 @@ def get_product_categories(product: Product, version: str) -> typing.List[Produc
     else:
         categories_mapping.append((ProductCategory.ESR, shipit_api.common.config.CURRENT_ESR + r"(\.[0-9]+){1,2}esr$"))
 
-    for (product_category, version_pattern) in categories_mapping:
+    for product_category, version_pattern in categories_mapping:
         if re.match(version_pattern, version):
             categories.append(product_category)
 
@@ -331,7 +327,6 @@ def get_releases(
     details = dict()
 
     for product in products:
-
         #
         # get release details from the JSON files up to breakpoint_version
         #
@@ -726,7 +721,7 @@ def get_l10n(
     # populate with old data first, stripping the '1.0/' prefix
     data: ProductDetails = {file_.replace("1.0/", ""): content for file_, content in old_product_details.items() if file_.startswith("1.0/l10n/")}
 
-    for (release, locales) in releases_l10n.items():
+    for release, locales in releases_l10n.items():
         # XXX: for some reason we didn't generate l10n for devedition in old_product_details
         # XXX need anything for pinebuild here?
         if Product(release.product) is Product.DEVEDITION:
@@ -990,7 +985,6 @@ async def rebuild(
     breakpoint_version: typing.Optional[int],
     clean_working_copy: bool = True,
 ):
-
     secrets = [urllib.parse.urlparse(git_repo_url).password]
 
     # Sometimes we want to work from a clean working copy
@@ -1132,7 +1126,7 @@ async def rebuild(
     if shipit_api.common.config.PRODUCT_DETAILS_NEW_DIR.exists():
         shutil.rmtree(shipit_api.common.config.PRODUCT_DETAILS_NEW_DIR)
 
-    for (file__, content) in product_details.items():
+    for file__, content in product_details.items():
         new_file = shipit_api.common.config.PRODUCT_DETAILS_NEW_DIR / file__
 
         # we must ensure that all needed folders exists

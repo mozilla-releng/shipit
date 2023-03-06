@@ -3,14 +3,14 @@ import enum
 
 @enum.unique
 class Product(enum.Enum):
-    ANDROID_COMPONENTS = "android-components"   # Only used for product details
+    ANDROID_COMPONENTS = "android-components"  # Only used for product details
     DEVEDITION = "devedition"
     PINEBUILD = "pinebuild"
     FIREFOX = "firefox"
-    FENIX = "fenix"   # Only used for product details
-    FENNEC = "fennec"   # Only used for product details
+    FENIX = "fenix"  # Only used for product details
+    FENNEC = "fennec"  # Only used for product details
     THUNDERBIRD = "thunderbird"
-    FOCUS_ANDROID = "focus-android"     # Only used for product details
+    FOCUS_ANDROID = "focus-android"  # Only used for product details
     FIREFOX_ANDROID = "firefox-android"
 
 
