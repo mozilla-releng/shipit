@@ -191,7 +191,7 @@ async def fetch_l10n_data(
         Product(release.product) is Product.THUNDERBIRD
         and release.branch == "releases/comm-beta"
         and release.revision in ["3e01e0dc6943", "481fea2011e6", "85cb8f907b18", "92950b2fd2dc", "c614b6e7cf58", "e277e3f0ab13", "efd290b55a35", "f87ba53e04ff"]
-    ) or Product(release.product) == Product.FIREFOX_ANDROID:
+    ) or Product(release.product) in (Product.FENIX, Product.ANDROID_COMPONENTS, Product.FOCUS_ANDROID, Product.FIREFOX_ANDROID):
         return (release, None)
 
     url_file = {
@@ -336,7 +336,7 @@ def get_releases(
         # get release details from the JSON files up to breakpoint_version
         #
         product_file = f"1.0/{product.value}.json"
-        if product == Product.FIREFOX_ANDROID:
+        if product in [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID]:
             product_file = "1.0/mobile_android.json"
 
         old_releases = typing.cast(typing.Dict[str, ReleaseDetails], old_product_details.get(product_file, {}).get("releases", dict()))  # noqa
@@ -439,7 +439,7 @@ def get_release_history(
     # l10n info, branches, etc). Instead of creating a special case per
     # exception, we just serve the data as is.
     product_file = f"1.0/{product.value}_history_{product_category.name.lower()}_releases.json"
-    if product == Product.FIREFOX_ANDROID:
+    if product in [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID]:
         product_file = f"1.0/mobile_history_{product_category.name.lower()}_releases.json"
 
     old_history = typing.cast(ReleasesHistory, old_product_details.get(product_file, {}))
@@ -1075,7 +1075,7 @@ async def rebuild(
     product_details: ProductDetails = {
         "all.json": get_releases(
             breakpoint_version,
-            [Product.DEVEDITION, Product.PINEBUILD, Product.FIREFOX, Product.THUNDERBIRD],
+            [Product.DEVEDITION, Product.PINEBUILD, Product.FIREFOX, Product.FENIX, Product.FENNEC, Product.THUNDERBIRD],
             releases,
             old_product_details,
         ),  # consider adding `android-components` at some point.
@@ -1092,7 +1092,7 @@ async def rebuild(
         "firefox_primary_builds.json": get_primary_builds(breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details),
         "firefox_versions.json": get_firefox_versions(releases),
         "languages.json": get_languages(old_product_details),
-        "mobile_android.json": get_releases(breakpoint_version, [Product.FIREFOX_ANDROID], releases, old_product_details),
+        "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID], releases, old_product_details),
         "mobile_details.json": get_mobile_details(releases),
         "mobile_history_development_releases.json": get_release_history(
             breakpoint_version, Product.FENNEC, ProductCategory.DEVELOPMENT, releases, old_product_details
