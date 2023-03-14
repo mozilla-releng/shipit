@@ -305,6 +305,7 @@ paths:
           type: string
           enum:
           - firefox
+          - fennec
           - devedition
           - pinebuild
       - name: branch
@@ -719,10 +720,14 @@ components:
           type: string
           example: firefox
           enum:
+          - android-components
           - devedition
           - pinebuild
+          - fenix
+          - fennec
           - firefox
           - firefox-android
+          - focus-android
           - thunderbird
         version:
           type: string
@@ -765,7 +770,7 @@ components:
           example: fennec_beta
         repo_url:
           type: string
-          example: https://github.com/mozilla-mobile/firefox-android
+          example: https://github.com/mozilla-mobile/fenix
     ReleaseStatus:
       required:
       - status
@@ -825,10 +830,14 @@ components:
           type: string
           example: firefox
           enum:
+          - android-components
           - devedition
           - pinebuild
+          - fenix
+          - fennec
           - firefox
           - firefox-android
+          - focus-android
           - thunderbird
         version:
           type: string
@@ -927,6 +936,7 @@ components:
           example: firefox
           enum:
           - firefox
+          - fennec
           - devedition
           - pinebuild
         branch:

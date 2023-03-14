@@ -104,6 +104,25 @@ module.exports = {
       enablePartials: true,
     },
     {
+      product: 'fenix',
+      prettyName: 'Deprecated Fenix',
+      appName: 'fenix',
+      branches: [
+        {
+          branch: '',
+        },
+      ],
+      repositories: [
+        {
+          prettyName: 'Official repo',
+          project: 'fenix',
+          repo: 'https://github.com/mozilla-mobile/fenix',
+          enableReleaseEta: false,
+        },
+      ],
+      enablePartials: false,
+    },
+    {
       product: 'firefox-android',
       prettyName: 'Firefox Android (Android-Components, Fenix, Focus)',
       appName: 'firefox-android',
