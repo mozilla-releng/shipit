@@ -158,10 +158,14 @@ components:
           type: string
           example: firefox
           enum:
+          - android-components
           - devedition
           - pinebuild
+          - fenix
+          - fennec
           - firefox
           - firefox-android
+          - focus-android
           - thunderbird
         version:
           type: string
@@ -302,6 +306,7 @@ components:
           example: firefox
           enum:
           - firefox
+          - fennec
           - devedition
           - pinebuild
         branch:
