@@ -2,13 +2,17 @@ ARG PYTHON_VERSION
 
 FROM python:${PYTHON_VERSION}
 
+COPY requirements/poetry.txt /tmp/poetry.txt
+RUN pip install -r /tmp/poetry.txt
+
 WORKDIR /app
 
-COPY MANIFEST.in setup.py tox.ini /app/
-COPY requirements/ /app/requirements/
+COPY pyproject.toml /app/
 
-RUN pip install -r requirements/local.txt
+RUN poetry install --only tox --no-root
+
+COPY tox.ini /app/
 
 COPY src/ /app/src/
 
-ENTRYPOINT ["/usr/local/bin/tox", "-e"]
+ENTRYPOINT ["/usr/local/bin/poetry", "run", "tox", "-e"]
