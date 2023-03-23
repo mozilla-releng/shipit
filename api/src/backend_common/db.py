@@ -25,7 +25,6 @@ def init_database(app):
     migrations_dir = os.path.abspath(os.path.join(app.root_path, "..", "migrations"))
 
     with app.app_context():
-
         if os.path.isdir(migrations_dir):
             # Needed to init potential migrations later on
             # Use a separate alembic_version table per app

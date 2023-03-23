@@ -39,7 +39,6 @@ class AuthType(enum.Enum):
 
 
 class BaseUser(object):
-
     anonymous = False
     type = AuthType.NONE
 
@@ -72,7 +71,6 @@ class BaseUser(object):
         raise NotImplementedError
 
     def has_permissions(self, permissions):
-
         if not isinstance(permissions, (tuple, list)):
             permissions = [permissions]
 
@@ -105,7 +103,6 @@ def create_auth0_secrets_file(auth_client_id, auth_client_secret, auth_domain):
 
 
 class AnonymousUser(BaseUser):
-
     anonymous = True
     type = AuthType.ANONYMOUS
 
@@ -118,7 +115,6 @@ class AnonymousUser(BaseUser):
 
 # We user TaskclusterUser for scriptworker actions (ship method for xpi manifest)
 class TaskclusterUser(BaseUser):
-
     type = AuthType.TASKCLUSTER
 
     def __init__(self, credentials):
@@ -162,7 +158,6 @@ class TaskclusterUser(BaseUser):
 
 
 class Auth0User(BaseUser):
-
     type = AuthType.AUTH0
 
     def __init__(self, token, userinfo):

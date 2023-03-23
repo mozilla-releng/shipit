@@ -53,7 +53,6 @@ class Pulse(object):
 
 
 def init_app(app):
-
     return Pulse(
         app.config.get("PULSE_HOST"),
         app.config.get("PULSE_PORT"),
