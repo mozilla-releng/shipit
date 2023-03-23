@@ -29,3 +29,85 @@ use_parentheses=true
 
 [tool.coverage.run]
 omit = ["api/tests/*"]
+
+[tool.poetry]
+name = "shipit-api"
+version = "1.0.0"
+description = ""
+authors = ["Release Engineering <releng@mozilla.com>"]
+license = "MPL2"
+packages = [
+    {include = "backend_common", from = "src"},
+    {include = "cli_common", from = "src"},
+    {include = "shipit_api", from = "src"},
+]
+
+[tool.poetry.scripts]
+shipit_upload_product_details = "shipit_api.admin.cli:download_product_details"
+shipit_rebuild_product_details = "shipit_api.admin.cli:rebuild_product_details"
+shipit_import = "shipit_api.admin.cli:shipit_import"
+shipit_trigger_product_details = "shipit_api.admin.cli:trigger_product_details"
+
+[tool.poetry.dependencies]
+# Required by both public and admin apps
+python = "^3.9"
+connexion = {version = "*", extras = ["swagger-ui"]}
+dockerflow = "*"
+flask = "*"
+flask_cors = "*"
+flask_migrate = "*"
+flask_talisman = "*"
+# flask_oidc imports JSONWebSignatureSerializer which was removed in 2.1+
+# https://github.com/pallets/itsdangerous/pull/273
+itsdangerous = "<2.1"
+mozilla-version = "*"
+python-decouple = "*"
+sentry-sdk = {version = "*", extras = ["flask"]}
+slugid = "*"
+sqlalchemy = "<=1.4.44"
+# deployment
+gunicorn = "*"
+psycopg2 = "*"
+
+# Required only by the admin app
+aioamqp = "*"
+aiohttp = {version = "*", extras = ["speedup"]}
+arrow = "*"
+backoff = "*"
+# to support signals in Flask
+blinker = "*"
+flask_login = "*"
+flask_oidc = "*"
+json-e = "*"
+kombu = "*"
+mohawk = "*"
+mypy = "*"
+mypy_extensions = "*"
+pyyaml = "*"
+taskcluster = "*"
+
+[tool.poetry.group.test.dependencies]
+python = "^3.9"
+aioresponses = "*"
+responses = "*"
+pytest = "*"
+pytest-asyncio = "*"
+pytest-cov = "*"
+black = "*"
+check-manifest = "*"
+isort = "*"
+coverage = "*"
+dpath = "*"
+flake8 = "*"
+openapi-spec-validator = "*"
+oyaml = "*"
+
+[tool.poetry.group.ccov-upload.dependencies]
+requests = "*"
+
+[tool.poetry.group.tox.dependencies]
+tox = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
