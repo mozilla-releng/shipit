@@ -37,7 +37,11 @@ def parse_version(product, version):
         except KeyError:
             raise ValueError(f"Product {product} versions are not supported")
 
-    VersionClass = _VERSION_CLASS_PER_PRODUCT[product_enum]
+    try:
+        VersionClass = _VERSION_CLASS_PER_PRODUCT[product_enum]
+    except KeyError:
+        raise ValueError(f"Product {product} versions are not supported")
+
     return VersionClass.parse(version)
 
 
