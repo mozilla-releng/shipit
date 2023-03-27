@@ -306,7 +306,6 @@ components:
           example: firefox
           enum:
           - firefox
-          - fennec
           - devedition
           - pinebuild
         branch:
