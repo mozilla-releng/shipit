@@ -4,6 +4,7 @@ services:
     build:
       context: api
       dockerfile: Dockerfile
+    command: admin
     ports:
       - "8015:8015"
     # Mounting these three specific volumes is done to ensure that autoreloading
@@ -45,7 +46,8 @@ services:
   public:
     build:
       context: api
-      dockerfile: Dockerfile.public
+      dockerfile: Dockerfile
+    command: public
     ports:
       - "8016:8016"
     # See comment on the api container for the reasoning behind these mounts

@@ -17,4 +17,4 @@ USER app
 
 RUN poetry install --only main
 
-CMD ["/app/docker.d/init.sh", "admin"]
+ENTRYPOINT ["/bin/bash", "/app/docker.d/init.sh"]
