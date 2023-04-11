@@ -1,0 +1,3 @@
+Requirements files are only used to get Poetry installed. From there, Poetry handles all of the application-specific packages, dependencies, et. al.
+
+To pick up a new version of Poetry, run `pip-compile -r poetry.in --generate-hashes`.

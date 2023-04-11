@@ -13,10 +13,9 @@ RUN mkdir /builds && \
 
 # %include-run-task
 
-# Use pinned tox version from requirements
-# %include api/requirements/tox.txt
-ADD topsrcdir/api/requirements/tox.txt /tmp/tox.txt
-RUN pip install -r /tmp/tox.txt && rm -rf /tmp/tox.txt
+# %include api/requirements/poetry.txt
+ADD topsrcdir/api/requirements/poetry.txt /tmp/poetry.txt
+RUN pip install -r /tmp/poetry.txt
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \

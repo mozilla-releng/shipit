@@ -45,8 +45,9 @@ jobs:
             command:
                 - sh
                 - -lxce
+                  # --no-ansi is needed due to https://github.com/python-oetry/poetry/issues/7148
                 - >-
-                  cd api && tox --parallel -e clean,check,py{substitute_version},report
+                  cd api && poetry install --only tox --no-root --no-ansi && poetry run tox --parallel -e clean,check,py{substitute_version},report
     frontend-node:
         description: "{name} node{substitute_version}"
         substitute-versions:

@@ -7,14 +7,14 @@ RUN groupadd --gid 10001 app && \
 
 WORKDIR /app
 
-COPY requirements/ /app/requirements/
-RUN pip install -r requirements/base.txt
+COPY requirements/poetry.txt /tmp/poetry.txt
+RUN pip install -r /tmp/poetry.txt
 
 COPY . /app
-RUN APP_TYPE="admin" pip install -e .
 
-ENV FLASK_APP shipit_api.admin.flask:app
 ENV WEB_CONCURRENCY=3
 USER app
 
-CMD ["/app/docker.d/init.sh"]
+RUN poetry install --only main
+
+CMD ["/app/docker.d/init.sh", "admin"]

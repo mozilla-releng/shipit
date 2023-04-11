@@ -11,16 +11,22 @@ ARG APP_TYPE
 RUN groupadd --gid 10001 app && \
     useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
 
-# %include api
-ADD topsrcdir/api/requirements/ /app/requirements/
 
-RUN pip install -r /app/requirements/public.txt
-RUN test "$APP_TYPE" = "admin" && pip install -r /app/requirements/base.txt || :
+# %include api
+COPY api/requirements/poetry.txt /tmp/poetry.txt
+RUN pip install -r /tmp/poetry.txt
+
+ENV POETRY_CACHE_DIR=/builds/worker/poetry_cache
+
+COPY api/pyproject.toml /app/src/pyproject.toml
+# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
+RUN poetry install --only main --no-root --no-ansi
 
 ADD topsrcdir/api/ /app/src
 ADD topsrcdir/api/docker.d/init.sh /app/docker.d/
 
-RUN APP_TYPE=$APP_TYPE pip install /app/src && rm -rf /app/src
+# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
+RUN APP_TYPE=$APP_TYPE poetry install --root-only --no-ansi && rm -rf /app/src
 
 ARG TASK_ID
 ARG APP_VERSION
@@ -30,9 +36,8 @@ ARG TASKCLUSTER_ROOT_URL
 
 RUN echo "{\"commit\": \"$VCS_HEAD_REV\", \"version\": \"$APP_VERSION\", \"source\": \"$VCS_HEAD_REPOSITORY\", \"build\": \"$TASKCLUSTER_ROOT_URL/tasks/$TASK_ID\"}" > /app/version.json
 
-ENV FLASK_APP shipit_api.$APP_TYPE.flask:app
 ENV WEB_CONCURRENCY=3
 USER app
 WORKDIR /app
 
-CMD ["/app/docker.d/init.sh"]
+CMD ["/app/docker.d/init.sh", $APP_TYPE]
