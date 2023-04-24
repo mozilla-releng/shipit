@@ -13,20 +13,20 @@ RUN groupadd --gid 10001 app && \
 
 
 # %include api
-COPY api/requirements/poetry.txt /tmp/poetry.txt
+COPY topsrcdir/api/requirements/poetry.txt /tmp/poetry.txt
 RUN pip install -r /tmp/poetry.txt
 
 ENV POETRY_CACHE_DIR=/builds/worker/poetry_cache
 
-COPY api/pyproject.toml /app/src/pyproject.toml
+COPY topsrcdir/api/pyproject.toml /app/src/pyproject.toml
 # --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN poetry install --only main --no-root --no-ansi
+RUN cd /app/src && poetry install --only main --no-root --no-ansi
 
 ADD topsrcdir/api/ /app/src
 ADD topsrcdir/api/docker.d/init.sh /app/docker.d/
 
 # --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN APP_TYPE=$APP_TYPE poetry install --root-only --no-ansi && rm -rf /app/src
+RUN cd /app/src && APP_TYPE=$APP_TYPE poetry install --only-root --no-ansi && rm -rf /app/src
 
 ARG TASK_ID
 ARG APP_VERSION
