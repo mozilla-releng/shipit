@@ -26,7 +26,7 @@ ADD topsrcdir/api/ /app/src
 ADD topsrcdir/api/docker.d/init.sh /app/docker.d/
 
 # --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN cd /app/src && APP_TYPE=$APP_TYPE poetry install --only-root --no-ansi && rm -rf /app/src
+RUN cd /app/src && APP_TYPE=$APP_TYPE poetry install --only-root --no-ansi
 
 ARG TASK_ID
 ARG APP_VERSION
@@ -37,7 +37,9 @@ ARG TASKCLUSTER_ROOT_URL
 RUN echo "{\"commit\": \"$VCS_HEAD_REV\", \"version\": \"$APP_VERSION\", \"source\": \"$VCS_HEAD_REPOSITORY\", \"build\": \"$TASKCLUSTER_ROOT_URL/tasks/$TASK_ID\"}" > /app/version.json
 
 ENV WEB_CONCURRENCY=3
+ENV APP_TYPE=${APP_TYPE}
+ENV FLASK_APP shipit_api.$APP_TYPE.flask:app
 USER app
-WORKDIR /app
+WORKDIR /app/src
 
-CMD ["/app/docker.d/init.sh", $APP_TYPE]
+ENTRYPOINT ["/bin/bash", "-c", "/app/docker.d/init.sh $APP_TYPE"]
