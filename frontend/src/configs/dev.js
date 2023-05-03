@@ -62,6 +62,22 @@ module.exports = {
       canTogglePartials: true,
     },
     {
+      product: 'birch',
+      prettyName: 'Firefox birch',
+      appName: 'browser',
+      branches: [
+        {
+          prettyName: 'Birch',
+          project: 'birch',
+          branch: 'projects/birch',
+          repo: 'https://hg.mozilla.org/projects/birch',
+          enableReleaseEta: false,
+          disableable: true,
+        },
+      ],
+      enablePartials: true,
+    },
+    {
       product: 'thunderbird',
       prettyName: 'Thunderbird',
       appName: 'mail',
