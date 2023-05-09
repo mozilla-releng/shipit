@@ -1,6 +1,7 @@
 Ship It API and Frontend
 ========================
 
+Ship It is Mozilla's internal tool for managing the releases of Firefox and other products.
 
 Local Development
 -----------------
@@ -118,4 +119,3 @@ How to deploy `main` branch to `production`?
     $ git push --dry-run origin main:production
     # in git, the upstream remote defaults to `origin`
     $ git push origin main:production
-
