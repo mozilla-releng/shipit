@@ -15,7 +15,7 @@ First setup
 
 3. Stop the docker containers.
 
-4. Install ``taskcluster`` mozilla's task execution framework. Get the latest `Taskcluster shell client here <https://github.com/taskcluster/taskcluster/tree/main/clients/client-shell#readme>`__
+4. Install ``taskcluster`` mozilla's task execution framework. Get the latest `Taskcluster shell client here <https://github.com/taskcluster/taskcluster/tree/main/clients/client-shell#readme>`__.
 
 5.  Go to https://github.com/settings/tokens and generate a new token that has no scope at all. It will show as ``public access``. This token is just used to fetch commit and branch info. **COPY AND STORE THE TOKEN FOR LATER USE**
 
