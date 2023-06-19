@@ -208,7 +208,6 @@ def generate_phases(release, common_input, verify_supported_flavors):
         input_ = copy.deepcopy(common_input)
         input_["release_promotion_flavor"] = phase["name"]
         input_["previous_graph_ids"] = list(previous_graph_ids)
-        input_["rebuild_kinds"] = ["docker-image", "fetch", "packages", "toolchain"]
 
         hook = generate_action_hook(task_group_id=decision_task_id, action_name="release-promotion", actions=actions, parameters=parameters, input_=input_)
         hook_no_context = {k: v for k, v in hook.items() if k != "context"}
