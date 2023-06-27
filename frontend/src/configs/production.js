@@ -51,6 +51,8 @@ module.exports = {
           repo: 'https://hg.mozilla.org/releases/mozilla-esr115',
           enableReleaseEta: true,
           numberOfPartials: 5,
+          alternativeBranch: 'releases/mozilla-esr102',
+          alternativeRepo: 'https://hg.mozilla.org/releases/mozilla-esr102',
           disableable: false,
         },
       ],
