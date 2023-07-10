@@ -95,6 +95,7 @@ AUTH0_AUTH_SCOPES = dict()
 
 # releng signoff scopes
 for product in [
+    "app-services",
     "devedition",
     "firefox",
     "firefox-android",

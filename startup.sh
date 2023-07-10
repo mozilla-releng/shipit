@@ -1,7 +1,9 @@
 #!/bin/bash
 export TASKCLUSTER_ROOT_URL="${TASKCLUSTER_ROOT_URL:-https://firefox-ci-tc.services.mozilla.com}"
 
-scopes=('hooks:trigger-hook:project-comm/in-tree-action-1-generic/*' \
+scopes=('hooks:trigger-hook:project-app-services/in-tree-action-1-generic/*' \
+        'hooks:trigger-hook:project-app-services/in-tree-action-1-release-promotion/*' \
+        'hooks:trigger-hook:project-comm/in-tree-action-1-generic/*' \
         'hooks:trigger-hook:project-comm/in-tree-action-1-release-promotion/*' \
         'hooks:trigger-hook:project-gecko/in-tree-action-1-generic/*' \
         'hooks:trigger-hook:project-gecko/in-tree-action-1-release-promotion/*' \
@@ -33,4 +35,3 @@ if [[ -z "${GITHUB_TOKEN}" ]]; then
     export GITHUB_TOKEN="$_token"
 fi
 docker compose up
->>>>>>> 95a90b7... Bug 1842897 - Make some improvements to startup script

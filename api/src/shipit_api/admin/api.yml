@@ -719,6 +719,7 @@ components:
           type: string
           example: firefox
           enum:
+          - app-services
           - devedition
           - pinebuild
           - firefox
@@ -826,6 +827,7 @@ components:
           example: firefox
           enum:
           - android-components
+          - app-services
           - devedition
           - pinebuild
           - fenix

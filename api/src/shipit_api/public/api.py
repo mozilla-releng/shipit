@@ -8,7 +8,7 @@ from collections import defaultdict
 
 from flask import abort, current_app
 from mozilla_version.fenix import FenixVersion
-from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
+from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, GeckoVersion, ThunderbirdVersion
 from mozilla_version.mobile import MobileVersion
 from werkzeug.exceptions import BadRequest
 
@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 VERSION_CLASSES = {
     Product.ANDROID_COMPONENTS.value: MobileVersion,
+    Product.APP_SERVICES.value: GeckoVersion,
     Product.DEVEDITION.value: DeveditionVersion,
     # XXX revisit when we know how pinebuild will be versioned
     Product.PINEBUILD.value: FirefoxVersion,

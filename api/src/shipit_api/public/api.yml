@@ -159,6 +159,7 @@ components:
           example: firefox
           enum:
           - android-components
+          - app-services
           - devedition
           - pinebuild
           - fenix
