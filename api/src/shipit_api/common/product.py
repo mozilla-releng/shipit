@@ -4,6 +4,7 @@ import enum
 @enum.unique
 class Product(enum.Enum):
     ANDROID_COMPONENTS = "android-components"  # Only used for product details
+    APP_SERVICES = "app-services"
     DEVEDITION = "devedition"
     PINEBUILD = "pinebuild"
     FIREFOX = "firefox"

@@ -474,11 +474,20 @@ SUPPORTED_FLAVORS = {
         {"name": "push", "in_previous_graph_ids": True},
         {"name": "ship", "in_previous_graph_ids": True},
     ],
+    "app-services": [
+        {"name": "promote", "in_previous_graph_ids": True},
+        {"name": "ship", "in_previous_graph_ids": True},
+    ]
 }
 
 SUPPORTED_MOBILE_REPO_NAMES = (
     "firefox-android",
     "staging-firefox-android",
+)
+
+SUPPORTED_APP_SERVICES_REPO_NAMES = (
+    "application-services",
+    "staging-application-services",
 )
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
