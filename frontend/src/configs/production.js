@@ -143,6 +143,26 @@ module.exports = {
       ],
       enablePartials: false,
     },
+    {
+      product: 'app-services',
+      prettyName: 'Application Services',
+      appName: 'app-services',
+      branches: [
+        {
+          branch: '',
+        },
+      ],
+      repositories: [
+        {
+          prettyName: 'Application Services',
+          project: 'app-services',
+          repo: 'https://github.com/mozilla/application-services',
+          enableReleaseEta: false,
+          enableTreeherder: false,
+        },
+      ],
+      enablePartials: false,
+    },
   ],
   XPI_MANIFEST: {
     branch: 'main',

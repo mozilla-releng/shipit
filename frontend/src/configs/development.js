@@ -95,6 +95,27 @@ module.exports = {
       ],
       enablePartials: false,
     },
+    {
+      product: 'app-services',
+      prettyName: 'Application Services',
+      appName: 'app-services',
+      branches: [
+        {
+          branch: '',
+        },
+      ],
+      repositories: [
+        {
+          prettyName: 'Staging Application Services',
+          project: 'app-services',
+          repo:
+            'https://github.com/mozilla-releng/staging-application-services',
+          enableReleaseEta: false,
+          enableTreeherder: false,
+        },
+      ],
+      enablePartials: false,
+    },
   ],
   XPI_MANIFEST: {
     branch: 'main',
