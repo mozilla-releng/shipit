@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { string, node, bool } from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { makeStyles } from '@material-ui/styles';
@@ -10,9 +10,18 @@ import menuItems from './menuItems';
 import Link from '../../utils/Link';
 import UserMenu from './UserMenu';
 import SettingsMenu from './SettingsMenu';
+import ReleasesMenu from './ReleasesMenu';
 import Button from '../Button';
 import Footer from '../../views/Footer';
 import { CONTENT_MAX_WIDTH, APP_BAR_HEIGHT } from '../../utils/constants';
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import Collapse from "@material-ui/core/Collapse";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+
 
 const useStyles = makeStyles(theme => ({
   appbar: {
@@ -68,7 +77,7 @@ export default function Dashboard(props) {
             Ship-It Admin ┃ {title}
           </Typography>
           <nav className={classes.nav}>
-            {menuItems.main.map(menuItem => (
+            {/* {menuItems.main.map(menuItem => (
               <Link
                 key={menuItem.value}
                 className={disabled ? classes.disabledLink : classes.link}
@@ -76,7 +85,8 @@ export default function Dashboard(props) {
                 to={menuItem.path}>
                 <Button color="inherit">{menuItem.value}</Button>
               </Link>
-            ))}
+            ))} */}
+            <ReleasesMenu />
             <SettingsMenu disabled={disabled} />
             <UserMenu />
           </nav>
