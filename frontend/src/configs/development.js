@@ -132,7 +132,7 @@ module.exports = {
           repo:
             'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
           enableReleaseEta: false,
-          enableTreeherder: true,
+          enableTreeherder: false,
         },
       ],
       enablePartials: false,
