@@ -291,7 +291,7 @@ export default function NewRelease() {
             />
           )}
         />
-        {revision !== '' && (
+        {revision !== '' && selectedBranch.enableTreeherder !== false && (
           <a
             href={`${config.TREEHERDER_URL}/jobs?repo=${selectedBranch.project}&revision=${revision}`}>
             Treeherder
