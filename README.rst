@@ -6,29 +6,24 @@ Ship It is Mozilla's internal tool for managing the releases of Firefox and othe
 Local Development
 -----------------
 
-First setup
-~~~~~~~~~~~
-
-1. Run ``docker-compose up``. Initializing the database can take some time, the first time. You may have to ``Ctrl+C`` and ``docker-compose up`` a second time to get in a stable state.
-
-2. Go to https://localhost:8015 (the API endpoint), https://localhost:8010 (the frontend one), and https://localhost:8016 (the public API one) and accept the TLS security warning (untrusted certificate). If you don't do so on all 3 ports, you may end up with the API that drops request to the API because of `CORS <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`__.
-
-3. Stop the docker containers.
-
-4. Install ``taskcluster`` mozilla's task execution framework. Get the latest `Taskcluster shell client here <https://github.com/taskcluster/taskcluster/tree/main/clients/client-shell#readme>`__.
-
-5.  Go to https://github.com/settings/tokens and generate a new token that has no scope at all. It will show as ``public access``. This token is just used to fetch commit and branch info. **COPY AND STORE THE TOKEN FOR LATER USE**
-
-To run each time
+First time setup
 ~~~~~~~~~~~~~~~~
 
-Run ``./startup.sh``
+1. Install ``taskcluster`` mozilla's task execution framework. Get the latest `Taskcluster shell client here <https://github.com/taskcluster/taskcluster/tree/main/clients/client-shell#readme>`__.
+2.  Go to https://github.com/settings/tokens and generate a new token that has no scope at all. It will show as ``public access``. This token is just used to fetch commit and branch info. **COPY AND STORE THE TOKEN FOR LATER USE**
+3. Run ``source startup.sh``. Confirm the Taskcluster client that opens in your browser, and provide your Github token when prompted. Initializing the database can take some time, the first time. You may have to ``Ctrl+C`` and ``docker-compose up`` a second time to get in a stable state.
+4. Go to https://localhost:8015 (the API endpoint), https://localhost:8010 (the frontend one), and https://localhost:8016 (the public API one) and accept the TLS security warning (untrusted certificate). If you don't do so on all 3 ports, you may end up with the API that drops request to the API because of `CORS <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`__.
 
+Subsequent Runs
+~~~~~~~~~~~~~~~
 
-- `You would need to pass your github token to the script for each startup`
-- `After running the startup script, if you stop the script you can simply run` ``docker-compose up`` `in the same terminal session to restart, this would maintain the environment prepared by the startup script for run and you won't need to provide your github token again unless you close the terminal session.`
+Run:
 
-You should be all set to kick off some staging releases.
+```bash
+source startup.sh
+```
+
+You should be all set to kick off some staging releases. The script will detect if your Taskcluster client has expired and automatically create a new one.
 
 To provide all required sign offs on staging xpi releases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
