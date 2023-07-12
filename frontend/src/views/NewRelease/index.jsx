@@ -291,7 +291,7 @@ export default function NewRelease() {
             />
           )}
         />
-        {revision !== '' && selectedBranch.enableTreeherder !== false && (
+        {revision !== '' && selectedRepository.enableTreeherder !== false && (
           <a
             href={`${config.TREEHERDER_URL}/jobs?repo=${selectedBranch.project}&revision=${revision}`}>
             Treeherder
@@ -303,7 +303,7 @@ export default function NewRelease() {
 
   const renderReleaseEta = () => {
     return (
-      selectedBranch.enableReleaseEta && (
+      (selectedBranch.enableReleaseEta || selectedRepository.enableReleaseEta) && (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <DateTimePicker
             className={classes.formControl}
