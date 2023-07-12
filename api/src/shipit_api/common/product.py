@@ -13,6 +13,7 @@ class Product(enum.Enum):
     THUNDERBIRD = "thunderbird"
     FOCUS_ANDROID = "focus-android"  # Only used for product details
     FIREFOX_ANDROID = "firefox-android"
+    MOZILLA_VPN = "mozilla-vpn"
 
 
 @enum.unique

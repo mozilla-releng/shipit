@@ -100,6 +100,7 @@ for product in [
     "firefox",
     "firefox-android",
     "pinebuild",
+    "mozilla-vpn",
 ]:
     scopes = {f"add_release/{product}": LDAP_GROUPS["firefox-signoff"], f"abandon_release/{product}": LDAP_GROUPS["firefox-signoff"]}
     phases = []

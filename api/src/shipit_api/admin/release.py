@@ -7,7 +7,7 @@ import logging
 
 import requests
 from mozilla_version.fenix import FenixVersion  # TODO replace with MobileVersion
-from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, GeckoVersion, ThunderbirdVersion
+from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, GeckoVersion, ThunderbirdVersion, BaseVersion
 from mozilla_version.mobile import MobileVersion
 
 from shipit_api.common.config import SUPPORTED_FLAVORS
@@ -26,6 +26,7 @@ _VERSION_CLASS_PER_PRODUCT = {
     Product.FIREFOX_ANDROID: MobileVersion,
     Product.FOCUS_ANDROID: MobileVersion,
     Product.THUNDERBIRD: ThunderbirdVersion,
+    Product.MOZILLA_VPN: BaseVersion,
 }
 
 

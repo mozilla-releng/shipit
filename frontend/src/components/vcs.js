@@ -123,10 +123,11 @@ export async function getBranches(repo) {
       repo,
     }));
 
+    branches = branches.filter(e => !e.branch.startsWith('dependabot/'))
+    branches = branches.filter(e => !e.branch.startsWith('releases/'))
     branches.sort((a, b) => b.date - a.date); // Most recent first
     branches = branches.slice(0, 10); // Only take the 10 most recent branches
   }
-
   return branches;
 }
 

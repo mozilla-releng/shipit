@@ -168,6 +168,7 @@ components:
           - firefox-android
           - focus-android
           - thunderbird
+          - mozilla-vpn
         version:
           type: string
           example: 56.0b12

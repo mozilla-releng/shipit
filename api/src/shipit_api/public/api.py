@@ -8,7 +8,7 @@ from collections import defaultdict
 
 from flask import abort, current_app
 from mozilla_version.fenix import FenixVersion
-from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, GeckoVersion, ThunderbirdVersion
+from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, GeckoVersion, ThunderbirdVersion, BaseVersion
 from mozilla_version.mobile import MobileVersion
 from werkzeug.exceptions import BadRequest
 
@@ -29,6 +29,7 @@ VERSION_CLASSES = {
     Product.FIREFOX_ANDROID.value: MobileVersion,
     Product.FOCUS_ANDROID.value: MobileVersion,
     Product.THUNDERBIRD.value: ThunderbirdVersion,
+    Product.MOZILLA_VPN.value: BaseVersion,
 }
 
 
