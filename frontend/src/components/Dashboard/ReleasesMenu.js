@@ -2,12 +2,13 @@ import React, { useState, Fragment } from "react";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/styles";
 import Menu from "@material-ui/core/Menu";
-import menuItems from './menuItems';
+import menuItems from "./menuItems";
 import { withUser } from "../../utils/AuthContext";
 import SettingsOutlineIcon from "mdi-react/RocketIcon";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 // import ListItemIcon from "@material-ui/core/ListItemIcon";
+import Link from "../../utils/Link";
 import ListItemText from "@material-ui/core/ListItemText";
 import Collapse from "@material-ui/core/Collapse";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
@@ -40,7 +41,16 @@ const SingleLevel = ({ item }) => {
   const classes = useStyles();
   return (
     <ListItem button className={classes.singleLevel}>
-      <ListItemText primary={item.title} />
+      {/* <ListItemText primary={item.title} /> */}
+      <Link
+        key={item.title}
+        // className={disabled ? classes.disabledLink : classes.link}
+        nav
+        to={item.to}
+        className={classes.listItemLink}
+      >
+        <ListItemText primary={item.title}/>
+      </Link>
     </ListItem>
   );
 };
@@ -72,16 +82,20 @@ const MultiLevel = ({ item }) => {
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    color: '#fff',
-    display: 'flex',
+    color: "#fff",
+    display: "flex",
   },
   singleLevel: {
-    paddingLeft: '40px',
+    paddingLeft: "40px",
+  },
+  listItemLink: {
+    textDecoration: 'none',
+    color: 'inherit',
   },
   menu: {
     // width: '100%',
     // padding: '10%'
-  }
+  },
 }));
 
 function MenuItems() {

@@ -7,11 +7,11 @@ export default [
         to: "/",
       },
       {
-        title: "New Firefox Release",
+        title: "New Release",
         to: "/new",
       },
       {
-        title: "Recent Firefox Releases",
+        title: "Recent Releases",
         to: "/recent",
       },
     ],
@@ -20,15 +20,15 @@ export default [
     title: "Mozilla Extensions",
     items: [
       {
-        title: "Pending XPI Releases",
+        title: "Pending Releases",
         to: "/xpi",
       },
       {
-        title: "New XPI Release",
+        title: "New Release",
         to: "/newxpi",
       },
       {
-        title: "Recent XPI Releases",
+        title: "Recent Releases",
         to: "/recentxpi",
       },
     ],
@@ -37,15 +37,15 @@ export default [
     title: "Mozilla VPN",
     items: [
       {
-        title: "Pending Mozilla Releases",
+        title: "Pending Releases",
         to: "/mozillavpn",
       },
       {
-        title: "New Mozilla VPN Release",
+        title: "New Release",
         to: "/newmozillavpn",
       },
       {
-        title: "Recent Mozilla VPN Releases",
+        title: "Recent Releases",
         to: "/recentmozillavpn",
       },
     ],
