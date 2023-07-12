@@ -72,9 +72,8 @@ const MultiLevel = ({ item }) => {
 
 const useStyles = makeStyles((theme) => ({
   button: {
-    height: theme.spacing(6),
-    width: theme.spacing(6),
-    margin: `0 ${theme.spacing(1)}px`,
+    color: '#fff',
+    display: 'flex',
   },
   singleLevel: {
     paddingLeft: '40px',

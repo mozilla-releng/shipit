@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import IconButton from '@material-ui/core/IconButton';
+// import IconButton from '@material-ui/core/IconButton';
 import SettingsOutlineIcon from 'mdi-react/SettingsOutlineIcon';
 import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import Dialog from '@material-ui/core/Dialog';
@@ -15,11 +15,16 @@ import { rebuildProductDetails } from '../api';
 import useAction from '../../hooks/useAction';
 
 const useStyles = makeStyles(theme => ({
-  settings: {
-    height: theme.spacing(6),
-    width: theme.spacing(6),
-    padding: 0,
-    margin: `0 ${theme.spacing(1)}px`,
+  // settings: {
+  //   height: theme.spacing(6),
+  //   width: theme.spacing(6),
+  //   padding: 0,
+  //   margin: `0 ${theme.spacing(1)}px`,
+  // },
+  button: {
+    color: '#fff',
+    display: 'flex',
+    padding: '1%',
   },
   settingsIcon: {
     fill: '#fff',
@@ -44,7 +49,7 @@ function SettingsMenu({ user, disabled }) {
 
   return (
     <Fragment>
-      <IconButton
+      {/* <IconButton
         disabled={!user || disabled}
         className={classes.settings}
         aria-haspopup="true"
@@ -59,7 +64,18 @@ function SettingsMenu({ user, disabled }) {
               : classes.settingsIconDisabled
           }
         />
-      </IconButton>
+      </IconButton> */}
+      <Button
+        disabled={!user || disabled}
+        className={classes.button}
+        aria-haspopup="true"
+        aria-controls="user-menu"
+        aria-label="user menu"
+        startIcon={<SettingsOutlineIcon />}
+        onClick={handleMenuOpen}
+      >
+        Setting
+      </Button>
       <Menu
         id="user-menu"
         anchorEl={anchorEl}
