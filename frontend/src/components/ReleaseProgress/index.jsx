@@ -94,6 +94,7 @@ export default function ReleaseProgress({
   const renderReleaseTitle = (isXPI, release) => {
     let url = null;
     let productBranch = null;
+    let enableTreeherder = true;
     const { PRODUCTS, TREEHERDER_URL } = config;
     let trimmedRevision = release.revision.substring(0, 13);
     const product =
@@ -114,6 +115,7 @@ export default function ReleaseProgress({
     }
 
     if (isXPI) {
+      enableTreeherder = false;
       trimmedRevision = release.xpi_revision.substring(0, 13);
       let repo = '';
       let owner = '';
@@ -131,6 +133,7 @@ export default function ReleaseProgress({
       );
     } else if (productBranch && productBranch.repo) {
       url = repoUrlBuilder(productBranch.repo, release.revision);
+      enableTreeherder = productBranch.enableTreeherder !== false;
     }
 
     return (
@@ -143,7 +146,7 @@ export default function ReleaseProgress({
           trimmedRevision
         )}
 
-        {!isXPI && TREEHERDER_URL && (
+        {enableTreeherder && TREEHERDER_URL && (
           <span>
             {' '}
             .{' '}
