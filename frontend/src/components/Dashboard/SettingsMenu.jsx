@@ -82,7 +82,7 @@ function SettingsMenu({ user, disabled }) {
         }
         onClick={handleMenuOpen}
       >
-        Setting
+        Settings
       </Button>
       <Menu
         id="user-menu"
