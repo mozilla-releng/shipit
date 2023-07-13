@@ -6,7 +6,6 @@ class Product(enum.Enum):
     ANDROID_COMPONENTS = "android-components"  # Only used for product details
     APP_SERVICES = "app-services"
     DEVEDITION = "devedition"
-    PINEBUILD = "pinebuild"
     FIREFOX = "firefox"
     FENIX = "fenix"  # Only used for product details
     FENNEC = "fennec"  # Only used for product details

@@ -99,7 +99,6 @@ for product in [
     "devedition",
     "firefox",
     "firefox-android",
-    "pinebuild",
 ]:
     scopes = {f"add_release/{product}": LDAP_GROUPS["firefox-signoff"], f"abandon_release/{product}": LDAP_GROUPS["firefox-signoff"]}
     phases = []
@@ -115,11 +114,9 @@ AUTH0_AUTH_SCOPES.update(
         "disable_product/firefox": LDAP_GROUPS["firefox-signoff"],
         "disable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
         "disable_product/devedition": LDAP_GROUPS["firefox-signoff"],
-        "disable_product/pinebuild": LDAP_GROUPS["firefox-signoff"],
         "enable_product/firefox": LDAP_GROUPS["firefox-signoff"],
         "enable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
         "enable_product/devedition": LDAP_GROUPS["firefox-signoff"],
-        "enable_product/pinebuild": LDAP_GROUPS["firefox-signoff"],
     }
 )
 

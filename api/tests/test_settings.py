@@ -52,7 +52,7 @@ def test_scopes(monkeypatch):
         [
             ldap_groups
             for scope, ldap_groups in AUTH0_AUTH_SCOPES.items()
-            if "firefox" in scope or "fenix" in scope or "fennec" in scope or "devedition" in scope or "pinebuild" in scope
+            if "firefox" in scope or "fenix" in scope or "fennec" in scope or "devedition" in scope
         ]
     )
     assert set(firefox_ldap_groups).isdisjoint(set(tb_ldap_groups))
@@ -70,7 +70,7 @@ def test_scopes(monkeypatch):
         [
             ldap_groups
             for scope, ldap_groups in AUTH0_AUTH_SCOPES.items()
-            if "firefox" in scope or "fenix" in scope or "fennec" in scope or "devedition" in scope or "pinebuild" in scope
+            if "firefox" in scope or "fenix" in scope or "fennec" in scope or "devedition" in scope
         ]
     )
     assert set(firefox_ldap_groups).isdisjoint(set(xpi_ldap_groups))

@@ -21,8 +21,6 @@ VERSION_CLASSES = {
     Product.ANDROID_COMPONENTS.value: MobileVersion,
     Product.APP_SERVICES.value: GeckoVersion,
     Product.DEVEDITION.value: DeveditionVersion,
-    # XXX revisit when we know how pinebuild will be versioned
-    Product.PINEBUILD.value: FirefoxVersion,
     Product.FENIX.value: FenixVersion,
     Product.FENNEC.value: FennecVersion,
     Product.FIREFOX.value: FirefoxVersion,
