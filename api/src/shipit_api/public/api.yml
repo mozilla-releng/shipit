@@ -161,7 +161,6 @@ components:
           - android-components
           - app-services
           - devedition
-          - pinebuild
           - fenix
           - fennec
           - firefox
@@ -308,7 +307,6 @@ components:
           enum:
           - firefox
           - devedition
-          - pinebuild
         branch:
           type: string
           example: releases/mozilla-beta

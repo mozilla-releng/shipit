@@ -103,7 +103,7 @@ class ReleaseBase:
     @property
     def allow_phase_skipping(self):
         # Phases can be skipped for betas and try only. The API doesn't enforce this.
-        return self.product in ["firefox", "devedition", "pinebuild"] and self.project in ["try", "beta"]
+        return self.product in ["firefox", "devedition"] and self.project in ["try", "beta"]
 
     @property
     def json(self):
