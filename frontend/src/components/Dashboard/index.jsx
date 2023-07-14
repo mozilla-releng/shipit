@@ -1,46 +1,45 @@
-import React, { Fragment } from 'react';
-import { string, node, bool } from 'prop-types';
-import { Helmet } from 'react-helmet';
-import { makeStyles } from '@material-ui/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import menuItems from './menuItems';
-import Link from '../../utils/Link';
-import UserMenu from './UserMenu';
-import SettingsMenu from './SettingsMenu';
-import Button from '../Button';
-import Footer from '../../views/Footer';
-import { CONTENT_MAX_WIDTH, APP_BAR_HEIGHT } from '../../utils/constants';
+import React, { Fragment } from "react";
+import { string, node, bool } from "prop-types";
+import { Helmet } from "react-helmet";
+import { makeStyles } from "@material-ui/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Paper from "@material-ui/core/Paper";
+import Typography from "@material-ui/core/Typography";
+import Link from "../../utils/Link";
+import UserMenu from "./UserMenu";
+import SettingsMenu from "./SettingsMenu";
+import ReleasesMenu from "./ReleasesMenu";
+import Footer from "../../views/Footer";
+import { CONTENT_MAX_WIDTH, APP_BAR_HEIGHT } from "../../utils/constants";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   appbar: {
     height: APP_BAR_HEIGHT,
   },
   title: {
-    textDecoration: 'none',
+    textDecoration: "none",
   },
   main: {
     maxWidth: CONTENT_MAX_WIDTH,
-    height: '100%',
-    margin: '0 auto',
+    height: "100%",
+    margin: "0 auto",
     padding: `${theme.spacing(12)}px ${APP_BAR_HEIGHT}px`,
   },
   nav: {
-    display: 'flex',
+    display: "flex",
     flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    justifyContent: "flex-end",
+    alignItems: "center",
   },
   link: {
-    textDecoration: 'none',
-    color: 'inherit',
+    textDecoration: "none",
+    color: "inherit",
   },
   disabledLink: {
-    textDecoration: 'none',
+    textDecoration: "none",
     color: theme.palette.grey[500],
-    pointerEvents: 'none',
+    pointerEvents: "none",
   },
   buttonWithIcon: {
     paddingLeft: theme.spacing(2),
@@ -64,19 +63,12 @@ export default function Dashboard(props) {
             variant="h6"
             noWrap
             component={Link}
-            to="/">
+            to="/"
+          >
             Ship-It Admin ┃ {title}
           </Typography>
           <nav className={classes.nav}>
-            {menuItems.main.map(menuItem => (
-              <Link
-                key={menuItem.value}
-                className={disabled ? classes.disabledLink : classes.link}
-                nav
-                to={menuItem.path}>
-                <Button color="inherit">{menuItem.value}</Button>
-              </Link>
-            ))}
+            <ReleasesMenu />
             <SettingsMenu disabled={disabled} />
             <UserMenu />
           </nav>
