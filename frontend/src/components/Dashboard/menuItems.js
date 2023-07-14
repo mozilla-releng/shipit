@@ -1,35 +1,35 @@
 export default [
   {
-    title: "Firefox",
+    title: 'Firefox',
     items: [
       {
-        title: "New",
-        to: "/new",
+        title: 'New',
+        to: '/new',
       },
       {
-        title: "Pending",
-        to: "/",
+        title: 'Pending',
+        to: '/',
       },
       {
-        title: "Recent",
-        to: "/recent",
+        title: 'Recent',
+        to: '/recent',
       },
     ],
   },
   {
-    title: "Mozilla Extensions",
+    title: 'Mozilla Extensions',
     items: [
       {
-        title: "New",
-        to: "/newxpi",
+        title: 'New',
+        to: '/newxpi',
       },
       {
-        title: "Pending",
-        to: "/xpi",
+        title: 'Pending',
+        to: '/xpi',
       },
       {
-        title: "Recent",
-        to: "/recentxpi",
+        title: 'Recent',
+        to: '/recentxpi',
       },
     ],
   },
