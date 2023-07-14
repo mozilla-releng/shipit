@@ -6,6 +6,7 @@ import SettingsOutlineIcon from 'mdi-react/RocketIcon';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -36,9 +37,6 @@ const useStyles = makeStyles(() => ({
     color: '#fff',
     display: 'flex',
   },
-  singleLevel: {
-    paddingLeft: '40px',
-  },
   listItemLink: {
     textDecoration: 'none',
     color: 'inherit',
@@ -48,15 +46,16 @@ const SingleLevel = ({ item }) => {
   const classes = useStyles();
 
   return (
-    <ListItem button className={classes.singleLevel}>
-      <Link
-        key={item.title}
-        nav
-        to={item.to ? item.to : ''}
-        className={classes.listItemLink}>
+    <Link
+      key={item.title}
+      nav
+      to={item.to ? item.to : ''}
+      className={classes.listItemLink}>
+      <ListItem button>
+        <ListItemIcon style={{ minWidth: '30px' }}>{item.Icon}</ListItemIcon>
         <ListItemText primary={item.title} />
-      </Link>
-    </ListItem>
+      </ListItem>
+    </Link>
   );
 };
 
