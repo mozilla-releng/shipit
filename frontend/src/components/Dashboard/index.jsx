@@ -44,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
   buttonWithIcon: {
     paddingLeft: theme.spacing(2),
   },
+  paper: {
+    height: "100%",
+  },
 }));
 
 export default function Dashboard(props) {
@@ -74,7 +77,7 @@ export default function Dashboard(props) {
           </nav>
         </Toolbar>
       </AppBar>
-      <Paper square elevation={0}>
+      <Paper square elevation={0} className={classes.paper}>
         <main className={classes.main}>{children}</main>
       </Paper>
       {!disabled && <Footer />}
