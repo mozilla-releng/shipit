@@ -14,6 +14,9 @@ const useStyles = makeStyles(theme => ({
     width: theme.spacing(6),
     padding: 0,
   },
+  button: {
+    marginLeft: '.5%',
+  },
 }));
 
 function UserMenu(props) {
@@ -44,6 +47,7 @@ function UserMenu(props) {
         </IconButton>
       ) : (
         <Button
+          className={classes.button}
           onClick={onAuthorize}
           size="small"
           variant="contained"

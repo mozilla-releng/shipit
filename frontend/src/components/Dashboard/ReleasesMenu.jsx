@@ -42,8 +42,12 @@ const useStyles = makeStyles(() => ({
     color: 'inherit',
   },
 }));
-const SingleLevel = ({ item }) => {
+const SingleLevel = withUser(({ item, disabled, user }) => {
   const classes = useStyles();
+
+  if ((!user || disabled) && item.to.includes('new')) {
+    return '';
+  }
 
   return (
     <Link
@@ -57,8 +61,7 @@ const SingleLevel = ({ item }) => {
       </ListItem>
     </Link>
   );
-};
-
+});
 const MultiLevel = ({ item }) => {
   const { items: children } = item;
   const [open, setOpen] = useState(false);
@@ -83,17 +86,19 @@ const MultiLevel = ({ item }) => {
   );
 };
 
-const MenuItem = ({ item }) => {
+const MenuItem = ({ item, disabled }) => {
   const Component = hasChildren(item) ? MultiLevel : SingleLevel;
 
-  return <Component item={item} />;
+  return <Component item={item} disabled={disabled} />;
 };
 
-function MenuItems() {
-  return menuItems.map(item => <MenuItem key={item.title} item={item} />);
+function MenuItems({ disabled }) {
+  return menuItems.map(item => (
+    <MenuItem key={item.title} item={item} disabled={disabled} />
+  ));
 }
 
-function ReleasesMenu({ user, disabled }) {
+function ReleasesMenu({ disabled }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const handleMenuOpen = e => setAnchorEl(e.currentTarget);
@@ -101,20 +106,15 @@ function ReleasesMenu({ user, disabled }) {
 
   return (
     <Fragment>
-      {!user || disabled ? (
-        ''
-      ) : (
-        <Button
-          disabled={!user || disabled}
-          className={classes.button}
-          aria-haspopup="true"
-          aria-controls="user-menu"
-          aria-label="user menu"
-          startIcon={<SettingsOutlineIcon />}
-          onClick={handleMenuOpen}>
-          Releases
-        </Button>
-      )}
+      <Button
+        className={classes.button}
+        aria-haspopup="true"
+        aria-controls="user-menu"
+        aria-label="user menu"
+        startIcon={<SettingsOutlineIcon />}
+        onClick={handleMenuOpen}>
+        Releases
+      </Button>
       <Menu
         id="user-menu"
         anchorEl={anchorEl}
@@ -123,10 +123,10 @@ function ReleasesMenu({ user, disabled }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         onClose={handleMenuClose}
         className={classes.menu}>
-        <MenuItems />
+        <MenuItems disabled={disabled} />
       </Menu>
     </Fragment>
   );
 }
 
-export default withUser(ReleasesMenu);
+export default ReleasesMenu;
