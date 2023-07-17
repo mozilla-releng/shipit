@@ -23,9 +23,6 @@ const useStyles = makeStyles(theme => ({
   settingsIcon: {
     fill: '#fff',
   },
-  settingsIconDisabled: {
-    fill: theme.palette.grey[500],
-  },
   link: {
     ...theme.mixins.link,
   },
@@ -43,24 +40,19 @@ function SettingsMenu({ user, disabled }) {
 
   return (
     <Fragment>
-      <Button
-        disabled={!user || disabled}
-        className={classes.button}
-        aria-haspopup="true"
-        aria-controls="user-menu"
-        aria-label="user menu"
-        startIcon={
-          <SettingsOutlineIcon
-            className={
-              user && !disabled
-                ? classes.settingsIcon
-                : classes.settingsIconDisabled
-            }
-          />
-        }
-        onClick={handleMenuOpen}>
-        Settings
-      </Button>
+      {!user || disabled ? (
+        ''
+      ) : (
+        <Button
+          className={classes.button}
+          aria-haspopup="true"
+          aria-controls="user-menu"
+          aria-label="user menu"
+          startIcon={<SettingsOutlineIcon className={classes.settingsIcon} />}
+          onClick={handleMenuOpen}>
+          Settings
+        </Button>
+      )}
       <Menu
         id="user-menu"
         anchorEl={anchorEl}

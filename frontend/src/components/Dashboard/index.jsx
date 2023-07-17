@@ -70,7 +70,7 @@ export default function Dashboard(props) {
             Ship-It Admin ┃ {title}
           </Typography>
           <nav className={classes.nav}>
-            <ReleasesMenu />
+            <ReleasesMenu disabled={disabled} />
             <SettingsMenu disabled={disabled} />
             <UserMenu />
           </nav>

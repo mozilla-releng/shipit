@@ -101,16 +101,20 @@ function ReleasesMenu({ user, disabled }) {
 
   return (
     <Fragment>
-      <Button
-        disabled={!user || disabled}
-        className={classes.button}
-        aria-haspopup="true"
-        aria-controls="user-menu"
-        aria-label="user menu"
-        startIcon={<SettingsOutlineIcon />}
-        onClick={handleMenuOpen}>
-        Releases
-      </Button>
+      {!user || disabled ? (
+        ''
+      ) : (
+        <Button
+          disabled={!user || disabled}
+          className={classes.button}
+          aria-haspopup="true"
+          aria-controls="user-menu"
+          aria-label="user menu"
+          startIcon={<SettingsOutlineIcon />}
+          onClick={handleMenuOpen}>
+          Releases
+        </Button>
+      )}
       <Menu
         id="user-menu"
         anchorEl={anchorEl}
