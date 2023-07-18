@@ -4,7 +4,9 @@ import { makeStyles } from '@material-ui/styles';
 import Menu from '@material-ui/core/Menu';
 import ListItem from '@material-ui/core/ListItem';
 import SettingsOutlineIcon from 'mdi-react/SettingsOutlineIcon';
+import MenuDownIcon from 'mdi-react/MenuDownIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
 import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -18,9 +20,13 @@ const useStyles = makeStyles(theme => ({
   button: {
     color: '#fff',
     display: 'flex',
-    padding: '1%',
+    textTransform: 'none',
+    marginRight: '.15%',
   },
-  settingsIcon: {
+  endIcon: {
+    margin: '0px',
+  },
+  icon: {
     fill: '#fff',
   },
   link: {
@@ -45,12 +51,18 @@ function SettingsMenu({ user, disabled }) {
       ) : (
         <Button
           className={classes.button}
+          classes={{
+            endIcon: classes.endIcon,
+          }}
           aria-haspopup="true"
           aria-controls="user-menu"
           aria-label="user menu"
-          startIcon={<SettingsOutlineIcon className={classes.settingsIcon} />}
+          startIcon={<SettingsOutlineIcon className={classes.icon} />}
+          endIcon={<MenuDownIcon className={classes.icon} />}
           onClick={handleMenuOpen}>
-          Settings
+          <Typography color="inherit" variant="h6" noWrap>
+            Settings
+          </Typography>
         </Button>
       )}
       <Menu

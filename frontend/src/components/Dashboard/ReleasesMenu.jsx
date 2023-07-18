@@ -2,7 +2,8 @@ import React, { useState, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/styles';
 import Menu from '@material-ui/core/Menu';
-import SettingsOutlineIcon from 'mdi-react/RocketIcon';
+import RocketIcon from 'mdi-react/RocketIcon';
+import MenuDownIcon from 'mdi-react/MenuDownIcon';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -10,6 +11,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Typography from '@material-ui/core/Typography';
 import Link from '../../utils/Link';
 import { withUser } from '../../utils/AuthContext';
 import menuItems from './menuItems';
@@ -36,6 +38,11 @@ const useStyles = makeStyles(() => ({
   button: {
     color: '#fff',
     display: 'flex',
+    textTransform: 'none',
+    marginRight: '.15%',
+  },
+  endIcon: {
+    margin: '0px',
   },
   listItemLink: {
     textDecoration: 'none',
@@ -108,12 +115,18 @@ function ReleasesMenu({ disabled }) {
     <Fragment>
       <Button
         className={classes.button}
+        classes={{
+          endIcon: classes.endIcon,
+        }}
         aria-haspopup="true"
         aria-controls="user-menu"
         aria-label="user menu"
-        startIcon={<SettingsOutlineIcon />}
+        startIcon={<RocketIcon />}
+        endIcon={<MenuDownIcon />}
         onClick={handleMenuOpen}>
-        Releases
+        <Typography color="inherit" variant="h6" noWrap>
+          Releases
+        </Typography>
       </Button>
       <Menu
         id="user-menu"

@@ -99,9 +99,7 @@ export default function NewXPIRelease() {
     if (xpis.data) {
       return (
         <FormControl className={classes.formControl}>
-          <InputLabel className={classes.formControl}>
-            Repository
-          </InputLabel>
+          <InputLabel className={classes.formControl}>Repository</InputLabel>
           <Select
             className={classes.formControl}
             value={selectedXpi}
