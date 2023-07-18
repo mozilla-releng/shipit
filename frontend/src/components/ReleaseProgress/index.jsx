@@ -20,9 +20,14 @@ import { AuthContext } from '../../utils/AuthContext';
 import config from '../../config';
 import { repoUrlBuilder } from '../../utils/helpers';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   cardActions: {
     justifyContent: 'flex-end',
+  },
+  releaseCard: {
+    margin: '1%',
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.background.paper,
   },
 }));
 
@@ -164,7 +169,7 @@ export default function ReleaseProgress({
   const dateCreated = new Date(release.created).toUTCString();
 
   return (
-    <Card key={release.name} style={{ margin: '5px' }}>
+    <Card key={release.name} className={classes.releaseCard} variant="outlined">
       <CardContent>
         <Typography component="h3" variant="h6">
           {release.name}

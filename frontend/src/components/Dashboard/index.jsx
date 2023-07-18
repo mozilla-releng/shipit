@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { string, node, bool } from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles, useTheme } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
@@ -49,19 +49,20 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: 'transparent',
   },
 }));
-const css = `
-  #root {
-    height: auto;
-  }
-
-  html body {
-    background-color: #fff;
-  }
-`;
 
 export default function Dashboard(props) {
   const classes = useStyles();
   const { title, children, disabled } = props;
+  const theme = useTheme();
+  const css = `
+    #root {
+      height: auto;
+    }
+
+    html body {
+      background-color: ${theme.palette.background.default};
+    }
+  `;
 
   return (
     <Fragment>
