@@ -301,9 +301,9 @@ export default function NewXPIRelease() {
   };
 
   return (
-    <Dashboard title="New XPI Release">
+    <Dashboard group="Mozilla Extensions" title="New">
       <Typography variant="h6" component="h2">
-        Create XPI Release
+        Create a New XPI Release
       </Typography>
       <Collapse in={selectedManifestCommit !== ''}>
         {renderXpiSelect()}

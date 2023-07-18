@@ -6,7 +6,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Link from '../../utils/Link';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import UserMenu from './UserMenu';
 import SettingsMenu from './SettingsMenu';
 import ReleasesMenu from './ReleasesMenu';
@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     height: APP_BAR_HEIGHT,
   },
   title: {
-    textDecoration: 'none',
+    color: '#fff',
   },
   main: {
     maxWidth: CONTENT_MAX_WIDTH,
@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Dashboard(props) {
   const classes = useStyles();
-  const { title, children, disabled } = props;
+  const { title, children, disabled, group } = props;
   const theme = useTheme();
   const css = `
     #root {
@@ -67,20 +67,29 @@ export default function Dashboard(props) {
   return (
     <Fragment>
       <Helmet>
-        <title>{title} - Ship-It!</title>
+        <title>
+          Ship-It / {group ? `${group} / ` : ''}
+          {title || ''}
+        </title>
         <style>{css}</style>
       </Helmet>
       <AppBar className={classes.appbar} position="fixed">
         <Toolbar>
-          <Typography
-            className={classes.title}
-            color="inherit"
-            variant="h6"
-            noWrap
-            component={Link}
-            to="/">
-            Ship-It Admin ┃ {title}
-          </Typography>
+          <Breadcrumbs aria-label="breadcrumb" className={classes.title}>
+            <Typography color="inherit" variant="h6" noWrap>
+              Ship-It
+            </Typography>
+            {group && (
+              <Typography color="inherit" variant="h6" noWrap>
+                {group}
+              </Typography>
+            )}
+            {title && (
+              <Typography color="inherit" variant="h6" noWrap>
+                {title}
+              </Typography>
+            )}
+          </Breadcrumbs>
           <nav className={classes.nav}>
             <ReleasesMenu disabled={disabled} />
             <SettingsMenu disabled={disabled} />
