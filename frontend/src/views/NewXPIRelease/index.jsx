@@ -100,7 +100,7 @@ export default function NewXPIRelease() {
       return (
         <FormControl className={classes.formControl}>
           <InputLabel className={classes.formControl}>
-            Available XPIs
+            Repository
           </InputLabel>
           <Select
             className={classes.formControl}
@@ -182,7 +182,7 @@ export default function NewXPIRelease() {
                   ...params.inputProps,
                   value: selectedXpiRevision,
                 }}
-                label="Available revisions"
+                label="Revision"
                 variant="outlined"
               />
             )}

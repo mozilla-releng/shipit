@@ -200,7 +200,7 @@ export default function NewRelease() {
     return (
       selectedProduct.repositories && (
         <FormControl className={classes.formControl}>
-          <InputLabel>Repositories</InputLabel>
+          <InputLabel>Repository</InputLabel>
           <Select
             value={selectedRepository}
             renderValue={() => selectedRepository.prettyName}
