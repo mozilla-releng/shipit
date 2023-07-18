@@ -46,8 +46,18 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     height: '100%',
+    backgroundColor: 'transparent',
   },
 }));
+const css = `
+  #root {
+    height: auto;
+  }
+
+  html body {
+    background-color: #fff;
+  }
+`;
 
 export default function Dashboard(props) {
   const classes = useStyles();
@@ -57,6 +67,7 @@ export default function Dashboard(props) {
     <Fragment>
       <Helmet>
         <title>{title} - Ship-It!</title>
+        <style>{css}</style>
       </Helmet>
       <AppBar className={classes.appbar} position="fixed">
         <Toolbar>
