@@ -446,9 +446,6 @@ export default function NewRelease() {
 
   return (
     <Dashboard group="Firefox" title="New Release">
-      <Typography variant="h6" component="h2">
-        Create a New Firefox Product Release
-      </Typography>
       {renderProductsSelect()}
       <Collapse
         in={
