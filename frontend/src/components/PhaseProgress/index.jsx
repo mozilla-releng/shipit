@@ -36,6 +36,9 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: theme.palette.background.paper,
     paddingTop: '40px',
   },
+  completed: {
+    fill: theme.palette.success.dark,
+  },
 }));
 
 export default function PhaseProgress({ release, readOnly, xpi }) {
@@ -121,7 +124,9 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             classes={{ label: classes.label }}
             error={taskError}
             StepIconProps={
-              inProgress ? { icon: <Spinner loading size={30} /> } : undefined
+              inProgress
+                ? { icon: <Spinner loading size={30} /> }
+                : { classes: { completed: classes.completed } }
             }>
             <Link href={`${taskGroupUrlPrefix}/${phase.actionTaskId}`}>
               {prettyName} task
