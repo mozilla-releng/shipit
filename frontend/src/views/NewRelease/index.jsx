@@ -436,7 +436,7 @@ export default function NewRelease() {
 
   if (!authContext.user) {
     return (
-      <Dashboard group="Firefox Products" title="Create Release">
+      <Dashboard group="Firefox" title="Create Release">
         <Typography variant="h6" component="h2">
           Auth required
         </Typography>
@@ -445,7 +445,7 @@ export default function NewRelease() {
   }
 
   return (
-    <Dashboard group="Firefox Products" title="New Release">
+    <Dashboard group="Firefox" title="New Release">
       <Typography variant="h6" component="h2">
         Create a New Firefox Product Release
       </Typography>

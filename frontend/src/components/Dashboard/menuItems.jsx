@@ -5,7 +5,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 export default [
   {
-    title: 'Firefox Products',
+    title: 'Firefox',
     items: [
       {
         title: 'New',
