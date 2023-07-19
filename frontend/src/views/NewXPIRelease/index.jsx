@@ -299,7 +299,7 @@ export default function NewXPIRelease() {
   };
 
   return (
-    <Dashboard group="Mozilla Extensions" title="New">
+    <Dashboard group="Mozilla Extensions" title="New Release">
       <Typography variant="h6" component="h2">
         Create a New XPI Release
       </Typography>

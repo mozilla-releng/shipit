@@ -445,7 +445,7 @@ export default function NewRelease() {
   }
 
   return (
-    <Dashboard group="Firefox Products" title="New">
+    <Dashboard group="Firefox Products" title="New Release">
       <Typography variant="h6" component="h2">
         Create a New Firefox Product Release
       </Typography>

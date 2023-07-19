@@ -60,7 +60,7 @@ export default function Releases({ recent = false, xpi = false }) {
     <ReleaseContext.Provider value={{ fetchReleases }}>
       <Dashboard
         group={xpi ? 'Mozilla Extensions' : 'Firefox Products'}
-        title={recent ? 'Recent' : 'Pending'}>
+        title={recent ? 'Recent Releases' : 'Pending Releases'}>
         <Grid container>
           <Button onClick={async () => fetchReleases()}>Refresh</Button>
         </Grid>
