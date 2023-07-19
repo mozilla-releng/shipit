@@ -12,6 +12,10 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import UpdateIcon from '@material-ui/icons/Update';
+import { ListItemIcon } from '@material-ui/core';
+import LinkVariantIcon from 'mdi-react/LinkVariantIcon';
+import Link from '../../utils/Link';
 import { withUser } from '../../utils/AuthContext';
 import { rebuildProductDetails } from '../api';
 import useAction from '../../hooks/useAction';
@@ -31,6 +35,10 @@ const useStyles = makeStyles(theme => ({
   },
   link: {
     ...theme.mixins.link,
+  },
+  listItemLink: {
+    textDecoration: 'none',
+    color: 'inherit',
   },
 }));
 
@@ -73,15 +81,29 @@ function SettingsMenu({ user, disabled }) {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         onClose={handleMenuClose}>
         <ListItem button>
+          <ListItemIcon style={{ minWidth: '30px' }}>
+            <UpdateIcon />
+          </ListItemIcon>
           <ListItemText
-            primary="Update product-details.m.o"
+            primary="Update product details"
             onClick={() => setShowModal(true)}
           />
         </ListItem>
+        <Link
+          nav
+          to="https://product-details.mozilla.org/1.0/"
+          className={classes.listItemLink}>
+          <ListItem button>
+            <ListItemIcon style={{ minWidth: '30px' }}>
+              <LinkVariantIcon />
+            </ListItemIcon>
+            <ListItemText primary="Go to product details" />
+          </ListItem>
+        </Link>
       </Menu>
       <Dialog open={showModal} onClose={() => setShowModal(false)}>
         <DialogTitle id="alert-dialog-title">
-          Rebuild product details?
+          Update product details?
         </DialogTitle>
         <DialogContent>
           {rebuildProductDetailsState.error && (
@@ -105,7 +127,7 @@ function SettingsMenu({ user, disabled }) {
               setShowModal(false);
             }}
             color="primary">
-            Rebuild
+            Update
           </Button>
         </DialogActions>
       </Dialog>
