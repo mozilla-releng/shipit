@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import CancelIcon from 'mdi-react/CancelIcon';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -28,6 +29,12 @@ const useStyles = makeStyles(theme => ({
     margin: '1%',
     border: `1px solid ${theme.palette.grey[400]}`,
     backgroundColor: theme.palette.background.paper,
+  },
+  icon: {
+    fill: theme.palette.secondary.main,
+  },
+  endIcon: {
+    margin: '1px',
   },
 }));
 
@@ -66,13 +73,19 @@ export default function ReleaseProgress({
       return <p>{cancelState.error.toString()}</p>;
     }
 
-    return <p>Do you want to cancel {release.name}</p>;
+    return <p>Do you want to cancel {release.name}?</p>;
   };
 
   const renderCancel = () => {
     return (
       <React.Fragment>
-        <Button onClick={() => setOpen(true)} color="secondary">
+        <Button
+          classes={{
+            endIcon: classes.endIcon,
+          }}
+          endIcon={<CancelIcon className={classes.icon} />}
+          onClick={() => setOpen(true)}
+          color="secondary">
           Cancel
         </Button>
         <Dialog open={open} onClose={handleClose}>
@@ -88,7 +101,7 @@ export default function ReleaseProgress({
               variant="contained"
               disabled={releaseCancelled || cancelState.loading}
               color="secondary">
-              Cancel Release
+              Cancel
             </Button>
           </DialogActions>
         </Dialog>
