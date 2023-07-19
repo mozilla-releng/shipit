@@ -103,11 +103,13 @@ function SettingsMenu({ user, disabled }) {
       </Menu>
       <Dialog open={showModal} onClose={() => setShowModal(false)}>
         <DialogTitle id="alert-dialog-title">
-          Update product details?
+          Update Product Details
         </DialogTitle>
         <DialogContent>
-          {rebuildProductDetailsState.error && (
+          {rebuildProductDetailsState.error ? (
             <p>{rebuildProductDetailsState.error.toString()}</p>
+          ) : (
+            'Do you want to update the products details API?'
           )}
         </DialogContent>
         <DialogActions>
