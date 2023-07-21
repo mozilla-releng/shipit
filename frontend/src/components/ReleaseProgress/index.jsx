@@ -188,8 +188,7 @@ export default function ReleaseProgress({
           {release.name}
         </Typography>
         <Box fontSize=".85rem" fontWeight="fontWeightRegular" display="block">
-          Created on {dateCreated}
-          with {renderReleaseTitle(xpi, release)}
+          Created on {dateCreated}  with {renderReleaseTitle(xpi, release)}
         </Box>
         <PhaseProgress release={release} readOnly={!mutable} xpi={xpi} />
       </CardContent>

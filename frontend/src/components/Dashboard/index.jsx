@@ -7,6 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Box from '@material-ui/core/Box';
 import UserMenu from './UserMenu';
 import SettingsMenu from './SettingsMenu';
 import ReleasesMenu from './ReleasesMenu';
@@ -48,6 +49,10 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
     backgroundColor: 'transparent',
   },
+  protocolLogo: {
+    margin: '0px',
+    marginRight: '1%',
+  },
 }));
 
 export default function Dashboard(props) {
@@ -76,9 +81,13 @@ export default function Dashboard(props) {
       <AppBar className={classes.appbar} position="fixed">
         <Toolbar>
           <Breadcrumbs aria-label="breadcrumb" className={classes.title}>
-            <Typography color="inherit" variant="h6" noWrap>
+            <Box
+              component="div"
+              className={`mzp-c-logo mzp-t-logo-sm mzp-t-product-mozilla ${classes.protocolLogo}`}
+            />
+            {/* <Typography color="inherit" variant="h6" noWrap>
               Ship-It
-            </Typography>
+            </Typography> */}
             {group && (
               <Typography color="inherit" variant="h6" noWrap>
                 {group}

@@ -38,14 +38,14 @@ export default function ProductDisabler({
   const [modalItem, setModalItem] = useState(null);
   const getIcon = (loading, disabled) => {
     if (loading) {
-      return <HourglassEmptyIcon />;
+      return <HourglassEmptyIcon style={{ fill: '#fff' }} />;
     }
 
     if (disabled) {
-      return <CancelOutlinedIcon />;
+      return <CancelOutlinedIcon style={{ fill: '#fff' }} />;
     }
 
-    return <CheckCircleOutlineIcon />;
+    return <CheckCircleOutlineIcon style={{ fill: '#fff' }} />;
   };
 
   const openModal = pb => {
