@@ -85,9 +85,9 @@ export default function Dashboard(props) {
               component="div"
               className={`mzp-c-logo mzp-t-logo-sm mzp-t-product-mozilla ${classes.protocolLogo}`}
             />
-            {/* <Typography color="inherit" variant="h6" noWrap>
+            <Typography color="inherit" variant="h6" noWrap>
               Ship-It
-            </Typography> */}
+            </Typography>
             {group && (
               <Typography color="inherit" variant="h6" noWrap>
                 {group}

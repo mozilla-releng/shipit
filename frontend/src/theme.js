@@ -30,7 +30,7 @@ export default createTheme({
     },
     overline: {
       fontFamily: "'Inter', sans-serif",
-    }
+    },
   },
   palette: {
     primary: {
