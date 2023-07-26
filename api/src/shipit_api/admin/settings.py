@@ -74,6 +74,7 @@ XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP = ["xpi_mozillaonline_admin"]
 
 LDAP_GROUPS = {
     "admin": ADMIN_LDAP_GROUP,
+    "relman": ["shipit_relman"],
     "firefox-signoff": ["shipit_firefox"],
     "thunderbird-signoff": ["shipit_thunderbird"],
     "firefox-android-signoff": ["shipit_mobile"],
@@ -93,20 +94,21 @@ LDAP_GROUPS = {
 
 AUTH0_AUTH_SCOPES = dict()
 
-# releng signoff scopes
+# firefox scopes
+firefox_ldap_groups = sorted(set(LDAP_GROUPS["firefox-signoff"] + LDAP_GROUPS["relman"]))
 for product in [
     "app-services",
     "devedition",
     "firefox",
     "firefox-android",
 ]:
-    scopes = {f"add_release/{product}": LDAP_GROUPS["firefox-signoff"], f"abandon_release/{product}": LDAP_GROUPS["firefox-signoff"]}
+    scopes = [f"add_release/{product}", f"abandon_release/{product}"]
     phases = []
     for flavor in [product, f"{product}_rc", f"{product}_release", f"{product}_release_rc", f"{product}_beta"]:
         phases += [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
     for phase in set(phases):
-        scopes.update({f"schedule_phase/{product}/{phase}": LDAP_GROUPS["firefox-signoff"], f"phase_signoff/{product}/{phase}": LDAP_GROUPS["firefox-signoff"]})
-    AUTH0_AUTH_SCOPES.update(scopes)
+        scopes.extend([f"schedule_phase/{product}/{phase}", f"phase_signoff/{product}/{phase}"])
+    AUTH0_AUTH_SCOPES.update({s: firefox_ldap_groups for s in scopes})
 
 # Add scopes for enabling/disabling products
 AUTH0_AUTH_SCOPES.update(
@@ -120,7 +122,7 @@ AUTH0_AUTH_SCOPES.update(
     }
 )
 
-# thunderbird signoff scopes
+# thunderbird scopes
 scopes = {"add_release/thunderbird": LDAP_GROUPS["thunderbird-signoff"], "abandon_release/thunderbird": LDAP_GROUPS["thunderbird-signoff"]}
 phases = []
 for flavor in ["thunderbird", "thunderbird_rc"]:
