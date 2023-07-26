@@ -487,6 +487,14 @@ SUPPORTED_APP_SERVICES_REPO_NAMES = (
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
 SIGNOFFS = {
+    "": {
+        "app-services": {
+            "ship": [
+                {"name": "App-services Team", "description": "Ship App-services", "permissions": "app-services-signoff"},
+                {"name": "Release Management", "description": "Ship App-services", "permissions": "relman"},
+            ]
+        }
+    },
     "xpi": {
         "privileged": {
             "promote": [
