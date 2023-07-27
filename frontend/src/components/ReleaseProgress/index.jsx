@@ -33,8 +33,8 @@ const useStyles = makeStyles(theme => ({
   icon: {
     fill: theme.palette.secondary.main,
   },
-  endIcon: {
-    margin: '1px',
+  startIcon: {
+    marginRight: '5px',
   },
 }));
 
@@ -81,9 +81,9 @@ export default function ReleaseProgress({
       <React.Fragment>
         <Button
           classes={{
-            endIcon: classes.endIcon,
+            startIcon: classes.startIcon,
           }}
-          endIcon={<CancelIcon className={classes.icon} />}
+          startIcon={<CancelIcon className={classes.icon} />}
           onClick={() => setOpen(true)}
           color="secondary">
           Cancel

@@ -33,7 +33,7 @@ function Main() {
   if (backendStatus.loading) {
     return (
       <BrowserRouter>
-        <Dashboard disabled>
+        <Dashboard group="Loading..." disabled>
           <Spinner loading />
         </Dashboard>
       </BrowserRouter>

@@ -25,7 +25,7 @@ export default [
     ],
   },
   {
-    title: 'Mozilla Extensions',
+    title: 'Extensions',
     items: [
       {
         title: 'New',
