@@ -8,6 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -19,9 +20,8 @@ const useStyles = makeStyles(() => ({
     top: 'auto',
     bottom: 0,
   },
-  products: {
-    paddingLeft: '5px',
-    paddingRight: '5px',
+  title: {
+    color: '#fff',
   },
 }));
 
@@ -75,26 +75,40 @@ export default function ProductDisabler({
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar>
-        <Typography color="inherit" variant="subtitle1" noWrap>
-          Automated Release Status
-        </Typography>
-        {productBranches.map(pb => (
-          <Fragment key={`${pb.product}-${pb.branch}`}>
-            <Typography className={classes.products}>
-              ┃ {pb.prettyProduct}: {pb.prettyBranch}
+        <Breadcrumbs
+          aria-label="breadcrumb"
+          separator="|"
+          className={classes.title}>
+          <Typography color="inherit" variant="subtitle1" noWrap>
+            Automated Release Status
+          </Typography>
+          {productBranches.map(pb => (
+            <Typography
+              color="inherit"
+              variant="subtitle1"
+              noWrap
+              className={classes.products}
+              key={`${pb.product}-${pb.branch}`}>
+              {pb.prettyProduct}: {pb.prettyBranch}
+              {mutable ? (
+                <Button
+                  style={{ minWidth: '30px', padding: '0px' }}
+                  onClick={() => openModal(pb)}
+                  disabled={loading}
+                  color={pb.disabled ? 'secondary' : 'default'}>
+                  {getIcon(loading, pb.disabled)}
+                </Button>
+              ) : (
+                <Button
+                  style={{ minWidth: '30px', padding: '0px' }}
+                  disabled
+                  color={pb.disabled ? 'secondary' : 'default'}>
+                  {getIcon(loading, pb.disabled)}
+                </Button>
+              )}
             </Typography>
-            {mutable ? (
-              <Button
-                onClick={() => openModal(pb)}
-                disabled={loading}
-                color={pb.disabled ? 'secondary' : 'default'}>
-                {getIcon(loading, pb.disabled)}
-              </Button>
-            ) : (
-              getIcon(loading, pb.disabled)
-            )}
-          </Fragment>
-        ))}
+          ))}
+        </Breadcrumbs>
 
         {mutable && (
           <Dialog open={showModal} onClose={closeModal}>
