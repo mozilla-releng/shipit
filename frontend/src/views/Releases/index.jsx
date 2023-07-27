@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import Spinner from '@mozilla-frontend-infra/components/Spinner';
-import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import RefreshIcon from 'mdi-react/RefreshIcon';
 import Dashboard from '../../components/Dashboard';
 import {
   getPendingReleases,
@@ -59,11 +60,19 @@ export default function Releases({ recent = false, xpi = false }) {
   return (
     <ReleaseContext.Provider value={{ fetchReleases }}>
       <Dashboard
-        group={xpi ? 'Mozilla Extensions' : 'Firefox'}
+        group={xpi ? 'Extensions' : 'Firefox'}
         title={recent ? 'Recent Releases' : 'Pending Releases'}>
-        <Grid container>
-          <Button onClick={async () => fetchReleases()}>Refresh</Button>
-        </Grid>
+        <Box
+          display="flex"
+          justifyContent="right"
+          alignItems="right"
+          marginRight="1%">
+          <Button
+            startIcon={<RefreshIcon />}
+            onClick={async () => fetchReleases()}>
+            Refresh
+          </Button>
+        </Box>
         {(releases.loading || (xpi && xpis.loading)) && <Spinner loading />}
 
         {releases.data && releases.data.length < 1 && (

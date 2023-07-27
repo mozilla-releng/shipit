@@ -14,6 +14,14 @@ import ReleasesMenu from './ReleasesMenu';
 import Footer from '../../views/Footer';
 import { CONTENT_MAX_WIDTH, APP_BAR_HEIGHT } from '../../utils/constants';
 
+function getLogoName(group) {
+  if (group && group.toLowerCase().includes('firefox')) {
+    return 'firefox';
+  }
+
+  return 'mozilla';
+}
+
 const useStyles = makeStyles(theme => ({
   appbar: {
     height: APP_BAR_HEIGHT,
@@ -51,7 +59,7 @@ const useStyles = makeStyles(theme => ({
   },
   protocolLogo: {
     margin: '0px',
-    marginRight: '1%',
+    marginRight: '.7%',
   },
 }));
 
@@ -80,14 +88,13 @@ export default function Dashboard(props) {
       </Helmet>
       <AppBar className={classes.appbar} position="fixed">
         <Toolbar>
+          <Box
+            component="div"
+            className={`mzp-c-logo mzp-t-logo-sm mzp-t-product-${getLogoName(
+              group
+            )} ${classes.protocolLogo}`}
+          />
           <Breadcrumbs aria-label="breadcrumb" className={classes.title}>
-            <Box
-              component="div"
-              className={`mzp-c-logo mzp-t-logo-sm mzp-t-product-mozilla ${classes.protocolLogo}`}
-            />
-            <Typography color="inherit" variant="h6" noWrap>
-              Ship-It
-            </Typography>
             {group && (
               <Typography color="inherit" variant="h6" noWrap>
                 {group}

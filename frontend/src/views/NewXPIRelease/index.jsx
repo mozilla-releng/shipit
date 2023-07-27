@@ -299,7 +299,7 @@ export default function NewXPIRelease() {
   };
 
   return (
-    <Dashboard group="Mozilla Extensions" title="New Release">
+    <Dashboard group="Extensions" title="New Release">
       <Collapse in={selectedManifestCommit !== ''}>
         {renderXpiSelect()}
       </Collapse>
