@@ -1,16 +1,15 @@
 import React, { Fragment } from 'react';
 import { string, node, bool } from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles, useTheme } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import menuItems from './menuItems';
-import Link from '../../utils/Link';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import UserMenu from './UserMenu';
 import SettingsMenu from './SettingsMenu';
-import Button from '../Button';
+import ReleasesMenu from './ReleasesMenu';
 import Footer from '../../views/Footer';
 import { CONTENT_MAX_WIDTH, APP_BAR_HEIGHT } from '../../utils/constants';
 
@@ -19,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     height: APP_BAR_HEIGHT,
   },
   title: {
-    textDecoration: 'none',
+    color: '#fff',
   },
   main: {
     maxWidth: CONTENT_MAX_WIDTH,
@@ -45,44 +44,60 @@ const useStyles = makeStyles(theme => ({
   buttonWithIcon: {
     paddingLeft: theme.spacing(2),
   },
+  paper: {
+    height: '100%',
+    backgroundColor: 'transparent',
+  },
 }));
 
 export default function Dashboard(props) {
   const classes = useStyles();
-  const { title, children, disabled } = props;
+  const { title, children, disabled, group } = props;
+  const theme = useTheme();
+  const css = `
+    #root {
+      height: auto;
+    }
+
+    html body {
+      background-color: ${theme.palette.background.default};
+    }
+  `;
 
   return (
     <Fragment>
       <Helmet>
-        <title>{title} - Ship-It!</title>
+        <title>
+          Ship-It / {group ? `${group} / ` : ''}
+          {title || ''}
+        </title>
+        <style>{css}</style>
       </Helmet>
       <AppBar className={classes.appbar} position="fixed">
         <Toolbar>
-          <Typography
-            className={classes.title}
-            color="inherit"
-            variant="h6"
-            noWrap
-            component={Link}
-            to="/">
-            Ship-It Admin ┃ {title}
-          </Typography>
+          <Breadcrumbs aria-label="breadcrumb" className={classes.title}>
+            <Typography color="inherit" variant="h6" noWrap>
+              Ship-It
+            </Typography>
+            {group && (
+              <Typography color="inherit" variant="h6" noWrap>
+                {group}
+              </Typography>
+            )}
+            {title && (
+              <Typography color="inherit" variant="h6" noWrap>
+                {title}
+              </Typography>
+            )}
+          </Breadcrumbs>
           <nav className={classes.nav}>
-            {menuItems.main.map(menuItem => (
-              <Link
-                key={menuItem.value}
-                className={disabled ? classes.disabledLink : classes.link}
-                nav
-                to={menuItem.path}>
-                <Button color="inherit">{menuItem.value}</Button>
-              </Link>
-            ))}
+            <ReleasesMenu disabled={disabled} />
             <SettingsMenu disabled={disabled} />
             <UserMenu />
           </nav>
         </Toolbar>
       </AppBar>
-      <Paper square elevation={0}>
+      <Paper square elevation={0} className={classes.paper}>
         <main className={classes.main}>{children}</main>
       </Paper>
       {!disabled && <Footer />}

@@ -28,11 +28,18 @@ import ReleaseContext from '../../utils/ReleaseContext';
 import { phasePrettyName } from '../text';
 import MouseOverPopover from '../Shared/MouseOverPopover';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
   label: {
     lineHeight: '0.5',
   },
-});
+  stepper: {
+    backgroundColor: theme.palette.background.paper,
+    paddingTop: '40px',
+  },
+  completed: {
+    fill: theme.palette.success.dark,
+  },
+}));
 
 export default function PhaseProgress({ release, readOnly, xpi }) {
   const classes = useStyles();
@@ -117,7 +124,9 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             classes={{ label: classes.label }}
             error={taskError}
             StepIconProps={
-              inProgress ? { icon: <Spinner loading size={30} /> } : undefined
+              inProgress
+                ? { icon: <Spinner loading size={30} /> }
+                : { classes: { completed: classes.completed } }
             }>
             <Link href={`${taskGroupUrlPrefix}/${phase.actionTaskId}`}>
               {prettyName} task
@@ -257,7 +266,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
     <React.Fragment>
       <Stepper
         nonLinear={release.allow_phase_skipping}
-        style={{ paddingTop: '40px' }}>
+        className={classes.stepper}>
         {release.phases.map((phase, idx) =>
           renderPhase(phase, idx, release.phases, release.allow_phase_skipping)
         )}

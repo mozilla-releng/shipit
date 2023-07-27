@@ -99,9 +99,7 @@ export default function NewXPIRelease() {
     if (xpis.data) {
       return (
         <FormControl className={classes.formControl}>
-          <InputLabel className={classes.formControl}>
-            Available XPIs
-          </InputLabel>
+          <InputLabel className={classes.formControl}>Repository</InputLabel>
           <Select
             className={classes.formControl}
             value={selectedXpi}
@@ -182,7 +180,7 @@ export default function NewXPIRelease() {
                   ...params.inputProps,
                   value: selectedXpiRevision,
                 }}
-                label="Available revisions"
+                label="Revision"
                 variant="outlined"
               />
             )}
@@ -301,10 +299,7 @@ export default function NewXPIRelease() {
   };
 
   return (
-    <Dashboard title="New XPI Release">
-      <Typography variant="h6" component="h2">
-        Create XPI Release
-      </Typography>
+    <Dashboard group="Mozilla Extensions" title="New Release">
       <Collapse in={selectedManifestCommit !== ''}>
         {renderXpiSelect()}
       </Collapse>
