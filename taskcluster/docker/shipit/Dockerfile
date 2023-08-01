@@ -19,6 +19,7 @@ RUN pip install -r /tmp/poetry.txt
 ENV POETRY_CACHE_DIR=/builds/worker/poetry_cache
 
 COPY topsrcdir/api/pyproject.toml /app/src/pyproject.toml
+COPY topsrcdir/api/poetry.lock /app/src/poetry.lock
 # --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
 RUN cd /app/src && poetry install --only main --no-root --no-ansi
 
