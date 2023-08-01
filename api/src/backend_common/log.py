@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import http
 import logging
 import os
 import sys
@@ -27,7 +28,7 @@ def init_app(app):
 
 def configure_logging():
     handler = logging.StreamHandler(sys.stdout)
-    level = logging.DEBUG if os.environ.get("DEBUG") else logging.INFO
+    # level = logging.DEBUG if os.environ.get("DEBUG") else logging.INFO
     if os.environ.get("LOG_FORMAT") == "plain":
         handler.setFormatter(logging.Formatter(fmt="%(asctime)s - %(levelname)s: %(message)s"))
         # The request.summary logger heavily uses the `extra` dict. As a result
@@ -37,7 +38,10 @@ def configure_logging():
     else:
         handler.setFormatter(JsonLogFormatter())
     logging.root.addHandler(handler)
-    logging.root.setLevel(level)
+    logging.root.setLevel(logging.DEBUG)
+    logging.getLogger("werkzeug").setLevel(logging.DEBUG)
+    logging.getLogger("requests").setLevel(logging.DEBUG)
+    http.client.HTTPConnection.debuglevel = 1
 
 
 def configure_sentry(environment, sentry_dsn):
