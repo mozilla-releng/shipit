@@ -87,6 +87,14 @@ def query_api(query):
     req = requests.post(GITHUB_API_ENDPOINT, json={"query": query}, headers=headers)
     req.raise_for_status()
 
+    current_app.logger.error(req)
+    current_app.logger.error(req.headers)
+    current_app.logger.error(req.status_code)
+    current_app.logger.error(req.content)
+    print(req)
+    print(req.headers)
+    print(req.status_code)
+    print(req.content)
     j = req.json()
     if "errors" in j:
         abort(502, f"Github query error - {j['errors']}")
