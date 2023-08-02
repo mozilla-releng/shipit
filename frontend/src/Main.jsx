@@ -33,7 +33,7 @@ function Main() {
   if (backendStatus.loading) {
     return (
       <BrowserRouter>
-        <Dashboard group="Loading..." disabled>
+        <Dashboard disabled>
           <Spinner loading />
         </Dashboard>
       </BrowserRouter>
@@ -43,7 +43,7 @@ function Main() {
   if (backendStatus.error) {
     return (
       <BrowserRouter>
-        <Dashboard title="Error" disabled>
+        <Dashboard disabled>
           <ErrorPanel
             fixed
             error={`Error contacting Shipit backend: ${backendStatus.error.toString()}. Are you connected to the VPN?`}
