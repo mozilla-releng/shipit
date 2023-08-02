@@ -7,6 +7,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Box from '@material-ui/core/Box';
+import ExtensionIcon from '@material-ui/icons/Extension';
 import UserMenu from './UserMenu';
 import SettingsMenu from './SettingsMenu';
 import ReleasesMenu from './ReleasesMenu';
@@ -48,7 +50,40 @@ const useStyles = makeStyles(theme => ({
     height: '100%',
     backgroundColor: 'transparent',
   },
+  protocolLogo: {
+    margin: '0px',
+    marginRight: '.7%',
+  },
+  extensionIcon: {
+    margin: '0px',
+    marginRight: '.5%',
+  },
 }));
+
+function Logo(props) {
+  const { group } = props;
+  const classes = useStyles();
+
+  if (group && group.toLowerCase().includes('firefox')) {
+    return (
+      <Box
+        component="div"
+        className={`mzp-c-logo mzp-t-logo-sm mzp-t-product-firefox ${classes.protocolLogo}`}
+      />
+    );
+  }
+
+  if (group && group.toLowerCase().includes('extensions')) {
+    return <ExtensionIcon className={classes.extensionIcon} />;
+  }
+
+  return (
+    <Box
+      component="div"
+      className={`mzp-c-logo mzp-t-logo-sm mzp-t-product-mozilla ${classes.protocolLogo}`}
+    />
+  );
+}
 
 export default function Dashboard(props) {
   const classes = useStyles();
@@ -75,10 +110,8 @@ export default function Dashboard(props) {
       </Helmet>
       <AppBar className={classes.appbar} position="fixed">
         <Toolbar>
+          <Logo group={group} />
           <Breadcrumbs aria-label="breadcrumb" className={classes.title}>
-            <Typography color="inherit" variant="h6" noWrap>
-              Ship-It
-            </Typography>
             {group && (
               <Typography color="inherit" variant="h6" noWrap>
                 {group}

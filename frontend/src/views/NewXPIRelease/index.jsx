@@ -99,7 +99,7 @@ export default function NewXPIRelease() {
     if (xpis.data) {
       return (
         <FormControl className={classes.formControl}>
-          <InputLabel className={classes.formControl}>Repository</InputLabel>
+          <InputLabel className={classes.formControl}>Extension</InputLabel>
           <Select
             className={classes.formControl}
             value={selectedXpi}
@@ -299,7 +299,7 @@ export default function NewXPIRelease() {
   };
 
   return (
-    <Dashboard group="Mozilla Extensions" title="New Release">
+    <Dashboard group="Extensions" title="New Release">
       <Collapse in={selectedManifestCommit !== ''}>
         {renderXpiSelect()}
       </Collapse>
