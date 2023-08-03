@@ -554,4 +554,7 @@ ALLOW_PHASE_SKIPPING = {
         "try": True,
         "beta": True,
     },
+    "app-services": {
+        "default": True,
+    },
 }
