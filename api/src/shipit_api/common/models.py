@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlalchemy.orm
 
 from backend_common.db import db
-from shipit_api.common.config import SIGNOFFS
+from shipit_api.common.config import ALLOW_PHASE_SKIPPING, SIGNOFFS
 
 
 class SignoffBase:
@@ -102,8 +102,9 @@ class ReleaseBase:
 
     @property
     def allow_phase_skipping(self):
-        # Phases can be skipped for betas and try only. The API doesn't enforce this.
-        return self.product in ["firefox", "devedition"] and self.project in ["try", "beta"]
+        # This only affects the frontend, the API doesn't enforce phase skipping.
+        product = ALLOW_PHASE_SKIPPING.get(self.product, {})
+        return product.get(self.project, product.get("default", False))
 
     @property
     def json(self):

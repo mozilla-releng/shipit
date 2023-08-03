@@ -544,3 +544,14 @@ SIGNOFFS = {
         },
     },
 }
+
+ALLOW_PHASE_SKIPPING = {
+    "devedition": {
+        "try": True,
+        "beta": True,
+    },
+    "firefox": {
+        "try": True,
+        "beta": True,
+    },
+}
