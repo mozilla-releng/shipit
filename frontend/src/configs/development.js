@@ -68,6 +68,14 @@ module.exports = {
         {
           branch: '',
         },
+        {
+          prettyName: 'Try',
+          project: 'try',
+          branch: 'try',
+          repo: 'https://hg.mozilla.org/try',
+          enableReleaseEta: false,
+          versionFile: 'mobile/android/version.txt',
+        },
       ],
       repositories: [
         {
