@@ -468,6 +468,9 @@ SUPPORTED_FLAVORS = {
         {"name": "promote", "in_previous_graph_ids": True},
         {"name": "push", "in_previous_graph_ids": True},
         {"name": "ship", "in_previous_graph_ids": True},
+        {"name": "promote_android", "in_previous_graph_ids": True},
+        {"name": "push_android", "in_previous_graph_ids": True},
+        {"name": "ship_android", "in_previous_graph_ids": True},
     ],
     "app-services": [
         {"name": "promote", "in_previous_graph_ids": True},
