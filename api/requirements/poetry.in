@@ -1,1 +1,5 @@
-poetry>=1.4.2
+poetry>=1.6.1
+# This is needed by build==0.10, which is needed by poetry, and for reasons I don't
+# understand pip-compile does not always add it (perhaps because it's a build
+# dependency?)
+tomli>=1.1.0
