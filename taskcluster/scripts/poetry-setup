@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -vx
+
+# Use pipx to avoid Poetry's curl | bash installer.
+python3 -mpip install --user pipx
+python3 -mpipx ensurepath
+python3 -mpipx install poetry==1.7.0
