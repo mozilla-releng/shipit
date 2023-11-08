@@ -107,6 +107,9 @@ def test_bump_version(product, version, result):
         ("firefox", "60.5.0esr", True),
         ("fennec", "65.0b8", False),
         ("fennec", "65.0", False),
+        ("thunderbird", "116.0b2", False),
+        ("thunderbird", "116.0", False),
+        ("thunderbird", "115.2.0esr", False),
     ),
 )
 def test_is_partner_enabled(product, version, result):
@@ -123,6 +126,9 @@ def test_is_partner_enabled(product, version, result):
         ("firefox", "60.5.0esr", False),
         ("fennec", "65.0b8", False),
         ("fennec", "65.0", False),
+        ("thunderbird", "116.0b2", False),
+        ("thunderbird", "116.0", False),
+        ("thunderbird", "115.2.0esr", False),
     ),
 )
 def test_is_eme_free_enabled(product, version, result):

@@ -75,6 +75,19 @@ from shipit_api.admin import tasks
                 {"name": "ship_firefox", "in_previous_graph_ids": True},
             ],
         ),
+        (
+            ["promote_thunderbird", "push_thunderbird", "ship_thunderbird"],
+            "thunderbird",
+            "129.0.1",
+            None,
+            None,
+            does_not_raise(),
+            [
+                {"name": "promote_thunderbird", "in_previous_graph_ids": True},
+                {"name": "push_thunderbird", "in_previous_graph_ids": True},
+                {"name": "ship_thunderbird", "in_previous_graph_ids": True},
+            ],
+        ),
     ),
 )
 def test_extract_our_flavors(avail_flavors, product, version, partial_updates, product_key, expectation, result):
