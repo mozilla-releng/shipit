@@ -103,6 +103,8 @@ ThunderbirdVersions = mypy_extensions.TypedDict(
         "LATEST_THUNDERBIRD_ALPHA_VERSION": str,
         "LATEST_THUNDERBIRD_DEVEL_VERSION": str,
         "LATEST_THUNDERBIRD_NIGHTLY_VERSION": str,
+        "THUNDERBIRD_ESR": str,
+        "THUNDERBIRD_ESR_NEXT": str,
     },
 )
 IndexListing = str
@@ -534,8 +536,11 @@ def get_primary_builds(
                 thunderbird_versions["LATEST_THUNDERBIRD_VERSION"],
                 thunderbird_versions["LATEST_THUNDERBIRD_DEVEL_VERSION"],
                 thunderbird_versions["LATEST_THUNDERBIRD_NIGHTLY_VERSION"],
+                thunderbird_versions["THUNDERBIRD_ESR"],
             ]
         )
+        if thunderbird_versions["THUNDERBIRD_ESR_NEXT"]:
+            versions.add(thunderbird_versions["THUNDERBIRD_ESR_NEXT"])
     else:
         raise click.ClickException(f'We don\'t generate product history for "{product.value}" product.')
 
@@ -883,7 +888,9 @@ def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Rele
             "LATEST_THUNDERBIRD_VERSION":         "52.6.0",
             "LATEST_THUNDERBIRD_ALPHA_VERSION":   "54.0a2",
             "LATEST_THUNDERBIRD_DEVEL_VERSION":   "59.0b2",
-            "LATEST_THUNDERBIRD_NIGHTLY_VERSION": "60.0a1"
+            "LATEST_THUNDERBIRD_NIGHTLY_VERSION": "60.0a1",
+            "THUNDERBIRD_ESR": "115.8.0esr",
+            "THUNDERBIRD_ESR_NEXT": ""
         }
     """
     return dict(
@@ -891,6 +898,15 @@ def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Rele
         LATEST_THUNDERBIRD_DEVEL_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_BETA_BRANCH),
         LATEST_THUNDERBIRD_NIGHTLY_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_NIGHTLY_VERSION,
         LATEST_THUNDERBIRD_ALPHA_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_ALPHA_VERSION,
+        THUNDERBIRD_ESR=get_firefox_esr_version(
+            releases, f"{shipit_api.common.config.THUNDERBIRD_ESR_BRANCH_PREFIX}{shipit_api.common.config.CURRENT_ESR}", Product.THUNDERBIRD
+        ),
+        THUNDERBIRD_ESR_NEXT=get_firefox_esr_next_version(
+            releases,
+            f"{shipit_api.common.config.THUNDERBIRD_ESR_BRANCH_PREFIX}{shipit_api.common.config.ESR_NEXT}",
+            Product.THUNDERBIRD,
+            shipit_api.common.config.ESR_NEXT,
+        ),
     )
 
 

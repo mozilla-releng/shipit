@@ -74,11 +74,12 @@ IOS_BETA_VERSION = ""
 IOS_VERSION = ""
 
 # Thunderbird configs
-LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
+LATEST_THUNDERBIRD_ALPHA_VERSION = ""
 LATEST_THUNDERBIRD_NIGHTLY_VERSION = "123.0a1"
 # TODO: Need to update this every cycle
-THUNDERBIRD_RELEASE_BRANCH = "releases/comm-esr115"
+THUNDERBIRD_RELEASE_BRANCH = "releases/comm-release"
 THUNDERBIRD_BETA_BRANCH = "releases/comm-beta"
+THUNDERBIRD_ESR_BRANCH_PREFIX = "releases/comm-esr"
 
 # Mixed
 HG_PREFIX = "https://hg.mozilla.org"
