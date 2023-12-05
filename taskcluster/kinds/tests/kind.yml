@@ -9,10 +9,10 @@ kind-dependencies:
 
 transforms:
     - shipit_taskgraph.transforms.substitute_version:transforms
-    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.run:transforms
     - taskgraph.transforms.task:transforms
 
-job-defaults:
+task-defaults:
     run-on-tasks-for: ["action", "github-pull-request", "github-push"]
     attributes:
         code-review: true
@@ -24,7 +24,7 @@ job-defaults:
             shipit: {}
         cwd: '{checkout}'
 
-jobs:
+tasks:
     api-python:
         description: "{name} tox-py{substitute_version}"
         substitute-versions:

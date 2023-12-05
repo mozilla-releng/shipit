@@ -11,10 +11,10 @@ kind-dependencies:
 transforms:
     - shipit_taskgraph.transforms.deploy_secret:transforms
     - shipit_taskgraph.transforms.docker_push:transforms
-    - taskgraph.transforms.job:transforms
+    - taskgraph.transforms.run:transforms
     - taskgraph.transforms.task:transforms
 
-job-defaults:
+task-defaults:
     worker-type: b-linux
     worker:
         taskcluster-proxy: true
@@ -34,7 +34,7 @@ job-defaults:
             - artifact: image.tar.zst
               extract: false
 
-jobs:
+tasks:
     shipit-admin:
         description: "Push to shipit-admin repository."
         dependencies:
