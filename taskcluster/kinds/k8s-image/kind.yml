@@ -11,7 +11,7 @@ transforms:
     - taskgraph.transforms.cached_tasks:transforms
     - taskgraph.transforms.task:transforms
 
-jobs:
+tasks:
     shipit-admin:
         definition: shipit
         args:
