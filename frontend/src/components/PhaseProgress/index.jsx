@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function PhaseProgress({ release, readOnly, xpi }) {
   const classes = useStyles();
-  const { fetchReleases } = useContext(ReleaseContext);
+  const { fetchReleases, productBranches } = useContext(ReleaseContext);
   const [disableScheduleOrSignoff, setDisableScheduleOrSignoff] = useState(
     false
   );
@@ -66,7 +66,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
     setOpen(false);
 
     if (refresh) {
-      await fetchReleases();
+      await fetchReleases(productBranches);
     }
   };
 

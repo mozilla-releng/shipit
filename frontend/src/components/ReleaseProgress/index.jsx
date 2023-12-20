@@ -1,4 +1,5 @@
 import React, { useState, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -44,12 +45,14 @@ export default function ReleaseProgress({
   xpi = false,
   xpis = null,
 }) {
+  const location = useLocation();
+  const group = new URLSearchParams(location.search).get('group') || 'firefox';
   const classes = useStyles();
   const authContext = useContext(AuthContext);
   const mutable = authContext.user && !readOnly;
   const [open, setOpen] = useState(false);
   const [cancelState, cancelAction] = useAction(cancelReleaseAPI);
-  const { fetchReleases } = useContext(ReleaseContext);
+  const { fetchReleases, productBranches } = useContext(ReleaseContext);
   const releaseCancelled =
     cancelState.data !== null && !cancelState.error && !cancelState.loading;
   const handleClose = () => {
@@ -64,7 +67,7 @@ export default function ReleaseProgress({
 
     if (!result.error) {
       await handleClose();
-      await fetchReleases();
+      await fetchReleases(productBranches);
     }
   };
 
@@ -116,7 +119,8 @@ export default function ReleaseProgress({
     const { PRODUCTS, TREEHERDER_URL } = config;
     let trimmedRevision = release.revision.substring(0, 13);
     const product =
-      PRODUCTS && PRODUCTS.find(product => product.product === release.product);
+      PRODUCTS &&
+      PRODUCTS[group].find(product => product.product === release.product);
 
     if (product && product.branches) {
       productBranch = product.branches.find(
