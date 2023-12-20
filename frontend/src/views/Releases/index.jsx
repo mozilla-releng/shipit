@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
+import { useLocation, BrowserRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import Box from '@material-ui/core/Box';
 import RefreshIcon from 'mdi-react/RefreshIcon';
 import Dashboard from '../../components/Dashboard';
+import ErrorPanel from '../../components/ErrorPanel';
 import {
   getPendingReleases,
+  getPendingReleasesForProductBranches,
   getRecentReleases,
   getRecentXPIReleases,
 } from '../../components/api';
@@ -15,7 +18,21 @@ import ReleaseContext from '../../utils/ReleaseContext';
 import config from '../../config';
 import { getXpis } from '../../components/vcs';
 
+function getProductBranches(group) {
+  if (!(group in config.PRODUCTS)) return [];
+
+  // A list of all product/branch variants:
+  // [[product, branch], [product, branch]]
+  return config.PRODUCTS[group]
+    .map(p => [p.branches.map(b => [p.product, b.branch])])
+    .flatMap(x => x)
+    .flatMap(x => x);
+}
+
 export default function Releases({ recent = false, xpi = false }) {
+  const location = useLocation();
+  const group = new URLSearchParams(location.search).get('group') || 'firefox';
+  const groupTitle = group.charAt(0).toUpperCase() + group.slice(1);
   let releaseFetcher = null;
   let xpiFetcher = () => null;
 
@@ -34,33 +51,42 @@ export default function Releases({ recent = false, xpi = false }) {
         getPendingReleases('/xpi/releases', '/xpi/signoff', false);
     }
   } else if (recent) {
-    // releases in progress
-    // A list of all product/branch variants:
-    // [[product, branch], [product, branch]]
-    const productBranches = config.PRODUCTS.map(p => [
-      p.branches.map(b => [p.product, b.branch]),
-    ])
-      .flatMap(x => x)
-      .flatMap(x => x);
-
-    releaseFetcher = () => getRecentReleases(productBranches);
-  } else {
     // read-only, aka recent releases
-    releaseFetcher = getPendingReleases;
+    releaseFetcher = productBranches => getRecentReleases(productBranches);
+  } else {
+    // releases in progress
+    releaseFetcher = productBranches =>
+      getPendingReleasesForProductBranches(productBranches);
   }
 
   const [releases, fetchReleases] = useAction(releaseFetcher);
   const [xpis, fetchXpis] = useAction(xpiFetcher);
 
   useEffect(() => {
-    fetchReleases();
-    fetchXpis();
-  }, []);
+    if (xpi) {
+      fetchReleases();
+      fetchXpis();
+    } else {
+      const productBranches = getProductBranches(group);
+
+      fetchReleases(productBranches);
+    }
+  }, [group]);
+
+  if (!(group in config.PRODUCTS)) {
+    return (
+      <BrowserRouter>
+        <Dashboard disabled>
+          <ErrorPanel fixed error={`Unknown group: ${group}.`} />
+        </Dashboard>
+      </BrowserRouter>
+    );
+  }
 
   return (
     <ReleaseContext.Provider value={{ fetchReleases }}>
       <Dashboard
-        group={xpi ? 'Extensions' : 'Firefox'}
+        group={xpi ? 'Extensions' : groupTitle}
         title={recent ? 'Recent Releases' : 'Pending Releases'}>
         <Box
           display="flex"
@@ -69,7 +95,15 @@ export default function Releases({ recent = false, xpi = false }) {
           marginRight="1%">
           <Button
             startIcon={<RefreshIcon />}
-            onClick={async () => fetchReleases()}>
+            onClick={async () => {
+              if (xpi) {
+                fetchReleases();
+              } else {
+                const productBranches = getProductBranches(group);
+
+                fetchReleases(productBranches);
+              }
+            }}>
             Refresh
           </Button>
         </Box>

@@ -1,5 +1,6 @@
 import 'date-fns';
 import React, { useState, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -44,6 +45,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function NewRelease() {
+  const location = useLocation();
+  const group = new URLSearchParams(location.search).get('group') || 'firefox';
+  const groupTitle = group.charAt(0).toUpperCase() + group.slice(1);
   const classes = useStyles();
   const authContext = useContext(AuthContext);
   const [selectedProduct, setSelectedProduct] = useState('');
@@ -186,7 +190,7 @@ export default function NewRelease() {
         <Select
           value={selectedProduct}
           onChange={event => handleProduct(event.target.value)}>
-          {config.PRODUCTS.map(product => (
+          {config.PRODUCTS[group].map(product => (
             <MenuItem value={product} key={product.product}>
               {product.prettyName}
             </MenuItem>
@@ -433,7 +437,7 @@ export default function NewRelease() {
 
   if (!authContext.user) {
     return (
-      <Dashboard group="Firefox" title="New Release">
+      <Dashboard group={groupTitle} title="New Release">
         <Typography variant="h6" component="h2">
           Auth required
         </Typography>
@@ -442,7 +446,7 @@ export default function NewRelease() {
   }
 
   return (
-    <Dashboard group="Firefox" title="New Release">
+    <Dashboard group={groupTitle} title="New Release">
       {renderProductsSelect()}
       <Collapse
         in={
