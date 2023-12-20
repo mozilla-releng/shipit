@@ -411,9 +411,10 @@ async function getStatus(release, phase) {
 export async function getPendingReleases(
   url = '/releases',
   signoffUrl = '/signoff',
-  usePublicApi = true
+  usePublicApi = true,
+  params = null
 ) {
-  const releases = await getReleases(null, url, usePublicApi);
+  const releases = await getReleases(params, url, usePublicApi);
   const pendingReleases = await Promise.all(
     releases.map(async release => {
       const phasesWithStatuses = await Promise.all(
@@ -444,6 +445,19 @@ export async function getPendingReleases(
   );
 
   return pendingReleases;
+}
+
+export async function getPendingReleasesForProductBranches(productBranches) {
+  const pendingReleases = await Promise.all(
+    productBranches.map(async ([product, branch]) => {
+      return getPendingReleases('/releases', '/signoff', true, {
+        product,
+        branch,
+      });
+    })
+  );
+
+  return pendingReleases.flatMap(x => x);
 }
 
 export async function schedulePhase(releaseName, phaseName, url) {
