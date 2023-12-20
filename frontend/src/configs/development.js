@@ -110,6 +110,50 @@ module.exports = {
         enablePartials: false,
       },
     ],
+    security: [
+      {
+        product: 'mozilla-vpn-client',
+        prettyName: 'Mozilla VPN Client',
+        appName: 'mozilla-vpn-client',
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        repositories: [
+          {
+            prettyName: 'Staging Mozilla VPN Client',
+            project: 'mozilla-vpn-client',
+            repo:
+              'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
+            enableReleaseEta: false,
+            enableTreeherder: false,
+          },
+        ],
+        enablePartials: false,
+      },
+      {
+        product: 'mozilla-vpn-addons',
+        prettyName: 'Mozilla VPN Addons',
+        appName: 'mozilla-vpn-addons',
+        branches: [
+          {
+            branch: 'main',
+          },
+        ],
+        repositories: [
+          {
+            prettyName: 'Staging Mozilla VPN Client',
+            project: 'mozilla-vpn-client',
+            repo:
+              'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
+            enableReleaseEta: false,
+            enableTreeherder: false,
+          },
+        ],
+        enablePartials: false,
+      },
+    ],
   },
   XPI_MANIFEST: {
     branch: 'main',

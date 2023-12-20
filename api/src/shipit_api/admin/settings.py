@@ -79,6 +79,7 @@ LDAP_GROUPS = {
     "thunderbird-signoff": ["shipit_thunderbird"],
     "firefox-android-signoff": ["shipit_mobile"],
     "app-services-signoff": ["shipit_app_services"],
+    "vpn-signoff": ADMIN_LDAP_GROUP,
     # XPI signoffs. These are in flux.
     # Adding Releng as a backup to most of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
@@ -141,6 +142,20 @@ for phase in set(phases):
 app_services_ldap_groups = sorted(set(LDAP_GROUPS["app-services-signoff"] + LDAP_GROUPS["relman"]))
 AUTH0_AUTH_SCOPES.update({s: app_services_ldap_groups for s in scopes})
 
+# vpn scopes
+scopes = []
+for flavor in ("mozilla-vpn-client", "mozilla-vpn-addons"):
+    scopes.extend(
+        [
+            f"add_release/{flavor}",
+            f"abandon_release/{flavor}",
+        ]
+    )
+    phases = [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
+    for phase in set(phases):
+        scopes.extend([f"schedule_phase/{flavor}/{phase}", f"phase_signoff/{flavor}/{phase}"])
+AUTH0_AUTH_SCOPES.update({s: LDAP_GROUPS["vpn-signoff"] for s in scopes})
+
 # other scopes
 AUTH0_AUTH_SCOPES.update({"rebuild_product_details": LDAP_GROUPS["firefox-signoff"], "update_release_status": []})
 
@@ -152,6 +167,7 @@ AUTH0_AUTH_SCOPES.update(
             set(
                 LDAP_GROUPS["app-services-signoff"]
                 + LDAP_GROUPS["firefox-android-signoff"]
+                + LDAP_GROUPS["vpn-signoff"]
                 + LDAP_GROUPS["xpi_privileged_build"]
                 + LDAP_GROUPS["xpi_privileged_signoff"]
                 + LDAP_GROUPS["xpi_system_build"]

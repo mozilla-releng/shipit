@@ -25,6 +25,26 @@ export default [
     ],
   },
   {
+    title: 'Security',
+    items: [
+      {
+        title: 'New',
+        to: '/new?group=security',
+        Icon: <AddBoxIcon />,
+      },
+      {
+        title: 'Pending',
+        to: '/?group=security',
+        Icon: <AutorenewIcon />,
+      },
+      {
+        title: 'Recent',
+        to: '/recent?group=security',
+        Icon: <CheckCircleIcon />,
+      },
+    ],
+  },
+  {
     title: 'Extensions',
     items: [
       {

@@ -476,6 +476,14 @@ SUPPORTED_FLAVORS = {
         {"name": "promote", "in_previous_graph_ids": True},
         {"name": "ship", "in_previous_graph_ids": True},
     ],
+    "mozilla-vpn-client": [
+        {"name": "promote-client", "in_previous_graph_ids": True},
+        {"name": "ship-client", "in_previous_graph_ids": True},
+    ],
+    "mozilla-vpn-addons": [
+        {"name": "promote-addons", "in_previous_graph_ids": True},
+        {"name": "ship-addons", "in_previous_graph_ids": True},
+    ],
 }
 
 SUPPORTED_MOBILE_REPO_NAMES = (
@@ -486,6 +494,11 @@ SUPPORTED_MOBILE_REPO_NAMES = (
 SUPPORTED_APP_SERVICES_REPO_NAMES = (
     "application-services",
     "staging-application-services",
+)
+
+SUPPORTED_MOZILLAVPN_REPO_NAMES = (
+    "mozilla-vpn-client",
+    "staging-mozilla-vpn-client",
 )
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)

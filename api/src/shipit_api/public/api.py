@@ -10,6 +10,7 @@ from flask import abort, current_app
 from mozilla_version.fenix import FenixVersion
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, GeckoVersion, ThunderbirdVersion
 from mozilla_version.mobile import MobileVersion
+from mozilla_version.version import BaseVersion
 from werkzeug.exceptions import BadRequest
 
 from shipit_api.common.models import DisabledProduct, Phase, Release, XPIRelease
@@ -26,6 +27,8 @@ VERSION_CLASSES = {
     Product.FIREFOX.value: FirefoxVersion,
     Product.FIREFOX_ANDROID.value: MobileVersion,
     Product.FOCUS_ANDROID.value: MobileVersion,
+    Product.MOZILLA_VPN_ADDONS.value: BaseVersion,
+    Product.MOZILLA_VPN_CLIENT.value: BaseVersion,
     Product.THUNDERBIRD.value: ThunderbirdVersion,
 }
 
