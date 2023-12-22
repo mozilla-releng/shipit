@@ -5,19 +5,63 @@ import isRc from './releases';
 import config from '../config';
 
 /**
+ * Get releases
+ *
+ * This will fetch releases for the given params. Params may optionally include
+ * product, branch, version, buildNumber or status.
+ */
+export async function getReleases(
+  params = null,
+  url = '/releases',
+  usePublicApi = true
+) {
+  const res = await axios.get(url, {
+    params,
+    usePublicApi,
+  });
+
+  return res.data.reverse();
+}
+
+/**
  * Get build numbers from the API endpoint.
  *
  * This will fetch all release builds including shipped, aborted, and not
  * started yet.
  */
 export async function getBuildNumbers(product, version) {
-  const res = await axios.get('/releases', {
-    params: { product, version, status: 'shipped,aborted,scheduled' },
-    usePublicApi: true,
+  const releases = await getReleases({
+    product,
+    version,
+    status: 'shipped,aborted,scheduled',
   });
-  const releases = res.data;
 
   return releases.map(release => release.build_number);
+}
+
+/**
+ * Get releases for product branches
+ *
+ * This will return all releases that match the given array of [product,
+ * branch] tuples.
+ */
+export async function getReleasesForProductBranches(
+  productBranches,
+  params,
+  limit = null,
+  url = '/releases',
+  usePublicApi = true
+) {
+  const releases = await Promise.all(
+    productBranches.map(async ([product, branch]) => {
+      const newParams = { ...params, product, branch };
+      const releases = await getReleases(newParams, url, usePublicApi);
+
+      return limit ? releases : releases.slice(0, limit);
+    })
+  );
+
+  return releases.flatMap(x => x);
 }
 
 /**
@@ -32,18 +76,13 @@ export async function getShippedReleases(
   version = null,
   buildNumber = null
 ) {
-  const res = await axios.get('/releases', {
-    params: {
-      product,
-      branch,
-      version,
-      build_number: buildNumber,
-      status: 'shipped',
-    },
-    usePublicApi: true,
+  return getReleases({
+    product,
+    branch,
+    version,
+    build_number: buildNumber,
+    status: 'shipped',
   });
-
-  return res.data.reverse();
 }
 
 export async function getRecentReleases(productBranches, limit = 4) {
@@ -52,35 +91,39 @@ export async function getRecentReleases(productBranches, limit = 4) {
   //   [ 'firefox', 'try' ],
   //   ...
   // ]
-  const recentReleases = await Promise.all(
-    productBranches.map(async ([product, branch]) => {
-      const releases = await getShippedReleases(product, branch);
-
-      return releases.slice(0, limit);
-    })
+  const recentReleases = await getReleasesForProductBranches(
+    productBranches,
+    { status: 'shipped' },
+    limit
   );
 
   return recentReleases.flatMap(x => x);
 }
 
 export async function getXPIBuildNumbers(xpiName, xpiVersion) {
-  const res = await axios.get('/xpi/releases', {
-    params: {
+  const releases = await getReleases(
+    {
       xpi_name: xpiName,
       xpi_version: xpiVersion,
       status: 'shipped,aborted,scheduled',
     },
-  });
+    '/xpi/releases',
+    false
+  );
 
-  return res.data.map(release => release.build_number);
+  return releases.map(release => release.build_number);
 }
 
 export async function getShippedXPIReleases() {
-  const res = await axios.get('/xpi/releases', {
-    params: { status: 'shipped' },
-  });
+  const releases = await getReleases(
+    {
+      status: 'shipped',
+    },
+    '/xpi/releases',
+    false
+  );
 
-  return res.data.reverse();
+  return releases;
 }
 
 export async function getRecentXPIReleases(limit = 4) {
@@ -370,9 +413,9 @@ export async function getPendingReleases(
   signoffUrl = '/signoff',
   usePublicApi = true
 ) {
-  const req = await axios.get(url, { usePublicApi });
-  const releases = await Promise.all(
-    req.data.map(async release => {
+  const releases = await getReleases(null, url, usePublicApi);
+  const pendingReleases = await Promise.all(
+    releases.map(async release => {
       const phasesWithStatuses = await Promise.all(
         release.phases.map(async phase => {
           const signoffs = await getPhaseSignOffs(
@@ -400,7 +443,7 @@ export async function getPendingReleases(
     })
   );
 
-  return releases;
+  return pendingReleases;
 }
 
 export async function schedulePhase(releaseName, phaseName, url) {
