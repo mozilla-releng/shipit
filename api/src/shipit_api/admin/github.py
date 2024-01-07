@@ -186,7 +186,7 @@ def get_xpi_manifest(owner, repo, ref):
 
 
 def get_taskgraph_config(owner, repo, ref):
-    config = yaml.safe_load(get_file_from_github(owner, repo, "taskcluster/ci/config.yml", ref))
+    config = yaml.safe_load(get_file_from_github(owner, repo, "taskcluster/config.yml", ref))
     return config
 
 
