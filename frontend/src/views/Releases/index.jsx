@@ -82,9 +82,9 @@ export default function Releases({ recent = false, xpi = false }) {
       </BrowserRouter>
     );
   }
-
+  const productBranches = getProductBranches(group);
   return (
-    <ReleaseContext.Provider value={{ fetchReleases }}>
+    <ReleaseContext.Provider value={{ fetchReleases, productBranches }}>
       <Dashboard
         group={xpi ? 'Extensions' : groupTitle}
         title={recent ? 'Recent Releases' : 'Pending Releases'}>
