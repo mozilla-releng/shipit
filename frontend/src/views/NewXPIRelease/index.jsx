@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Button from '@material-ui/core/Button';
@@ -39,6 +40,7 @@ export default function NewXPIRelease() {
   const [manifestCommit, fetchManifestCommit] = useAction(
     getLatestGithubCommit
   );
+  const history = useHistory();
   const [xpis, fetchXpis] = useAction(getXpis);
   const [xpiCommits, fetchXpiCommits] = useAction(getGithubCommits);
   const [xpiVersion, fetchXpiVersion] = useAction(getXPIVersion);
@@ -270,7 +272,7 @@ export default function NewXPIRelease() {
               setOpen(false);
 
               if (!readyToSubmit()) {
-                window.location.reload();
+                history.push('/xpi');
               }
             }}
             color="default"
