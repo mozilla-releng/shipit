@@ -138,13 +138,13 @@ module.exports = {
         appName: 'mozilla-vpn-addons',
         branches: [
           {
-            branch: 'main',
+            branch: '',
           },
         ],
         repositories: [
           {
             prettyName: 'Staging Mozilla VPN Client',
-            project: 'mozilla-vpn-client',
+            project: 'mozilla-vpn-addons',
             repo:
               'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
             enableReleaseEta: false,
