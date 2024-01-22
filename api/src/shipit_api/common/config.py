@@ -55,7 +55,7 @@ FIREFOX_NIGHTLY = "124.0a1"
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found on https://whattrainisitnow.com/calendar/
 LAST_SOFTFREEZE_DATE = "2024-01-11"
-LAST_MERGE_DATE = "2013-01-22"
+LAST_MERGE_DATE = "2024-01-22"
 LAST_RELEASE_DATE = "2024-01-23"
 NEXT_SOFTFREEZE_DATE = "2024-02-15"
 NEXT_MERGE_DATE = "2024-02-19"
