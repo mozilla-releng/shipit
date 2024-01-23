@@ -166,6 +166,8 @@ components:
           - firefox
           - firefox-android
           - focus-android
+          - mozilla-vpn-addons
+          - mozilla-vpn-client
           - thunderbird
         version:
           type: string

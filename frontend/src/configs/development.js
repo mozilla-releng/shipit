@@ -9,106 +9,152 @@ module.exports = {
     responseType: 'token id_token',
     audience: 'https://auth.mozilla.auth0.com/api/v2/',
   },
-  PRODUCTS: [
-    {
-      product: 'firefox',
-      prettyName: 'Firefox Desktop',
-      appName: 'browser',
-      branches: [
-        {
-          prettyName: 'Try',
-          project: 'try',
-          branch: 'try',
-          repo: 'https://hg.mozilla.org/try',
-          enableReleaseEta: true,
-          disableable: true,
-        },
-      ],
-      enablePartials: true,
-      canTogglePartials: true,
-    },
-    {
-      product: 'devedition',
-      prettyName: 'Firefox Developer Edition',
-      appName: 'browser',
-      branches: [
-        {
-          prettyName: 'Try',
-          project: 'try',
-          branch: 'try',
-          repo: 'https://hg.mozilla.org/try',
-          enableReleaseEta: false,
-          disableable: true,
-        },
-      ],
-      enablePartials: true,
-    },
-    {
-      product: 'thunderbird',
-      prettyName: 'Thunderbird',
-      appName: 'mail',
-      branches: [
-        {
-          prettyName: 'Try',
-          project: 'try-comm-central',
-          branch: 'try-comm-central',
-          repo: 'https://hg.mozilla.org/try-comm-central',
-          enableReleaseEta: false,
-          disableable: false,
-        },
-      ],
-      // TODO
-      enablePartials: false,
-    },
-    {
-      product: 'firefox-android',
-      prettyName: 'Firefox Android (Android-Components, Fenix, Focus)',
-      appName: 'firefox-android',
-      branches: [
-        {
-          branch: '',
-        },
-        {
-          prettyName: 'Try',
-          project: 'try',
-          branch: 'try',
-          repo: 'https://hg.mozilla.org/try',
-          enableReleaseEta: false,
-          versionFile: 'mobile/android/version.txt',
-        },
-      ],
-      repositories: [
-        {
-          prettyName: 'Staging Android monorepo',
-          project: 'staging-firefox-android',
-          repo: 'https://github.com/mozilla-releng/staging-firefox-android',
-          enableReleaseEta: false,
-        },
-      ],
-      enablePartials: false,
-    },
-    {
-      product: 'app-services',
-      prettyName: 'Application Services',
-      appName: 'app-services',
-      branches: [
-        {
-          branch: '',
-        },
-      ],
-      repositories: [
-        {
-          prettyName: 'Staging Application Services',
-          project: 'app-services',
-          repo:
-            'https://github.com/mozilla-releng/staging-application-services',
-          enableReleaseEta: false,
-          enableTreeherder: false,
-        },
-      ],
-      enablePartials: false,
-    },
-  ],
+  PRODUCTS: {
+    firefox: [
+      {
+        product: 'firefox',
+        prettyName: 'Firefox Desktop',
+        appName: 'browser',
+        branches: [
+          {
+            prettyName: 'Try',
+            project: 'try',
+            branch: 'try',
+            repo: 'https://hg.mozilla.org/try',
+            enableReleaseEta: true,
+            disableable: true,
+          },
+        ],
+        enablePartials: true,
+        canTogglePartials: true,
+      },
+      {
+        product: 'devedition',
+        prettyName: 'Firefox Developer Edition',
+        appName: 'browser',
+        branches: [
+          {
+            prettyName: 'Try',
+            project: 'try',
+            branch: 'try',
+            repo: 'https://hg.mozilla.org/try',
+            enableReleaseEta: false,
+            disableable: true,
+          },
+        ],
+        enablePartials: true,
+      },
+      {
+        product: 'thunderbird',
+        prettyName: 'Thunderbird',
+        appName: 'mail',
+        branches: [
+          {
+            prettyName: 'Try',
+            project: 'try-comm-central',
+            branch: 'try-comm-central',
+            repo: 'https://hg.mozilla.org/try-comm-central',
+            enableReleaseEta: false,
+            disableable: false,
+          },
+        ],
+        // TODO
+        enablePartials: false,
+      },
+      {
+        product: 'firefox-android',
+        prettyName: 'Firefox Android (Android-Components, Fenix, Focus)',
+        appName: 'firefox-android',
+        branches: [
+          {
+            branch: '',
+          },
+          {
+            prettyName: 'Try',
+            project: 'try',
+            branch: 'try',
+            repo: 'https://hg.mozilla.org/try',
+            enableReleaseEta: false,
+            versionFile: 'mobile/android/version.txt',
+          },
+        ],
+        repositories: [
+          {
+            prettyName: 'Staging Android monorepo',
+            project: 'staging-firefox-android',
+            repo: 'https://github.com/mozilla-releng/staging-firefox-android',
+            enableReleaseEta: false,
+          },
+        ],
+        enablePartials: false,
+      },
+      {
+        product: 'app-services',
+        prettyName: 'Application Services',
+        appName: 'app-services',
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        repositories: [
+          {
+            prettyName: 'Staging Application Services',
+            project: 'app-services',
+            repo:
+              'https://github.com/mozilla-releng/staging-application-services',
+            enableReleaseEta: false,
+            enableTreeherder: false,
+          },
+        ],
+        enablePartials: false,
+      },
+    ],
+    security: [
+      {
+        product: 'mozilla-vpn-client',
+        prettyName: 'Mozilla VPN Client',
+        appName: 'mozilla-vpn-client',
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        repositories: [
+          {
+            prettyName: 'Staging Mozilla VPN Client',
+            project: 'mozilla-vpn-client',
+            repo:
+              'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
+            enableReleaseEta: false,
+            enableTreeherder: false,
+          },
+        ],
+        enablePartials: false,
+      },
+      {
+        product: 'mozilla-vpn-addons',
+        prettyName: 'Mozilla VPN Addons',
+        appName: 'mozilla-vpn-addons',
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        repositories: [
+          {
+            prettyName: 'Staging Mozilla VPN Client',
+            project: 'mozilla-vpn-addons',
+            repo:
+              'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
+            enableReleaseEta: false,
+            enableTreeherder: false,
+          },
+        ],
+        enablePartials: false,
+      },
+    ],
+  },
   XPI_MANIFEST: {
     branch: 'main',
     owner: 'mozilla-releng',

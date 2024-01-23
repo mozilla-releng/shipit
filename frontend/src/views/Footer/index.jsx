@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import config from '../../config';
 import ProductDisabler from '../../components/ProductDisabler';
 import useAction from '../../hooks/useAction';
@@ -9,6 +10,8 @@ import {
 } from '../../components/api';
 
 export default function Footer() {
+  const location = useLocation();
+  const group = new URLSearchParams(location.search).get('group') || 'firefox';
   const [disabledProducts, setDisabledProducts] = useState([]);
   const [getDisabledProductsState, getDisabledProductsAction] = useAction(
     getDisabledProducts
@@ -45,7 +48,7 @@ export default function Footer() {
 
   return (
     <ProductDisabler
-      productBranches={config.PRODUCTS.flatMap(product =>
+      productBranches={config.PRODUCTS[group].flatMap(product =>
         product.branches
           .filter(branch => branch.disableable)
           .map(pb => ({

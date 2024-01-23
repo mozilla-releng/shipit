@@ -49,17 +49,17 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # e.g. version bumped, but still no builds available.
 #
 # This version also defines the mobile nightly version (i.e.: Fenix)
-FIREFOX_NIGHTLY = "123.0a1"
+FIREFOX_NIGHTLY = "124.0a1"
 
 # The next 6 dates are information about the current and next release
 # They must be updated at the same time as FIREFOX_NIGHTLY
 # They can be found on https://whattrainisitnow.com/calendar/
-LAST_SOFTFREEZE_DATE = "2023-12-14"
-LAST_MERGE_DATE = "2023-12-18"
-LAST_RELEASE_DATE = "2023-12-19"
-NEXT_SOFTFREEZE_DATE = "2024-01-11"
-NEXT_MERGE_DATE = "2013-01-22"
-NEXT_RELEASE_DATE = "2024-01-23"
+LAST_SOFTFREEZE_DATE = "2024-01-11"
+LAST_MERGE_DATE = "2024-01-22"
+LAST_RELEASE_DATE = "2024-01-23"
+NEXT_SOFTFREEZE_DATE = "2024-02-15"
+NEXT_MERGE_DATE = "2024-02-19"
+NEXT_RELEASE_DATE = "2024-02-20"
 
 DATE_FORMAT = "%Y-%m-%d"
 LAST_STRINGFREEZE_DATE = (datetime.strptime(LAST_SOFTFREEZE_DATE, DATE_FORMAT) + timedelta(days=1)).strftime(DATE_FORMAT)
@@ -74,8 +74,8 @@ IOS_BETA_VERSION = ""
 IOS_VERSION = ""
 
 # Thunderbird configs
-LATEST_THUNDERBIRD_ALPHA_VERSION = ""
-LATEST_THUNDERBIRD_NIGHTLY_VERSION = "123.0a1"
+LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
+LATEST_THUNDERBIRD_NIGHTLY_VERSION = "124.0a1"
 # TODO: Need to update this every cycle
 THUNDERBIRD_RELEASE_BRANCH = "releases/comm-release"
 THUNDERBIRD_BETA_BRANCH = "releases/comm-beta"
@@ -477,6 +477,14 @@ SUPPORTED_FLAVORS = {
         {"name": "promote", "in_previous_graph_ids": True},
         {"name": "ship", "in_previous_graph_ids": True},
     ],
+    "mozilla-vpn-client": [
+        {"name": "promote-client", "in_previous_graph_ids": True},
+        {"name": "ship-client", "in_previous_graph_ids": True},
+    ],
+    "mozilla-vpn-addons": [
+        {"name": "promote-addons", "in_previous_graph_ids": True},
+        {"name": "ship-addons", "in_previous_graph_ids": True},
+    ],
 }
 
 SUPPORTED_MOBILE_REPO_NAMES = (
@@ -487,6 +495,11 @@ SUPPORTED_MOBILE_REPO_NAMES = (
 SUPPORTED_APP_SERVICES_REPO_NAMES = (
     "application-services",
     "staging-application-services",
+)
+
+SUPPORTED_MOZILLAVPN_REPO_NAMES = (
+    "mozilla-vpn-client",
+    "staging-mozilla-vpn-client",
 )
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
