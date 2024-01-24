@@ -894,7 +894,7 @@ def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Rele
         }
     """
     return dict(
-        LATEST_THUNDERBIRD_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_RELEASE_BRANCH),
+        LATEST_THUNDERBIRD_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_OLD_RELEASE_BRANCH),
         LATEST_THUNDERBIRD_DEVEL_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_BETA_BRANCH),
         LATEST_THUNDERBIRD_NIGHTLY_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_NIGHTLY_VERSION,
         LATEST_THUNDERBIRD_ALPHA_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_ALPHA_VERSION,
