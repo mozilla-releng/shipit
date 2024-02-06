@@ -1,19 +1,12 @@
 import enum
+import pathlib
+from functools import cache
 
+import yaml
 
-@enum.unique
-class Product(enum.Enum):
-    ANDROID_COMPONENTS = "android-components"  # Only used for product details
-    APP_SERVICES = "app-services"
-    DEVEDITION = "devedition"
-    FIREFOX = "firefox"
-    FENIX = "fenix"  # Only used for product details
-    FENNEC = "fennec"  # Only used for product details
-    THUNDERBIRD = "thunderbird"
-    FOCUS_ANDROID = "focus-android"  # Only used for product details
-    FIREFOX_ANDROID = "firefox-android"
-    MOZILLA_VPN_ADDONS = "mozilla-vpn-addons"
-    MOZILLA_VPN_CLIENT = "mozilla-vpn-client"
+_CURRENT_DIR = pathlib.Path(__file__).parent.absolute()
+_SWAGGER_API_YML_PATH = (_CURRENT_DIR / ".." / "admin" / "api.yml").resolve()
+_PRODUCT_ENUM_KEYS = "components.schemas.ProductOutput.enum"
 
 
 @enum.unique
@@ -28,3 +21,27 @@ class ProductCategory(enum.Enum):
 # So all hyphens are translated to underscores as a rule.
 def get_key(name):
     return name.upper().replace("-", "_")
+
+
+def _resolve_dict_keys(dict_, keys):
+    value = dict_
+    path = keys.split(".")
+    for key in path:
+        value = value[key]
+    return value
+
+
+@cache
+def _generate_product_enum():
+    with open(_SWAGGER_API_YML_PATH) as f:
+        swagger_spec = yaml.load(f, Loader=yaml.CLoader)
+
+    try:
+        products = _resolve_dict_keys(swagger_spec, _PRODUCT_ENUM_KEYS)
+    except KeyError:
+        raise KeyError(f"Cannot find in keys {_PRODUCT_ENUM_KEYS}: {_SWAGGER_API_YML_PATH}")
+
+    return enum.Enum("Product", {get_key(product): product for product in products})
+
+
+Product = _generate_product_enum()
