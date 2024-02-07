@@ -19,7 +19,6 @@ def create_app(config=None):
         extensions=["dockerflow", "log", "security", "cors", "api", "auth", "db", "pulse"],
         root_path=os.path.dirname(__file__),
     )
-    app.api.register(os.path.join(os.path.dirname(__file__), "api.yml"))
     app.cli.add_command(cmd, "worker")
 
     return app
