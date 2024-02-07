@@ -1,0 +1,16 @@
+---
+android-components:
+  legacy: true
+app-services: {}
+devedition: {}
+fenix:
+  legacy: true
+fennec:
+  legacy: true
+firefox: {}
+firefox-android: {}
+focus-android:
+  legacy: true
+mozilla-vpn-addons: {}
+mozilla-vpn-client: {}
+thunderbird: {}
