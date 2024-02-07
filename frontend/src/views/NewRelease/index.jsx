@@ -1,6 +1,6 @@
 import 'date-fns';
 import React, { useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import ReactTimeAgo from 'react-time-ago';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -46,6 +46,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function NewRelease() {
   const location = useLocation();
+  const history = useHistory();
   const group = new URLSearchParams(location.search).get('group') || 'firefox';
   const groupTitle = group.charAt(0).toUpperCase() + group.slice(1);
   const classes = useStyles();
@@ -377,7 +378,7 @@ export default function NewRelease() {
               setOpen(false);
 
               if (!readyToSubmit()) {
-                window.location.reload();
+                history.push(`/?group=${group}`);
               }
             }}
             color="default"
