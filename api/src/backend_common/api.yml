@@ -1,0 +1,46 @@
+---
+openapi: 3.0.1
+info:
+  title: Ship-It API
+  description: 'Find  out more about Ship-it at
+
+    [https://github.com/mozilla-releng/shipit](https://github.com/mozilla-releng/shipit)
+
+    '
+  license:
+    name: MPL 2.0
+    url: https://www.mozilla.org/MPL/2.0/
+  version: 1.0.0
+components:
+  schemas:
+    ProductInput:
+      # ProductInput handles the products we currently support on shipit
+      type: string
+      example: firefox
+      enum:
+      - app-services
+      - devedition
+      - firefox
+      - firefox-android
+      - mozilla-vpn-addons
+      - mozilla-vpn-client
+      - thunderbird
+    ProductOutput:
+      # ProductOutput lists all the products shipit has ever supported. They are needed
+      # for API endpoints that return historical data.
+      type: string
+      example: firefox
+      # /!\ Enums are not extensible yet https://github.com/OAI/OpenAPI-Specification/issues/1552
+      # We require new products to be added here and in ProductInput.
+      enum:
+      - android-components
+      - app-services
+      - devedition
+      - fenix
+      - fennec
+      - firefox
+      - firefox-android
+      - focus-android
+      - mozilla-vpn-addons
+      - mozilla-vpn-client
+      - thunderbird
