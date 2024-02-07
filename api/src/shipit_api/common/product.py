@@ -5,7 +5,7 @@ from functools import cache
 import yaml
 
 _CURRENT_DIR = pathlib.Path(__file__).parent.absolute()
-_SWAGGER_API_YML_PATH = (_CURRENT_DIR / ".." / "admin" / "api.yml").resolve()
+_SWAGGER_API_YML_PATH = (_CURRENT_DIR / ".." / ".." / "backend_common" / "api.yml").resolve()
 _PRODUCT_ENUM_KEYS = "components.schemas.ProductOutput.enum"
 
 

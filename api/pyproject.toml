@@ -76,6 +76,7 @@ arrow = "*"
 backoff = "*"
 # to support signals in Flask
 blinker = "*"
+deepmerge = "*"
 flask_login = "*"
 flask_oidc = "*"
 json-e = "*"
