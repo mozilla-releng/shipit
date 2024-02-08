@@ -85,13 +85,22 @@ def _get_specifications_from_openapi_yaml_files(root_path):
 
 def get_product_names(include_legacy=False):
     products_config = get_products_config()
-    return [product_name for product_name, product_config in products_config.items() if not product_config.get("legacy", False) or include_legacy]
+    return [product_name for product_name, product_config in products_config.items() if not product_config["legacy"] or include_legacy]
 
 
 @cache
 def get_products_config():
     with open(os.path.join(os.path.dirname(__file__), "..", "..", "products.yml")) as f:
-        return yaml.safe_load(f)
+        products_config = yaml.safe_load(f)
+
+    _set_products_config_default_values(products_config)
+    return products_config
+
+
+def _set_products_config_default_values(products_config):
+    for product_config in products_config.values():
+        product_config.setdefault("legacy", False)
+        product_config.setdefault("phases", [])
 
 
 def _read_specification_file(path):
