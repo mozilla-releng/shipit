@@ -7,12 +7,14 @@ app-services:
   phases:
   - promote
   - ship
+  firefox-ci-trust-domain: app-services
   version-class: "mozilla_version.gecko.GeckoVersion"
 devedition:
   phases:
   - promote_devedition
   - push_devedition
   - ship_devedition
+  firefox-ci-trust-domain: gecko
   version-class: "mozilla_version.gecko.DeveditionVersion"
 fenix:
   legacy: true
@@ -25,6 +27,7 @@ firefox:
   - promote_firefox
   - push_firefox
   - ship_firefox
+  firefox-ci-trust-domain: gecko
   version-class: "mozilla_version.gecko.GeckoVersion"
 firefox-android:
   phases:
@@ -34,6 +37,7 @@ firefox-android:
   - promote_android
   - push_android
   - ship_android
+  firefox-ci-trust-domain: mobile
   version-class: "mozilla_version.mobile.MobileVersion"
 focus-android:
   legacy: true
@@ -42,15 +46,18 @@ mozilla-vpn-addons:
   phases:
   - promote-addons
   - ship-addons
+  firefox-ci-trust-domain: mozillavpn
   version-class: "mozilla_version.version.BaseVersion"
 mozilla-vpn-client:
   phases:
   - promote-client
   - ship-client
+  firefox-ci-trust-domain: mozillavpn
   version-class: "mozilla_version.version.BaseVersion"
 thunderbird:
   phases:
   - promote_thunderbird
   - push_thunderbird
   - ship_thunderbird
+  firefox-ci-trust-domain: comm
   version-class: "mozilla_version.gecko.ThunderbirdVersion"
