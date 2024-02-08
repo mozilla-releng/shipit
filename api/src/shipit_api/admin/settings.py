@@ -97,20 +97,6 @@ LDAP_GROUPS = {
 
 AUTH0_AUTH_SCOPES = dict()
 
-# firefox scopes
-firefox_ldap_groups = sorted(set(LDAP_GROUPS["firefox-signoff"] + LDAP_GROUPS["relman"]))
-for product in [
-    "devedition",
-    "firefox",
-    "firefox-android",
-]:
-    scopes = [f"add_release/{product}", f"abandon_release/{product}"]
-    phases = []
-    for flavor in [product, f"{product}_rc", f"{product}_release", f"{product}_release_rc", f"{product}_beta"]:
-        phases += [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
-    for phase in set(phases):
-        scopes.extend([f"schedule_phase/{product}/{phase}", f"phase_signoff/{product}/{phase}"])
-    AUTH0_AUTH_SCOPES.update({s: firefox_ldap_groups for s in scopes})
 
 # Add scopes for enabling/disabling products
 AUTH0_AUTH_SCOPES.update(
@@ -128,7 +114,7 @@ AUTH0_AUTH_SCOPES.update(
 def _assign_ldap_groups_to_scopes():
     ldap_groups_per_scope = {}
     for product_name, product_config in get_products_config().items():
-        if product_name not in ("app-services", "mozilla-vpn-client", "mozilla-vpn-addons", "thunderbird"):
+        if product_config["legacy"]:
             continue
 
         scopes = _get_auth0_scopes(product_name)
@@ -144,6 +130,8 @@ def _get_auth0_scopes(product_name):
         f"abandon_release/{product_name}",
     ]
     phases = [f["name"] for f in SUPPORTED_FLAVORS.get(product_name, [])]
+    if product_name == "firefox":
+        phases.extend([f["name"] for f in SUPPORTED_FLAVORS["firefox_rc"]])
     for phase in phases:
         scopes.extend([f"schedule_phase/{product_name}/{phase}", f"phase_signoff/{product_name}/{phase}"])
 
