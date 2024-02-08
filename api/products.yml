@@ -14,6 +14,9 @@ app-services:
   firefox-ci-trust-domain: app-services
   version-class: "mozilla_version.gecko.GeckoVersion"
 devedition:
+  ldap-groups:
+  - shipit_firefox
+  - shipit_relman
   phases:
   - promote_devedition
   - push_devedition
@@ -27,6 +30,9 @@ fennec:
   legacy: true
   version-class: "mozilla_version.gecko.FennecVersion"
 firefox:
+  ldap-groups:
+  - shipit_firefox
+  - shipit_relman
   phases:
   - promote_firefox
   - push_firefox
@@ -34,6 +40,9 @@ firefox:
   firefox-ci-trust-domain: gecko
   version-class: "mozilla_version.gecko.GeckoVersion"
 firefox-android:
+  ldap-groups:
+  - shipit_firefox
+  - shipit_relman
   phases:
   - promote
   - push
