@@ -451,7 +451,7 @@ def _get_supported_flavors():
 
     supported_flavors_per_product = {}
     for product_name, product_config in products_config.items():
-        phase_definitions = _get_phases_definitions(product_config.get("phases", []))
+        phase_definitions = _get_phases_definitions(product_config["phases"])
         supported_flavors_per_product[product_name] = phase_definitions
 
     # We RCs are not a real product per se. That's why we special-case it here.
