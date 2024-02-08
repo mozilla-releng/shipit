@@ -63,6 +63,8 @@ mozilla-vpn-client:
   firefox-ci-trust-domain: mozillavpn
   version-class: "mozilla_version.version.BaseVersion"
 thunderbird:
+  authorized-ldap-groups:
+  - shipit_thunderbird
   phases:
   - promote_thunderbird
   - push_thunderbird
