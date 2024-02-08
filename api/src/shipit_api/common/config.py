@@ -478,21 +478,6 @@ def _get_phases_definitions(phases):
 SUPPORTED_FLAVORS = _get_supported_flavors()
 
 
-SUPPORTED_MOBILE_REPO_NAMES = (
-    "firefox-android",
-    "staging-firefox-android",
-)
-
-SUPPORTED_APP_SERVICES_REPO_NAMES = (
-    "application-services",
-    "staging-application-services",
-)
-
-SUPPORTED_MOZILLAVPN_REPO_NAMES = (
-    "mozilla-vpn-client",
-    "staging-mozilla-vpn-client",
-)
-
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
 SIGNOFFS = {
     "": {
