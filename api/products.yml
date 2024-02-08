@@ -3,6 +3,10 @@ android-components:
   legacy: true
   version-class: "mozilla_version.mobile.MobileVersion"
 app-services:
+  authorized-ldap-groups:
+  - releng
+  - shipit_app_services
+  - shipit_relman
   # Phases per product, ordered
   phases:
   - promote
