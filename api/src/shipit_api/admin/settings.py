@@ -7,6 +7,7 @@ import base64
 
 from decouple import config
 
+from backend_common import get_products_config
 from backend_common.auth import create_auth0_secrets_file
 from shipit_api.common.config import SCOPE_PREFIX, SUPPORTED_FLAVORS, XPI_LAX_SIGN_OFF
 
@@ -142,19 +143,33 @@ for phase in set(phases):
 app_services_ldap_groups = sorted(set(LDAP_GROUPS["app-services-signoff"] + LDAP_GROUPS["relman"]))
 AUTH0_AUTH_SCOPES.update({s: app_services_ldap_groups for s in scopes})
 
-# vpn scopes
-scopes = []
-for flavor in ("mozilla-vpn-client", "mozilla-vpn-addons"):
-    scopes.extend(
-        [
-            f"add_release/{flavor}",
-            f"abandon_release/{flavor}",
-        ]
-    )
-    phases = [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
-    for phase in set(phases):
-        scopes.extend([f"schedule_phase/{flavor}/{phase}", f"phase_signoff/{flavor}/{phase}"])
-AUTH0_AUTH_SCOPES.update({s: LDAP_GROUPS["vpn-signoff"] for s in scopes})
+
+def _assign_ldap_groups_to_scopes():
+    ldap_groups_per_scope = {}
+    for product_name, product_config in get_products_config().items():
+        if product_name not in ("mozilla-vpn-client", "mozilla-vpn-addons"):
+            continue
+
+        scopes = _get_auth0_scopes(product_name)
+        new_ldap_groups_per_scope = {s: product_config["ldap-groups"] for s in scopes}
+        ldap_groups_per_scope = merge_or_raise.merge(ldap_groups_per_scope, new_ldap_groups_per_scope)
+
+    return ldap_groups_per_scope
+
+
+def _get_auth0_scopes(product_name):
+    scopes = [
+        f"add_release/{product_name}",
+        f"abandon_release/{product_name}",
+    ]
+    phases = [f["name"] for f in SUPPORTED_FLAVORS.get(product_name, [])]
+    for phase in phases:
+        scopes.extend([f"schedule_phase/{product_name}/{phase}", f"phase_signoff/{product_name}/{phase}"])
+
+    return scopes
+
+
+AUTH0_AUTH_SCOPES = _assign_ldap_groups_to_scopes()
 
 # other scopes
 AUTH0_AUTH_SCOPES.update({"rebuild_product_details": LDAP_GROUPS["firefox-signoff"], "update_release_status": []})
