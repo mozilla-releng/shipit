@@ -107,6 +107,7 @@ def _set_products_config_default_values(products_config):
         product_config.setdefault("can-be-disabled", False)
         product_config.setdefault("legacy", False)
         product_config.setdefault("phases", [])
+        product_config.setdefault("repo-url", "")
 
 
 def _check_mandatory_keys_are_provided(products_config):

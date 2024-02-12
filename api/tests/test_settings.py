@@ -236,7 +236,8 @@ def test_scopes_are_all_defined():
                 "releng",
                 "shipit_app_services",
                 "xpi_privileged_admin",
-                "shipit_mobile",
+                "shipit_firefox",
+                "shipit_relman",
                 "xpi_privileged_build",
             ],
             "project:releng:services/shipit_api/phase_signoff/app-services/promote": [
