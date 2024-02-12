@@ -14,7 +14,8 @@ app-services:
   firefox-ci-trust-domain: app-services
   version-class: "mozilla_version.gecko.GeckoVersion"
 devedition:
-  ldap-groups:
+  can-be-disabled: true
+  authorized-ldap-groups:
   - shipit_firefox
   - shipit_relman
   phases:
@@ -30,7 +31,8 @@ fennec:
   legacy: true
   version-class: "mozilla_version.gecko.FennecVersion"
 firefox:
-  ldap-groups:
+  can-be-disabled: true
+  authorized-ldap-groups:
   - shipit_firefox
   - shipit_relman
   phases:
@@ -40,7 +42,8 @@ firefox:
   firefox-ci-trust-domain: gecko
   version-class: "mozilla_version.gecko.GeckoVersion"
 firefox-android:
-  ldap-groups:
+  can-be-disabled: true
+  authorized-ldap-groups:
   - shipit_firefox
   - shipit_relman
   phases:

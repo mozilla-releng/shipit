@@ -98,33 +98,20 @@ LDAP_GROUPS = {
 AUTH0_AUTH_SCOPES = dict()
 
 
-# Add scopes for enabling/disabling products
-AUTH0_AUTH_SCOPES.update(
-    {
-        "disable_product/firefox": LDAP_GROUPS["firefox-signoff"],
-        "disable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
-        "disable_product/devedition": LDAP_GROUPS["firefox-signoff"],
-        "enable_product/firefox": LDAP_GROUPS["firefox-signoff"],
-        "enable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
-        "enable_product/devedition": LDAP_GROUPS["firefox-signoff"],
-    }
-)
-
-
 def _assign_ldap_groups_to_scopes():
     ldap_groups_per_scope = {}
     for product_name, product_config in get_products_config().items():
         if product_config["legacy"]:
             continue
 
-        scopes = _get_auth0_scopes(product_name)
-        new_ldap_groups_per_scope = {s: product_config["ldap-groups"] for s in scopes}
+        scopes = _get_auth0_scopes(product_name, product_config)
+        new_ldap_groups_per_scope = {s: product_config["authorized-ldap-groups"] for s in scopes}
         ldap_groups_per_scope = merge_or_raise.merge(ldap_groups_per_scope, new_ldap_groups_per_scope)
 
     return ldap_groups_per_scope
 
 
-def _get_auth0_scopes(product_name):
+def _get_auth0_scopes(product_name, product_config):
     scopes = [
         f"add_release/{product_name}",
         f"abandon_release/{product_name}",
@@ -134,6 +121,14 @@ def _get_auth0_scopes(product_name):
         phases.extend([f["name"] for f in SUPPORTED_FLAVORS["firefox_rc"]])
     for phase in phases:
         scopes.extend([f"schedule_phase/{product_name}/{phase}", f"phase_signoff/{product_name}/{phase}"])
+
+    if product_config["can-be-disabled"]:
+        scopes.extend(
+            [
+                f"disable_product/{product_name}",
+                f"enable_product/{product_name}",
+            ]
+        )
 
     return scopes
 
