@@ -5,6 +5,38 @@ import pytest
 import backend_common
 
 
+def test_build_api_specification(monkeypatch):
+    def mock_get_specifications_from_openapi_yaml_files(_):
+        return {
+            "components": {
+                "schemas": {
+                    "ProductInput": {},
+                    "ProductOutput": {},
+                },
+            },
+        }
+
+    monkeypatch.setattr(backend_common, "_get_specifications_from_openapi_yaml_files", mock_get_specifications_from_openapi_yaml_files)
+
+    def mock_get_product_names(include_legacy=False):
+        return ["legacy-product", "current-product"] if include_legacy else ["current-product"]
+
+    monkeypatch.setattr(backend_common, "get_product_names", mock_get_product_names)
+
+    assert backend_common.build_api_specification("dummy_root_path") == {
+        "components": {
+            "schemas": {
+                "ProductInput": {
+                    "enum": ["current-product"],
+                },
+                "ProductOutput": {
+                    "enum": ["legacy-product", "current-product"],
+                },
+            },
+        },
+    }
+
+
 @pytest.mark.parametrize("include_legacy, expected", ((True, ["legacy-product", "current-product"]), (False, ["current-product"])))
 def test_get_product_names(monkeypatch, include_legacy, expected):
     def mock_get_products_config():
