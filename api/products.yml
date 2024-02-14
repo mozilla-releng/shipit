@@ -1,0 +1,89 @@
+---
+android-components:
+  legacy: true
+  version-class: "mozilla_version.mobile.MobileVersion"
+app-services:
+  authorized-ldap-groups:
+  - releng
+  - shipit_app_services
+  - shipit_relman
+  # Phases per product, ordered
+  phases:
+  - promote
+  - ship
+  firefox-ci-trust-domain: app-services
+  repo-url: https://github.com/mozilla/application-services
+  version-class: "mozilla_version.gecko.GeckoVersion"
+devedition:
+  can-be-disabled: true
+  authorized-ldap-groups:
+  - shipit_firefox
+  - shipit_relman
+  phases:
+  - promote_devedition
+  - push_devedition
+  - ship_devedition
+  firefox-ci-trust-domain: gecko
+  version-class: "mozilla_version.gecko.DeveditionVersion"
+fenix:
+  legacy: true
+  version-class: "mozilla_version.fenix.FenixVersion" # TODO replace with MobileVersion
+fennec:
+  legacy: true
+  version-class: "mozilla_version.gecko.FennecVersion"
+firefox:
+  can-be-disabled: true
+  authorized-ldap-groups:
+  - shipit_firefox
+  - shipit_relman
+  phases:
+  - promote_firefox
+  - push_firefox
+  - ship_firefox
+  firefox-ci-trust-domain: gecko
+  version-class: "mozilla_version.gecko.GeckoVersion"
+firefox-android:
+  can-be-disabled: true
+  authorized-ldap-groups:
+  - shipit_firefox
+  - shipit_relman
+  phases:
+  - promote
+  - push
+  - ship
+  - promote_android
+  - push_android
+  - ship_android
+  firefox-ci-trust-domain: mobile
+  repo-url: https://github.com/mozilla-mobile/firefox-android
+  version-class: "mozilla_version.mobile.MobileVersion"
+focus-android:
+  legacy: true
+  version-class: "mozilla_version.mobile.MobileVersion"
+mozilla-vpn-addons:
+  authorized-ldap-groups:
+  - releng
+  phases:
+  - promote-addons
+  - ship-addons
+  firefox-ci-trust-domain: mozillavpn
+  repo-url: https://github.com/mozilla-mobile/mozilla-vpn-client
+  version-class: "mozilla_version.version.BaseVersion"
+mozilla-vpn-client:
+  authorized-ldap-groups:
+  - releng
+  phases:
+  - promote-client
+  - ship-client
+  firefox-ci-trust-domain: mozillavpn
+  repo-url: https://github.com/mozilla-mobile/mozilla-vpn-client
+  version-class: "mozilla_version.version.BaseVersion"
+thunderbird:
+  authorized-ldap-groups:
+  - shipit_thunderbird
+  phases:
+  - promote_thunderbird
+  - push_thunderbird
+  - ship_thunderbird
+  firefox-ci-trust-domain: comm
+  version-class: "mozilla_version.gecko.ThunderbirdVersion"

@@ -1,14 +1,4 @@
 ---
-openapi: 3.0.1
-info:
-  title: Ship-It API
-  description: |
-    Find  out more about Ship-it at
-    [https://github.com/mozilla-releng/shipit](https://github.com/mozilla-releng/shipit)
-  license:
-    name: MPL 2.0
-    url: https://www.mozilla.org/MPL/2.0/
-  version: 1.0.0
 servers:
 - url: /
 paths:
@@ -33,10 +23,10 @@ paths:
                   type: string
         required: false
       responses:
-        200:
+        "200":
           description: Product details rebuild triggered.
           content: {}
-        405:
+        "405":
           description: Invalid input
           content: {}
   /releases:
@@ -72,7 +62,7 @@ paths:
           items:
             type: string
       responses:
-        200:
+        "200":
           description: A list of releases
           content:
             'application/json':
@@ -91,13 +81,13 @@ paths:
               $ref: '#/components/schemas/ReleaseInput'
         required: true
       responses:
-        201:
+        "201":
           description: Release added
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Release'
-        405:
+        "405":
           description: Invalid input
           content: {}
   /releases/{name}:
@@ -112,7 +102,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Returns release representation
           content:
             'application/json':
@@ -131,7 +121,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Returns release representation
           content:
             'application/json':
@@ -155,7 +145,7 @@ paths:
               $ref: '#/components/schemas/ReleaseStatus'
         required: true
       responses:
-        200:
+        "200":
           description: Release updated
           content:
             'application/json':
@@ -163,7 +153,7 @@ paths:
                 anyOf:
                   - $ref: '#/components/schemas/Release'
                   - $ref: '#/components/schemas/XPIRelease'
-        405:
+        "405":
           description: Invalid input
           content: {}
   /releases/{name}/{phase}:
@@ -183,7 +173,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Retruns phase representation
           content:
             'application/json':
@@ -205,13 +195,13 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Phase scheduled
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Phase'
-        409:
+        "409":
           description: Already submitted
           content: {}
   /signoff/{name}/{phase}:
@@ -231,7 +221,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Retruns phase signoff representation
           content:
             'application/json':
@@ -260,13 +250,13 @@ paths:
               type: string
         required: true
       responses:
-        200:
+        "200":
           description: Retruns phase signoff representation
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Signoffs'
-        409:
+        "409":
           description: Already submitted
           content: {}
   /disabled-products:
@@ -274,7 +264,7 @@ paths:
       summary: Get the list of product/branches which are currently disabled. Disabled products/branches will not have automated releases created
       operationId: shipit_api.public.api.get_disabled_products
       responses:
-        200:
+        "200":
           description: Disabled product/branches
           content:
             application/json:
@@ -290,9 +280,9 @@ paths:
             schema:
               $ref: '#/components/schemas/DisableProduct'
       responses:
-        200:
+        "200":
           description: OK
-        405:
+        "405":
           description: Invalid input
     delete:
       summary: Enable a product+branch
@@ -317,9 +307,9 @@ paths:
           - releases/mozilla-beta
           - try
       responses:
-        200:
+        "200":
           description: OK
-        405:
+        "405":
           description: Invalid input
   /github/branches/{owner}/{repo}:
     get:
@@ -339,7 +329,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: List of git branches
           content:
             application/json:
@@ -371,7 +361,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: List of git commits
           content:
             application/json:
@@ -403,7 +393,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Contents of package.json
           content:
             application/json:
@@ -439,7 +429,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Contents of package.json
           content:
             application/json:
@@ -469,7 +459,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Contents of version.txt
           content:
             text/plain:
@@ -507,7 +497,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: List of XPIs in a manifest
           content:
             application/json:
@@ -539,7 +529,7 @@ paths:
           items:
             type: string
       responses:
-        200:
+        "200":
           description: A list of releases
           content:
             'application/json':
@@ -558,7 +548,7 @@ paths:
               $ref: '#/components/schemas/XPIReleaseInput'
         required: true
       responses:
-        201:
+        "201":
           description: Release added
           content:
             'application/json':
@@ -576,7 +566,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Returns release representation
           content:
             'application/json':
@@ -593,7 +583,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Returns release representation
           content:
             'application/json':
@@ -617,7 +607,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Retruns phase representation
           content:
             'application/json':
@@ -639,13 +629,13 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Phase scheduled
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Phase'
-        409:
+        "409":
           description: Already submitted
           content: {}
   /xpi/signoff/{name}/{phase}:
@@ -665,7 +655,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Retruns phase signoff representation
           content:
             'application/json':
@@ -694,13 +684,13 @@ paths:
               type: string
         required: true
       responses:
-        200:
+        "200":
           description: Retruns phase signoff representation
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Signoffs'
-        409:
+        "409":
           description: Already submitted
           content: {}
 components:
@@ -715,16 +705,7 @@ components:
       type: object
       properties:
         product:
-          type: string
-          example: firefox
-          enum:
-          - app-services
-          - devedition
-          - firefox
-          - firefox-android
-          - mozilla-vpn-addons
-          - mozilla-vpn-client
-          - thunderbird
+          $ref: '#/components/schemas/ProductInput'
         version:
           type: string
           example: 56.0b12
@@ -823,20 +804,7 @@ components:
           type: string
           example: firefox-69.0b1-build1
         product:
-          type: string
-          example: firefox
-          enum:
-          - android-components
-          - app-services
-          - devedition
-          - fenix
-          - fennec
-          - firefox
-          - firefox-android
-          - focus-android
-          - mozilla-vpn-addons
-          - mozilla-vpn-client
-          - thunderbird
+          $ref: '#/components/schemas/ProductOutput'
         version:
           type: string
           example: 56.0b12

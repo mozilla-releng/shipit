@@ -6,9 +6,16 @@
 import os
 
 import pytest
+import responses as rsps
 
 import backend_common.testing
 from shipit_api.common.models import XPI, XPIRelease
+
+
+@pytest.fixture
+def responses():
+    with rsps.RequestsMock() as req_mock:
+        yield req_mock
 
 
 @pytest.fixture(scope="session")

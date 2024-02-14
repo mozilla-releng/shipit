@@ -1,19 +1,6 @@
 import enum
 
-
-@enum.unique
-class Product(enum.Enum):
-    ANDROID_COMPONENTS = "android-components"  # Only used for product details
-    APP_SERVICES = "app-services"
-    DEVEDITION = "devedition"
-    FIREFOX = "firefox"
-    FENIX = "fenix"  # Only used for product details
-    FENNEC = "fennec"  # Only used for product details
-    THUNDERBIRD = "thunderbird"
-    FOCUS_ANDROID = "focus-android"  # Only used for product details
-    FIREFOX_ANDROID = "firefox-android"
-    MOZILLA_VPN_ADDONS = "mozilla-vpn-addons"
-    MOZILLA_VPN_CLIENT = "mozilla-vpn-client"
+from backend_common import get_product_names
 
 
 @enum.unique
@@ -28,3 +15,6 @@ class ProductCategory(enum.Enum):
 # So all hyphens are translated to underscores as a rule.
 def get_key(name):
     return name.upper().replace("-", "_")
+
+
+Product = enum.Enum("Product", {get_key(product): product for product in get_product_names(include_legacy=True)})

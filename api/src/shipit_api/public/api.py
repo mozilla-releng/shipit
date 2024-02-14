@@ -7,30 +7,12 @@ import logging
 from collections import defaultdict
 
 from flask import abort, current_app
-from mozilla_version.fenix import FenixVersion
-from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, GeckoVersion, ThunderbirdVersion
-from mozilla_version.mobile import MobileVersion
-from mozilla_version.version import BaseVersion
 from werkzeug.exceptions import BadRequest
 
 from shipit_api.common.models import DisabledProduct, Phase, Release, XPIRelease
-from shipit_api.common.product import Product
+from shipit_api.common.version import parse_version
 
 logger = logging.getLogger(__name__)
-
-VERSION_CLASSES = {
-    Product.ANDROID_COMPONENTS.value: MobileVersion,
-    Product.APP_SERVICES.value: GeckoVersion,
-    Product.DEVEDITION.value: DeveditionVersion,
-    Product.FENIX.value: FenixVersion,
-    Product.FENNEC.value: FennecVersion,
-    Product.FIREFOX.value: FirefoxVersion,
-    Product.FIREFOX_ANDROID.value: MobileVersion,
-    Product.FOCUS_ANDROID.value: MobileVersion,
-    Product.MOZILLA_VPN_ADDONS.value: BaseVersion,
-    Product.MOZILLA_VPN_CLIENT.value: BaseVersion,
-    Product.THUNDERBIRD.value: ThunderbirdVersion,
-}
 
 
 def good_version(release):
@@ -41,11 +23,8 @@ def good_version(release):
     Example versions that cannot be parsed:
     1.1, 1.1b1, 2.0.0.1
     """
-    product = release["product"]
-    if product not in VERSION_CLASSES:
-        raise ValueError(f"Product {product} versions are not supported")
     try:
-        VERSION_CLASSES[product].parse(release["version"])
+        parse_version(release["version"])
         return True
     except ValueError:
         return False
@@ -80,7 +59,7 @@ def _sort_releases_by_product_then_version(releases):
         releases_for_product.append(release)
 
     for product, releases in releases_by_product.items():
-        releases_by_product[product] = sorted(releases, key=lambda r: VERSION_CLASSES[product].parse(r["version"]))
+        releases_by_product[product] = sorted(releases, key=lambda r: parse_version(r["version"]))
 
     return [release for product in sorted(releases_by_product.keys()) for release in releases_by_product[product]]
 

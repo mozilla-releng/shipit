@@ -1,15 +1,4 @@
-openapi: 3.0.1
-info:
-  title: Ship-It API
-  description: 'Find  out more about Ship-it at
-
-    [https://github.com/mozilla-releng/shipit](https://github.com/mozilla-releng/shipit)
-
-    '
-  license:
-    name: MPL 2.0
-    url: https://www.mozilla.org/MPL/2.0/
-  version: 1.0.0
+---
 servers:
 - url: /
 paths:
@@ -46,7 +35,7 @@ paths:
           items:
             type: string
       responses:
-        200:
+        "200":
           description: A list of releases
           content:
             application/json:
@@ -66,7 +55,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Returns release representation
           content:
             application/json:
@@ -91,7 +80,7 @@ paths:
         schema:
           type: string
       responses:
-        200:
+        "200":
           description: Retruns phase representation
           content:
             application/json:
@@ -103,7 +92,7 @@ paths:
         products/branches will not have automated releases created
       operationId: shipit_api.public.api.get_disabled_products
       responses:
-        200:
+        "200":
           description: Disabled product/branches
           content:
             application/json:
@@ -155,20 +144,7 @@ components:
           type: string
           example: firefox-69.0b1-build1
         product:
-          type: string
-          example: firefox
-          enum:
-          - android-components
-          - app-services
-          - devedition
-          - fenix
-          - fennec
-          - firefox
-          - firefox-android
-          - focus-android
-          - mozilla-vpn-addons
-          - mozilla-vpn-client
-          - thunderbird
+          $ref: '#/components/schemas/ProductOutput'
         version:
           type: string
           example: 56.0b12

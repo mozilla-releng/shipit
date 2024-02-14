@@ -6,46 +6,13 @@
 import logging
 
 import requests
-from mozilla_version.fenix import FenixVersion  # TODO replace with MobileVersion
-from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, GeckoVersion, ThunderbirdVersion
-from mozilla_version.mobile import MobileVersion
-from mozilla_version.version import BaseVersion
+from mozilla_version.gecko import FirefoxVersion
 
 from shipit_api.common.config import SUPPORTED_FLAVORS
-from shipit_api.common.product import Product, get_key
+from shipit_api.common.product import Product
+from shipit_api.common.version import parse_version
 
 logger = logging.getLogger(__name__)
-
-_VERSION_CLASS_PER_PRODUCT = {
-    Product.ANDROID_COMPONENTS: MobileVersion,
-    Product.APP_SERVICES: GeckoVersion,
-    Product.DEVEDITION: DeveditionVersion,
-    Product.FENIX: FenixVersion,
-    Product.FENNEC: FennecVersion,
-    Product.FIREFOX: FirefoxVersion,
-    Product.FIREFOX_ANDROID: MobileVersion,
-    Product.FOCUS_ANDROID: MobileVersion,
-    Product.MOZILLA_VPN_ADDONS: BaseVersion,
-    Product.MOZILLA_VPN_CLIENT: BaseVersion,
-    Product.THUNDERBIRD: ThunderbirdVersion,
-}
-
-
-def parse_version(product, version):
-    if isinstance(product, Product):
-        product_enum = product
-    else:
-        try:
-            product_enum = Product[get_key(product)]
-        except KeyError:
-            raise ValueError(f"Product {product} versions are not supported")
-
-    try:
-        VersionClass = _VERSION_CLASS_PER_PRODUCT[product_enum]
-    except KeyError:
-        raise ValueError(f"Product {product} versions are not supported")
-
-    return VersionClass.parse(version)
 
 
 def is_rc(product, version, partial_updates):

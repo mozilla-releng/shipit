@@ -8,7 +8,8 @@ import base64
 from decouple import config
 
 from backend_common.auth import create_auth0_secrets_file
-from shipit_api.common.config import SCOPE_PREFIX, SUPPORTED_FLAVORS, XPI_LAX_SIGN_OFF
+from shipit_api.admin.auth0 import assign_ldap_groups_to_scopes
+from shipit_api.common.config import SCOPE_PREFIX, XPI_LAX_SIGN_OFF
 
 # TODO: 1) rename "development" to "local" 2) remove "staging" when fully migrated
 supported_channels = ["dev", "development", "staging", "production"]
@@ -94,90 +95,26 @@ LDAP_GROUPS = {
     "xpi_normandy-privileged_signoff": ADMIN_LDAP_GROUP,
 }
 
-AUTH0_AUTH_SCOPES = dict()
 
-# firefox scopes
-firefox_ldap_groups = sorted(set(LDAP_GROUPS["firefox-signoff"] + LDAP_GROUPS["relman"]))
-for product in [
-    "devedition",
-    "firefox",
-    "firefox-android",
-]:
-    scopes = [f"add_release/{product}", f"abandon_release/{product}"]
-    phases = []
-    for flavor in [product, f"{product}_rc", f"{product}_release", f"{product}_release_rc", f"{product}_beta"]:
-        phases += [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
-    for phase in set(phases):
-        scopes.extend([f"schedule_phase/{product}/{phase}", f"phase_signoff/{product}/{phase}"])
-    AUTH0_AUTH_SCOPES.update({s: firefox_ldap_groups for s in scopes})
-
-# Add scopes for enabling/disabling products
-AUTH0_AUTH_SCOPES.update(
-    {
-        "disable_product/firefox": LDAP_GROUPS["firefox-signoff"],
-        "disable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
-        "disable_product/devedition": LDAP_GROUPS["firefox-signoff"],
-        "enable_product/firefox": LDAP_GROUPS["firefox-signoff"],
-        "enable_product/firefox-android": LDAP_GROUPS["firefox-android-signoff"],
-        "enable_product/devedition": LDAP_GROUPS["firefox-signoff"],
-    }
-)
-
-# thunderbird scopes
-scopes = {"add_release/thunderbird": LDAP_GROUPS["thunderbird-signoff"], "abandon_release/thunderbird": LDAP_GROUPS["thunderbird-signoff"]}
-phases = []
-for flavor in ["thunderbird", "thunderbird_rc"]:
-    phases += [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
-for phase in set(phases):
-    scopes.update(
-        {f"schedule_phase/thunderbird/{phase}": LDAP_GROUPS["thunderbird-signoff"], f"phase_signoff/thunderbird/{phase}": LDAP_GROUPS["thunderbird-signoff"]}
-    )
-AUTH0_AUTH_SCOPES.update(scopes)
-
-# app-services scopes
-scopes = ["add_release/app-services", "abandon_release/app-services"]
-phases = [i["name"] for i in SUPPORTED_FLAVORS.get("app-services", [])]
-for phase in set(phases):
-    scopes.extend([f"schedule_phase/app-services/{phase}", f"phase_signoff/app-services/{phase}"])
-app_services_ldap_groups = sorted(set(LDAP_GROUPS["app-services-signoff"] + LDAP_GROUPS["relman"]))
-AUTH0_AUTH_SCOPES.update({s: app_services_ldap_groups for s in scopes})
-
-# vpn scopes
-scopes = []
-for flavor in ("mozilla-vpn-client", "mozilla-vpn-addons"):
-    scopes.extend(
-        [
-            f"add_release/{flavor}",
-            f"abandon_release/{flavor}",
-        ]
-    )
-    phases = [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
-    for phase in set(phases):
-        scopes.extend([f"schedule_phase/{flavor}/{phase}", f"phase_signoff/{flavor}/{phase}"])
-AUTH0_AUTH_SCOPES.update({s: LDAP_GROUPS["vpn-signoff"] for s in scopes})
+AUTH0_AUTH_SCOPES = assign_ldap_groups_to_scopes()
 
 # other scopes
 AUTH0_AUTH_SCOPES.update({"rebuild_product_details": LDAP_GROUPS["firefox-signoff"], "update_release_status": []})
 
 # Github scopes
 # The following scope gives permission to all github queries, inlcuding private repos
-AUTH0_AUTH_SCOPES.update(
-    {
-        "github": list(
-            set(
-                LDAP_GROUPS["app-services-signoff"]
-                + LDAP_GROUPS["firefox-android-signoff"]
-                + LDAP_GROUPS["vpn-signoff"]
-                + LDAP_GROUPS["xpi_privileged_build"]
-                + LDAP_GROUPS["xpi_privileged_signoff"]
-                + LDAP_GROUPS["xpi_system_build"]
-                + LDAP_GROUPS["xpi_system_signoff"]
-                + LDAP_GROUPS["xpi_mozillaonline-privileged_signoff"]
-                + LDAP_GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
-                + LDAP_GROUPS["xpi_normandy-privileged_signoff"]
-            )
+AUTH0_AUTH_SCOPES.setdefault("github", []).extend(
+    list(
+        set(
+            LDAP_GROUPS["xpi_privileged_build"]
+            + LDAP_GROUPS["xpi_privileged_signoff"]
+            + LDAP_GROUPS["xpi_system_build"]
+            + LDAP_GROUPS["xpi_system_signoff"]
+            + LDAP_GROUPS["xpi_mozillaonline-privileged_signoff"]
+            + LDAP_GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
+            + LDAP_GROUPS["xpi_normandy-privileged_signoff"]
         )
-    }
+    )
 )
 
 # XPI scopes

@@ -114,27 +114,46 @@ def ref_to_commit(owner, repo, ref):
 
 
 def list_github_branches(owner, repo, limit=100):
-    query = """
-    {
-      repository(name: "%(repo)s", owner: "%(owner)s") {
-        refs(first: %(limit)s, refPrefix: "refs/heads/") {
-          nodes {
-            name
-            target {
-              ... on Commit {
-                committedDate
+    page = {
+        "hasNextPage": True,
+        "endCursor": None,
+    }
+
+    branches = []
+    while page["hasNextPage"]:
+        after = ""
+        if page["endCursor"]:
+            after = f", after: \"{page['endCursor']}\""
+
+        query = """
+        {
+          repository(name: "%(repo)s", owner: "%(owner)s") {
+            refs(first: %(limit)s%(after)s, refPrefix: "refs/heads/") {
+              nodes {
+                name
+                target {
+                  ... on Commit {
+                    committedDate
+                  }
+                }
+              }
+              pageInfo {
+                endCursor
+                hasNextPage
               }
             }
           }
         }
-      }
-    }
-    """ % dict(
-        owner=owner, repo=repo, limit=limit
-    )
-    content = query_api(query)
-    nodes = content["data"]["repository"]["refs"]["nodes"]
-    return [{"committer_date": node["target"]["committedDate"], "name": node["name"]} for node in nodes]
+        """ % dict(
+            owner=owner, repo=repo, limit=limit, after=after
+        )
+        content = query_api(query)
+        page = content["data"]["repository"]["refs"]["pageInfo"]
+
+        nodes = content["data"]["repository"]["refs"]["nodes"]
+        branches.extend([{"committer_date": node["target"]["committedDate"], "name": node["name"]} for node in nodes])
+
+    return branches
 
 
 def list_github_commits(owner, repo, branch, limit=10):

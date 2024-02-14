@@ -16,6 +16,8 @@ PUBLIC_API_SECTIONS = [
     "paths./releases/{name}.get",
     "paths./releases/{name}/{phase}.get",
     "paths./disabled-products.get",
+    "components.schemas.ProductInput",
+    "components.schemas.ProductOutput",
     "components.schemas.Phase",
     "components.schemas.Release",
     "components.schemas.XPIRelease",

@@ -5,16 +5,23 @@
 
 import importlib
 import logging
+import os
+from functools import cache
 from pathlib import PosixPath
 
 import flask
+import yaml
+from deepmerge import merge_or_raise
 
 EXTENSIONS = ["dockerflow", "log", "security", "cors", "api", "auth", "pulse", "db"]
+
+_PRODUCT_YML_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "products.yml"))
+_MANDATORY_KEYS_IN_PRODUCT_YML = ("version-class",)
 
 logger = logging.getLogger(__name__)
 
 
-def create_app(project_name, app_name, extensions=[], config=None, redirect_root_to_api=True, **kwargs):
+def create_app(project_name, app_name, root_path, extensions=[], config=None, redirect_root_to_api=True, **kwargs):
     """
     Create a new Flask backend application
     app_name is the Python application name, used as Flask import_name
@@ -22,7 +29,7 @@ def create_app(project_name, app_name, extensions=[], config=None, redirect_root
     """
     logger.debug("Initializing %s", app_name)
 
-    app = flask.Flask(import_name=app_name, **kwargs)
+    app = flask.Flask(import_name=app_name, root_path=root_path, **kwargs)
     app.name = project_name
     app.__extensions = extensions
 
@@ -57,5 +64,61 @@ def create_app(project_name, app_name, extensions=[], config=None, redirect_root
     if redirect_root_to_api:
         app.add_url_rule("/", "root", lambda: flask.redirect(app.api.swagger_url))
 
+    app.api.register(build_api_specification(root_path))
     logger.debug("Initialized %s", app.name)
     return app
+
+
+def build_api_specification(root_path):
+    openapi_spec = _get_specifications_from_openapi_yaml_files(root_path)
+    schemas = openapi_spec["components"]["schemas"]
+    schemas["ProductInput"]["enum"] = get_product_names()
+    schemas["ProductOutput"]["enum"] = get_product_names(include_legacy=True)
+    return openapi_spec
+
+
+def _get_specifications_from_openapi_yaml_files(root_path):
+    common_api = os.path.join(os.path.dirname(__file__), "api.yml")
+    specific_api = os.path.join(root_path, "api.yml")
+    return merge_or_raise.merge(
+        _read_specification_file(common_api),
+        _read_specification_file(specific_api),
+    )
+
+
+def get_product_names(include_legacy=False):
+    products_config = get_products_config()
+    return [product_name for product_name, product_config in products_config.items() if not product_config["legacy"] or include_legacy]
+
+
+@cache
+def get_products_config():
+    with open(_PRODUCT_YML_PATH) as f:
+        products_config = yaml.safe_load(f)
+
+    _set_products_config_default_values(products_config)
+    _check_mandatory_keys_are_provided(products_config)
+    return products_config
+
+
+def _set_products_config_default_values(products_config):
+    for product_config in products_config.values():
+        product_config.setdefault("authorized-ldap-groups", [])
+        product_config.setdefault("can-be-disabled", False)
+        product_config.setdefault("legacy", False)
+        product_config.setdefault("phases", [])
+        product_config.setdefault("repo-url", "")
+
+
+def _check_mandatory_keys_are_provided(products_config):
+    for product_name, product_config in products_config.items():
+        for key in _MANDATORY_KEYS_IN_PRODUCT_YML:
+            try:
+                product_config[key]
+            except KeyError:
+                raise KeyError(f"In {_PRODUCT_YML_PATH}: {product_name} doesn't define key '{key}'")
+
+
+def _read_specification_file(path):
+    with open(path) as f:
+        return yaml.safe_load(f)
