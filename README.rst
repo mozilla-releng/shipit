@@ -17,11 +17,7 @@ First time setup
 Subsequent Runs
 ~~~~~~~~~~~~~~~
 
-Run:
-
-```bash
-source startup.sh
-```
+Run: ``source startup.sh``
 
 You should be all set to kick off some staging releases. The script will detect if your Taskcluster client has expired and automatically create a new one.
 
@@ -35,8 +31,8 @@ When running locally add ``XPI_LAX_SIGN_OFF=true`` to the docker-compose.yml fil
 To rebuild product-details
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-product-details rely on a ``pulse queue <https://github.com/mozilla-releng/shipit/blob/df379442c32baa7931767b058840bbb293135010/api/src/shipit_api/admin/api.py#L229>``_, which makes local test tricky.
-This pulse queue is then consumed by ``worker.py <https://github.com/mozilla-releng/shipit/blob/df379442c32baa7931767b058840bbb293135010/api/src/shipit_api/admin/worker.py#L42>``_. Although, there's a
+product-details rely on a `pulse queue <https://github.com/mozilla-releng/shipit/blob/df379442c32baa7931767b058840bbb293135010/api/src/shipit_api/admin/api.py#L229>`__, which makes local test tricky.
+This pulse queue is then consumed by `worker.py <https://github.com/mozilla-releng/shipit/blob/df379442c32baa7931767b058840bbb293135010/api/src/shipit_api/admin/worker.py#L42>`__. Although, there's a
 way to by-pass the need for a pulse queue.
 
 1. ``docker-compose run api bash``
