@@ -200,32 +200,26 @@ def test_scopes_are_all_defined():
             ],
             "project:releng:services/shipit_api/disable_product/devedition": [
                 "shipit_firefox",
-                "shipit_relman",
                 "releng",
             ],
             "project:releng:services/shipit_api/disable_product/firefox": [
                 "shipit_firefox",
-                "shipit_relman",
                 "releng",
             ],
             "project:releng:services/shipit_api/disable_product/firefox-android": [
-                "shipit_firefox",
-                "shipit_relman",
+                "shipit_mobile",
                 "releng",
             ],
             "project:releng:services/shipit_api/enable_product/devedition": [
                 "shipit_firefox",
-                "shipit_relman",
                 "releng",
             ],
             "project:releng:services/shipit_api/enable_product/firefox": [
                 "shipit_firefox",
-                "shipit_relman",
                 "releng",
             ],
             "project:releng:services/shipit_api/enable_product/firefox-android": [
-                "shipit_firefox",
-                "shipit_relman",
+                "shipit_mobile",
                 "releng",
             ],
             "project:releng:services/shipit_api/github": [

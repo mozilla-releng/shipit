@@ -103,8 +103,6 @@ def get_products_config():
 
 def _set_products_config_default_values(products_config):
     for product_config in products_config.values():
-        product_config.setdefault("authorized-ldap-groups", [])
-        product_config.setdefault("can-be-disabled", False)
         product_config.setdefault("legacy", False)
         product_config.setdefault("phases", [])
 
