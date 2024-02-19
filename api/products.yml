@@ -41,7 +41,7 @@ firefox:
   - push_firefox
   - ship_firefox
   firefox-ci-trust-domain: gecko
-  version-class: "mozilla_version.gecko.GeckoVersion"
+  version-class: "mozilla_version.gecko.FirefoxVersion"
 firefox-android:
   can-be-disabled: true
   authorized-ldap-groups:
