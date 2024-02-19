@@ -86,11 +86,6 @@ def _get_specifications_from_openapi_yaml_files(root_path):
     )
 
 
-def _read_specification_file(path):
-    with open(path) as f:
-        return yaml.safe_load(f)
-
-
 def get_product_names(include_legacy=False):
     products_config = get_products_config()
     return [product_name for product_name, product_config in products_config.items() if not product_config["legacy"] or include_legacy]
@@ -122,3 +117,8 @@ def _check_mandatory_keys_are_provided(products_config):
                 product_config[key]
             except KeyError:
                 raise KeyError(f"In {_PRODUCT_YML_PATH}: {product_name} doesn't define key '{key}'")
+
+
+def _read_specification_file(path):
+    with open(path) as f:
+        return yaml.safe_load(f)

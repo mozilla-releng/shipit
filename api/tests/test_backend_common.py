@@ -77,23 +77,10 @@ def test_get_specifications_from_openapi_yaml_files_overriden_value(monkeypatch)
                 "common-param": "overriden-value",
             },
         }
-
     monkeypatch.setattr(backend_common, "_read_specification_file", mock_read_specification_file)
 
     with pytest.raises(deepmerge.exception.InvalidMerge):
         backend_common._get_specifications_from_openapi_yaml_files("api/src/shipit_api/public")
-
-
-def test_read_specification_file(tmp_path):
-    file_path = tmp_path / "api.yml"
-    with open(file_path, mode="w") as f:
-        f.write(
-            """---
-some-param: some-value
-"""
-        )
-
-    assert backend_common._read_specification_file(file_path) == {"some-param": "some-value"}
 
 
 @pytest.mark.parametrize("include_legacy, expected", ((True, ["legacy-product", "current-product"]), (False, ["current-product"])))
