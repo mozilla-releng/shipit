@@ -6,11 +6,8 @@
 import pathlib
 import tempfile
 from datetime import datetime, timedelta
-from functools import cache
 
 from decouple import config
-
-from backend_common import get_products_config
 
 PROJECT_NAME = "shipit/api"
 APP_NAME = "shipit_api"
@@ -444,39 +441,50 @@ MOBILE_DETAILS_TEMPLATE = r"""
 }
 """
 
-
-@cache
-def _get_supported_flavors():
-    products_config = get_products_config()
-
-    supported_flavors_per_product = {}
-    for product_name, product_config in products_config.items():
-        phase_definitions = _get_phases_definitions(product_config.get("phases", []))
-        supported_flavors_per_product[product_name] = phase_definitions
-
-    # We RCs are not a real product per se. That's why we special-case it here.
-    supported_flavors_per_product["firefox_rc"] = [
+# Phases per product, ordered
+SUPPORTED_FLAVORS = {
+    "firefox": [
+        {"name": "promote_firefox", "in_previous_graph_ids": True},
+        {"name": "push_firefox", "in_previous_graph_ids": True},
+        {"name": "ship_firefox", "in_previous_graph_ids": True},
+    ],
+    "firefox_rc": [
         {"name": "promote_firefox_rc", "in_previous_graph_ids": True},
         {"name": "ship_firefox_rc", "in_previous_graph_ids": False},
         {"name": "push_firefox", "in_previous_graph_ids": True},
         {"name": "ship_firefox", "in_previous_graph_ids": True},
-    ]
-
-    return supported_flavors_per_product
-
-
-def _get_phases_definitions(phases):
-    return [
-        {
-            "name": phase,
-            "in_previous_graph_ids": True,
-        }
-        for phase in phases
-    ]
-
-
-SUPPORTED_FLAVORS = _get_supported_flavors()
-
+    ],
+    "devedition": [
+        {"name": "promote_devedition", "in_previous_graph_ids": True},
+        {"name": "push_devedition", "in_previous_graph_ids": True},
+        {"name": "ship_devedition", "in_previous_graph_ids": True},
+    ],
+    "thunderbird": [
+        {"name": "promote_thunderbird", "in_previous_graph_ids": True},
+        {"name": "push_thunderbird", "in_previous_graph_ids": True},
+        {"name": "ship_thunderbird", "in_previous_graph_ids": True},
+    ],
+    "firefox-android": [
+        {"name": "promote", "in_previous_graph_ids": True},
+        {"name": "push", "in_previous_graph_ids": True},
+        {"name": "ship", "in_previous_graph_ids": True},
+        {"name": "promote_android", "in_previous_graph_ids": True},
+        {"name": "push_android", "in_previous_graph_ids": True},
+        {"name": "ship_android", "in_previous_graph_ids": True},
+    ],
+    "app-services": [
+        {"name": "promote", "in_previous_graph_ids": True},
+        {"name": "ship", "in_previous_graph_ids": True},
+    ],
+    "mozilla-vpn-client": [
+        {"name": "promote-client", "in_previous_graph_ids": True},
+        {"name": "ship-client", "in_previous_graph_ids": True},
+    ],
+    "mozilla-vpn-addons": [
+        {"name": "promote-addons", "in_previous_graph_ids": True},
+        {"name": "ship-addons", "in_previous_graph_ids": True},
+    ],
+}
 
 SUPPORTED_MOBILE_REPO_NAMES = (
     "firefox-android",

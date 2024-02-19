@@ -3,16 +3,8 @@ android-components:
   legacy: true
   version-class: "mozilla_version.mobile.MobileVersion"
 app-services:
-  # Phases per product, ordered
-  phases:
-  - promote
-  - ship
   version-class: "mozilla_version.gecko.GeckoVersion"
 devedition:
-  phases:
-  - promote_devedition
-  - push_devedition
-  - ship_devedition
   version-class: "mozilla_version.gecko.DeveditionVersion"
 fenix:
   legacy: true
@@ -21,36 +13,15 @@ fennec:
   legacy: true
   version-class: "mozilla_version.gecko.FennecVersion"
 firefox:
-  phases:
-  - promote_firefox
-  - push_firefox
-  - ship_firefox
   version-class: "mozilla_version.gecko.GeckoVersion"
 firefox-android:
-  phases:
-  - promote
-  - push
-  - ship
-  - promote_android
-  - push_android
-  - ship_android
   version-class: "mozilla_version.mobile.MobileVersion"
 focus-android:
   legacy: true
   version-class: "mozilla_version.mobile.MobileVersion"
 mozilla-vpn-addons:
-  phases:
-  - promote-addons
-  - ship-addons
   version-class: "mozilla_version.version.BaseVersion"
 mozilla-vpn-client:
-  phases:
-  - promote-client
-  - ship-client
   version-class: "mozilla_version.version.BaseVersion"
 thunderbird:
-  phases:
-  - promote_thunderbird
-  - push_thunderbird
-  - ship_thunderbird
   version-class: "mozilla_version.gecko.ThunderbirdVersion"
