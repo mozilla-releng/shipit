@@ -7,9 +7,9 @@ import base64
 
 from decouple import config
 
+from backend_common import get_products_config
 from backend_common.auth import create_auth0_secrets_file
-from shipit_api.admin.auth0 import assign_ldap_groups_to_scopes
-from shipit_api.common.config import SCOPE_PREFIX, XPI_LAX_SIGN_OFF
+from shipit_api.common.config import SCOPE_PREFIX, SUPPORTED_FLAVORS, XPI_LAX_SIGN_OFF
 
 # TODO: 1) rename "development" to "local" 2) remove "staging" when fully migrated
 supported_channels = ["dev", "development", "staging", "production"]
@@ -95,8 +95,48 @@ LDAP_GROUPS = {
     "xpi_normandy-privileged_signoff": ADMIN_LDAP_GROUP,
 }
 
+AUTH0_AUTH_SCOPES = dict()
 
-AUTH0_AUTH_SCOPES = assign_ldap_groups_to_scopes()
+
+def _assign_ldap_groups_to_scopes():
+    ldap_groups_per_scope = {}
+    for product_name, product_config in get_products_config().items():
+        if product_config["legacy"]:
+            continue
+
+        scopes = _get_auth0_scopes(product_name, product_config)
+        new_ldap_groups_per_scope = {s: product_config["authorized-ldap-groups"] for s in scopes}
+        ldap_groups_per_scope = merge_or_raise.merge(ldap_groups_per_scope, new_ldap_groups_per_scope)
+
+    return ldap_groups_per_scope
+
+
+def _get_auth0_scopes(product_name, product_config):
+    scopes = [
+        f"add_release/{product_name}",
+        f"abandon_release/{product_name}",
+    ]
+    phases = [f["name"] for f in SUPPORTED_FLAVORS.get(product_name, [])]
+    if product_name == "firefox":
+        phases.extend([f["name"] for f in SUPPORTED_FLAVORS["firefox_rc"]])
+    for phase in phases:
+        scopes.extend([f"schedule_phase/{product_name}/{phase}", f"phase_signoff/{product_name}/{phase}"])
+
+    if product_config["can-be-disabled"]:
+        scopes.extend(
+            [
+                f"disable_product/{product_name}",
+                f"enable_product/{product_name}",
+            ]
+        )
+
+    if "github.com" in product_config["repo-url"]:
+        scopes.extend(["github"])
+
+    return scopes
+
+
+AUTH0_AUTH_SCOPES = _assign_ldap_groups_to_scopes()
 
 # other scopes
 AUTH0_AUTH_SCOPES.update({"rebuild_product_details": LDAP_GROUPS["firefox-signoff"], "update_release_status": []})
