@@ -705,39 +705,6 @@ paths:
           content: {}
 components:
   schemas:
-    ProductInput:
-      # ProductInput handles the products we currently support on shipit
-      type: string
-      example: firefox
-      enum:
-      - app-services
-      - devedition
-      - firefox
-      - firefox-android
-      - mozilla-vpn-addons
-      - mozilla-vpn-client
-      - thunderbird
-    # TODO: Move ProductOutput to a separate file once we migrate to connexion 3.x:
-    # https://github.com/spec-first/connexion/pull/1648
-    ProductOutput:
-      # ProductOutput lists all the products shipit has ever supported. They are needed
-      # for API endpoints that return historical data.
-      type: string
-      example: firefox
-      # /!\ Enums are not extensible yet https://github.com/OAI/OpenAPI-Specification/issues/1552
-      # We require new products to be added here and in ProductInput.
-      enum:
-      - android-components
-      - app-services
-      - devedition
-      - fenix
-      - fennec
-      - firefox
-      - firefox-android
-      - focus-android
-      - mozilla-vpn-addons
-      - mozilla-vpn-client
-      - thunderbird
     ReleaseInput:
       required:
       - branch
@@ -748,7 +715,16 @@ components:
       type: object
       properties:
         product:
-          $ref: '#/components/schemas/ProductInput'
+          type: string
+          example: firefox
+          enum:
+          - app-services
+          - devedition
+          - firefox
+          - firefox-android
+          - mozilla-vpn-addons
+          - mozilla-vpn-client
+          - thunderbird
         version:
           type: string
           example: 56.0b12
@@ -847,7 +823,20 @@ components:
           type: string
           example: firefox-69.0b1-build1
         product:
-          $ref: '#/components/schemas/ProductOutput'
+          type: string
+          example: firefox
+          enum:
+          - android-components
+          - app-services
+          - devedition
+          - fenix
+          - fennec
+          - firefox
+          - firefox-android
+          - focus-android
+          - mozilla-vpn-addons
+          - mozilla-vpn-client
+          - thunderbird
         version:
           type: string
           example: 56.0b12
