@@ -6,7 +6,6 @@
 import importlib
 import logging
 import os
-from functools import cache
 from pathlib import PosixPath
 
 import flask
@@ -67,31 +66,12 @@ def create_app(project_name, app_name, root_path, extensions=[], config=None, re
 
 
 def build_api_specification(root_path):
-    openapi_spec = _get_specifications_from_openapi_yaml_files(root_path)
-    schemas = openapi_spec["components"]["schemas"]
-    schemas["ProductInput"]["enum"] = get_product_names()
-    schemas["ProductOutput"]["enum"] = get_product_names(include_legacy=True)
-    return openapi_spec
-
-
-def _get_specifications_from_openapi_yaml_files(root_path):
     common_api = os.path.join(os.path.dirname(__file__), "api.yml")
     specific_api = os.path.join(root_path, "api.yml")
     return merge_or_raise.merge(
         _read_specification_file(common_api),
         _read_specification_file(specific_api),
     )
-
-
-def get_product_names(include_legacy=False):
-    products_config = get_products_config()
-    return [product_name for product_name, product_config in products_config.items() if not product_config.get("legacy", False) or include_legacy]
-
-
-@cache
-def get_products_config():
-    with open(os.path.join(os.path.dirname(__file__), "..", "..", "products.yml")) as f:
-        return yaml.safe_load(f)
 
 
 def _read_specification_file(path):
