@@ -124,11 +124,22 @@ AUTH0_AUTH_SCOPES.update(
     }
 )
 
+# thunderbird scopes
+scopes = {"add_release/thunderbird": LDAP_GROUPS["thunderbird-signoff"], "abandon_release/thunderbird": LDAP_GROUPS["thunderbird-signoff"]}
+phases = []
+for flavor in ["thunderbird", "thunderbird_rc"]:
+    phases += [i["name"] for i in SUPPORTED_FLAVORS.get(flavor, [])]
+for phase in set(phases):
+    scopes.update(
+        {f"schedule_phase/thunderbird/{phase}": LDAP_GROUPS["thunderbird-signoff"], f"phase_signoff/thunderbird/{phase}": LDAP_GROUPS["thunderbird-signoff"]}
+    )
+AUTH0_AUTH_SCOPES.update(scopes)
+
 
 def _assign_ldap_groups_to_scopes():
     ldap_groups_per_scope = {}
     for product_name, product_config in get_products_config().items():
-        if product_name not in ("app-services", "mozilla-vpn-client", "mozilla-vpn-addons", "thunderbird"):
+        if product_name not in ("app-services", "mozilla-vpn-client", "mozilla-vpn-addons"):
             continue
 
         scopes = _get_auth0_scopes(product_name)
