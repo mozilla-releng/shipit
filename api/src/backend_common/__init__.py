@@ -15,9 +15,6 @@ from deepmerge import merge_or_raise
 
 EXTENSIONS = ["dockerflow", "log", "security", "cors", "api", "auth", "pulse", "db"]
 
-_PRODUCT_YML_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "products.yml"))
-_MANDATORY_KEYS_IN_PRODUCT_YML = ("version-class",)
-
 logger = logging.getLogger(__name__)
 
 
@@ -93,11 +90,10 @@ def get_product_names(include_legacy=False):
 
 @cache
 def get_products_config():
-    with open(_PRODUCT_YML_PATH) as f:
+    with open(os.path.join(os.path.dirname(__file__), "..", "..", "products.yml")) as f:
         products_config = yaml.safe_load(f)
 
     _set_products_config_default_values(products_config)
-    _check_mandatory_keys_are_provided(products_config)
     return products_config
 
 
@@ -105,15 +101,6 @@ def _set_products_config_default_values(products_config):
     for product_config in products_config.values():
         product_config.setdefault("legacy", False)
         product_config.setdefault("phases", [])
-
-
-def _check_mandatory_keys_are_provided(products_config):
-    for product_name, product_config in products_config.items():
-        for key in _MANDATORY_KEYS_IN_PRODUCT_YML:
-            try:
-                product_config[key]
-            except KeyError:
-                raise KeyError(f"In {_PRODUCT_YML_PATH}: {product_name} doesn't define key '{key}'")
 
 
 def _read_specification_file(path):
