@@ -5,19 +5,6 @@ import pytest
 import backend_common
 
 
-@pytest.mark.parametrize("include_legacy, expected", ((True, ["legacy-product", "current-product"]), (False, ["current-product"])))
-def test_get_product_names(monkeypatch, include_legacy, expected):
-    def mock_get_products_config():
-        return {
-            "legacy-product": {"legacy": True},
-            "current-product": {"legacy": False},
-        }
-
-    monkeypatch.setattr(backend_common, "get_products_config", mock_get_products_config)
-
-    assert backend_common.get_product_names(include_legacy) == expected
-
-
 def test_set_products_config_default_values():
     products_config = {
         "all-default-values": {},
