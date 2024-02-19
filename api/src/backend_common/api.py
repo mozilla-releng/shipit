@@ -4,6 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import logging
+import pathlib
 
 from connexion import problem
 from connexion.apis.flask_api import FlaskApi
@@ -84,7 +85,7 @@ class Api:
         logger.debug("Adding API: %s", specification)
 
         self.__api = api = FlaskApi(
-            specification=specification,
+            specification=pathlib.Path(specification),
             base_path=base_path,
             arguments=arguments,
             validate_responses=validate_responses,

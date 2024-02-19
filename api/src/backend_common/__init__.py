@@ -9,8 +9,6 @@ import os
 from pathlib import PosixPath
 
 import flask
-import yaml
-from deepmerge import merge_or_raise
 
 EXTENSIONS = ["dockerflow", "log", "security", "cors", "api", "auth", "pulse", "db"]
 
@@ -60,20 +58,6 @@ def create_app(project_name, app_name, root_path, extensions=[], config=None, re
     if redirect_root_to_api:
         app.add_url_rule("/", "root", lambda: flask.redirect(app.api.swagger_url))
 
-    app.api.register(build_api_specification(root_path))
+    app.api.register(os.path.join(root_path, "api.yml"))
     logger.debug("Initialized %s", app.name)
     return app
-
-
-def build_api_specification(root_path):
-    common_api = os.path.join(os.path.dirname(__file__), "api.yml")
-    specific_api = os.path.join(root_path, "api.yml")
-    return merge_or_raise.merge(
-        _read_specification_file(common_api),
-        _read_specification_file(specific_api),
-    )
-
-
-def _read_specification_file(path):
-    with open(path) as f:
-        return yaml.safe_load(f)
