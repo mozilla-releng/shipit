@@ -1,27 +1,16 @@
 ---
 android-components:
   legacy: true
-  version-class: "mozilla_version.mobile.MobileVersion"
-app-services:
-  version-class: "mozilla_version.gecko.GeckoVersion"
-devedition:
-  version-class: "mozilla_version.gecko.DeveditionVersion"
+app-services: {}
+devedition: {}
 fenix:
   legacy: true
-  version-class: "mozilla_version.fenix.FenixVersion" # TODO replace with MobileVersion
 fennec:
   legacy: true
-  version-class: "mozilla_version.gecko.FennecVersion"
-firefox:
-  version-class: "mozilla_version.gecko.GeckoVersion"
-firefox-android:
-  version-class: "mozilla_version.mobile.MobileVersion"
+firefox: {}
+firefox-android: {}
 focus-android:
   legacy: true
-  version-class: "mozilla_version.mobile.MobileVersion"
-mozilla-vpn-addons:
-  version-class: "mozilla_version.version.BaseVersion"
-mozilla-vpn-client:
-  version-class: "mozilla_version.version.BaseVersion"
-thunderbird:
-  version-class: "mozilla_version.gecko.ThunderbirdVersion"
+mozilla-vpn-addons: {}
+mozilla-vpn-client: {}
+thunderbird: {}
