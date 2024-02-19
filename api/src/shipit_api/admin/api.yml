@@ -23,10 +23,10 @@ paths:
                   type: string
         required: false
       responses:
-        "200":
+        200:
           description: Product details rebuild triggered.
           content: {}
-        "405":
+        405:
           description: Invalid input
           content: {}
   /releases:
@@ -62,7 +62,7 @@ paths:
           items:
             type: string
       responses:
-        "200":
+        200:
           description: A list of releases
           content:
             'application/json':
@@ -81,13 +81,13 @@ paths:
               $ref: '#/components/schemas/ReleaseInput'
         required: true
       responses:
-        "201":
+        201:
           description: Release added
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Release'
-        "405":
+        405:
           description: Invalid input
           content: {}
   /releases/{name}:
@@ -102,7 +102,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Returns release representation
           content:
             'application/json':
@@ -121,7 +121,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Returns release representation
           content:
             'application/json':
@@ -145,7 +145,7 @@ paths:
               $ref: '#/components/schemas/ReleaseStatus'
         required: true
       responses:
-        "200":
+        200:
           description: Release updated
           content:
             'application/json':
@@ -153,7 +153,7 @@ paths:
                 anyOf:
                   - $ref: '#/components/schemas/Release'
                   - $ref: '#/components/schemas/XPIRelease'
-        "405":
+        405:
           description: Invalid input
           content: {}
   /releases/{name}/{phase}:
@@ -173,7 +173,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Retruns phase representation
           content:
             'application/json':
@@ -195,13 +195,13 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Phase scheduled
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Phase'
-        "409":
+        409:
           description: Already submitted
           content: {}
   /signoff/{name}/{phase}:
@@ -221,7 +221,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Retruns phase signoff representation
           content:
             'application/json':
@@ -250,13 +250,13 @@ paths:
               type: string
         required: true
       responses:
-        "200":
+        200:
           description: Retruns phase signoff representation
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Signoffs'
-        "409":
+        409:
           description: Already submitted
           content: {}
   /disabled-products:
@@ -264,7 +264,7 @@ paths:
       summary: Get the list of product/branches which are currently disabled. Disabled products/branches will not have automated releases created
       operationId: shipit_api.public.api.get_disabled_products
       responses:
-        "200":
+        200:
           description: Disabled product/branches
           content:
             application/json:
@@ -280,9 +280,9 @@ paths:
             schema:
               $ref: '#/components/schemas/DisableProduct'
       responses:
-        "200":
+        200:
           description: OK
-        "405":
+        405:
           description: Invalid input
     delete:
       summary: Enable a product+branch
@@ -307,9 +307,9 @@ paths:
           - releases/mozilla-beta
           - try
       responses:
-        "200":
+        200:
           description: OK
-        "405":
+        405:
           description: Invalid input
   /github/branches/{owner}/{repo}:
     get:
@@ -329,7 +329,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: List of git branches
           content:
             application/json:
@@ -361,7 +361,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: List of git commits
           content:
             application/json:
@@ -393,7 +393,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Contents of package.json
           content:
             application/json:
@@ -429,7 +429,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Contents of package.json
           content:
             application/json:
@@ -459,7 +459,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Contents of version.txt
           content:
             text/plain:
@@ -497,7 +497,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: List of XPIs in a manifest
           content:
             application/json:
@@ -529,7 +529,7 @@ paths:
           items:
             type: string
       responses:
-        "200":
+        200:
           description: A list of releases
           content:
             'application/json':
@@ -548,7 +548,7 @@ paths:
               $ref: '#/components/schemas/XPIReleaseInput'
         required: true
       responses:
-        "201":
+        201:
           description: Release added
           content:
             'application/json':
@@ -566,7 +566,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Returns release representation
           content:
             'application/json':
@@ -583,7 +583,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Returns release representation
           content:
             'application/json':
@@ -607,7 +607,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Retruns phase representation
           content:
             'application/json':
@@ -629,13 +629,13 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Phase scheduled
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Phase'
-        "409":
+        409:
           description: Already submitted
           content: {}
   /xpi/signoff/{name}/{phase}:
@@ -655,7 +655,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Retruns phase signoff representation
           content:
             'application/json':
@@ -684,13 +684,13 @@ paths:
               type: string
         required: true
       responses:
-        "200":
+        200:
           description: Retruns phase signoff representation
           content:
             'application/json':
               schema:
                 $ref: '#/components/schemas/Signoffs'
-        "409":
+        409:
           description: Already submitted
           content: {}
 components:

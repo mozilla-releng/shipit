@@ -35,7 +35,7 @@ paths:
           items:
             type: string
       responses:
-        "200":
+        200:
           description: A list of releases
           content:
             application/json:
@@ -55,7 +55,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Returns release representation
           content:
             application/json:
@@ -80,7 +80,7 @@ paths:
         schema:
           type: string
       responses:
-        "200":
+        200:
           description: Retruns phase representation
           content:
             application/json:
@@ -92,7 +92,7 @@ paths:
         products/branches will not have automated releases created
       operationId: shipit_api.public.api.get_disabled_products
       responses:
-        "200":
+        200:
           description: Disabled product/branches
           content:
             application/json:
