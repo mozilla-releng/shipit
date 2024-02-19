@@ -43,16 +43,12 @@ focus-android:
   legacy: true
   version-class: "mozilla_version.mobile.MobileVersion"
 mozilla-vpn-addons:
-  authorized-ldap-groups:
-  - releng
   phases:
   - promote-addons
   - ship-addons
   firefox-ci-trust-domain: mozillavpn
   version-class: "mozilla_version.version.BaseVersion"
 mozilla-vpn-client:
-  authorized-ldap-groups:
-  - releng
   phases:
   - promote-client
   - ship-client
