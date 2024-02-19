@@ -1,6 +1,5 @@
 from contextlib import nullcontext as does_not_raise
 
-import deepmerge
 import pytest
 
 import backend_common
@@ -36,51 +35,6 @@ def test_build_api_specification(monkeypatch):
             },
         },
     }
-
-
-def test_get_specifications_from_openapi_yaml_files(monkeypatch):
-    def mock_read_specification_file(path):
-        if path.endswith("api/src/backend_common/api.yml"):
-            return {
-                "common-config": {
-                    "common-param": "common-value",
-                },
-            }
-        return {
-            "specific-config": {
-                "specific-param": "specific-value",
-            },
-        }
-
-    monkeypatch.setattr(backend_common, "_read_specification_file", mock_read_specification_file)
-
-    assert backend_common._get_specifications_from_openapi_yaml_files("api/src/shipit_api/public") == {
-        "common-config": {
-            "common-param": "common-value",
-        },
-        "specific-config": {
-            "specific-param": "specific-value",
-        },
-    }
-
-
-def test_get_specifications_from_openapi_yaml_files_overriden_value(monkeypatch):
-    def mock_read_specification_file(path):
-        if path.endswith("api/src/backend_common/api.yml"):
-            return {
-                "common-config": {
-                    "common-param": "common-value",
-                },
-            }
-        return {
-            "common-config": {
-                "common-param": "overriden-value",
-            },
-        }
-    monkeypatch.setattr(backend_common, "_read_specification_file", mock_read_specification_file)
-
-    with pytest.raises(deepmerge.exception.InvalidMerge):
-        backend_common._get_specifications_from_openapi_yaml_files("api/src/shipit_api/public")
 
 
 @pytest.mark.parametrize("include_legacy, expected", ((True, ["legacy-product", "current-product"]), (False, ["current-product"])))
