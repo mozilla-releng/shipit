@@ -135,11 +135,19 @@ for phase in set(phases):
     )
 AUTH0_AUTH_SCOPES.update(scopes)
 
+# app-services scopes
+scopes = ["add_release/app-services", "abandon_release/app-services"]
+phases = [i["name"] for i in SUPPORTED_FLAVORS.get("app-services", [])]
+for phase in set(phases):
+    scopes.extend([f"schedule_phase/app-services/{phase}", f"phase_signoff/app-services/{phase}"])
+app_services_ldap_groups = sorted(set(LDAP_GROUPS["app-services-signoff"] + LDAP_GROUPS["relman"]))
+AUTH0_AUTH_SCOPES.update({s: app_services_ldap_groups for s in scopes})
+
 
 def _assign_ldap_groups_to_scopes():
     ldap_groups_per_scope = {}
     for product_name, product_config in get_products_config().items():
-        if product_name not in ("app-services", "mozilla-vpn-client", "mozilla-vpn-addons"):
+        if product_name not in ("mozilla-vpn-client", "mozilla-vpn-addons"):
             continue
 
         scopes = _get_auth0_scopes(product_name)
