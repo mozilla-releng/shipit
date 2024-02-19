@@ -59,7 +59,7 @@ def _sort_releases_by_product_then_version(releases):
         releases_for_product.append(release)
 
     for product, releases in releases_by_product.items():
-        releases_by_product[product] = sorted(releases, key=lambda r: parse_version(r["version"]))
+        releases_by_product[product] = sorted(releases, key=lambda r: parse_version(r["product"], r["version"]))
 
     return [release for product in sorted(releases_by_product.keys()) for release in releases_by_product[product]]
 

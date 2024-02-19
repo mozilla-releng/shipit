@@ -31,3 +31,28 @@ def test_public_api_subset():
 )
 def test_good_version(release, expected):
     assert api.good_version(release) == expected
+
+
+@pytest.mark.parametrize(
+    "releases, expected",
+    (
+        (
+            [
+                {"product": "firefox", "version": "123.0"},
+                {"product": "firefox", "version": "123.0b1"},
+                {"product": "firefox", "version": "122.0.1"},
+            ],
+            [{"product": "firefox", "version": "122.0.1"}, {"product": "firefox", "version": "123.0b1"}, {"product": "firefox", "version": "123.0"}],
+        ),
+        (
+            [
+                {"product": "firefox", "version": "123.0"},
+                {"product": "thunderbird", "version": "123.0"},
+                {"product": "firefox-android", "version": "123.0"},
+            ],
+            [{"product": "firefox", "version": "123.0"}, {"product": "firefox-android", "version": "123.0"}, {"product": "thunderbird", "version": "123.0"}],
+        ),
+    ),
+)
+def test_sort_releases_by_product_then_version(releases, expected):
+    assert api._sort_releases_by_product_then_version(releases) == expected
