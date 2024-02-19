@@ -130,9 +130,6 @@ def _get_auth0_scopes(product_name, product_config):
             ]
         )
 
-    if "github.com" in product_config["repo-url"]:
-        scopes.extend(["github"])
-
     return scopes
 
 
@@ -143,18 +140,23 @@ AUTH0_AUTH_SCOPES.update({"rebuild_product_details": LDAP_GROUPS["firefox-signof
 
 # Github scopes
 # The following scope gives permission to all github queries, inlcuding private repos
-AUTH0_AUTH_SCOPES.setdefault("github", []).extend(
-    list(
-        set(
-            LDAP_GROUPS["xpi_privileged_build"]
-            + LDAP_GROUPS["xpi_privileged_signoff"]
-            + LDAP_GROUPS["xpi_system_build"]
-            + LDAP_GROUPS["xpi_system_signoff"]
-            + LDAP_GROUPS["xpi_mozillaonline-privileged_signoff"]
-            + LDAP_GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
-            + LDAP_GROUPS["xpi_normandy-privileged_signoff"]
+AUTH0_AUTH_SCOPES.update(
+    {
+        "github": list(
+            set(
+                LDAP_GROUPS["app-services-signoff"]
+                + LDAP_GROUPS["firefox-android-signoff"]
+                + LDAP_GROUPS["vpn-signoff"]
+                + LDAP_GROUPS["xpi_privileged_build"]
+                + LDAP_GROUPS["xpi_privileged_signoff"]
+                + LDAP_GROUPS["xpi_system_build"]
+                + LDAP_GROUPS["xpi_system_signoff"]
+                + LDAP_GROUPS["xpi_mozillaonline-privileged_signoff"]
+                + LDAP_GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
+                + LDAP_GROUPS["xpi_normandy-privileged_signoff"]
+            )
         )
-    )
+    }
 )
 
 # XPI scopes

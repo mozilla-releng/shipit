@@ -12,7 +12,6 @@ app-services:
   - promote
   - ship
   firefox-ci-trust-domain: app-services
-  repo-url: https://github.com/mozilla/application-services
   version-class: "mozilla_version.gecko.GeckoVersion"
 devedition:
   can-be-disabled: true
@@ -55,7 +54,6 @@ firefox-android:
   - push_android
   - ship_android
   firefox-ci-trust-domain: mobile
-  repo-url: https://github.com/mozilla-mobile/firefox-android
   version-class: "mozilla_version.mobile.MobileVersion"
 focus-android:
   legacy: true
@@ -67,7 +65,6 @@ mozilla-vpn-addons:
   - promote-addons
   - ship-addons
   firefox-ci-trust-domain: mozillavpn
-  repo-url: https://github.com/mozilla-mobile/mozilla-vpn-client
   version-class: "mozilla_version.version.BaseVersion"
 mozilla-vpn-client:
   authorized-ldap-groups:
@@ -76,7 +73,6 @@ mozilla-vpn-client:
   - promote-client
   - ship-client
   firefox-ci-trust-domain: mozillavpn
-  repo-url: https://github.com/mozilla-mobile/mozilla-vpn-client
   version-class: "mozilla_version.version.BaseVersion"
 thunderbird:
   authorized-ldap-groups:
