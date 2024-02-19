@@ -24,7 +24,7 @@ def good_version(release):
     1.1, 1.1b1, 2.0.0.1
     """
     try:
-        parse_version(release["version"])
+        parse_version(release["product"], release["version"])
         return True
     except ValueError:
         return False
