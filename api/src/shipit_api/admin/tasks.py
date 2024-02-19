@@ -12,11 +12,10 @@ import jsone
 import requests
 import yaml
 
-from backend_common import get_products_config
 from backend_common.taskcluster import get_service
-from shipit_api.admin.github import extract_github_repo_owner_and_name
+from shipit_api.admin.github import extract_github_repo_owner_and_name, is_github_url
 from shipit_api.admin.release import is_rc
-from shipit_api.common.config import SUPPORTED_FLAVORS
+from shipit_api.common.config import SUPPORTED_APP_SERVICES_REPO_NAMES, SUPPORTED_FLAVORS, SUPPORTED_MOBILE_REPO_NAMES, SUPPORTED_MOZILLAVPN_REPO_NAMES
 
 logger = logging.getLogger(__name__)
 
@@ -31,21 +30,28 @@ class ArtifactNotFound(Exception):
     pass
 
 
-def get_trust_domain(project, product):
-    # XPI doesn't have any products defined in products.yml
-    if "xpi" in project:
+def get_trust_domain(repo_url, project, product):
+    if is_github_url(repo_url):
+        repo_owner, repo_name = extract_github_repo_owner_and_name(repo_url)
+        if repo_owner == "mozilla-mobile" or repo_name in SUPPORTED_MOBILE_REPO_NAMES:
+            return "mobile"
+        elif repo_name in SUPPORTED_APP_SERVICES_REPO_NAMES:
+            return "app-services"
+        elif repo_name in SUPPORTED_MOZILLAVPN_REPO_NAMES:
+            return "mozillavpn"
+        else:
+            raise UnsupportedFlavor(f'Unable to know what to do with repo_owner "{repo_owner}" and repo_name "{repo_name}"')
+    elif "comm" in project:
+        return "comm"
+    elif "xpi" in project:
         return "xpi"
-    products_config = get_products_config()
-    product_config = products_config[product]
-    try:
-        return product_config["firefox-ci-trust-domain"]
-    except KeyError:
-        raise KeyError(f"Product '{product}' does not define 'firefox-ci-trust-domain'")
+    else:
+        return "gecko"
 
 
 @lru_cache(maxsize=2048)
 def find_decision_task_id(repo_url, project, revision, product):
-    trust_domain = get_trust_domain(project, product)
+    trust_domain = get_trust_domain(repo_url, project, product)
     if trust_domain in ("app-services", "mobile", "mozillavpn"):
         _, project = extract_github_repo_owner_and_name(repo_url)
 
