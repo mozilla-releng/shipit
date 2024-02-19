@@ -5,7 +5,6 @@
 
 import importlib
 import logging
-import os
 from pathlib import PosixPath
 
 import flask
@@ -15,7 +14,7 @@ EXTENSIONS = ["dockerflow", "log", "security", "cors", "api", "auth", "pulse", "
 logger = logging.getLogger(__name__)
 
 
-def create_app(project_name, app_name, root_path, extensions=[], config=None, redirect_root_to_api=True, **kwargs):
+def create_app(project_name, app_name, extensions=[], config=None, redirect_root_to_api=True, **kwargs):
     """
     Create a new Flask backend application
     app_name is the Python application name, used as Flask import_name
@@ -23,7 +22,7 @@ def create_app(project_name, app_name, root_path, extensions=[], config=None, re
     """
     logger.debug("Initializing %s", app_name)
 
-    app = flask.Flask(import_name=app_name, root_path=root_path, **kwargs)
+    app = flask.Flask(import_name=app_name, **kwargs)
     app.name = project_name
     app.__extensions = extensions
 
@@ -58,6 +57,5 @@ def create_app(project_name, app_name, root_path, extensions=[], config=None, re
     if redirect_root_to_api:
         app.add_url_rule("/", "root", lambda: flask.redirect(app.api.swagger_url))
 
-    app.api.register(os.path.join(root_path, "api.yml"))
     logger.debug("Initialized %s", app.name)
     return app

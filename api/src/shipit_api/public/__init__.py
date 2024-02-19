@@ -25,4 +25,5 @@ def create_app(config=None):
         extensions=["log", "security", "cors", "api", "db", "dockerflow"],
         root_path=os.path.dirname(__file__),
     )
+    app.api.register(os.path.join(os.path.dirname(__file__), "api.yml"))
     return app
