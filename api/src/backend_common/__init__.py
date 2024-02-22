@@ -16,6 +16,7 @@ from deepmerge import merge_or_raise
 EXTENSIONS = ["dockerflow", "log", "security", "cors", "api", "auth", "pulse", "db"]
 
 _PRODUCT_YML_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "products.yml"))
+_TRUST_DOMAIN_YML_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "trust-domains.yml"))
 _MANDATORY_KEYS_IN_PRODUCT_YML = ("version-class",)
 
 logger = logging.getLogger(__name__)
@@ -122,3 +123,9 @@ def _check_mandatory_keys_are_provided(products_config):
                 product_config[key]
             except KeyError:
                 raise KeyError(f"In {_PRODUCT_YML_PATH}: {product_name} doesn't define key '{key}'")
+
+
+@cache
+def get_trust_domains():
+    with open(_TRUST_DOMAIN_YML_PATH) as f:
+        return yaml.safe_load(f)
