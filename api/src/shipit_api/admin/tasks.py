@@ -36,6 +36,9 @@ def get_trust_domain(repo_url, product):
     if "xpi" == product:
         return "xpi"
     trust_domains = get_trust_domains()
+    if not repo_url:
+        # shipitscript doesn't pass a repo url, fall back to gecko in that case
+        return "gecko"
     for trust_domain in trust_domains:
         if repo_url in trust_domains[trust_domain]:
             return trust_domain
