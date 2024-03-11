@@ -12,7 +12,7 @@ import jsone
 import requests
 import yaml
 
-from backend_common import get_products_config
+from backend_common import get_trust_domains
 from backend_common.taskcluster import get_service
 from shipit_api.admin.github import extract_github_repo_owner_and_name
 from shipit_api.admin.release import is_rc
@@ -31,21 +31,23 @@ class ArtifactNotFound(Exception):
     pass
 
 
-def get_trust_domain(project, product):
-    # XPI doesn't have any products defined in products.yml
-    if "xpi" in project:
+def get_trust_domain(repo_url, product):
+    # XPI doesn't set repo_url
+    if "xpi" == product:
         return "xpi"
-    products_config = get_products_config()
-    product_config = products_config[product]
-    try:
-        return product_config["firefox-ci-trust-domain"]
-    except KeyError:
-        raise KeyError(f"Product '{product}' does not define 'firefox-ci-trust-domain'")
+    trust_domains = get_trust_domains()
+    if not repo_url:
+        # shipitscript doesn't pass a repo url, fall back to gecko in that case
+        return "gecko"
+    for trust_domain in trust_domains:
+        if repo_url in trust_domains[trust_domain]:
+            return trust_domain
+    raise KeyError(f"Can't find trust domain for repository {repo_url}")
 
 
 @lru_cache(maxsize=2048)
 def find_decision_task_id(repo_url, project, revision, product):
-    trust_domain = get_trust_domain(project, product)
+    trust_domain = get_trust_domain(repo_url, product)
     if trust_domain in ("app-services", "mobile", "mozillavpn"):
         _, project = extract_github_repo_owner_and_name(repo_url)
 

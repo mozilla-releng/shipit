@@ -5,8 +5,12 @@
 
 from pathlib import Path
 
+import pytest
+
 from backend_common import build_api_specification
 from cli_common.openapi_subset import PUBLIC_API_SECTIONS, extract
+from shipit_api.common.product import Product
+from shipit_api.public import api
 
 
 def test_public_api_subset():
@@ -15,3 +19,40 @@ def test_public_api_subset():
     generated_public_api = extract(full_api, PUBLIC_API_SECTIONS)
     # If this fails, check the diff; each file needs to match exactly, including the ordering of enum values
     assert generated_public_api == public_api
+
+
+@pytest.mark.parametrize(
+    "release, expected",
+    (
+        ({"product": "firefox", "version": "123.0"}, True),
+        ({"product": Product.FIREFOX_ANDROID, "version": "123.0b4"}, True),
+        ({"product": "firefox", "version": "123.4"}, False),
+    ),
+)
+def test_good_version(release, expected):
+    assert api.good_version(release) == expected
+
+
+@pytest.mark.parametrize(
+    "releases, expected",
+    (
+        (
+            [
+                {"product": "firefox", "version": "123.0"},
+                {"product": "firefox", "version": "123.0b1"},
+                {"product": "firefox", "version": "122.0.1"},
+            ],
+            [{"product": "firefox", "version": "122.0.1"}, {"product": "firefox", "version": "123.0b1"}, {"product": "firefox", "version": "123.0"}],
+        ),
+        (
+            [
+                {"product": "firefox", "version": "123.0"},
+                {"product": "thunderbird", "version": "123.0"},
+                {"product": "firefox-android", "version": "123.0"},
+            ],
+            [{"product": "firefox", "version": "123.0"}, {"product": "firefox-android", "version": "123.0"}, {"product": "thunderbird", "version": "123.0"}],
+        ),
+    ),
+)
+def test_sort_releases_by_product_then_version(releases, expected):
+    assert api._sort_releases_by_product_then_version(releases) == expected

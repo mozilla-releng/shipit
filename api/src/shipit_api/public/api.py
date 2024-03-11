@@ -24,7 +24,7 @@ def good_version(release):
     1.1, 1.1b1, 2.0.0.1
     """
     try:
-        parse_version(release["version"])
+        parse_version(release["product"], release["version"])
         return True
     except ValueError:
         return False
@@ -59,7 +59,7 @@ def _sort_releases_by_product_then_version(releases):
         releases_for_product.append(release)
 
     for product, releases in releases_by_product.items():
-        releases_by_product[product] = sorted(releases, key=lambda r: parse_version(r["version"]))
+        releases_by_product[product] = sorted(releases, key=lambda r: parse_version(r["product"], r["version"]))
 
     return [release for product in sorted(releases_by_product.keys()) for release in releases_by_product[product]]
 

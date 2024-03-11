@@ -16,6 +16,7 @@ from deepmerge import merge_or_raise
 EXTENSIONS = ["dockerflow", "log", "security", "cors", "api", "auth", "pulse", "db"]
 
 _PRODUCT_YML_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "products.yml"))
+_TRUST_DOMAIN_YML_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "trust-domains.yml"))
 _MANDATORY_KEYS_IN_PRODUCT_YML = ("version-class",)
 
 logger = logging.getLogger(__name__)
@@ -86,6 +87,11 @@ def _get_specifications_from_openapi_yaml_files(root_path):
     )
 
 
+def _read_specification_file(path):
+    with open(path) as f:
+        return yaml.safe_load(f)
+
+
 def get_product_names(include_legacy=False):
     products_config = get_products_config()
     return [product_name for product_name, product_config in products_config.items() if not product_config["legacy"] or include_legacy]
@@ -119,6 +125,7 @@ def _check_mandatory_keys_are_provided(products_config):
                 raise KeyError(f"In {_PRODUCT_YML_PATH}: {product_name} doesn't define key '{key}'")
 
 
-def _read_specification_file(path):
-    with open(path) as f:
+@cache
+def get_trust_domains():
+    with open(_TRUST_DOMAIN_YML_PATH) as f:
         return yaml.safe_load(f)
