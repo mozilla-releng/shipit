@@ -63,6 +63,7 @@ def test_parse_version(product, version, expectation, result):
         ("firefox", "57.0.1", {"57.0": [], "56.0.1": [], "56.0": []}, False),
         ("thunderbird", "57.0", {"56.0": [], "55.0": []}, False),
         ("thunderbird", "57.0", {"56.0": [], "56.0b4": [], "55.0": []}, True),
+        ("firefox", "115.8.0esr", None, False),
         ("firefox", "70.0b4", {"69.0b15": [], "69.0b16": [], "70.0b3": []}, False),
         ("devedition", "70.0b4", {"70.0b3": [], "70.0b1": [], "70.0b2": []}, False),
     ),
@@ -88,6 +89,7 @@ def test_is_rc(product, version, partial_updates, result):
         ("focus-android", "95.0.0", "95.0.1"),
         ("firefox-android", "108.0.0", "108.0.1"),
         ("firefox-android", "109.0", "109.0.1"),
+        ("thunderbird", "115.8.0esr", "115.8.1esr"),
     ),
 )
 def test_bump_version(product, version, result):
@@ -105,6 +107,9 @@ def test_bump_version(product, version, result):
         ("firefox", "60.5.0esr", True),
         ("fennec", "65.0b8", False),
         ("fennec", "65.0", False),
+        ("thunderbird", "116.0b2", False),
+        ("thunderbird", "116.0", False),
+        ("thunderbird", "115.2.0esr", False),
     ),
 )
 def test_is_partner_enabled(product, version, result):
@@ -121,6 +126,9 @@ def test_is_partner_enabled(product, version, result):
         ("firefox", "60.5.0esr", False),
         ("fennec", "65.0b8", False),
         ("fennec", "65.0", False),
+        ("thunderbird", "116.0b2", False),
+        ("thunderbird", "116.0", False),
+        ("thunderbird", "115.2.0esr", False),
     ),
 )
 def test_is_eme_free_enabled(product, version, result):
