@@ -25,6 +25,26 @@ export default [
     ],
   },
   {
+    title: 'Thunderbird',
+    items: [
+      {
+        title: 'New',
+        to: '/new?group=thunderbird',
+        Icon: <AddBoxIcon />,
+      },
+      {
+        title: 'Pending',
+        to: '/?group=thunderbird',
+        Icon: <AutorenewIcon />,
+      },
+      {
+        title: 'Recent',
+        to: '/recent?group=thunderbird',
+        Icon: <CheckCircleIcon />,
+      },
+    ],
+  },
+  {
     title: 'Security',
     items: [
       {
