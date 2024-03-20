@@ -45,23 +45,6 @@ module.exports = {
         enablePartials: true,
       },
       {
-        product: 'thunderbird',
-        prettyName: 'Thunderbird',
-        appName: 'mail',
-        branches: [
-          {
-            prettyName: 'Try',
-            project: 'try-comm-central',
-            branch: 'try-comm-central',
-            repo: 'https://hg.mozilla.org/try-comm-central',
-            enableReleaseEta: false,
-            disableable: false,
-          },
-        ],
-        // TODO
-        enablePartials: false,
-      },
-      {
         product: 'firefox-android',
         prettyName: 'Firefox Android (Android-Components, Fenix, Focus)',
         appName: 'firefox-android',
@@ -105,6 +88,24 @@ module.exports = {
               'https://github.com/mozilla-releng/staging-application-services',
             enableReleaseEta: false,
             enableTreeherder: false,
+          },
+        ],
+        enablePartials: false,
+      },
+    ],
+    thunderbird: [
+      {
+        product: 'thunderbird',
+        prettyName: 'Thunderbird',
+        appName: 'mail',
+        branches: [
+          {
+            prettyName: 'Try',
+            project: 'try-comm-central',
+            branch: 'try-comm-central',
+            repo: 'https://hg.mozilla.org/try-comm-central',
+            enableReleaseEta: false,
+            disableable: false,
           },
         ],
         enablePartials: false,

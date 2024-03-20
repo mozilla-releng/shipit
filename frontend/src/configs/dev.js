@@ -46,23 +46,6 @@ module.exports = {
         canTogglePartials: true,
       },
       {
-        product: 'thunderbird',
-        prettyName: 'Thunderbird',
-        appName: 'mail',
-        branches: [
-          {
-            prettyName: 'Try',
-            project: 'try-comm-central',
-            branch: 'try-comm-central',
-            repo: 'https://hg.mozilla.org/try-comm-central',
-            enableReleaseEta: false,
-            disableable: false,
-          },
-        ],
-        enablePartials: true,
-        canTogglePartials: true,
-      },
-      {
         product: 'firefox-android',
         prettyName: 'Firefox Android (Android-Components, Fenix, Focus)',
         appName: 'firefox-android',
@@ -109,6 +92,25 @@ module.exports = {
           },
         ],
         enablePartials: false,
+      },
+    ],
+    thunderbird: [
+      {
+        product: 'thunderbird',
+        prettyName: 'Thunderbird',
+        appName: 'mail',
+        branches: [
+          {
+            prettyName: 'Try',
+            project: 'try-comm-central',
+            branch: 'try-comm-central',
+            repo: 'https://hg.mozilla.org/try-comm-central',
+            enableReleaseEta: false,
+            disableable: false,
+          },
+        ],
+        enablePartials: true,
+        canTogglePartials: true,
       },
     ],
     security: [
