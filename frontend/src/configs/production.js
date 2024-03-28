@@ -83,6 +83,24 @@ module.exports = {
           {
             branch: '',
           },
+          {
+            prettyName: 'Beta',
+            project: 'mozilla-beta',
+            branch: 'releases/mozilla-beta',
+            repo: 'https://hg.mozilla.org/releases/mozilla-beta',
+            versionFile: 'mobile/android/version.txt',
+            enableReleaseEta: false,
+            disableable: false,
+          },
+          {
+            prettyName: 'Release',
+            project: 'mozilla-release',
+            branch: 'releases/mozilla-release',
+            repo: 'https://hg.mozilla.org/releases/mozilla-release',
+            versionFile: 'mobile/android/version.txt',
+            enableReleaseEta: true,
+            disableable: false,
+          },
         ],
         repositories: [
           {
