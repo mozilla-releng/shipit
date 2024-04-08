@@ -409,14 +409,20 @@ export default function NewRelease() {
   };
 
   const renderReleaseInfo = () => {
+    // shipit is looking for a version_display.txt file here:
+    // https://hg.mozilla.org/try/raw-file/bd34c4d287cae93983357f5ef26f41d29f590878/merge-automation/config/version_display.txt
     return (
       <React.Fragment>
-        <Typography component="h3" variant="h6">
-          Version: {version}
-        </Typography>
-        <Typography component="h3" variant="h6">
-          Build #: {buildNumber}
-        </Typography>
+        {version && (
+          <Typography component="h3" variant="h6">
+            Version: {version}
+          </Typography>
+        )}
+        {buildNumber && (
+          <Typography component="h3" variant="h6">
+            Build #: {buildNumber}
+          </Typography>
+        )}
       </React.Fragment>
     );
   };

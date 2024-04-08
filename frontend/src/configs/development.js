@@ -92,6 +92,23 @@ module.exports = {
         ],
         enablePartials: false,
       },
+      {
+        product: 'merge-automation',
+        prettyName: 'Merge Automation',
+        appName: 'merge-automation',
+        branches: [
+          {
+            prettyName: 'Beta',
+            project: 'mozilla-beta',
+            branch: 'releases/mozilla-beta',
+            repo: 'https://hg.mozilla.org/releases/mozilla-beta',
+            enableReleaseEta: false,
+            disableable: true,
+            versionFile: 'browser/config/version_display.txt',
+          },
+        ],
+        enablePartials: false,
+      },
     ],
     thunderbird: [
       {
