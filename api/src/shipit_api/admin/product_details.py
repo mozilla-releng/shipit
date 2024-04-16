@@ -261,7 +261,7 @@ def get_releases_from_db(db_session: sqlalchemy.orm.Session, breakpoint_version:
 
 def get_product_categories(product: Product, version: str) -> typing.List[ProductCategory]:
     # typically, these are dot releases that are considered major
-    SPECIAL_FIREFOX_MAJORS = ["14.0.1"]
+    SPECIAL_FIREFOX_MAJORS = ["14.0.1", "125.0.1"]
     SPECIAL_THUNDERBIRD_MAJORS = ["14.0.1", "38.0.1"]
 
     def patternize_versions(versions):
