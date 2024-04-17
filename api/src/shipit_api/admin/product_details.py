@@ -454,6 +454,23 @@ def get_release_history(
         if release_version is None or release_version.major_number < breakpoint_version:
             continue
 
+        # short term hack: 125.0.1 is a major release. we should replace this with
+        # something that uses MozillaVersion to determine categories
+        if (
+            product_category is ProductCategory.MAJOR
+            and release_version.major_number == 125
+            and release_version.patch_number == 1
+            and release_version.beta_number is None
+            and not release_version.is_esr
+        ):
+            # history_version is a copy of stuff further down - we need it now, before
+            # this release gets skipped
+            history_version = release.version
+            if history_version.endswith("esr"):
+                history_version = history_version[: -len("esr")]
+            history[history_version] = with_default(release.completed, functools.partial(to_format, format="YYYY-MM-DD"), default="")
+            continue
+
         # skip all releases which don't fit into product category
         if product_category is ProductCategory.MAJOR and (
             release_version.patch_number is not None or release_version.beta_number is not None or release_version.is_esr
