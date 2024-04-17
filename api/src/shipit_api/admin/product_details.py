@@ -455,16 +455,24 @@ def get_release_history(
             continue
 
         # skip all releases which don't fit into product category
-        if product_category is ProductCategory.MAJOR and (
-            release_version.patch_number is not None or release_version.beta_number is not None or release_version.is_esr
-        ):
-            continue
+        # short term hack: 125.0.1 is a major release. we should replace this with
+        # https://github.com/mozilla-releng/mozilla-version/pull/109
+        if not (release_version.major_number != "125" and release_version.patch_number != "1"):
+            if product_category is ProductCategory.MAJOR and (
+                release_version.patch_number is not None or release_version.beta_number is not None or release_version.is_esr
+            ):
+                continue
 
         elif product_category is ProductCategory.DEVELOPMENT and (release_version.beta_number is None or release_version.is_esr):
             continue
 
-        elif product_category is ProductCategory.STABILITY and (release_version.beta_number is not None or release_version.patch_number is None):
-            continue
+        elif product_category is ProductCategory.STABILITY:
+            # short term hack: 125.0.1 is a major release. we should replace this with
+            # https://github.com/mozilla-releng/mozilla-version/pull/109
+            if not (release_version.major_number == "125" and release_version.patch_number == "1"):
+                continue
+            if release_version.beta_number is not None or release_version.patch_number is None:
+                continue
 
         history_version = release.version
         if history_version.endswith("esr"):
