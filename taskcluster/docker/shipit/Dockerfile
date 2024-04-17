@@ -12,9 +12,9 @@ RUN groupadd --gid 10001 app && \
     useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
 
 
-# %include api
-COPY topsrcdir/api/requirements/poetry.txt /tmp/poetry.txt
-RUN pip install -r /tmp/poetry.txt
+# %include taskcluster/scripts/poetry-setup
+ADD topsrcdir/taskcluster/scripts/poetry-setup /tmp/poetry-setup
+RUN /tmp/poetry-setup
 
 ENV POETRY_CACHE_DIR=/builds/worker/poetry_cache
 

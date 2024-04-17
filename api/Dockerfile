@@ -7,8 +7,9 @@ RUN groupadd --gid 10001 app && \
 
 WORKDIR /app
 
-COPY requirements/poetry.txt /tmp/poetry.txt
-RUN pip install -r /tmp/poetry.txt
+# %include taskcluster/scripts/poetry-setup
+ADD topsrcdir/taskcluster/scripts/poetry-setup /tmp/poetry-setup
+RUN /tmp/poetry-setup
 
 COPY . /app
 
