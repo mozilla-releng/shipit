@@ -1,5 +1,7 @@
 import enum
 
+from mozilla_version.gecko import GeckoVersion
+
 from backend_common import get_product_names
 
 
@@ -9,6 +11,18 @@ class ProductCategory(enum.Enum):
     DEVELOPMENT = "dev"
     STABILITY = "stability"
     ESR = "esr"
+
+
+def get_product_category(version: GeckoVersion):
+    if version.is_major:
+        return ProductCategory.MAJOR
+    elif version.is_development:
+        return ProductCategory.DEVELOPMENT
+    elif version.is_stability:
+        return ProductCategory.STABILITY
+    elif version.is_esr:
+        return ProductCategory.ESR
+    raise ValueError(f"Unknown category for version: {version}")
 
 
 # Keys of Product will have underscores where the product name may have hyphens.

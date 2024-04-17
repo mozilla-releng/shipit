@@ -13,7 +13,6 @@ import json
 import logging
 import os
 import pathlib
-import re
 import shutil
 import typing
 import urllib.parse
@@ -32,7 +31,7 @@ import cli_common.utils
 import shipit_api.common.config
 import shipit_api.common.models
 from shipit_api.admin.release import parse_version
-from shipit_api.common.product import Product, ProductCategory
+from shipit_api.common.product import Product, ProductCategory, get_product_category
 
 logger = logging.getLogger(__name__)
 
@@ -259,44 +258,6 @@ def get_releases_from_db(db_session: sqlalchemy.orm.Session, breakpoint_version:
     return query.all()
 
 
-def get_product_categories(product: Product, version: str) -> typing.List[ProductCategory]:
-    # typically, these are dot releases that are considered major
-    SPECIAL_FIREFOX_MAJORS = ["14.0.1", "125.0.1"]
-    SPECIAL_THUNDERBIRD_MAJORS = ["14.0.1", "38.0.1"]
-
-    def patternize_versions(versions):
-        if not versions:
-            return ""
-        return "|" + "|".join([v.replace(r".", r"\.") for v in versions])
-
-    categories = []
-    categories_mapping: typing.List[typing.Tuple[ProductCategory, str]] = []
-
-    if product is Product.THUNDERBIRD:
-        special_majors = patternize_versions(SPECIAL_THUNDERBIRD_MAJORS)
-    else:
-        special_majors = patternize_versions(SPECIAL_FIREFOX_MAJORS)
-
-    categories_mapping.append((ProductCategory.MAJOR, r"([0-9]+\.[0-9]+%s)$" % special_majors))
-    categories_mapping.append((ProductCategory.MAJOR, r"([0-9]+\.[0-9]+(esr|)%s)$" % special_majors))
-    categories_mapping.append((ProductCategory.STABILITY, r"([0-9]+\.[0-9]+\.[0-9]+$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$)"))
-    categories_mapping.append((ProductCategory.STABILITY, r"([0-9]+\.[0-9]+\.[0-9]+(esr|)$|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+(esr|)$)"))
-    # We had 38.0.5b2
-    categories_mapping.append((ProductCategory.DEVELOPMENT, r"([0-9]+\.[0-9]|[0-9]+\.[0-9]+\.[0-9])(b|rc|build|plugin)[0-9]+$"))
-
-    # Ugly hack to manage the next ESR (when we have two overlapping esr)
-    if shipit_api.common.config.ESR_NEXT:
-        categories_mapping.append((ProductCategory.ESR, shipit_api.common.config.ESR_NEXT + r"(\.[0-9]+){1,2}esr$"))
-    else:
-        categories_mapping.append((ProductCategory.ESR, shipit_api.common.config.CURRENT_ESR + r"(\.[0-9]+){1,2}esr$"))
-
-    for product_category, version_pattern in categories_mapping:
-        if re.match(version_pattern, version):
-            categories.append(product_category)
-
-    return categories
-
-
 def get_releases(
     breakpoint_version: int, products: Products, releases: typing.List[shipit_api.common.models.Release], old_product_details: ProductDetails
 ) -> Releases:
@@ -358,20 +319,22 @@ def get_releases(
         for release in releases:
             if release.product != product.value:
                 continue
-            categories = get_product_categories(Product(release.product), release.version)
+
             release_version = release.version
-            for category in categories:
-                if release_version.endswith("esr"):
-                    release_version = release_version[: -len("esr")]
-                details[f"{release.product}-{release.version}"] = dict(
-                    category=category.value,
-                    product=release.product,
-                    build_number=release.build_number,
-                    description=None,
-                    is_security_driven=False,  # TODO: we don't have this field anymore
-                    version=release_version,
-                    date=with_default(release.completed, functools.partial(to_format, format="YYYY-MM-DD"), default=""),
-                )
+            version = parse_version(product, release_version)
+            category = get_product_category(version)
+
+            if release_version.endswith("esr"):
+                release_version = release_version[: -len("esr")]
+            details[f"{release.product}-{release.version}"] = dict(
+                category=category.value,
+                product=release.product,
+                build_number=release.build_number,
+                description=None,
+                is_security_driven=False,  # TODO: we don't have this field anymore
+                version=release_version,
+                date=with_default(release.completed, functools.partial(to_format, format="YYYY-MM-DD"), default=""),
+            )
 
     return dict(releases=details)
 
@@ -438,6 +401,8 @@ def get_release_history(
         version = parse_version(product, version_string)
         if version.major_number >= breakpoint_version:
             continue
+        if get_product_category(version) != product_category:
+            continue
         history[version_string] = old_history[version_string]
 
     #
@@ -454,33 +419,7 @@ def get_release_history(
         if release_version is None or release_version.major_number < breakpoint_version:
             continue
 
-        # short term hack: 125.0.1 is a major release. we should replace this with
-        # something that uses MozillaVersion to determine categories
-        if (
-            product_category is ProductCategory.MAJOR
-            and release_version.major_number == 125
-            and release_version.patch_number == 1
-            and release_version.beta_number is None
-            and not release_version.is_esr
-        ):
-            # history_version is a copy of stuff further down - we need it now, before
-            # this release gets skipped
-            history_version = release.version
-            if history_version.endswith("esr"):
-                history_version = history_version[: -len("esr")]
-            history[history_version] = with_default(release.completed, functools.partial(to_format, format="YYYY-MM-DD"), default="")
-            continue
-
-        # skip all releases which don't fit into product category
-        if product_category is ProductCategory.MAJOR and (
-            release_version.patch_number is not None or release_version.beta_number is not None or release_version.is_esr
-        ):
-            continue
-
-        elif product_category is ProductCategory.DEVELOPMENT and (release_version.beta_number is None or release_version.is_esr):
-            continue
-
-        elif product_category is ProductCategory.STABILITY and (release_version.beta_number is not None or release_version.patch_number is None):
+        if get_product_category(release_version) != product_category:
             continue
 
         history_version = release.version
