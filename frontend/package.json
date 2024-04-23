@@ -32,7 +32,7 @@
     "@material-ui/icons": "4.11.3",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/pickers": "3.3.10",
-    "@material-ui/styles": "4.11.5",
+    "@mui/styles": "5.0.0",
     "@mozilla-frontend-infra/components": "3.0.7",
     "@mozilla-protocol/core": "^17.0.1",
     "axios": "0.27.2",
