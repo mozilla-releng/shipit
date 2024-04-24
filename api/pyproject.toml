@@ -59,7 +59,7 @@ flask_migrate = "*"
 flask_talisman = "*"
 # flask_oidc imports JSONWebSignatureSerializer which was removed in 2.1+
 # https://github.com/pallets/itsdangerous/pull/273
-itsdangerous = "<2.1"
+itsdangerous = "<2.3"
 mozilla-version = "*"
 python-decouple = "*"
 sentry-sdk = {version = "*", extras = ["flask"]}
