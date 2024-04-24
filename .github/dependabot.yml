@@ -36,3 +36,7 @@ updates:
         - "patch"
   commit-message:
     prefix: "chore(frontend)"
+  labels:
+    - "dependencies"
+    - "javascript"
+    - "testing needed"
