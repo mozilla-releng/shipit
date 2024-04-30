@@ -1,6 +1,7 @@
 ---
 app-services:
   - https://github.com/mozilla/application-services
+  - https://github.com/mozilla-releng/staging-application-services
 comm:
   - https://hg.mozilla.org/releases/comm-beta
   - https://hg.mozilla.org/releases/comm-release

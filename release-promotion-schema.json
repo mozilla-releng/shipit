@@ -1,0 +1,122 @@
+{
+  "properties": {
+    "build_number": {
+      "default": 1,
+      "description": "The release build number. Starts at 1 per release version, and increments on rebuild.",
+      "minimum": 1,
+      "title": "The release build number",
+      "type": "integer"
+    },
+    "do_not_optimize": {
+      "description": "Optional: a list of labels to avoid optimizing out of the graph (to force a rerun of, say, funsize docker-image tasks).",
+      "items": { "type": "string" },
+      "type": "array"
+    },
+    "next_version": {
+      "default": "",
+      "description": "Next version. Required in the following flavors: ['ship_devedition', 'ship_firefox']",
+      "type": "string"
+    },
+    "partial_updates": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "buildNumber": { "type": "number" },
+          "locales": { "items": { "type": "string" }, "type": "array" }
+        },
+        "required": ["buildNumber", "locales"],
+        "type": "object"
+      },
+      "default": {},
+      "description": "Partial updates. Required in the following flavors: ['promote_devedition', 'promote_firefox', 'promote_firefox_rc', 'push_devedition', 'push_firefox', 'ship_devedition', 'ship_firefox', 'ship_firefox_rc']",
+      "type": "object"
+    },
+    "previous_graph_ids": {
+      "description": "Optional: an array of taskIds of decision or action tasks from the previous graph(s) to use to populate our `previous_graph_kinds`.",
+      "items": { "type": "string" },
+      "type": "array"
+    },
+    "rebuild_kinds": {
+      "default": ["docker-image", "fetch", "packages", "toolchain"],
+      "description": "Optional: an array of kinds to ignore from the previous graph(s).",
+      "items": { "type": "string" },
+      "type": "array"
+    },
+    "release_enable_emefree": {
+      "default": false,
+      "description": "Toggle for creating EME-free repacks",
+      "type": "boolean"
+    },
+    "release_enable_partner_attribution": {
+      "default": false,
+      "description": "Toggle for creating partner attribution",
+      "type": "boolean"
+    },
+    "release_enable_partner_repack": {
+      "default": false,
+      "description": "Toggle for creating partner repacks",
+      "type": "boolean"
+    },
+    "release_eta": { "default": "", "type": "string" },
+    "release_partner_build_number": {
+      "default": 1,
+      "description": "The partner build number. This translates to, e.g. `v1` in the path. We generally only have to bump this on off-cycle partner rebuilds.",
+      "minimum": 1,
+      "type": "integer"
+    },
+    "release_partner_config": {
+      "additionalProperties": true,
+      "description": "Partner configuration to use for partner repacks.",
+      "properties": {},
+      "type": "object"
+    },
+    "release_partners": {
+      "description": "A list of partners to repack, or if null or empty then use the current full set",
+      "items": { "type": "string" },
+      "type": "array"
+    },
+    "release_promotion_flavor": {
+      "default": "FILL ME OUT",
+      "description": "The flavor of release promotion to perform.",
+      "enum": [
+        "promote_android",
+        "promote_devedition",
+        "promote_firefox",
+        "promote_firefox_partner_attribution",
+        "promote_firefox_partner_repack",
+        "promote_firefox_rc",
+        "push_android",
+        "push_devedition",
+        "push_firefox",
+        "ship_android",
+        "ship_devedition",
+        "ship_firefox",
+        "ship_firefox_rc"
+      ],
+      "type": "string"
+    },
+    "required_signoffs": {
+      "description": "The flavor of release promotion to perform.",
+      "items": { "enum": ["mar-signing"] },
+      "type": "array"
+    },
+    "revision": {
+      "description": "Optional: the revision to promote. If specified, and `previous_graph_kinds is not specified, find the push graph to promote based on the revision.",
+      "title": "Optional: revision to promote",
+      "type": "string"
+    },
+    "signoff_urls": {
+      "additionalProperties": false,
+      "default": {},
+      "properties": { "mar-signing": { "type": "string" } },
+      "type": "object"
+    },
+    "version": {
+      "default": "",
+      "description": "Optional: override the version for release promotion. Occasionally we'll land a taskgraph fix in a later commit, but want to act on a build from a previous commit. If a version bump has landed in the meantime, relying on the in-tree version will break things.",
+      "type": "string"
+    }
+  },
+  "required": ["release_promotion_flavor", "build_number"],
+  "type": "object"
+}

@@ -1,0 +1,53 @@
+{
+  "properties": {
+    "behavior": {
+      "default": "central-to-beta",
+      "description": "The type of release promotion to perform.",
+      "enum": [
+        "beta-to-release",
+        "bump-central",
+        "bump-esr115",
+        "central-to-beta",
+        "early-to-late-beta",
+        "release-to-esr"
+      ],
+      "type": "string"
+    },
+    "fetch-version-from": {
+      "description": "Path to file used when querying current version.",
+      "type": "string"
+    },
+    "force-dry-run": {
+      "default": true,
+      "description": "Override other options and do not push changes",
+      "type": "boolean"
+    },
+    "from-branch": {
+      "description": "The fx head of the source, such as central",
+      "type": "string"
+    },
+    "from-repo": {
+      "description": "The URI of the source repository",
+      "type": "string"
+    },
+    "push": {
+      "default": false,
+      "description": "Push changes using to_repo and to_branch",
+      "type": "boolean"
+    },
+    "ssh-user-alias": {
+      "description": "The alias of an ssh account to use when pushing changes.",
+      "type": "string"
+    },
+    "to-branch": {
+      "description": "The fx head of the target, such as beta",
+      "type": "string"
+    },
+    "to-repo": {
+      "description": "The push URI of the target repository",
+      "type": "string"
+    }
+  },
+  "required": ["behavior"],
+  "type": "object"
+}

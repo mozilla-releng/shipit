@@ -264,3 +264,104 @@ class XPIRelease(db.Model, ReleaseBase):
             "completed": self.completed or "",
             "phases": [p.json for p in self.phases],
         }
+
+
+import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import ENUM
+from backend_common.db import db
+import datetime
+
+
+class Workflow(db.Model):
+    __tablename__ = "shipit_api_workflows"
+    id = sa.Column(sa.Integer, primary_key=True)
+    attributes = sa.Column(sa.JSON, nullable=False)
+    name = sa.Column(sa.String(80), nullable=False, unique=True)
+    status = sa.Column(ENUM('scheduled', 'completed', 'aborted', name='shipit_api_workflow_status'), nullable=False)
+    created = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    completed = sa.Column(sa.DateTime)
+    phases = sa.orm.relationship("Phase", order_by=Phase.id, back_populates="workflow")
+
+    def __init__(self, attributes, status):
+        self.name = self.construct_name(attributes)
+        self.attributes = attributes
+        self.status = status
+
+    def construct_name(self, attributes):
+        raise NotImplementedError("Subclasses must implement this method to construct name")
+
+    @property
+    def allow_phase_skipping(self):
+        # This only affects the frontend, *the API doesn't enforce phase skipping.*
+        return False
+
+    @property
+    def json(self):
+        return {
+            "name": self.name,
+            "status": self.status,
+            "attributes": self.attributes,
+            "created": self.created.isoformat(),
+            "completed": self.completed.isoformat() if self.completed else "",
+            "phases": [p.json for p in self.phases],
+            "allow_phase_skipping": self.allow_phase_skipping,
+        }
+
+
+class Phase(db.Model):
+    __tablename__ = "shipit_api_workflow_phases"
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String, nullable=False)
+    submitted = sa.Column(sa.Boolean, nullable=False, default=False)
+    task_id = sa.Column(sa.String, nullable=False)
+    task = sa.Column(sa.JSON, nullable=False)
+    context = sa.Column(sa.JSON, nullable=False)
+    created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
+    completed = sa.Column(sa.DateTime)
+    completed_by = sa.Column(sa.String)
+    workflow_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_workflows.id"))
+    workflow = sqlalchemy.orm.relationship("Workflow", back_populates="phases")
+    signoffs = sqlalchemy.orm.relationship("Signoff", order_by=Signoff.id, back_populates="phase")
+
+
+class Release(Workflow):
+    product_details_enabled = True
+
+    def __init__(self, attributes, status):
+        super().__init__(attributes, status)
+
+    def construct_name(self, attributes):
+        return f"{attributes['product'].capitalize()}-{attributes['version']}-build{attributes['build_number']}"
+
+    @property
+    def allow_phase_skipping(self):
+        # This only affects the frontend, the API doesn't enforce phase skipping.
+        product = ALLOW_PHASE_SKIPPING.get(self.product, {})
+        return product.get(self.project, product.get("default", False))
+
+    def phase_signoffs(self, phase):
+        return [
+            Signoff(uid=slugid.nice(), name=req["name"], description=req["description"], permissions=req["permissions"])
+            for req in SIGNOFFS.get(self.product, {}).get(phase, [])
+        ]
+
+    @property
+    def project(self):
+        return self.branch.split("/")[-1]
+
+
+class XPIRelease(Workflow):
+    product_details_enabled = False
+    product = "xpi"  # Used in notifications.
+
+    def __init__(self, attributes, status):
+        super().__init__(attributes, status)
+
+    def construct_name(self, attributes):
+        return f"{attributes['xpi_name']}-{attributes['xpi_version']}-build{attributes['build_number']}"
+
+    def phase_signoffs(self, phase):
+        return [
+            XPISignoff(uid=slugid.nice(), name=req["name"], description=req["description"], permissions=req["permissions"])
+            for req in SIGNOFFS.get("xpi", {}).get(self.attributes["xpi_type"], {}).get(phase, [])
+        ]
