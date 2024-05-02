@@ -9,6 +9,7 @@ import json
 
 import slugid
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import ENUM
 import sqlalchemy.orm
 
 from backend_common.db import db
@@ -264,3 +265,66 @@ class XPIRelease(db.Model, ReleaseBase):
             "completed": self.completed or "",
             "phases": [p.json for p in self.phases],
         }
+
+
+class Step(db.Model):
+    __tablename__ = "shipit_api_workflow_steps"
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String, nullable=False)
+    submitted = sa.Column(sa.Boolean, nullable=False, default=False)
+    task_id = sa.Column(sa.String, nullable=False)
+    task = sa.Column(sa.JSON, nullable=False)
+    context = sa.Column(sa.JSON, nullable=False)
+    created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
+    completed = sa.Column(sa.DateTime)
+    completed_by = sa.Column(sa.String)
+    workflow_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_workflows.id"))
+    workflow = sqlalchemy.orm.relationship("Workflow", back_populates="steps")
+    signoffs = sqlalchemy.orm.relationship("Signoff", order_by=Signoff.id, back_populates="step")
+
+
+class Workflow(db.Model):
+    __tablename__ = "shipit_api_workflows"
+    id = sa.Column(sa.Integer, primary_key=True)
+    attributes = sa.Column(sa.JSON, nullable=False)
+    name = sa.Column(sa.String(80), nullable=False, unique=True)
+    status = sa.Column(ENUM("scheduled", "completed", "aborted", name="shipit_api_workflow_status"), nullable=False)
+    created = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    completed = sa.Column(sa.DateTime)
+    steps = sa.orm.relationship("Step", order_by=Step.id, back_populates="workflow")
+
+    def __init__(self, attributes, status):
+        self.name = self.construct_name(attributes)
+        self.attributes = attributes
+        self.status = status
+
+    def construct_name(self, attributes):
+        raise NotImplementedError("Subclasses must implement this method to construct the workflow's name")
+
+    def step_signoffs(self, step):
+        raise NotImplementedError("Subclasses must implement this method to get signoffs for a workflow step")
+
+    @property
+    def allow_step_skipping(self):
+        # This only affects the frontend, *the API doesn't enforce step skipping.*
+        return False
+
+    @property
+    def json(self):
+        return {
+            "name": self.name,
+            "status": self.status,
+            "attributes": self.attributes,
+            "created": self.created.isoformat(),
+            "completed": self.completed.isoformat() if self.completed else "",
+            "steps": [p.json for p in self.steps],
+            "allow_step_skipping": self.allow_step_skipping,
+        }
+
+
+class Merge(Workflow):
+    def step_signoffs(self, step):
+        return []
+
+    def construct_name(self, attributes):
+        return f"merges-{attributes['version']}"
