@@ -152,8 +152,6 @@ module.exports = {
             project: 'comm-release',
             branch: 'releases/comm-release',
             repo: 'https://hg.mozilla.org/releases/comm-release',
-            alternativeBranch: 'releases/comm-beta',
-            alternativeRepo: 'https://hg.mozilla.org/releases/comm-beta',
             enableReleaseEta: false,
             disableable: false,
           },
@@ -169,6 +167,7 @@ module.exports = {
           },
         ],
         enablePartials: true,
+        canTogglePartials: true,
       },
     ],
     security: [
