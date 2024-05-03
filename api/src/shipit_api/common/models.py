@@ -9,8 +9,8 @@ import json
 
 import slugid
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import ENUM
 import sqlalchemy.orm
+from sqlalchemy.dialects.postgresql import ENUM
 
 from backend_common.db import db
 from shipit_api.common.config import ALLOW_PHASE_SKIPPING, SIGNOFFS
