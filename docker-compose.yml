@@ -18,6 +18,7 @@ services:
       - ./api/src/cli_common:/app/src/cli_common
       - ./api/src/shipit_api:/app/src/shipit_api
       - "./api/products.yml:/app/products.yml"
+      - "./api/trust-domains.yml:/app/trust-domains.yml"
     environment:
       - HOST=0.0.0.0
       - PORT=8015
