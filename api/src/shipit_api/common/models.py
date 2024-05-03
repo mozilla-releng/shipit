@@ -278,7 +278,7 @@ class Approval(db.Model):
     completed_by = sa.Column(sa.String)
     signed = sa.Column(sa.Boolean, default=False)
     step_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_workflow_steps.id"))
-    step = sqlalchemy.orm.relationship("Step", back_populates="steps")
+    step = sqlalchemy.orm.relationship("Step", back_populates="approvals")
 
     def __init__(self, uid, name, description, permissions):
         self.uid = uid
@@ -312,7 +312,7 @@ class Step(db.Model):
     completed_by = sa.Column(sa.String)
     workflow_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_workflows.id"))
     workflow = sqlalchemy.orm.relationship("Workflow", back_populates="steps")
-    approvals = sqlalchemy.orm.relationship("Approval", order_by=Approval.id, back_populates="approvals")
+    approvals = sqlalchemy.orm.relationship("Approval", order_by=Approval.id, back_populates="step")
 
 
 class Workflow(db.Model):
