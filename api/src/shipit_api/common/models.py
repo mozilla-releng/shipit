@@ -267,6 +267,38 @@ class XPIRelease(db.Model, ReleaseBase):
         }
 
 
+class Approval(db.Model):
+    __tablename__ = "shipit_api_workflow_approvals"
+    id = sa.Column(sa.Integer, primary_key=True)
+    uid = sa.Column(sa.String, nullable=False, unique=True)
+    name = sa.Column(sa.String, nullable=False)
+    description = sa.Column(sa.Text)
+    permissions = sa.Column(sa.String, nullable=False)
+    completed = sa.Column(sa.DateTime)
+    completed_by = sa.Column(sa.String)
+    signed = sa.Column(sa.Boolean, default=False)
+    step_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_workflow_steps.id"))
+    step = sqlalchemy.orm.relationship("Step", back_populates="steps")
+
+    def __init__(self, uid, name, description, permissions):
+        self.uid = uid
+        self.name = name
+        self.description = description
+        self.permissions = permissions
+
+    @property
+    def json(self):
+        return dict(
+            uid=self.uid,
+            name=self.name,
+            description=self.description,
+            permissions=self.permissions,
+            completed=self.completed or "",
+            completed_by=self.completed_by or "",
+            signed=self.signed,
+        )
+
+
 class Step(db.Model):
     __tablename__ = "shipit_api_workflow_steps"
     id = sa.Column(sa.Integer, primary_key=True)
@@ -280,7 +312,7 @@ class Step(db.Model):
     completed_by = sa.Column(sa.String)
     workflow_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_workflows.id"))
     workflow = sqlalchemy.orm.relationship("Workflow", back_populates="steps")
-    signoffs = sqlalchemy.orm.relationship("Signoff", order_by=Signoff.id, back_populates="step")
+    approvals = sqlalchemy.orm.relationship("Approval", order_by=Approval.id, back_populates="step")
 
 
 class Workflow(db.Model):
@@ -301,8 +333,8 @@ class Workflow(db.Model):
     def construct_name(self, attributes):
         raise NotImplementedError("Subclasses must implement this method to construct the workflow's name")
 
-    def step_signoffs(self, step):
-        raise NotImplementedError("Subclasses must implement this method to get signoffs for a workflow step")
+    def step_approvals(self, step):
+        raise NotImplementedError("Subclasses must implement this method to get approvals for a workflow step")
 
     @property
     def allow_step_skipping(self):
@@ -323,7 +355,7 @@ class Workflow(db.Model):
 
 
 class Merge(Workflow):
-    def step_signoffs(self, step):
+    def step_approvals(self, step):
         return []
 
     def construct_name(self, attributes):
