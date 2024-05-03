@@ -312,7 +312,7 @@ class Step(db.Model):
     completed_by = sa.Column(sa.String)
     workflow_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_workflows.id"))
     workflow = sqlalchemy.orm.relationship("Workflow", back_populates="steps")
-    approvals = sqlalchemy.orm.relationship("Approval", order_by=Approval.id, back_populates="step")
+    approvals = sqlalchemy.orm.relationship("Approval", order_by=Approval.id, back_populates="approvals")
 
 
 class Workflow(db.Model):
