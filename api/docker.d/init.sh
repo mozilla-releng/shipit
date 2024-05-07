@@ -28,9 +28,4 @@ then
     EXTRA_ARGS="--bind $HOST:$PORT --workers 1 --timeout 3600 --reload --reload-engine=poll --certfile=$cert --keyfile=$key"
 fi
 
-if [ "$APP_CHANNEL" == "production" ]
-then
-    EXTRA_ARGS="--timeout 300"
-fi
-
 exec poetry run gunicorn $FLASK_APP --log-file - $EXTRA_ARGS
