@@ -25,6 +25,7 @@ import click
 import mypy_extensions
 import sqlalchemy
 import sqlalchemy.orm
+from mozilla_version.gecko import FirefoxVersion
 from mozilla_version.mobile import MobileVersion
 
 import cli_common.command
@@ -130,8 +131,16 @@ def to_isoformat(d: datetime.datetime) -> str:
     return arrow.get(d).isoformat()
 
 
+def from_isoformat(s: str) -> datetime.datetime:
+    return datetime.datetime.fromisoformat(s)
+
+
 def to_format(d: datetime.datetime, format: str) -> str:
     return arrow.get(d).format(format)
+
+
+def from_format(s: str, format: str) -> datetime.datetime:
+    return datetime.datetime.strptime(s, format)
 
 
 def create_index_listing_html(folder: pathlib.Path, items: typing.Set[pathlib.Path]) -> str:
@@ -495,7 +504,7 @@ def get_release_history(
     return ordered_history
 
 
-def get_primary_builds(
+async def get_primary_builds(
     breakpoint_version: int,
     product: Product,
     releases: typing.List[shipit_api.common.models.Release],
@@ -531,7 +540,7 @@ def get_primary_builds(
     """
 
     if product is Product.FIREFOX:
-        firefox_versions = get_firefox_versions(releases)
+        firefox_versions = await get_firefox_versions(releases)
         # make sure that Devedition is included in the list
         products = [Product.FIREFOX, Product.DEVEDITION]
         versions = set(
@@ -624,7 +633,61 @@ def get_firefox_esr_next_version(releases: typing.List[shipit_api.common.models.
         return get_latest_version(releases, product, branch)
 
 
-def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]) -> FirefoxVersions:
+@backoff.on_exception(backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_time=60)
+async def fetch_firefox_release_schedule_data(releases: typing.List[shipit_api.common.models.Release], session: aiohttp.ClientSession):
+    firefox_nightly_mozilla_version = FirefoxVersion.parse(shipit_api.common.config.FIREFOX_NIGHTLY)
+    current_nightly_version_major_number = firefox_nightly_mozilla_version.major_number
+    previous_nightly_version_major_number = current_nightly_version_major_number - 1
+    url_template = "https://whattrainisitnow.com/api/release/schedule/?version={version}"
+    try:
+        url = url_template.format(version=current_nightly_version_major_number)
+        async with session.get(url) as response:
+            response.raise_for_status()
+            logger.debug(f"Fetched {url}")
+            current_nightly_version_schedule = await response.json()
+        url = url_template.format(version=previous_nightly_version_major_number)
+        async with session.get(url) as response:
+            response.raise_for_status()
+            logger.debug(f"Fetched {url}")
+            previous_nightly_version_schedule = await response.json()
+    except Exception:
+        logger.info("Failed to fetch %s, %s", url)
+        raise
+    date_format = "%Y-%m-%d"
+    last_softfreeze_date = from_isoformat(previous_nightly_version_schedule["soft_code_freeze"]).strftime(date_format)
+    last_merge_date = from_isoformat(previous_nightly_version_schedule["merge_day"]).strftime(date_format)
+    releases_after_last_merge_date = sorted(
+        [
+            release
+            for release in releases
+            if release.product == Product.FIREFOX.value
+            and FirefoxVersion.parse(release.version).is_release
+            and release.status == "shipped"
+            and release.completed is not None
+            and release.completed.replace(tzinfo=datetime.timezone.utc) > from_isoformat(previous_nightly_version_schedule["merge_day"])
+        ],
+        key=lambda release: FirefoxVersion.parse(release.version),
+    )
+    first_release_after_last_merge_date = releases_after_last_merge_date[0]
+    last_release_date = first_release_after_last_merge_date.completed.strftime(date_format)
+    next_softfreeze_date = from_isoformat(current_nightly_version_schedule["soft_code_freeze"]).strftime(date_format)
+    next_merge_date = from_isoformat(current_nightly_version_schedule["merge_day"]).strftime(date_format)
+    next_release_date = (from_isoformat(current_nightly_version_schedule["merge_day"]) + datetime.timedelta(days=1)).strftime(date_format)
+    last_stringfreeze_date = (from_format(last_softfreeze_date, date_format) + datetime.timedelta(days=1)).strftime(date_format)
+    next_stringfreeze_date = (from_format(next_softfreeze_date, date_format) + datetime.timedelta(days=1)).strftime(date_format)
+    return {
+        "LAST_SOFTFREEZE_DATE": last_softfreeze_date,
+        "LAST_MERGE_DATE": last_merge_date,
+        "LAST_RELEASE_DATE": last_release_date,
+        "NEXT_SOFTFREEZE_DATE": next_softfreeze_date,
+        "NEXT_MERGE_DATE": next_merge_date,
+        "NEXT_RELEASE_DATE": next_release_date,
+        "LAST_STRINGFREEZE_DATE": last_stringfreeze_date,
+        "NEXT_STRINGFREEZE_DATE": next_stringfreeze_date,
+    }
+
+
+async def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]) -> FirefoxVersions:
     """All the versions we ship for Firefox for Desktop
 
     This function will output to the following files:
@@ -651,6 +714,8 @@ def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]
             "NEXT_RELEASE_DATE":                      "2019-05-14"
         }
     """
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=50), timeout=aiohttp.ClientTimeout(total=30)) as session:
+        firefox_release_schedule_data = await fetch_firefox_release_schedule_data(releases, session)
 
     return dict(
         FIREFOX_NIGHTLY=shipit_api.common.config.FIREFOX_NIGHTLY,
@@ -664,14 +729,14 @@ def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]
         LATEST_FIREFOX_RELEASED_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
         FIREFOX_DEVEDITION=get_latest_version(releases, Product.DEVEDITION, shipit_api.common.config.BETA_BRANCH),
         LATEST_FIREFOX_OLDER_VERSION=shipit_api.common.config.LATEST_FIREFOX_OLDER_VERSION,
-        LAST_SOFTFREEZE_DATE=shipit_api.common.config.LAST_SOFTFREEZE_DATE,
-        LAST_STRINGFREEZE_DATE=shipit_api.common.config.LAST_STRINGFREEZE_DATE,
-        LAST_MERGE_DATE=shipit_api.common.config.LAST_MERGE_DATE,
-        LAST_RELEASE_DATE=shipit_api.common.config.LAST_RELEASE_DATE,
-        NEXT_SOFTFREEZE_DATE=shipit_api.common.config.NEXT_SOFTFREEZE_DATE,
-        NEXT_STRINGFREEZE_DATE=shipit_api.common.config.NEXT_STRINGFREEZE_DATE,
-        NEXT_MERGE_DATE=shipit_api.common.config.NEXT_MERGE_DATE,
-        NEXT_RELEASE_DATE=shipit_api.common.config.NEXT_RELEASE_DATE,
+        LAST_SOFTFREEZE_DATE=firefox_release_schedule_data["LAST_SOFTFREEZE_DATE"],
+        LAST_STRINGFREEZE_DATE=firefox_release_schedule_data["LAST_STRINGFREEZE_DATE"],
+        LAST_MERGE_DATE=firefox_release_schedule_data["LAST_MERGE_DATE"],
+        LAST_RELEASE_DATE=firefox_release_schedule_data["LAST_RELEASE_DATE"],
+        NEXT_SOFTFREEZE_DATE=firefox_release_schedule_data["NEXT_SOFTFREEZE_DATE"],
+        NEXT_STRINGFREEZE_DATE=firefox_release_schedule_data["NEXT_STRINGFREEZE_DATE"],
+        NEXT_MERGE_DATE=firefox_release_schedule_data["NEXT_MERGE_DATE"],
+        NEXT_RELEASE_DATE=firefox_release_schedule_data["NEXT_RELEASE_DATE"],
     )
 
 
@@ -1104,8 +1169,8 @@ async def rebuild(
         "firefox_history_stability_releases.json": get_release_history(
             breakpoint_version, Product.FIREFOX, ProductCategory.STABILITY, releases, old_product_details
         ),
-        "firefox_primary_builds.json": get_primary_builds(breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details),
-        "firefox_versions.json": get_firefox_versions(releases),
+        "firefox_primary_builds.json": await get_primary_builds(breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details),
+        "firefox_versions.json": await get_firefox_versions(releases),
         "languages.json": get_languages(old_product_details),
         "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID], releases, old_product_details),
         "mobile_details.json": get_mobile_details(releases),
@@ -1128,7 +1193,9 @@ async def rebuild(
         "thunderbird_history_stability_releases.json": get_release_history(
             breakpoint_version, Product.THUNDERBIRD, ProductCategory.STABILITY, releases, old_product_details
         ),
-        "thunderbird_primary_builds.json": get_primary_builds(breakpoint_version, Product.THUNDERBIRD, combined_releases, combined_l10n, old_product_details),
+        "thunderbird_primary_builds.json": await get_primary_builds(
+            breakpoint_version, Product.THUNDERBIRD, combined_releases, combined_l10n, old_product_details
+        ),
         "thunderbird_versions.json": get_thunderbird_versions(releases),
     }
 
