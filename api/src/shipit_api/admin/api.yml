@@ -693,6 +693,167 @@ paths:
         "409":
           description: Already submitted
           content: {}
+  /versions/{product}/{channel}:
+    get:
+      summary: Get the current version for the given product channel
+      operationId: shipit_api.admin.api.get_product_channel_version
+      parameters:
+      - name: product
+        in: path
+        description: product name
+        required: true
+        schema:
+          type: string
+      - name: channel
+        in: path
+        description: product channel
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: The current version for the given product channel
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "127.0a1"
+        "404":
+          description: Product channel version not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No version found for firefox release."
+    post:
+      summary: Create a new product channel version
+      operationId: shipit_api.admin.api.create_product_channel_version
+      parameters:
+        - name: product
+          in: path
+          description: The product name for which the version is to be updated
+          required: true
+          schema:
+            type: string
+        - name: channel
+          in: path
+          description: product channel
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Initial version for a new product channel
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                version:
+                  type: string
+                  example: "128.0a1"
+        required: true
+      responses:
+        "201":
+          description: Product channel version created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "A firefox nightly version was created successfully."
+                  version:
+                    type: string
+                    example: "128.0a1"
+                  product:
+                    type: string
+                    example: "firefox"
+                  channel:
+                    type: string
+                    example: "nightly"
+        "409":
+          description: Product channel version already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "A firefox nightly version already exists."
+    put:
+      summary: Update an existing product channel's version
+      operationId: shipit_api.admin.api.update_product_channel_version
+      parameters:
+        - name: product
+          in: path
+          description: The product name for which the version is to be updated
+          required: true
+          schema:
+            type: string
+        - name: channel
+          in: path
+          description: product channel
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: A valid version for the product channel
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                version:
+                  type: string
+                  example: "129.0a1"
+        required: true
+      responses:
+        "200":
+          description: Product version updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "The version for firefox nightly was updated successfully."
+                  version:
+                    type: string
+                    example: "128.0a1"
+                  product:
+                    type: string
+                    example: "firefox"
+                  channel:
+                    type: string
+                    example: "nightly"
+        "409":
+          description: Product channel is already the given value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "The firefox nightly version is already 128.0a1!"
+        "404":
+          description: Product channel version not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No version found for firefox release."
+
+
 components:
   schemas:
     ReleaseInput:

@@ -264,3 +264,12 @@ class XPIRelease(db.Model, ReleaseBase):
             "completed": self.completed or "",
             "phases": [p.json for p in self.phases],
         }
+
+
+class Version(db.Model):
+    __tablename__ = "shipit_api_versions"
+    id = sa.Column(sa.Integer, primary_key=True)
+    product_name = sa.Column(sa.String, unique=True, nullable=False)
+    product_channel = sa.Column(sa.String, nullable=False)
+    current_version = sa.Column(sa.String, nullable=False)
+    __table_args__ = (sa.UniqueConstraint("product_name", "product_channel", name="_product_name_channel_uc"),)

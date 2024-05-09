@@ -28,7 +28,7 @@ from shipit_api.admin.tasks import (
     rendered_hook_payload,
 )
 from shipit_api.common.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
-from shipit_api.common.models import DisabledProduct, Phase, Release, Signoff, XPIRelease
+from shipit_api.common.models import DisabledProduct, Phase, Release, Signoff, Version, XPIRelease
 from shipit_api.public.api import get_disabled_products, list_releases
 
 logger = logging.getLogger(__name__)
@@ -375,3 +375,55 @@ def get_signoff_emails(phases):
             additional_shipit_emails.update({signoff.completed_by for signoff in _phase.signoffs if signoff.completed_by is not None})
 
     return list(additional_shipit_emails)
+
+
+def get_product_channel_version(product, channel):
+    version = Version.query.filter_by(product_name=product, product_channel=channel).first()
+    if version:
+        return version.current_version
+    else:
+        return {"error": f"No version found for {product} {channel}."}, 404
+
+
+def update_product_channel_version(product, channel, body):
+    required_permission = f"{SCOPE_PREFIX}/update_product_channel_version/{product}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+    version = Version.query.filter_by(product_name=product, product_channel=channel).first()
+    if version and version.current_version != body["version"]:
+        version.current_version = body["version"]
+        current_app.db.session.commit()
+        logger.info(f"Regenerating product details after updating {version.product_name} {version.product_channel} version to {version.current_version}")
+        _rebuild_product_details({})
+        notify_via_matrix(product, f"Updated {version.product_name} {version.product_channel} version to `{version.current_version}`.")
+        return {
+            "message": f"The version for {product} {channel} was updated successfully.",
+            "version": version.current_version,
+            "product": version.product_name,
+            "channel": version.product_channel,
+        }, 200
+    elif version and version.current_version == body["version"]:
+        return {"error": f"The {product} {channel} version is already {body['version']}!"}, 409
+    else:
+        return {"error": f"No version found for {product} {channel}."}, 404
+
+
+def create_product_channel_version(product, channel, body):
+    required_permission = f"{SCOPE_PREFIX}/create_product_channel_version/{product}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+    existing_version = Version.query.filter_by(product_name=product, product_channel=channel).first()
+    if existing_version:
+        return {"error": f"A {product} {channel} version already exists."}, 409
+    else:
+        new_version = Version(product_name=product, product_channel=channel, current_version=body["version"])
+        current_app.db.session.add(new_version)
+        current_app.db.session.commit()
+        return {
+            "message": f"A {product} {channel} version was created successfully.",
+            "version": new_version.current_version,
+            "product": new_version.product_name,
+            "channel": new_version.product_channel,
+        }, 201
