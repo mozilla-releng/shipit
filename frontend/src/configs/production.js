@@ -167,7 +167,6 @@ module.exports = {
           },
         ],
         enablePartials: true,
-        canTogglePartials: true,
       },
     ],
     security: [
