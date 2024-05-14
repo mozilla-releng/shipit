@@ -50,23 +50,12 @@ module.exports = {
         appName: 'firefox-android',
         branches: [
           {
-            branch: '',
-          },
-          {
             prettyName: 'Try',
             project: 'try',
             branch: 'try',
             repo: 'https://hg.mozilla.org/try',
             enableReleaseEta: false,
             versionFile: 'mobile/android/version.txt',
-          },
-        ],
-        repositories: [
-          {
-            prettyName: 'Staging Android monorepo',
-            project: 'staging-firefox-android',
-            repo: 'https://github.com/mozilla-releng/staging-firefox-android',
-            enableReleaseEta: false,
           },
         ],
         enablePartials: false,
