@@ -5,7 +5,6 @@
 
 import asyncio
 import collections
-import datetime
 import functools
 import hashlib
 import io
@@ -17,6 +16,7 @@ import re
 import shutil
 import typing
 import urllib.parse
+from datetime import datetime, timedelta, timezone
 
 import aiohttp
 import arrow
@@ -127,20 +127,20 @@ def with_default(a: typing.Optional[A], func: typing.Callable[[A], B], default: 
     return func(a)
 
 
-def to_isoformat(d: datetime.datetime) -> str:
+def to_isoformat(d: datetime) -> str:
     return arrow.get(d).isoformat()
 
 
-def from_isoformat(s: str) -> datetime.datetime:
-    return datetime.datetime.fromisoformat(s)
+def from_isoformat(s: str) -> datetime:
+    return datetime.fromisoformat(s)
 
 
-def to_format(d: datetime.datetime, format: str) -> str:
+def to_format(d: datetime, format: str) -> str:
     return arrow.get(d).format(format)
 
 
-def from_format(s: str, format: str) -> datetime.datetime:
-    return datetime.datetime.strptime(s, format)
+def from_format(s: str, format: str) -> datetime:
+    return datetime.strptime(s, format)
 
 
 YMD_DATE_FORMAT = "%Y-%m-%d"
@@ -150,11 +150,11 @@ def iso_to_ymd(s: str) -> str:
     return from_isoformat(s).strftime(YMD_DATE_FORMAT)
 
 
-def datetime_to_ymd(d: datetime.datetime) -> str:
+def dt_to_ymd(d: datetime) -> str:
     return d.strftime(YMD_DATE_FORMAT)
 
 
-def from_ymd_format(s: str) -> datetime.datetime:
+def from_ymd_format(s: str) -> datetime:
     return from_format(s, YMD_DATE_FORMAT)
 
 
@@ -678,19 +678,19 @@ async def fetch_firefox_release_schedule_data(releases: typing.List[shipit_api.c
             and FirefoxVersion.parse(release.version).is_release
             and release.status == "shipped"
             and release.completed is not None
-            and release.completed.replace(tzinfo=datetime.timezone.utc) > from_isoformat(previous_nightly_version_schedule["merge_day"])
+            and release.completed.replace(tzinfo=timezone.utc) > from_isoformat(previous_nightly_version_schedule["merge_day"])
         ],
         key=lambda release: FirefoxVersion.parse(release.version),
     )
     if not releases_after_last_merge_date:
         raise ValueError(f"No Firefox releases shipped after the last merge date ({last_merge_date})")
     first_release_after_last_merge_date = releases_after_last_merge_date[0]
-    last_release_date = datetime_to_ymd(first_release_after_last_merge_date.completed)
+    last_release_date = dt_to_ymd(first_release_after_last_merge_date.completed)
     next_softfreeze_date = iso_to_ymd(current_nightly_version_schedule["soft_code_freeze"])
     next_merge_date = iso_to_ymd(current_nightly_version_schedule["merge_day"])
-    next_release_date = datetime_to_ymd(from_isoformat(current_nightly_version_schedule["merge_day"]) + datetime.timedelta(days=1))
-    last_stringfreeze_date = datetime_to_ymd(from_ymd_format(last_softfreeze_date) + datetime.timedelta(days=1))
-    next_stringfreeze_date = datetime_to_ymd(from_ymd_format(next_softfreeze_date) + datetime.timedelta(days=1))
+    next_release_date = dt_to_ymd(from_isoformat(current_nightly_version_schedule["merge_day"]) + timedelta(days=1))
+    last_stringfreeze_date = dt_to_ymd(from_ymd_format(last_softfreeze_date) + timedelta(days=1))
+    next_stringfreeze_date = dt_to_ymd(from_ymd_format(next_softfreeze_date) + timedelta(days=1))
     return {
         "LAST_SOFTFREEZE_DATE": last_softfreeze_date,
         "LAST_MERGE_DATE": last_merge_date,
