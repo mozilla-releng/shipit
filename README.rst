@@ -21,6 +21,63 @@ Run: ``source startup.sh``
 
 You should be all set to kick off some staging releases. The script will detect if your Taskcluster client has expired and automatically create a new one.
 
+Running an Interactive Flask Shell for Development
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This section describes how to create an interactive shell environment for the Flask applications, which is useful for development and testing purposes.
+
+Setting up for the Admin API:
+
+1. Set the environment variable for the Flask application
+
+::
+
+    export FLASK_APP="shipit_api.admin.flask:app"
+
+2. Define the container in which the Flask application is running
+
+::
+
+    export SHIPIT_API_CONTAINER="shipit-api-1"
+
+3. Access the Docker container's interactive shell
+
+::
+
+    docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
+
+4. Once inside the container, start the interactive Flask shell using Poetry
+
+::
+
+    poetry run flask shell
+
+Setting up for the Public API:
+
+1. Set the environment variable for the Flask application
+
+::
+
+    export FLASK_APP="shipit_api.public.flask:app"
+
+2. Define the container in which the Flask application is running
+
+::
+
+    export SHIPIT_API_CONTAINER="shipit-public-1"
+
+3. Access the Docker container's interactive shell
+
+::
+
+    docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
+
+4. Once inside the container, start the interactive Flask shell using Poetry
+
+::
+
+    poetry run flask shell
+
 To provide all required sign offs on staging xpi releases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
