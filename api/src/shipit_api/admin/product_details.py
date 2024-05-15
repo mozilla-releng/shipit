@@ -651,7 +651,7 @@ async def fetch_firefox_release_schedule_data(releases: typing.List[shipit_api.c
             logger.debug(f"Fetched {url}")
             previous_nightly_version_schedule = await response.json()
     except Exception:
-        logger.info("Failed to fetch %s, %s", url)
+        logger.info("Failed to fetch %s", url)
         raise
     date_format = "%Y-%m-%d"
     last_softfreeze_date = from_isoformat(previous_nightly_version_schedule["soft_code_freeze"]).strftime(date_format)
