@@ -143,6 +143,21 @@ def from_format(s: str, format: str) -> datetime.datetime:
     return datetime.datetime.strptime(s, format)
 
 
+YMD_DATE_FORMAT = "%Y-%m-%d"
+
+
+def iso_to_ymd(s: str) -> str:
+    return from_isoformat(s).strftime(YMD_DATE_FORMAT)
+
+
+def datetime_to_ymd(d: datetime.datetime) -> str:
+    return d.strftime(YMD_DATE_FORMAT)
+
+
+def from_ymd_format(s: str) -> datetime.datetime:
+    return from_format(s, YMD_DATE_FORMAT)
+
+
 def create_index_listing_html(folder: pathlib.Path, items: typing.Set[pathlib.Path]) -> str:
     folder = "/" / folder  # noqa : T484 Unsupported left operand type for / ("str")
     with io.StringIO() as html:
@@ -653,9 +668,8 @@ async def fetch_firefox_release_schedule_data(releases: typing.List[shipit_api.c
     except Exception:
         logger.info("Failed to fetch %s", url)
         raise
-    date_format = "%Y-%m-%d"
-    last_softfreeze_date = from_isoformat(previous_nightly_version_schedule["soft_code_freeze"]).strftime(date_format)
-    last_merge_date = from_isoformat(previous_nightly_version_schedule["merge_day"]).strftime(date_format)
+    last_softfreeze_date = iso_to_ymd(previous_nightly_version_schedule["soft_code_freeze"])
+    last_merge_date = iso_to_ymd(previous_nightly_version_schedule["merge_day"])
     releases_after_last_merge_date = sorted(
         [
             release
@@ -671,12 +685,12 @@ async def fetch_firefox_release_schedule_data(releases: typing.List[shipit_api.c
     if not releases_after_last_merge_date:
         raise ValueError(f"No Firefox releases shipped after the last merge date ({last_merge_date})")
     first_release_after_last_merge_date = releases_after_last_merge_date[0]
-    last_release_date = first_release_after_last_merge_date.completed.strftime(date_format)
-    next_softfreeze_date = from_isoformat(current_nightly_version_schedule["soft_code_freeze"]).strftime(date_format)
-    next_merge_date = from_isoformat(current_nightly_version_schedule["merge_day"]).strftime(date_format)
-    next_release_date = (from_isoformat(current_nightly_version_schedule["merge_day"]) + datetime.timedelta(days=1)).strftime(date_format)
-    last_stringfreeze_date = (from_format(last_softfreeze_date, date_format) + datetime.timedelta(days=1)).strftime(date_format)
-    next_stringfreeze_date = (from_format(next_softfreeze_date, date_format) + datetime.timedelta(days=1)).strftime(date_format)
+    last_release_date = datetime_to_ymd(first_release_after_last_merge_date.completed)
+    next_softfreeze_date = iso_to_ymd(current_nightly_version_schedule["soft_code_freeze"])
+    next_merge_date = iso_to_ymd(current_nightly_version_schedule["merge_day"])
+    next_release_date = datetime_to_ymd(from_isoformat(current_nightly_version_schedule["merge_day"]) + datetime.timedelta(days=1))
+    last_stringfreeze_date = datetime_to_ymd(from_ymd_format(last_softfreeze_date) + datetime.timedelta(days=1))
+    next_stringfreeze_date = datetime_to_ymd(from_ymd_format(next_softfreeze_date) + datetime.timedelta(days=1))
     return {
         "LAST_SOFTFREEZE_DATE": last_softfreeze_date,
         "LAST_MERGE_DATE": last_merge_date,
