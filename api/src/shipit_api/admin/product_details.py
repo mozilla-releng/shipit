@@ -668,6 +668,8 @@ async def fetch_firefox_release_schedule_data(releases: typing.List[shipit_api.c
         ],
         key=lambda release: FirefoxVersion.parse(release.version),
     )
+    if not releases_after_last_merge_date:
+        raise ValueError(f"No Firefox releases shipped after the last merge date ({last_merge_date})")
     first_release_after_last_merge_date = releases_after_last_merge_date[0]
     last_release_date = first_release_after_last_merge_date.completed.strftime(date_format)
     next_softfreeze_date = from_isoformat(current_nightly_version_schedule["soft_code_freeze"]).strftime(date_format)
