@@ -5,7 +5,6 @@
 
 import pathlib
 import tempfile
-from datetime import datetime, timedelta
 from functools import cache
 
 from decouple import config
@@ -53,20 +52,6 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 #
 # This version also defines the mobile nightly version (i.e.: Fenix)
 FIREFOX_NIGHTLY = "128.0a1"
-
-# The next 6 dates are information about the current and next release
-# They must be updated at the same time as FIREFOX_NIGHTLY
-# They can be found on https://whattrainisitnow.com/calendar/
-LAST_SOFTFREEZE_DATE = "2024-05-09"
-LAST_MERGE_DATE = "2024-05-13"
-LAST_RELEASE_DATE = "2024-05-14"
-NEXT_SOFTFREEZE_DATE = "2024-06-06"
-NEXT_MERGE_DATE = "2024-06-10"
-NEXT_RELEASE_DATE = "2024-06-11"
-
-DATE_FORMAT = "%Y-%m-%d"
-LAST_STRINGFREEZE_DATE = (datetime.strptime(LAST_SOFTFREEZE_DATE, DATE_FORMAT) + timedelta(days=1)).strftime(DATE_FORMAT)
-NEXT_STRINGFREEZE_DATE = (datetime.strptime(NEXT_SOFTFREEZE_DATE, DATE_FORMAT) + timedelta(days=1)).strftime(DATE_FORMAT)
 
 # Aurora has been replaced by Dev Edition, but some 3rd party applications may
 # still rely on this value.
