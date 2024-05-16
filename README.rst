@@ -65,7 +65,7 @@ Setting up for the Public API:
 
 ::
 
-    export FLASK_APP="shipit_api.admin.flask:app"
+    export FLASK_APP="shipit_api.public.flask:app"
     poetry run flask shell
 
 To provide all required sign offs on staging xpi releases
