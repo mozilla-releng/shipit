@@ -28,54 +28,44 @@ This section describes how to create an interactive shell environment for the Fl
 
 Setting up for the Admin API:
 
-1. Set the environment variable for the Flask application
-
-::
-
-    export FLASK_APP="shipit_api.admin.flask:app"
-
-2. Define the container in which the Flask application is running
+1. Define the container in which the Flask application is running
 
 ::
 
     export SHIPIT_API_CONTAINER="shipit-api-1"
 
-3. Access the Docker container's interactive shell
+2. Access the Docker container's interactive shell
 
 ::
 
     docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
 
-4. Once inside the container, start the interactive Flask shell using Poetry
+3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using Poetry
 
 ::
 
+    export FLASK_APP="shipit_api.admin.flask:app"
     poetry run flask shell
 
 Setting up for the Public API:
 
-1. Set the environment variable for the Flask application
-
-::
-
-    export FLASK_APP="shipit_api.public.flask:app"
-
-2. Define the container in which the Flask application is running
+1. Define the container in which the Flask application is running
 
 ::
 
     export SHIPIT_API_CONTAINER="shipit-public-1"
 
-3. Access the Docker container's interactive shell
+2. Access the Docker container's interactive shell
 
 ::
 
     docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
 
-4. Once inside the container, start the interactive Flask shell using Poetry
+3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using Poetry
 
 ::
 
+    export FLASK_APP="shipit_api.admin.flask:app"
     poetry run flask shell
 
 To provide all required sign offs on staging xpi releases
