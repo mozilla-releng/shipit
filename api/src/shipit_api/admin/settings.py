@@ -80,7 +80,7 @@ LDAP_GROUPS = {
     "thunderbird-signoff": ["shipit_thunderbird"],
     "firefox-android-signoff": ["shipit_mobile"],
     "app-services-signoff": ["shipit_app_services"],
-    "vpn-signoff": ADMIN_LDAP_GROUP,
+    "vpn-signoff": ["shipit_mozillavpn"],
     # XPI signoffs. These are in flux.
     # Adding Releng as a backup to most of these, for bus factor. Releng should
     # only sign off if requested by someone in the appropriate group.
