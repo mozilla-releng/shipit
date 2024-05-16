@@ -45,13 +45,9 @@ firefox-android:
   - shipit_firefox
   - shipit_relman
   phases:
-  - promote
-  - push
-  - ship
   - promote_android
   - push_android
   - ship_android
-  repo-url: https://github.com/mozilla-mobile/firefox-android
   version-class: "mozilla_version.mobile.MobileVersion"
 focus-android:
   legacy: true

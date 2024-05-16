@@ -81,9 +81,6 @@ module.exports = {
         appName: 'firefox-android',
         branches: [
           {
-            branch: '',
-          },
-          {
             prettyName: 'Beta',
             project: 'mozilla-beta',
             branch: 'releases/mozilla-beta',
@@ -100,14 +97,6 @@ module.exports = {
             versionFile: 'mobile/android/version.txt',
             enableReleaseEta: true,
             disableable: false,
-          },
-        ],
-        repositories: [
-          {
-            prettyName: 'Android monorepo',
-            project: 'firefox-android',
-            repo: 'https://github.com/mozilla-mobile/firefox-android',
-            enableReleaseEta: false,
           },
         ],
         enablePartials: false,
