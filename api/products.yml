@@ -55,6 +55,7 @@ focus-android:
 mozilla-vpn-addons:
   authorized-ldap-groups:
   - releng
+  - shipit_mozillavpn
   phases:
   - promote-addons
   - ship-addons
@@ -63,6 +64,7 @@ mozilla-vpn-addons:
 mozilla-vpn-client:
   authorized-ldap-groups:
   - releng
+  - shipit_mozillavpn
   phases:
   - promote-client
   - ship-client
