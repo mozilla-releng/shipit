@@ -107,6 +107,10 @@ requests = "*"
 [tool.poetry.group.tox.dependencies]
 tox = "*"
 
+
+[tool.poetry.group.dev.dependencies]
+flask-shell-ipython = "^0.5.1"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

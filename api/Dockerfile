@@ -16,5 +16,6 @@ ENV WEB_CONCURRENCY=3
 USER app
 
 RUN poetry install --only main
+RUN poetry install --only dev
 
 CMD ["/app/docker.d/init.sh", "admin"]
