@@ -467,6 +467,18 @@ SUPPORTED_FLAVORS = _get_supported_flavors()
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
 SIGNOFFS = {
+    "mozilla-vpn-client": {
+        "ship-client": [
+            {"name": "MozillaVPN Team", "description": "Ship mozilla-vpn-client", "permissions": "vpn-signoff"},
+            {"name": "Release Engineering", "description": "Ship mozilla-vpn-client", "permissions": "admin"},
+        ]
+    },
+    "mozilla-vpn-addons": {
+        "ship-addons": [
+            {"name": "MozillaVPN Team", "description": "Ship mozilla-vpn-client", "permissions": "vpn-signoff"},
+            {"name": "Release Engineering", "description": "Ship mozilla-vpn-client", "permissions": "admin"},
+        ]
+    },
     "xpi": {
         "privileged": {
             "promote": [
