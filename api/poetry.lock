@@ -2599,13 +2599,13 @@ Jinja2 = ">=2.0"
 
 [[package]]
 name = "taskcluster"
-version = "64.2.8"
+version = "65.0.2"
 description = "Python client for Taskcluster"
 optional = false
 python-versions = "*"
 files = [
-    {file = "taskcluster-64.2.8-py3-none-any.whl", hash = "sha256:3a6e1739a66e900663064ba3a7c684c9757ceb63013f6ea73b90b71e05084505"},
-    {file = "taskcluster-64.2.8.tar.gz", hash = "sha256:98b5a646f136ca3fb620e5995a76c568016b6e48f419e07ee3a1571baba37166"},
+    {file = "taskcluster-65.0.2-py3-none-any.whl", hash = "sha256:cbe251815a93b3fa75878c877f5e125248fc0b3ff2b140bd8a261a7185f12ba6"},
+    {file = "taskcluster-65.0.2.tar.gz", hash = "sha256:d1d4050b2838a04a09f19c2fae6eb076f749f9e23d5cdcf705ff1348d59fa925"},
 ]
 
 [package.dependencies]
