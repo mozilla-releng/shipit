@@ -6,11 +6,13 @@ comm:
   - https://hg.mozilla.org/releases/comm-beta
   - https://hg.mozilla.org/releases/comm-release
   - https://hg.mozilla.org/releases/comm-esr115
+  - https://hg.mozilla.org/releases/comm-esr128
   - https://hg.mozilla.org/try-comm-central
 gecko:
   - https://hg.mozilla.org/releases/mozilla-beta
   - https://hg.mozilla.org/releases/mozilla-release
   - https://hg.mozilla.org/releases/mozilla-esr115
+  - https://hg.mozilla.org/releases/mozilla-esr128
   - https://hg.mozilla.org/try
 mobile:
   - https://github.com/mozilla-mobile/firefox-android
