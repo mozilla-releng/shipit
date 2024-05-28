@@ -10,6 +10,7 @@ import json
 import slugid
 import sqlalchemy as sa
 import sqlalchemy.orm
+from sqlalchemy.dialects.postgresql import ENUM
 
 from backend_common.db import db
 from shipit_api.common.config import ALLOW_PHASE_SKIPPING, SIGNOFFS
@@ -264,3 +265,98 @@ class XPIRelease(db.Model, ReleaseBase):
             "completed": self.completed or "",
             "phases": [p.json for p in self.phases],
         }
+
+
+class Approval(db.Model):
+    __tablename__ = "shipit_api_workflow_approvals"
+    id = sa.Column(sa.Integer, primary_key=True)
+    uid = sa.Column(sa.String, nullable=False, unique=True)
+    name = sa.Column(sa.String, nullable=False)
+    description = sa.Column(sa.Text)
+    permissions = sa.Column(sa.String, nullable=False)
+    completed = sa.Column(sa.DateTime)
+    completed_by = sa.Column(sa.String)
+    signed = sa.Column(sa.Boolean, default=False)
+    step_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_workflow_steps.id"))
+    step = sqlalchemy.orm.relationship("Step", back_populates="approvals")
+
+    def __init__(self, uid, name, description, permissions):
+        self.uid = uid
+        self.name = name
+        self.description = description
+        self.permissions = permissions
+
+    @property
+    def json(self):
+        return dict(
+            uid=self.uid,
+            name=self.name,
+            description=self.description,
+            permissions=self.permissions,
+            completed=self.completed or "",
+            completed_by=self.completed_by or "",
+            signed=self.signed,
+        )
+
+
+class Step(db.Model):
+    __tablename__ = "shipit_api_workflow_steps"
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.String, nullable=False)
+    submitted = sa.Column(sa.Boolean, nullable=False, default=False)
+    task_id = sa.Column(sa.String, nullable=False)
+    task = sa.Column(sa.JSON, nullable=False)
+    context = sa.Column(sa.JSON, nullable=False)
+    created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
+    completed = sa.Column(sa.DateTime)
+    completed_by = sa.Column(sa.String)
+    workflow_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_workflows.id"))
+    workflow = sqlalchemy.orm.relationship("Workflow", back_populates="steps")
+    approvals = sqlalchemy.orm.relationship("Approval", order_by=Approval.id, back_populates="step")
+
+
+class Workflow(db.Model):
+    __tablename__ = "shipit_api_workflows"
+    id = sa.Column(sa.Integer, primary_key=True)
+    attributes = sa.Column(sa.JSON, nullable=False)
+    name = sa.Column(sa.String(80), nullable=False, unique=True)
+    status = sa.Column(ENUM("scheduled", "completed", "aborted", name="shipit_api_workflow_status"), nullable=False)
+    created = sa.Column(sa.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    completed = sa.Column(sa.DateTime)
+    steps = sa.orm.relationship("Step", order_by=Step.id, back_populates="workflow")
+
+    def __init__(self, attributes, status):
+        self.name = self.construct_name(attributes)
+        self.attributes = attributes
+        self.status = status
+
+    def construct_name(self, attributes):
+        raise NotImplementedError("Subclasses must implement this method to construct the workflow's name")
+
+    def step_approvals(self, step):
+        raise NotImplementedError("Subclasses must implement this method to get approvals for a workflow step")
+
+    @property
+    def allow_step_skipping(self):
+        # This only affects the frontend, *the API doesn't enforce step skipping.*
+        return False
+
+    @property
+    def json(self):
+        return {
+            "name": self.name,
+            "status": self.status,
+            "attributes": self.attributes,
+            "created": self.created.isoformat(),
+            "completed": self.completed.isoformat() if self.completed else "",
+            "steps": [p.json for p in self.steps],
+            "allow_step_skipping": self.allow_step_skipping,
+        }
+
+
+class Merge(Workflow):
+    def step_approvals(self, step):
+        return []
+
+    def construct_name(self, attributes):
+        return f"merges-{attributes['version']}"

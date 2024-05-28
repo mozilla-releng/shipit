@@ -1,0 +1,14 @@
+merges:
+    authorized-ldap-groups:
+        - releng
+        - shipit_relman
+    steps:
+        - close-beta # closes beta using the tree status API.
+        - beta-to-release # merges beta to release, bumps release, tags beta, sends a notification, etc.
+        - central-to-beta # merges central to beta, bumps beta, tags central, sends a notification, etc.
+        - open-beta # sets beta the beta tree to "approval required" using the tree status API.
+        - bump-central # bumps the nightly version and sends a notification.
+        # - bump-esr-VERSION  # not sure what to do about this one yet, but we can probably read HGMO and figure out the ESR bump steps? That data is here https://searchfox.org/mozilla-central/rev/38377227b8f96fda8f418db614e6a8aa67d01c31/taskcluster/config.yml#615-627
+        # - update-wiki # I don't know if this is feasible any more :/ see Bug 1414278: https://bugzilla.mozilla.org/show_bug.cgi?id=1414278 can the wiki read dynamic data?
+        - update-shipit # This part is about updating the nightly version and release dates in shipit. To accomplish this we need to modify the app so updating these doesn't require a deployment. Maybe we can store them in a table and create APIs to manage the data.
+        - rebuild-product-details # sends a message to the product details pulse topic to pick up the updated shipit data.
