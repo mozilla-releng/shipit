@@ -6,8 +6,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import ContentCopyIcon from 'mdi-react/ContentCopyIcon';
-import { USER_SESSION } from '../../utils/constants';
 import copy from 'clipboard-copy';
+import { USER_SESSION } from '../../utils/constants';
 import Button from '../Button';
 import { withUser } from '../../utils/AuthContext';
 
@@ -29,6 +29,7 @@ function UserMenu(props) {
     handleMenuClose();
     onUnauthorize();
   };
+
   const handleCopyAccessToken = () => {
     const { accessToken } = JSON.parse(
       localStorage.getItem(USER_SESSION)
