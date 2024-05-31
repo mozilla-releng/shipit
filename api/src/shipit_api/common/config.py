@@ -44,15 +44,6 @@ RELEASE_BRANCH = "releases/mozilla-release"
 BETA_BRANCH = "releases/mozilla-beta"
 ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 
-# FIREFOX_NIGHTLY version is hard coded and requires a human to update it after
-# the latest Nightly builds are available on CDNs after version bump (merge
-# day).
-# We could have used the in-tree version, but there can be race conditions,
-# e.g. version bumped, but still no builds available.
-#
-# This version also defines the mobile nightly version (i.e.: Fenix)
-FIREFOX_NIGHTLY = "129.0a1"
-
 # Aurora has been replaced by Dev Edition, but some 3rd party applications may
 # still rely on this value.
 FIREFOX_AURORA = ""

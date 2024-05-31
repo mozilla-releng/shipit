@@ -283,6 +283,13 @@ def get_releases_from_db(db_session: sqlalchemy.orm.Session, breakpoint_version:
     return query.all()
 
 
+def get_product_channel_version(db_session: sqlalchemy.orm.Session, product: str, channel: str):
+    Version = shipit_api.common.models.Version
+    query = db_session.query(Version)
+    version = query.filter_by(product_name=product, product_channel=channel).first()
+    return version.current_version
+
+
 def get_product_categories(product: Product, version: str) -> typing.List[ProductCategory]:
     # typically, these are dot releases that are considered major
     SPECIAL_FIREFOX_MAJORS = ["14.0.1", "125.0.1"]
@@ -525,6 +532,7 @@ async def get_primary_builds(
     releases: typing.List[shipit_api.common.models.Release],
     releases_l10n: typing.Dict[shipit_api.common.models.Release, ReleaseL10ns],
     old_product_details: ProductDetails,
+    firefox_nightly_version: str,
 ) -> PrimaryBuilds:
     """This file contains all the Thunderbird builds we provide per locale. The
     filesize fields have the same value for all lcoales, this is not a bug,
@@ -555,7 +563,7 @@ async def get_primary_builds(
     """
 
     if product is Product.FIREFOX:
-        firefox_versions = await get_firefox_versions(releases)
+        firefox_versions = await get_firefox_versions(releases, firefox_nightly_version)
         # make sure that Devedition is included in the list
         products = [Product.FIREFOX, Product.DEVEDITION]
         versions = set(
@@ -649,8 +657,10 @@ def get_firefox_esr_next_version(releases: typing.List[shipit_api.common.models.
 
 
 @backoff.on_exception(backoff.expo, (aiohttp.ClientError, asyncio.TimeoutError), max_time=60)
-async def fetch_firefox_release_schedule_data(releases: typing.List[shipit_api.common.models.Release], session: aiohttp.ClientSession):
-    firefox_nightly_mozilla_version = FirefoxVersion.parse(shipit_api.common.config.FIREFOX_NIGHTLY)
+async def fetch_firefox_release_schedule_data(
+    releases: typing.List[shipit_api.common.models.Release], session: aiohttp.ClientSession, firefox_nightly_version: str
+):
+    firefox_nightly_mozilla_version = FirefoxVersion.parse(firefox_nightly_version)
     current_nightly_version_major_number = firefox_nightly_mozilla_version.major_number
     previous_nightly_version_major_number = current_nightly_version_major_number - 1
     url_template = "https://whattrainisitnow.com/api/release/schedule/?version={version}"
@@ -706,7 +716,7 @@ async def fetch_firefox_release_schedule_data(releases: typing.List[shipit_api.c
     }
 
 
-async def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release]) -> FirefoxVersions:
+async def get_firefox_versions(releases: typing.List[shipit_api.common.models.Release], firefox_nightly_version: str) -> FirefoxVersions:
     """All the versions we ship for Firefox for Desktop
 
     This function will output to the following files:
@@ -734,10 +744,10 @@ async def get_firefox_versions(releases: typing.List[shipit_api.common.models.Re
         }
     """
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=50), timeout=aiohttp.ClientTimeout(total=30)) as session:
-        firefox_release_schedule_data = await fetch_firefox_release_schedule_data(releases, session)
+        firefox_release_schedule_data = await fetch_firefox_release_schedule_data(releases, session, firefox_nightly_version)
 
     return dict(
-        FIREFOX_NIGHTLY=shipit_api.common.config.FIREFOX_NIGHTLY,
+        FIREFOX_NIGHTLY=firefox_nightly_version,
         FIREFOX_AURORA=shipit_api.common.config.FIREFOX_AURORA,
         LATEST_FIREFOX_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.RELEASE_BRANCH),
         FIREFOX_ESR=get_firefox_esr_version(releases, f"{shipit_api.common.config.ESR_BRANCH_PREFIX}{shipit_api.common.config.CURRENT_ESR}", Product.FIREFOX),
@@ -869,7 +879,7 @@ def get_languages(old_product_details: ProductDetails) -> Languages:
     return typing.cast(Languages, languages)
 
 
-def get_mobile_details(releases: typing.List[shipit_api.common.models.Release]) -> MobileDetails:
+def get_mobile_details(releases: typing.List[shipit_api.common.models.Release], firefox_nightly_version: str) -> MobileDetails:
     """This file contains all the release information for Firefox for Android
     and Firefox for iOS. We are keeping this file around for backward
     compatibility with consumers and only the version numbers are updated
@@ -944,13 +954,13 @@ def get_mobile_details(releases: typing.List[shipit_api.common.models.Release]) 
             },
         }
     """
-    mobile_versions = get_mobile_versions(releases)
+    mobile_versions = get_mobile_versions(releases, firefox_nightly_version)
     mobile_details = json.loads(shipit_api.common.config.MOBILE_DETAILS_TEMPLATE)
     mobile_details.update(mobile_versions)
     return mobile_details
 
 
-def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release]) -> MobileVersions:
+def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release], firefox_nightly_version: str) -> MobileVersions:
     """This file contains all the versions we ship for Firefox for Android
 
     This function will output to the following files:
@@ -970,8 +980,8 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release])
     return dict(
         ios_beta_version=shipit_api.common.config.IOS_BETA_VERSION,
         ios_version=shipit_api.common.config.IOS_VERSION,
-        nightly_version=shipit_api.common.config.FIREFOX_NIGHTLY,
-        alpha_version=shipit_api.common.config.FIREFOX_NIGHTLY,
+        nightly_version=firefox_nightly_version,
+        alpha_version=firefox_nightly_version,
         beta_version=get_latest_version(releases, Product.FIREFOX_ANDROID, filter_closure=lambda r: MobileVersion.parse(r.version).is_beta),
         version=get_latest_version(releases, Product.FIREFOX_ANDROID, filter_closure=lambda r: MobileVersion.parse(r.version).is_release),
     )
@@ -1134,11 +1144,16 @@ async def rebuild(
     # breakpoint_version on
     logger.info("Getting old releases from the database")
     releases = get_releases_from_db(db_session, breakpoint_version)
+
+    # get the current nightly version from the database
+    logger.info("Getting the current nightly version from the database")
+    firefox_nightly_version = get_product_channel_version(db_session, "firefox", "nightly")
+
     # Also fetch latest nightly builds with their L10N info
     nightly_builds = [
         shipit_api.common.models.Release(
             product=Product.FIREFOX.value,
-            version=shipit_api.common.config.FIREFOX_NIGHTLY,
+            version=firefox_nightly_version,
             branch="mozilla-central",
             revision="default",
             build_number=None,
@@ -1188,11 +1203,13 @@ async def rebuild(
         "firefox_history_stability_releases.json": get_release_history(
             breakpoint_version, Product.FIREFOX, ProductCategory.STABILITY, releases, old_product_details
         ),
-        "firefox_primary_builds.json": await get_primary_builds(breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details),
-        "firefox_versions.json": await get_firefox_versions(releases),
+        "firefox_primary_builds.json": await get_primary_builds(
+            breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details, firefox_nightly_version
+        ),
+        "firefox_versions.json": await get_firefox_versions(releases, firefox_nightly_version),
         "languages.json": get_languages(old_product_details),
         "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID], releases, old_product_details),
-        "mobile_details.json": get_mobile_details(releases),
+        "mobile_details.json": get_mobile_details(releases, firefox_nightly_version),
         "mobile_history_development_releases.json": get_release_history(
             breakpoint_version, Product.FENNEC, ProductCategory.DEVELOPMENT, releases, old_product_details
         ),
@@ -1200,7 +1217,7 @@ async def rebuild(
         "mobile_history_stability_releases.json": get_release_history(
             breakpoint_version, Product.FENNEC, ProductCategory.STABILITY, releases, old_product_details
         ),
-        "mobile_versions.json": get_mobile_versions(releases),
+        "mobile_versions.json": get_mobile_versions(releases, firefox_nightly_version),
         "thunderbird.json": get_releases(breakpoint_version, [Product.THUNDERBIRD], releases, old_product_details),
         "thunderbird_beta_builds.json": get_thunderbird_beta_builds(),
         "thunderbird_history_development_releases.json": get_release_history(
@@ -1213,7 +1230,7 @@ async def rebuild(
             breakpoint_version, Product.THUNDERBIRD, ProductCategory.STABILITY, releases, old_product_details
         ),
         "thunderbird_primary_builds.json": await get_primary_builds(
-            breakpoint_version, Product.THUNDERBIRD, combined_releases, combined_l10n, old_product_details
+            breakpoint_version, Product.THUNDERBIRD, combined_releases, combined_l10n, old_product_details, firefox_nightly_version
         ),
         "thunderbird_versions.json": get_thunderbird_versions(releases),
     }
