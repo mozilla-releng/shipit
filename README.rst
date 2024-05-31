@@ -82,11 +82,21 @@ product-details rely on a `pulse queue <https://github.com/mozilla-releng/shipit
 This pulse queue is then consumed by `worker.py <https://github.com/mozilla-releng/shipit/blob/df379442c32baa7931767b058840bbb293135010/api/src/shipit_api/admin/worker.py#L42>`__. Although, there's a
 way to by-pass the need for a pulse queue.
 
-1. ``docker-compose run api bash``
+1. Define the container in which the api application is running
 
-2. ``shipit_rebuild_product_details --database-url="postgresql://shipituser:shipitpassword@db/shipitdb" --channel development``
+::
 
-3. This will ask you for some GitHub crendentials. You can provide them if you want to update https://github.com/mozilla-releng/product-details. That said, you can also ``Ctrl+C`` and inspect the content of `/tmp/product-details` in the docker container. Changes are done here before they pushed to the git repo.
+    export SHIPIT_API_CONTAINER="shipit-api-1"
+
+2. Access the Docker container's interactive shell
+
+::
+
+    docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
+
+3. ``poetry run shipit_rebuild_product_details --database-url="postgresql://shipituser:shipitpassword@db/shipitdb" --channel development``
+
+4. This will ask you for some GitHub crendentials. You can provide them if you want to update https://github.com/mozilla-releng/product-details. That said, you can also ``Ctrl+C`` and inspect the content of `/tmp/product-details` in the docker container. Changes are done here before they pushed to the git repo.
 
 ⚠️ If you decide to provide GitHub crendentials, remember that GitHub accounts that enabled 2-factor-authentication have to provide a GitHub token
 instead of their regular password. Instructions to generate a token are found above. This time tough, grant the ``public_repo`` scope.
