@@ -51,7 +51,7 @@ shipit_trigger_product_details = "shipit_api.admin.cli:trigger_product_details"
 [tool.poetry.dependencies]
 # Required by both public and admin apps
 python = "^3.9"
-connexion = {version = "<3.0", extras = ["swagger-ui"]}
+connexion = {version = "<4.0", extras = ["swagger-ui"]}
 dockerflow = "*"
 flask = "*"
 flask_cors = "*"
