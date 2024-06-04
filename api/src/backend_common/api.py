@@ -6,8 +6,7 @@
 import logging
 
 from connexion import problem
-from connexion.apis.flask_api import FlaskApi
-from connexion.apps.flask_app import FlaskJSONEncoder
+from connexion.apps.flask import FlaskApi
 from connexion.exceptions import ProblemException
 from werkzeug.exceptions import HTTPException, InternalServerError, default_exceptions
 
@@ -48,10 +47,6 @@ class Api:
         TODO: annotate function
         """
         self.__app = app
-
-        logger.debug("Setting JSON encoder.")
-
-        app.json_encoder = FlaskJSONEncoder
 
         logger.debug("Setting common error handler for all error codes.")
         # FlaskApp sets up error handler automatically, but FlaskApi doesn't.
