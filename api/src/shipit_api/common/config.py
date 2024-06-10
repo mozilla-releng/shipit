@@ -51,7 +51,7 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # e.g. version bumped, but still no builds available.
 #
 # This version also defines the mobile nightly version (i.e.: Fenix)
-FIREFOX_NIGHTLY = "128.0a1"
+FIREFOX_NIGHTLY = "129.0a1"
 
 # Aurora has been replaced by Dev Edition, but some 3rd party applications may
 # still rely on this value.
