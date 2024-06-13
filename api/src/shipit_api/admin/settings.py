@@ -99,8 +99,14 @@ LDAP_GROUPS = {
 AUTH0_AUTH_SCOPES = assign_ldap_groups_to_scopes()
 
 # other scopes
-AUTH0_AUTH_SCOPES.update({"rebuild_product_details": LDAP_GROUPS["firefox-signoff"], "update_release_status": [], "create_product_channel_version/firefox": []})
-
+AUTH0_AUTH_SCOPES.update(
+    {
+        "rebuild_product_details": LDAP_GROUPS["firefox-signoff"],
+        "update_release_status": [],
+        "create_product_channel_version/firefox": [],
+        "create_product_channel_version/thunderbird": [],
+    }
+)
 
 # Github scopes
 # The following scope gives permission to all github queries, inlcuding private repos
