@@ -87,7 +87,7 @@ module.exports = {
             repo: 'https://hg.mozilla.org/releases/mozilla-beta',
             versionFile: 'mobile/android/version.txt',
             enableReleaseEta: false,
-            disableable: false,
+            disableable: true,
           },
           {
             prettyName: 'Release',

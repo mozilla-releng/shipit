@@ -56,6 +56,7 @@ module.exports = {
             repo: 'https://hg.mozilla.org/try',
             enableReleaseEta: false,
             versionFile: 'mobile/android/version.txt',
+            disableable: true,
           },
         ],
         enablePartials: false,
