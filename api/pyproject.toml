@@ -61,7 +61,7 @@ mozilla-version = "*"
 python-decouple = "*"
 sentry-sdk = {version = "*", extras = ["flask"]}
 slugid = "*"
-sqlalchemy = "<=2.0.30"
+sqlalchemy = "*"
 # deployment
 gunicorn = "*"
 psycopg2 = "*"
