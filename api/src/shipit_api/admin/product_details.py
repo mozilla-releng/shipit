@@ -533,6 +533,7 @@ async def get_primary_builds(
     releases_l10n: typing.Dict[shipit_api.common.models.Release, ReleaseL10ns],
     old_product_details: ProductDetails,
     firefox_nightly_version: str,
+    thunderbird_nightly_version: str,
 ) -> PrimaryBuilds:
     """This file contains all the Thunderbird builds we provide per locale. The
     filesize fields have the same value for all lcoales, this is not a bug,
@@ -578,7 +579,7 @@ async def get_primary_builds(
         if firefox_versions["FIREFOX_ESR_NEXT"]:
             versions.add(firefox_versions["FIREFOX_ESR_NEXT"])
     elif product is Product.THUNDERBIRD:
-        thunderbird_versions = get_thunderbird_versions(releases)
+        thunderbird_versions = get_thunderbird_versions(releases, thunderbird_nightly_version)
         products = [Product.THUNDERBIRD]
         versions = set(
             [
@@ -987,7 +988,7 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release],
     )
 
 
-def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Release]) -> ThunderbirdVersions:
+def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Release], thunderbird_nightly_version: str) -> ThunderbirdVersions:
     """
 
     This function will output to the following files:
@@ -1007,7 +1008,7 @@ def get_thunderbird_versions(releases: typing.List[shipit_api.common.models.Rele
     return dict(
         LATEST_THUNDERBIRD_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_OLD_RELEASE_BRANCH),
         LATEST_THUNDERBIRD_DEVEL_VERSION=get_latest_version(releases, Product.THUNDERBIRD, shipit_api.common.config.THUNDERBIRD_BETA_BRANCH),
-        LATEST_THUNDERBIRD_NIGHTLY_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_NIGHTLY_VERSION,
+        LATEST_THUNDERBIRD_NIGHTLY_VERSION=thunderbird_nightly_version,
         LATEST_THUNDERBIRD_ALPHA_VERSION=shipit_api.common.config.LATEST_THUNDERBIRD_ALPHA_VERSION,
         THUNDERBIRD_ESR=get_firefox_esr_version(
             releases, f"{shipit_api.common.config.THUNDERBIRD_ESR_BRANCH_PREFIX}{shipit_api.common.config.CURRENT_ESR}", Product.THUNDERBIRD
@@ -1148,6 +1149,7 @@ async def rebuild(
     # get the current nightly version from the database
     logger.info("Getting the current nightly version from the database")
     firefox_nightly_version = get_product_channel_version(db_session, "firefox", "nightly")
+    thunderbird_nightly_version = get_product_channel_version(db_session, "thunderbird", "nightly")
 
     # Also fetch latest nightly builds with their L10N info
     nightly_builds = [
@@ -1163,7 +1165,7 @@ async def rebuild(
         ),
         shipit_api.common.models.Release(
             product=Product.THUNDERBIRD.value,
-            version=shipit_api.common.config.LATEST_THUNDERBIRD_NIGHTLY_VERSION,
+            version=thunderbird_nightly_version,
             branch="comm-central",
             revision="default",
             build_number=None,
@@ -1204,7 +1206,7 @@ async def rebuild(
             breakpoint_version, Product.FIREFOX, ProductCategory.STABILITY, releases, old_product_details
         ),
         "firefox_primary_builds.json": await get_primary_builds(
-            breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details, firefox_nightly_version
+            breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details, firefox_nightly_version, thunderbird_nightly_version
         ),
         "firefox_versions.json": await get_firefox_versions(releases, firefox_nightly_version),
         "languages.json": get_languages(old_product_details),
@@ -1230,9 +1232,9 @@ async def rebuild(
             breakpoint_version, Product.THUNDERBIRD, ProductCategory.STABILITY, releases, old_product_details
         ),
         "thunderbird_primary_builds.json": await get_primary_builds(
-            breakpoint_version, Product.THUNDERBIRD, combined_releases, combined_l10n, old_product_details, firefox_nightly_version
+            breakpoint_version, Product.THUNDERBIRD, combined_releases, combined_l10n, old_product_details, firefox_nightly_version, thunderbird_nightly_version
         ),
-        "thunderbird_versions.json": get_thunderbird_versions(releases),
+        "thunderbird_versions.json": get_thunderbird_versions(releases, thunderbird_nightly_version),
     }
 
     product_details.update(get_regions(old_product_details))
