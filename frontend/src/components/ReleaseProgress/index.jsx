@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import CancelIcon from 'mdi-react/CancelIcon';
+import AndroidIcon from 'mdi-react/AndroidIcon';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
@@ -194,6 +195,21 @@ export default function ReleaseProgress({
         <Box fontSize=".85rem" fontWeight="fontWeightRegular" display="block">
           Created on {dateCreated} with {renderReleaseTitle(xpi, release)}
         </Box>
+        <div style={{ position: 'relative' }}>
+          <div style={{ width: '50%', position: 'absolute' }}>
+            {release.name.toLowerCase().includes('android') && (
+              <AndroidIcon
+                style={{
+                  color: '#20ac5f',
+                  height: '2.5em',
+                  width: '2.5em',
+                  left: 0,
+                  marginTop: '1em',
+                }}
+              />
+            )}
+          </div>
+        </div>
         <PhaseProgress release={release} readOnly={!mutable} xpi={xpi} />
       </CardContent>
       <CardActions className={classes.cardActions}>
