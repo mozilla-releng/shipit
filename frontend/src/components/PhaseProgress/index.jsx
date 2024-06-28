@@ -5,6 +5,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import AndroidIcon from 'mdi-react/AndroidIcon';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
@@ -272,6 +273,21 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
         )}
       </Stepper>
       <Dialog open={open} onClose={handleClose}>
+        <div style={{ position: 'relative' }}>
+          <div style={{ width: '50%', position: 'absolute' }}>
+            {release.name.toLowerCase().includes('android') && (
+              <AndroidIcon
+                style={{
+                  color: '#20ac5f',
+                  height: '3em',
+                  width: '3em',
+                  marginTop: '2em',
+                  marginLeft: '28.75em',
+                }}
+              />
+            )}
+          </div>
+        </div>
         <DialogTitle>Schedule Phase</DialogTitle>
         <DialogContent>
           {phase.signoffs && phase.signoffs.length > 0
