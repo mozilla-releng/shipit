@@ -296,6 +296,7 @@ paths:
           enum:
           - firefox
           - devedition
+          - firefox-android
       - name: branch
         in: query
         required: true
@@ -1064,6 +1065,7 @@ components:
           enum:
           - firefox
           - devedition
+          - firefox-android
         branch:
           type: string
           example: releases/mozilla-beta
