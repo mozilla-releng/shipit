@@ -285,6 +285,7 @@ components:
           enum:
           - firefox
           - devedition
+          - firefox-android
         branch:
           type: string
           example: releases/mozilla-beta
