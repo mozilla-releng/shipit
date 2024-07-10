@@ -70,7 +70,7 @@ def add_release(body):
     session = current_app.db.session
     partial_updates = body.get("partial_updates")
     if partial_updates == "auto":
-        if product not in [Product.FIREFOX.value, Product.DEVEDITION.value] or branch not in [
+        if product not in (Product.FIREFOX.value, Product.DEVEDITION.value, Product.FIREFOX_ANDROID.value) or branch not in [
             "try",
             "releases/mozilla-beta",
             "projects/maple",
@@ -355,6 +355,8 @@ def enable_product(product, branch):
 
 def _suggest_partials(product, branch, max_partials=3):
     """Return a list of suggested partials"""
+    if product == Product.FIREFOX_ANDROID.value:
+        return None
     shipped_releases = reversed(list_releases(product, branch, status=["shipped"]))
     suggested_releases = list(shipped_releases)[:max_partials]
     suggested_partials = {}
