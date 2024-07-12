@@ -6,7 +6,8 @@ policy:
 tasks:
     - $if: >
           (tasks_for == "github-pull-request" && event.action in ["opened", "reopened", "synchronize"])
-          || (tasks_for in ["github-push", "action", "cron"])
+          || (tasks_for in ["action", "cron"])
+          || (tasks_for == "github-push" && event.ref in ["refs/heads/main", "refs/heads/production", "refs/heads/dev"])
       then:
           $let:
               trustDomain: releng
