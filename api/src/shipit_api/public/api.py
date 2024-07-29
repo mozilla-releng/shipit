@@ -30,7 +30,9 @@ def good_version(release):
         return False
 
 
-def list_releases(product=None, branch=None, version=None, build_number=None, status=["scheduled"]):
+def list_releases(product=None, branch=None, version=None, build_number=None, status=None):
+    if not status:
+        status = ["scheduled"]
     session = current_app.db.session
     releases = session.query(Release)
     if product:
@@ -40,7 +42,7 @@ def list_releases(product=None, branch=None, version=None, build_number=None, st
     if version:
         releases = releases.filter(Release.version == version)
         if build_number:
-            releases = releases.filter(Release.build_number == build_number)
+            releases = releases.filter(Release.build_number == int(build_number))
     elif build_number:
         raise BadRequest(description="Filtering by build_number without version is not supported.")
     releases = releases.filter(Release.status.in_(status))
