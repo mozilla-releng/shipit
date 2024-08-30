@@ -57,6 +57,7 @@ FirefoxVersions = mypy_extensions.TypedDict(
         "FIREFOX_AURORA": str,
         "FIREFOX_ESR": str,
         "FIREFOX_ESR_NEXT": str,
+        "FIREFOX_ESR115": str,
         "LATEST_FIREFOX_DEVEL_VERSION": str,
         "FIREFOX_DEVEDITION": str,
         "LATEST_FIREFOX_OLDER_VERSION": str,
@@ -578,6 +579,8 @@ async def get_primary_builds(
         )
         if firefox_versions["FIREFOX_ESR_NEXT"]:
             versions.add(firefox_versions["FIREFOX_ESR_NEXT"])
+        if firefox_versions["FIREFOX_ESR115"]:
+            versions.add(firefox_versions["FIREFOX_ESR115"])
     elif product is Product.THUNDERBIRD:
         thunderbird_versions = get_thunderbird_versions(releases, thunderbird_nightly_version)
         products = [Product.THUNDERBIRD]
@@ -755,6 +758,7 @@ async def get_firefox_versions(releases: typing.List[shipit_api.common.models.Re
         FIREFOX_ESR_NEXT=get_firefox_esr_next_version(
             releases, f"{shipit_api.common.config.ESR_BRANCH_PREFIX}{shipit_api.common.config.ESR_NEXT}", Product.FIREFOX, shipit_api.common.config.ESR_NEXT
         ),
+        FIREFOX_ESR115=get_firefox_esr_next_version(releases, f"{shipit_api.common.config.ESR_BRANCH_PREFIX}115", Product.FIREFOX, "115"),
         LATEST_FIREFOX_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
         LATEST_FIREFOX_RELEASED_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
         FIREFOX_DEVEDITION=get_latest_version(releases, Product.DEVEDITION, shipit_api.common.config.BETA_BRANCH),
@@ -1069,6 +1073,7 @@ def sanity_checks(product_details: ProductDetails) -> None:
         "FIREFOX_DEVEDITION",
         "FIREFOX_ESR",
         "FIREFOX_ESR_NEXT",
+        "FIREFOX_ESR115",
         "LATEST_FIREFOX_DEVEL_VERSION",
         "LATEST_FIREFOX_RELEASED_DEVEL_VERSION",
         "LATEST_FIREFOX_VERSION",
