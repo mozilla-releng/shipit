@@ -2814,18 +2814,18 @@ Jinja2 = ">=2.0"
 
 [[package]]
 name = "taskcluster"
-version = "73.0.0"
+version = "75.0.0"
 description = "Python client for Taskcluster"
 optional = false
 python-versions = "*"
 files = [
-    {file = "taskcluster-73.0.0-py3-none-any.whl", hash = "sha256:6f730bcab9c5e6d6dc5ce5dcde33ab1ff244d0a5901233a719f510ca2ae736da"},
-    {file = "taskcluster-73.0.0.tar.gz", hash = "sha256:c21f77402f75685e82b42bea6030fc49416d2474c6d566106ba4a9d3dc9e5d4a"},
+    {file = "taskcluster-75.0.0-py3-none-any.whl", hash = "sha256:0d39f32bd7cb0ddf75a51827c15fbb5641d1f5922654451ba3ecae72fcfc8e1a"},
+    {file = "taskcluster-75.0.0.tar.gz", hash = "sha256:f932ec449f265a52dce2fea89a4de5b1607f47e21ce84a6fe33d78afe43c7d42"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.7.4"
-async-timeout = ">=2.0.0"
+async_timeout = ">=2.0.0"
 mohawk = ">=0.3.4"
 python-dateutil = ">=2.8.2"
 requests = ">=2.4.3"
