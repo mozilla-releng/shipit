@@ -211,11 +211,19 @@ async def fetch_l10n_data(
     session: aiohttp.ClientSession, release: shipit_api.common.models.Release, raise_on_failure: bool, use_cache: bool = True
 ) -> typing.Tuple[shipit_api.common.models.Release, typing.Optional[ReleaseL10ns]]:
     # Fenix and some thunderbird on the betas don't have l10n in the repository
+    # XXX: for some reason we didn't generate l10n for devedition in old_product_details
     if (
         Product(release.product) is Product.THUNDERBIRD
         and release.branch == "releases/comm-beta"
         and release.revision in ["3e01e0dc6943", "481fea2011e6", "85cb8f907b18", "92950b2fd2dc", "c614b6e7cf58", "e277e3f0ab13", "efd290b55a35", "f87ba53e04ff"]
-    ) or Product(release.product) in (Product.FENIX, Product.ANDROID_COMPONENTS, Product.FOCUS_ANDROID, Product.FIREFOX_ANDROID, Product.APP_SERVICES):
+    ) or Product(release.product) in (
+        Product.FENIX,
+        Product.ANDROID_COMPONENTS,
+        Product.FOCUS_ANDROID,
+        Product.FIREFOX_ANDROID,
+        Product.APP_SERVICES,
+        Product.DEVEDITION,
+    ):
         return (release, None)
 
     url_file = {
@@ -604,7 +612,12 @@ async def get_primary_builds(
         if Product(release.product) not in products or release.version not in versions:
             continue
         # Make sure to add en-US, it's not listed in the l10n changesets file
-        for l10n in list(releases_l10n.get(release, {}).keys()) + ["en-US"]:
+        locales = ["en-US"]
+        if release in releases_l10n:
+            locales += releases_l10n[release].keys()
+        elif f"1.0/l10n/{release.name}.json" in old_product_details:
+            locales += old_product_details[f"1.0/l10n/{release.name}.json"]["locales"]
+        for l10n in locales:
             # for compatibility with shipit v1, skip ja-JP-mac
             if l10n == "ja-JP-mac":
                 continue
@@ -834,9 +847,6 @@ def get_l10n(
     data: ProductDetails = {file_.replace("1.0/", ""): content for file_, content in old_product_details.items() if file_.startswith("1.0/l10n/")}
 
     for release, locales in releases_l10n.items():
-        # XXX: for some reason we didn't generate l10n for devedition in old_product_details
-        if Product(release.product) is Product.DEVEDITION:
-            continue
         data[f"l10n/{release.name}.json"] = {
             "locales": {locale: dict(changeset=content["revision"]) for locale, content in locales.items()},
             "submittedAt": with_default(release.created, to_isoformat, default=""),
@@ -1182,8 +1192,9 @@ async def rebuild(
     logger.info("Getting locales from hg.mozilla.org for each release from database")
     # use limit_per_host=50 since hg.mozilla.org doesn't like too many connections
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=50), timeout=aiohttp.ClientTimeout(total=30)) as session:
+        missing_releases = [release for release in releases if f"1.0/l10n/{release.name}.json" not in old_product_details]
         raise_on_failure = git_branch in ["production", "staging"]
-        releases_l10n = await asyncio.gather(*[fetch_l10n_data(session, release, raise_on_failure) for release in releases])
+        releases_l10n = await asyncio.gather(*[fetch_l10n_data(session, release, raise_on_failure) for release in missing_releases])
         nightly_l10n = await asyncio.gather(*[fetch_l10n_data(session, release, raise_on_failure) for release in nightly_builds])
 
     releases_l10n = {release: changeset for (release, changeset) in releases_l10n if changeset is not None}
