@@ -1040,9 +1040,6 @@ def get_thunderbird_beta_builds() -> typing.Dict:
 
 
 def sanity_check_firefox_builds(firefox_versions: FirefoxVersions, firefox_primary_builds: PrimaryBuilds, version_key: str, min_builds: int = 20) -> None:
-    if version_key in ("FIREFOX_ESR_NEXT", "FIREFOX_AURORA"):
-        return
-
     version = firefox_versions.get(version_key)
     if not version:
         return
@@ -1069,10 +1066,8 @@ def sanity_check_thunderbuild_builds(
 def sanity_checks(product_details: ProductDetails) -> None:
     for version_key in (
         "FIREFOX_NIGHTLY",
-        "FIREFOX_AURORA",
         "FIREFOX_DEVEDITION",
         "FIREFOX_ESR",
-        "FIREFOX_ESR_NEXT",
         "FIREFOX_ESR115",
         "LATEST_FIREFOX_DEVEL_VERSION",
         "LATEST_FIREFOX_RELEASED_DEVEL_VERSION",
