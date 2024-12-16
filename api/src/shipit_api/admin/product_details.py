@@ -211,7 +211,6 @@ async def fetch_l10n_data(
     session: aiohttp.ClientSession, release: shipit_api.common.models.Release, raise_on_failure: bool, use_cache: bool = True
 ) -> typing.Tuple[shipit_api.common.models.Release, typing.Optional[ReleaseL10ns]]:
     # Fenix and some thunderbird on the betas don't have l10n in the repository
-    # XXX: for some reason we didn't generate l10n for devedition in old_product_details
     if (
         Product(release.product) is Product.THUNDERBIRD
         and release.branch == "releases/comm-beta"
@@ -222,7 +221,6 @@ async def fetch_l10n_data(
         Product.FOCUS_ANDROID,
         Product.FIREFOX_ANDROID,
         Product.APP_SERVICES,
-        Product.DEVEDITION,
     ):
         return (release, None)
 
@@ -1187,7 +1185,10 @@ async def rebuild(
     logger.info("Getting locales from hg.mozilla.org for each release from database")
     # use limit_per_host=50 since hg.mozilla.org doesn't like too many connections
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=50), timeout=aiohttp.ClientTimeout(total=30)) as session:
-        missing_releases = [release for release in releases if f"1.0/l10n/{release.name}.json" not in old_product_details]
+        # XXX: for some reason we didn't generate l10n for devedition in old_product_details
+        # However, we do need to include devedition releases if there's no corresponding firefox
+        # release, to populate firefox_primary_builds.json
+        missing_releases = [release for release in releases if f"1.0/l10n/{release.name}.json".replace("Devedition", "Firefox") not in old_product_details]
         raise_on_failure = git_branch in ["production", "staging"]
         releases_l10n = await asyncio.gather(*[fetch_l10n_data(session, release, raise_on_failure) for release in missing_releases])
         nightly_l10n = await asyncio.gather(*[fetch_l10n_data(session, release, raise_on_failure) for release in nightly_builds])
