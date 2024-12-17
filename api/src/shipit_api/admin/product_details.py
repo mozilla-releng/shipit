@@ -845,6 +845,10 @@ def get_l10n(
     data: ProductDetails = {file_.replace("1.0/", ""): content for file_, content in old_product_details.items() if file_.startswith("1.0/l10n/")}
 
     for release, locales in releases_l10n.items():
+        # XXX: for some reason we didn't generate l10n for devedition in old_product_details
+        if Product(release.product) is Product.DEVEDITION:
+            continue
+
         data[f"l10n/{release.name}.json"] = {
             "locales": {locale: dict(changeset=content["revision"]) for locale, content in locales.items()},
             "submittedAt": with_default(release.created, to_isoformat, default=""),
