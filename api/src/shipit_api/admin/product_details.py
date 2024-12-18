@@ -1106,20 +1106,7 @@ def run_check(*arg, **kw):
     return cli_common.utils.retry(lambda: cli_common.command.run_check(*arg, **kw))
 
 
-async def rebuild(
-    db_session: sqlalchemy.orm.Session,
-    git_branch: str,
-    git_repo_url: str,
-    folder_in_repo: str,
-    breakpoint_version: typing.Optional[int],
-    clean_working_copy: bool = True,
-):
-    secrets = [urllib.parse.urlparse(git_repo_url).password]
-
-    # Sometimes we want to work from a clean working copy
-    if clean_working_copy and shipit_api.common.config.PRODUCT_DETAILS_DIR.exists():
-        shutil.rmtree(shipit_api.common.config.PRODUCT_DETAILS_DIR)
-
+def setup_working_copy(git_branch, git_repo_url, secrets):
     # Clone/pull latest product details
     logger.info(f"Getting latest product details from {cli_common.command.hide_secrets(git_repo_url, secrets)}.")
     if shipit_api.common.config.PRODUCT_DETAILS_DIR.exists():
@@ -1140,6 +1127,23 @@ async def rebuild(
         run_check(["git", "config", "http.postBuffer", "12M"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
         run_check(["git", "config", "user.email", "release-services+robot@mozilla.com"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
         run_check(["git", "config", "user.name", "Release Services Robot"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
+
+
+async def rebuild(
+    db_session: sqlalchemy.orm.Session,
+    git_branch: str,
+    git_repo_url: str,
+    folder_in_repo: str,
+    breakpoint_version: typing.Optional[int],
+    clean_working_copy: bool = True,
+):
+    secrets = [urllib.parse.urlparse(git_repo_url).password]
+
+    # Sometimes we want to work from a clean working copy
+    if clean_working_copy and shipit_api.common.config.PRODUCT_DETAILS_DIR.exists():
+        shutil.rmtree(shipit_api.common.config.PRODUCT_DETAILS_DIR)
+
+    setup_working_copy(git_branch, git_repo_url, secrets)
 
     # XXX: we need to implement how to figure out breakpoint_version from old_product_details
     # if breakpoint_version is not provided we should figure it out from old_product_details
@@ -1303,4 +1307,8 @@ async def rebuild(
         # XXX: we need a better commmit message, maybe mention what triggered this update
         commit_message = "Updating product details"
         run_check(["git", "commit", "-m", commit_message], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
-        run_check(["git", "push", "origin", git_branch], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
+        git_push(git_branch, secrets)
+
+
+def git_push(git_branch, secrets):
+    run_check(["git", "push", "origin", git_branch], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
