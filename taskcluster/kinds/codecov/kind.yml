@@ -17,14 +17,14 @@ jobs:
         description: "Upload coverage.xml to codecov.io"
         worker-type: t-linux
         worker:
-            docker-image: {in-tree: python39}
+            docker-image: {in-tree: python312}
             max-run-time: 1800
             env:
                 MOZ_FETCHES_DIR: /builds/worker/fetches
         scopes:
             - secrets:get:project/releng/shipit/ci
         dependencies:
-            tests: tests-api-python-39
+            tests: tests-api-python-312
         fetches:
             fetch:
                 - codecov-uploader

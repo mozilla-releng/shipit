@@ -31,7 +31,7 @@ tasks:
             max-run-time: 3600
         dependencies:
               tests-js: tests-frontend-node-14
-              tests-api: tests-api-python-39
+              tests-api: tests-api-python-312
         run:
             command:
                 - sh
