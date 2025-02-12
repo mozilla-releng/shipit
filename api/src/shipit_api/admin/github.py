@@ -226,6 +226,9 @@ def get_package_json_directory(owner, repo, revision, directory):
 
 
 def get_version_txt(owner, repo, revision):
+    if "firefox-ios" in repo:
+        # TODO: Figure out what to do about version
+        return "900.0"
     return get_file_from_github(owner, repo, "version.txt", revision)
 
 
