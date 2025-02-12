@@ -17,6 +17,8 @@ gecko:
 mobile:
   - https://github.com/mozilla-mobile/firefox-android
   - https://github.com/mozilla-releng/staging-firefox-android
+  - https://github.com/mozilla-mobile/firefox-ios
+  - https://github.com/mozilla-mobile/staging-firefox-ios
 mozillavpn:
   - https://github.com/mozilla-mobile/mozilla-vpn-client
   - https://github.com/mozilla-releng/staging-mozilla-vpn-client

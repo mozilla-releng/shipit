@@ -79,6 +79,7 @@ LDAP_GROUPS = {
     "firefox-signoff": ["shipit_firefox"],
     "thunderbird-signoff": ["shipit_thunderbird"],
     "firefox-android-signoff": ["shipit_mobile"],
+    "firefox-ios-signoff": ["shipit_mobile"],
     "app-services-signoff": ["shipit_app_services"],
     "vpn-signoff": ["shipit_mozillavpn"],
     # XPI signoffs. These are in flux.
