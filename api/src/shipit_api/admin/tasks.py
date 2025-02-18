@@ -157,10 +157,12 @@ def extract_our_flavors(avail_flavors, product, version, partial_updates, produc
     return [flavor for flavor in SUPPORTED_FLAVORS[product_key] if flavor["name"] in avail_flavors_set]
 
 
-def generate_action_hook(task_group_id, action_name, actions, parameters, input_):
+def generate_action_hook(task_group_id, action_name, actions, parameters, input_, action_title=None):
     target_action = find_action(action_name, actions)
     context = copy.deepcopy({"parameters": parameters})
     context.update({"taskGroupId": task_group_id, "taskId": None, "task": None, "input": input_})
+    if action_title:
+        target_action["hookPayload"]["decision"]["action"]["title"] = action_title
     return dict(hook_group_id=target_action["hookGroupId"], hook_id=target_action["hookId"], hook_payload=target_action["hookPayload"], context=context)
 
 
@@ -209,7 +211,14 @@ def generate_phases(release, common_input, verify_supported_flavors):
         input_["release_promotion_flavor"] = phase["name"]
         input_["previous_graph_ids"] = list(previous_graph_ids)
 
-        hook = generate_action_hook(task_group_id=decision_task_id, action_name="release-promotion", actions=actions, parameters=parameters, input_=input_)
+        hook = generate_action_hook(
+            task_group_id=decision_task_id,
+            action_name="release-promotion",
+            actions=actions,
+            parameters=parameters,
+            input_=input_,
+            action_title=f"{phase['name'].split('_')[0].capitalize()} {release.name}",
+        )
         hook_no_context = {k: v for k, v in hook.items() if k != "context"}
         phase_obj = release.phase_class(name=phase["name"], task_id="", task=json.dumps(hook_no_context), context=json.dumps(hook["context"]))
         # we need to update input_['previous_graph_ids'] later, because
