@@ -102,6 +102,26 @@ module.exports = {
         enablePartials: false,
       },
       {
+        product: 'firefox-ios',
+        prettyName: 'Firefox iOS',
+        appName: 'firefox-ios',
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        repositories: [
+          {
+            prettyName: 'Firefox iOS',
+            project: 'firefox-ios',
+            repo: 'https://github.com/mozilla-mobile/firefox-ios',
+            enableReleaseEta: false,
+            enableTreeherder: true,
+          },
+        ],
+        enablePartials: false,
+      },
+      {
         product: 'app-services',
         prettyName: 'Application Services',
         appName: 'app-services',
