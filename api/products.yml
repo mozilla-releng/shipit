@@ -52,6 +52,16 @@ firefox-android:
 focus-android:
   legacy: true
   version-class: "mozilla_version.mobile.MobileVersion"
+firefox-ios:
+  can-be-disabled: true
+  authorized-ldap-groups:
+  - shipit_firefox
+  - shipit_relman
+  phases:
+  - promote
+  - push
+  - ship
+  version-class: "mozilla_version.mobile.MobileVersion"
 mozilla-vpn-addons:
   authorized-ldap-groups:
   - releng
