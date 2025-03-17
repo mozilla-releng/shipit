@@ -2948,14 +2948,14 @@ Jinja2 = ">=2.0"
 
 [[package]]
 name = "taskcluster"
-version = "81.0.3"
+version = "83.3.0"
 description = "Python client for Taskcluster"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "taskcluster-81.0.3-py3-none-any.whl", hash = "sha256:5adc1eefd507195f281442935decee6491e10597626fad55bcd59f6535a32f8e"},
-    {file = "taskcluster-81.0.3.tar.gz", hash = "sha256:ebe004ada85002c6ce06a99f9b303e52e9ef093a872bc309fcd7b81c53946b97"},
+    {file = "taskcluster-83.3.0-py3-none-any.whl", hash = "sha256:e32531a13bd5c6652b1ab8f7a7f917dedb9a63a1ae9af0ed8a83498afa036a85"},
+    {file = "taskcluster-83.3.0.tar.gz", hash = "sha256:0e882ca827109c32d9feea39232fbbc68451fb238618cf9c45c1e5053a845cc5"},
 ]
 
 [package.dependencies]
@@ -3024,6 +3024,7 @@ files = [
     {file = "tomli-2.2.1-py3-none-any.whl", hash = "sha256:cb55c73c5f4408779d0cf3eef9f762b9c9f147a77de7b258bef0a5628adc85cc"},
     {file = "tomli-2.2.1.tar.gz", hash = "sha256:cd45e1dc79c835ce60f7404ec8119f2eb06d38b1deba146f07ced3bbc44505ff"},
 ]
+markers = {main = "python_version < \"3.11\"", test = "python_full_version <= \"3.11.0a6\"", tox = "python_version < \"3.11\""}
 
 [[package]]
 name = "tox"
