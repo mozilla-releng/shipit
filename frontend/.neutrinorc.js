@@ -11,6 +11,7 @@ const SHIPIT_API_URL = process.env.SHIPIT_API_URL;
 const FRONTEND_TASKCLUSTER_ROOT_URL = process.env.FRONTEND_TASKCLUSTER_ROOT_URL;
 const connectSrc = [
   'https://hg.mozilla.org',
+  'https://hg-edge.mozilla.org',
   'https://auth.mozilla.auth0.com',
   SHIPIT_API_URL,
   SHIPIT_PUBLIC_API_URL,
