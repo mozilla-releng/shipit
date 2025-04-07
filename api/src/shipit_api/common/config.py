@@ -453,6 +453,7 @@ def _get_phases_definitions(phases):
 
 SUPPORTED_FLAVORS = _get_supported_flavors()
 
+SYSTEM_ADDONS = ("webcompat",)
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
 SIGNOFFS = {
@@ -476,13 +477,6 @@ SIGNOFFS = {
             ],
             "ship": [
                 {"name": "Privileged webextension admin", "description": "Ship XPI", "permissions": "xpi_privileged_signoff"},
-            ],
-        },
-        # XXX replace the 2nd `system` signoff with `xpi_system_qa_signoff` once
-        #     that team is defined and granted access to shipit
-        "system": {
-            "ship": [
-                {"name": "System addon admin", "description": "Ship XPI", "permissions": "xpi_system_signoff"},
             ],
         },
         "mozillaonline-privileged": {
@@ -513,6 +507,16 @@ SIGNOFFS = {
         },
     },
 }
+
+# System Addon signoffs
+for addon in SYSTEM_ADDONS:
+    SIGNOFFS["xpi"][f"system_{addon}"] = {
+        "ship": [
+            {"name": f"{addon.capitalize()} developer (#1)", "description": f"Ship {addon}", "permissions": f"system_addon_{addon}"},
+            {"name": f"{addon.capitalize()} developer (#2)", "description": f"Ship {addon}", "permissions": f"system_addon_{addon}"},
+        ],
+    }
+
 
 ALLOW_PHASE_SKIPPING = {
     "devedition": {

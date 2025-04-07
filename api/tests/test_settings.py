@@ -27,8 +27,8 @@ def test_scopes(monkeypatch):
         XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP,
         XPI_PRIVILEGED_ADMIN_LDAP_GROUP,
         XPI_PRIVILEGED_BUILD_LDAP_GROUP,
-        XPI_SYSTEM_ADMIN_LDAP_GROUP,
     )
+    from shipit_api.common.config import SYSTEM_ADDONS
 
     # make sure the admin ldap group has all scopes
     assert all([set(LDAP_GROUPS["admin"]).issubset(entry) for entry in AUTH0_AUTH_SCOPES.values()])
@@ -60,9 +60,9 @@ def test_scopes(monkeypatch):
     xpi_ldap_groups = (
         XPI_PRIVILEGED_BUILD_LDAP_GROUP
         + XPI_PRIVILEGED_ADMIN_LDAP_GROUP
-        + XPI_SYSTEM_ADMIN_LDAP_GROUP
         + XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP
         + XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP
+        + [f"shipit_system_addon_{addon}" for addon in SYSTEM_ADDONS]
     )
 
     # XPI ldap_groups have no access to Firefox and Thunderbird

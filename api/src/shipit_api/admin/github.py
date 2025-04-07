@@ -266,7 +266,10 @@ def list_xpis(owner, repo, revision):
 def get_xpi_type(owner, repo, revision, xpi_name):
     xpis = list_xpis(owner, repo, revision)["xpis"]
     our_xpi = get_single_item_from_sequence(xpis, lambda xpi: xpi["xpi_name"] == xpi_name)
-    return our_xpi["addon-type"]
+    xpi_type = our_xpi["addon-type"]
+    if xpi_type == "system":
+        xpi_type += f"_{our_xpi['xpi_name']}"
+    return xpi_type
 
 
 def extract_github_repo_owner_and_name(url):
