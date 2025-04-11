@@ -4,12 +4,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import base64
+from itertools import chain
 
 from decouple import config
 
 from backend_common.auth import create_auth0_secrets_file
 from shipit_api.admin.auth0 import assign_ldap_groups_to_scopes
-from shipit_api.common.config import SCOPE_PREFIX, XPI_LAX_SIGN_OFF
+from shipit_api.common.config import SCOPE_PREFIX, SYSTEM_ADDONS, XPI_LAX_SIGN_OFF
 
 # TODO: 1) rename "development" to "local" 2) remove "staging" when fully migrated
 supported_channels = ["dev", "development", "staging", "production"]
@@ -68,8 +69,6 @@ ADMIN_LDAP_GROUP = ["releng"]
 XPI_PRIVILEGED_BUILD_LDAP_GROUP = ["xpi_privileged_build"]
 
 XPI_PRIVILEGED_ADMIN_LDAP_GROUP = ["xpi_privileged_admin"]
-XPI_SYSTEM_BUILD_LDAP_GROUP = ["xpi_system_build"]
-XPI_SYSTEM_ADMIN_LDAP_GROUP = ["xpi_system_admin"]
 XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP = ["xpi_mozillaonline_build"]
 XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP = ["xpi_mozillaonline_admin"]
 
@@ -89,12 +88,12 @@ LDAP_GROUPS = {
     "xpi_privileged_build": XPI_PRIVILEGED_BUILD_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_privileged_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_privileged_admin_signoff": XPI_PRIVILEGED_ADMIN_LDAP_GROUP,
-    "xpi_system_build": XPI_SYSTEM_BUILD_LDAP_GROUP + ADMIN_LDAP_GROUP,
-    "xpi_system_signoff": XPI_SYSTEM_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_signoff": XPI_MOZILLAONLINE_PRIVILEGED_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_mozillaonline-privileged_admin_signoff": XPI_MOZILLAONLINE_PRIVILEGED_ADMIN_LDAP_GROUP + ADMIN_LDAP_GROUP,
     "xpi_normandy-privileged_signoff": ADMIN_LDAP_GROUP,
 }
+for addon in SYSTEM_ADDONS:
+    LDAP_GROUPS[f"system_addon_{addon}"] = [f"shipit_system_addon_{addon}"] + ADMIN_LDAP_GROUP
 
 
 AUTH0_AUTH_SCOPES = assign_ldap_groups_to_scopes()
@@ -116,17 +115,16 @@ AUTH0_AUTH_SCOPES.setdefault("github", []).extend(
         set(
             LDAP_GROUPS["xpi_privileged_build"]
             + LDAP_GROUPS["xpi_privileged_signoff"]
-            + LDAP_GROUPS["xpi_system_build"]
-            + LDAP_GROUPS["xpi_system_signoff"]
             + LDAP_GROUPS["xpi_mozillaonline-privileged_signoff"]
             + LDAP_GROUPS["xpi_mozillaonline-privileged_admin_signoff"]
             + LDAP_GROUPS["xpi_normandy-privileged_signoff"]
         )
     )
+    + list(chain(*[LDAP_GROUPS[f"system_addon_{addon}"] for addon in SYSTEM_ADDONS]))
 )
 
 # XPI scopes
-for xpi_type in ["privileged", "system", "mozillaonline-privileged", "normandy-privileged"]:
+for xpi_type in ["privileged", "mozillaonline-privileged", "normandy-privileged"]:
     # "build", "signoff", and "admin_signoff" groups can create and cancel releases
     AUTH0_AUTH_SCOPES.update(
         {
@@ -161,6 +159,26 @@ for xpi_type in ["privileged", "system", "mozillaonline-privileged", "normandy-p
         {
             f"schedule_phase/xpi/{xpi_type}/ship": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
             f"phase_signoff/xpi/{xpi_type}/ship": LDAP_GROUPS[f"xpi_{xpi_type}_signoff"] + LDAP_GROUPS.get(f"xpi_{xpi_type}_admin_signoff", []),
+        }
+    )
+
+# XPI System Addons
+for addon in SYSTEM_ADDONS:
+    # We grant the system addon specific LDAP group the ability to manage and
+    # signoff on all phases of the release. This is acceptable because System
+    # Addons don't ship to users until Balrog rules are set up manually.
+    # Additional signoffs are setup in Balrog.
+    addon_ldap_group = LDAP_GROUPS[f"system_addon_{addon}"]
+    AUTH0_AUTH_SCOPES.update(
+        {
+            f"add_release/xpi/system_{addon}": addon_ldap_group,
+            f"abandon_release/xpi/system_{addon}": addon_ldap_group,
+            f"schedule_phase/xpi/system_{addon}/build": addon_ldap_group,
+            f"phase_signoff/xpi/system_{addon}/build": addon_ldap_group,
+            f"schedule_phase/xpi/system_{addon}/promote": addon_ldap_group,
+            f"phase_signoff/xpi/system_{addon}/promote": addon_ldap_group,
+            f"schedule_phase/xpi/system_{addon}/ship": addon_ldap_group,
+            f"phase_signoff/xpi/system_{addon}/ship": addon_ldap_group,
         }
     )
 
