@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
@@ -29,6 +29,8 @@ import ReleaseContext from '../../utils/ReleaseContext';
 import { phasePrettyName } from '../text';
 import MouseOverPopover from '../Shared/MouseOverPopover';
 
+const POLL_INTERVAL = 60000; // 60 seconds
+
 const useStyles = makeStyles(theme => ({
   label: {
     lineHeight: '0.5',
@@ -58,6 +60,14 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
     '/tasks/groups'
   );
   const loading = schedulePhaseState.loading || phaseSignOffState.loading;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchReleases(productBranches);
+    }, POLL_INTERVAL);
+    return () => clearInterval(interval);
+  }, [fetchReleases, productBranches]);
+
   const handleClickOpen = phase => {
     setPhase(phase);
     setOpen(true);
@@ -130,7 +140,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                 : { classes: { completed: classes.completed } }
             }>
             <Link href={`${taskGroupUrlPrefix}/${phase.actionTaskId}`}>
-              {prettyName} task
+              {prettyName} task group
             </Link>
             {phase.signoffs && phase.signoffs.length > 0 && (
               <MouseOverPopover
@@ -195,7 +205,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
       !phases.map(p => p.tcStatus).find(st => st === 'running') &&
       (idx === 0 || // The first phase can be scheduled anytime
       allowPhaseSkipping || // Can schedule anything
-      phases[idx - 1].tcStatus === 'completed' || // previsous phase is done
+      phases[idx - 1].tcStatus === 'completed' || // previous phase is done
         // Special case for Firefox RC.
         // push_firefox can be scheduled even if ship_firefox_rc (the previous
         // phase) is not ready. We still need to be sure that
