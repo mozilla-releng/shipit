@@ -1,5 +1,7 @@
 import lazy from './utils/lazy';
 
+/* eslint-disable import/no-cycle */
+
 const Login = lazy(() =>
   import(/* webpackChunkName: 'Login' */ './views/Login')
 );
