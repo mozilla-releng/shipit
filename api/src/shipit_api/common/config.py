@@ -453,7 +453,10 @@ def _get_phases_definitions(phases):
 
 SUPPORTED_FLAVORS = _get_supported_flavors()
 
-SYSTEM_ADDONS = ("webcompat",)
+SYSTEM_ADDONS = (
+    "newtab",
+    "webcompat",
+)
 
 XPI_LAX_SIGN_OFF = config("XPI_LAX_SIGN_OFF", default=False, cast=bool)
 SIGNOFFS = {
