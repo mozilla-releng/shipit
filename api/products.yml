@@ -61,7 +61,7 @@ firefox-ios:
   - promote
   - push
   - ship
-  version-class: "mozilla_version.mobile.MobileVersion"
+  version-class: "mozilla_version.ios.MobileIosVersion"
 mozilla-vpn-addons:
   authorized-ldap-groups:
   - releng
