@@ -1550,20 +1550,19 @@ referencing = ">=0.31.0"
 
 [[package]]
 name = "kombu"
-version = "5.5.2"
+version = "5.5.3"
 description = "Messaging library for Python."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "kombu-5.5.2-py3-none-any.whl", hash = "sha256:40f3674ed19603b8a771b6c74de126dbf8879755a0337caac6602faa82d539cd"},
-    {file = "kombu-5.5.2.tar.gz", hash = "sha256:2dd27ec84fd843a4e0a7187424313f87514b344812cb98c25daddafbb6a7ff0e"},
+    {file = "kombu-5.5.3-py3-none-any.whl", hash = "sha256:5b0dbceb4edee50aa464f59469d34b97864be09111338cfb224a10b6a163909b"},
+    {file = "kombu-5.5.3.tar.gz", hash = "sha256:021a0e11fcfcd9b0260ef1fb64088c0e92beb976eb59c1dfca7ddd4ad4562ea2"},
 ]
 
 [package.dependencies]
 amqp = ">=5.1.1,<6.0.0"
-typing-extensions = {version = "4.12.2", markers = "python_version < \"3.10\""}
-tzdata = {version = "2025.2", markers = "python_version >= \"3.9\""}
+tzdata = {version = ">=2025.2", markers = "python_version >= \"3.9\""}
 vine = "5.1.0"
 
 [package.extras]
@@ -1578,7 +1577,7 @@ msgpack = ["msgpack (==1.1.0)"]
 pyro = ["pyro4 (==4.82)"]
 qpid = ["qpid-python (>=0.26)", "qpid-tools (>=0.26)"]
 redis = ["redis (>=4.5.2,!=4.5.5,!=5.0.2,<=5.2.1)"]
-slmq = ["softlayer-messaging (>=1.0.3)"]
+slmq = ["softlayer_messaging (>=1.0.3)"]
 sqlalchemy = ["sqlalchemy (>=1.4.48,<2.1)"]
 sqs = ["boto3 (>=1.26.143)", "urllib3 (>=1.26.16)"]
 yaml = ["PyYAML (>=3.10)"]
@@ -1765,14 +1764,14 @@ six = "*"
 
 [[package]]
 name = "mozilla-version"
-version = "3.1.0"
+version = "3.2.0"
 description = "Process Firefox versions numbers. Tells whether they are valid or not, whether they are nightlies or regular releases, whether this version precedes that other."
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "mozilla-version-3.1.0.tar.gz", hash = "sha256:3a9463ebcf2249dc8bcf504e246b6b5977c902dfa819de31602e10bce032ed93"},
-    {file = "mozilla_version-3.1.0-py3-none-any.whl", hash = "sha256:f798e716da9063608a0b49ca1ec0a51b73ac810c3cc8a4bcc2c461df902b147c"},
+    {file = "mozilla_version-3.2.0-py3-none-any.whl", hash = "sha256:b2a1ce11d261ce4f83cc1dff482e43a101a9c1e05c5b08ab63041c6c3dd794a6"},
+    {file = "mozilla_version-3.2.0.tar.gz", hash = "sha256:5825d94ae5e859df30414a24c190aed34fbc6d7ecbd7b20f194d78eee02f4a22"},
 ]
 
 [package.dependencies]
@@ -2750,14 +2749,14 @@ files = [
 
 [[package]]
 name = "sentry-sdk"
-version = "2.25.1"
+version = "2.26.1"
 description = "Python client for Sentry (https://sentry.io)"
 optional = false
 python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "sentry_sdk-2.25.1-py2.py3-none-any.whl", hash = "sha256:60b016d0772789454dc55a284a6a44212044d4a16d9f8448725effee97aaf7f6"},
-    {file = "sentry_sdk-2.25.1.tar.gz", hash = "sha256:f9041b7054a7cf12d41eadabe6458ce7c6d6eea7a97cfe1b760b6692e9562cf0"},
+    {file = "sentry_sdk-2.26.1-py2.py3-none-any.whl", hash = "sha256:e99390e3f217d13ddcbaeaed08789f1ca614d663b345b9da42e35ad6b60d696a"},
+    {file = "sentry_sdk-2.26.1.tar.gz", hash = "sha256:759e019c41551a21519a95e6cef6d91fb4af1054761923dadaee2e6eca9c02c7"},
 ]
 
 [package.dependencies]
@@ -2986,14 +2985,14 @@ Jinja2 = ">=2.0"
 
 [[package]]
 name = "taskcluster"
-version = "83.5.2"
+version = "83.5.6"
 description = "Python client for Taskcluster"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "taskcluster-83.5.2-py3-none-any.whl", hash = "sha256:134f18e499108f8362102979d3b2a3f9fb9b8bedf9674f02d52445f2ccb1d19f"},
-    {file = "taskcluster-83.5.2.tar.gz", hash = "sha256:7a5607c362036d146aae67db10f7664ea23bd2c195388bfddf040ddd6014ed72"},
+    {file = "taskcluster-83.5.6-py3-none-any.whl", hash = "sha256:84d38c247309a1d0a93732d65fa0013944ba05c921056c995ddc626a9ffcda97"},
+    {file = "taskcluster-83.5.6.tar.gz", hash = "sha256:49579f02a829793532da649a9e07a4c8d0891aa0e9dd4228bd838a012a609986"},
 ]
 
 [package.dependencies]
@@ -3062,7 +3061,6 @@ files = [
     {file = "tomli-2.2.1-py3-none-any.whl", hash = "sha256:cb55c73c5f4408779d0cf3eef9f762b9c9f147a77de7b258bef0a5628adc85cc"},
     {file = "tomli-2.2.1.tar.gz", hash = "sha256:cd45e1dc79c835ce60f7404ec8119f2eb06d38b1deba146f07ced3bbc44505ff"},
 ]
-markers = {main = "python_version < \"3.11\"", test = "python_full_version <= \"3.11.0a6\"", tox = "python_version < \"3.11\""}
 
 [[package]]
 name = "tox"
