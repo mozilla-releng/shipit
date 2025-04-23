@@ -221,6 +221,7 @@ async def fetch_l10n_data(
         Product.FOCUS_ANDROID,
         Product.FIREFOX_ANDROID,
         Product.APP_SERVICES,
+        Product.FIREFOX_IOS,
     ):
         return (release, None)
 
