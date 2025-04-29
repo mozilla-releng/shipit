@@ -22,7 +22,7 @@ paths:
       - name: build_number
         in: query
         schema:
-          type: integer
+          type: string
       - name: status
         in: query
         style: form
