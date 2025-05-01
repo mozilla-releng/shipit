@@ -57,7 +57,7 @@ flask = "*"
 flask_cors = "*"
 flask_migrate = "*"
 flask_talisman = "*"
-mozilla-version = "*"
+mozilla-version = "^4"
 python-decouple = "*"
 sentry-sdk = {version = "*", extras = ["flask"]}
 slugid = "*"
