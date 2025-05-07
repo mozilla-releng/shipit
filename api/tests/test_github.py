@@ -50,3 +50,18 @@ def test_list_github_branches(responses):
     print("Dumping for copy/paste:")
     pprint(repos)
     assert repos == [{"committer_date": "1", "name": "foo"}, {"committer_date": "2", "name": "bar"}, {"committer_date": "3", "name": "baz"}]
+
+
+def test_get_file_from_github(responses):
+    text = "foo"
+
+    responses.post(
+        "https://api.github.com/graphql",
+        json={"data": {"repository": {"object": {"text": text}}}},
+    )
+    assert github.get_file_from_github("org", "repo", "abc", "version.txt") == text
+
+    with pytest.raises(ValueError):
+        github.get_file_from_github("org", "repo", "abc", "package.json")
+
+    assert github.get_file_from_github("mozilla-extensions", "repo", "abc", "package.json") == text
