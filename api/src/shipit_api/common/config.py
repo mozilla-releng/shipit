@@ -4,6 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pathlib
+import re
 import tempfile
 from functools import cache, lru_cache
 
@@ -537,16 +538,17 @@ ALLOW_PHASE_SKIPPING = {
 
 
 @lru_cache(maxsize=10)
-def get_allowed_github_files(owner: str, repo: str) -> set[str]:
+def get_allowed_github_files(owner: str, repo: str) -> set[re.Pattern]:
+    """Retrieve a set of compiled regexes that match allowed file paths."""
     allowed_paths = {
-        "taskcluster/config.yml",
-        "version.txt",
+        r"taskcluster/config.yml",
+        r"version.txt",
     }
 
     match (owner, repo):
         case ("mozilla-extensions", _):
-            allowed_paths.add("package.json")
+            allowed_paths.add(r"package.json")
         case ("mozilla-releng", "staging-xpi-public"):
-            allowed_paths.add("one/package.json")
+            allowed_paths.add(r"one/package.json")
 
-    return allowed_paths
+    return {re.compile(s) for s in allowed_paths}

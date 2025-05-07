@@ -23,7 +23,7 @@ def _require_auth():
 @lru_cache(maxsize=10)
 def get_file_from_github(owner, repo, ref, path):
     allowed_files = get_allowed_github_files(owner, repo)
-    if path not in allowed_files:
+    if not any(af.fullmatch(path) for af in allowed_files):
         raise ValueError(f"Retrieving {path} not allowed for {owner}/{repo}!")
 
     path = unquote(path)
