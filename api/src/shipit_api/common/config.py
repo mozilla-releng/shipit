@@ -5,7 +5,7 @@
 
 import pathlib
 import tempfile
-from functools import cache
+from functools import cache, lru_cache
 
 from decouple import config
 
@@ -534,3 +534,15 @@ ALLOW_PHASE_SKIPPING = {
         "default": True,
     },
 }
+
+
+@lru_cache(maxsize=10)
+def get_allowed_github_files(owner: str, repo: str) -> set[str]:
+    match (owner, repo):
+        case ("mozilla-extensions", _):
+            return {
+                "package.json",
+                "version.txt",
+            }
+        case _:
+            return {"version.txt"}
