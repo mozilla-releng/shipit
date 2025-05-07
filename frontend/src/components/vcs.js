@@ -53,8 +53,14 @@ export async function getXpis(owner = null, repo = null, commit = null) {
   return req.data;
 }
 
-export async function getXPIVersion(owner, repo, commit, directory = null) {
-  let path = 'package.json';
+export async function getXPIVersion(
+  owner,
+  repo,
+  commit,
+  installType,
+  directory = null
+) {
+  let path = installType === 'mach' ? 'manifest.json' : 'package.json';
 
   if (directory) {
     path = `${directory}/${path}`;
