@@ -54,12 +54,13 @@ export async function getXpis(owner = null, repo = null, commit = null) {
 }
 
 export async function getXPIVersion(owner, repo, commit, directory = null) {
-  let url = `/github/package_json/${owner}/${repo}/${commit}`;
+  let path = 'package.json';
 
   if (directory) {
-    url = `${url}/${directory}`;
+    path = `${directory}/${path}`;
   }
 
+  const url = `/github/file/${owner}/${repo}/${commit}/${path}`;
   const req = await axios.get(url, { authRequired: true });
 
   return req.data.version;
@@ -147,7 +148,7 @@ export async function getVersion(repo, revision, appName, versionFile) {
   } else if (isGitHubRepo(repo)) {
     const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
 
-    url = `/github/version_txt/${repoOwner}/${repoName}/${revision}`;
+    url = `/github/file/${repoOwner}/${repoName}/${revision}/version.txt`;
     authRequired = true;
   }
 

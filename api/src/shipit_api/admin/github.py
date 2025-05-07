@@ -9,7 +9,7 @@ from flask import abort, current_app
 from flask_login import current_user
 from sentry_sdk import capture_exception
 
-from shipit_api.common.config import SCOPE_PREFIX
+from shipit_api.common.config import SCOPE_PREFIX, get_allowed_github_files
 
 GITHUB_API_ENDPOINT = "https://api.github.com/graphql"
 
@@ -22,10 +22,14 @@ def _require_auth():
 
 
 @lru_cache(maxsize=10)
-def get_file_from_github(owner, repo, file_path, ref):
+def get_file_from_github(owner, repo, ref, path):
+    allowed_files = get_allowed_github_files(owner, repo)
+    if path not in allowed_files:
+        raise ValueError(f"Retrieving {path} not allowed for {owner}/{repo}!")
+
     query = """query {
       repository(owner:"%(owner)s", name:"%(repo)s") {
-        object(expression: "%(ref)s:%(file_path)s") {
+        object(expression: "%(ref)s:%(path)s") {
           ... on Blob {
             text
           }
@@ -33,7 +37,7 @@ def get_file_from_github(owner, repo, file_path, ref):
       }
     }
     """ % dict(
-        owner=owner, repo=repo, ref=ref, file_path=file_path
+        owner=owner, repo=repo, ref=ref, path=path
     )
     content = query_api(query)
     return content["data"]["repository"]["object"]["text"]
@@ -205,7 +209,7 @@ def get_xpi_manifest(owner, repo, ref):
 
 
 def get_taskgraph_config(owner, repo, ref):
-    config = yaml.safe_load(get_file_from_github(owner, repo, "taskcluster/config.yml", ref))
+    config = yaml.safe_load(get_file_from_github(owner, repo, ref, "taskcluster/config.yml"))
     return config
 
 
@@ -214,19 +218,11 @@ def get_package_json(owner, repo, revision, directory=None):
     if directory:
         path = f"{directory.rstrip('/')}/{path}"
     try:
-        package = json.loads(get_file_from_github(owner, repo, path, revision))
+        package = json.loads(get_file_from_github(owner, repo, revision, path))
         return package
     except TypeError as exc:
         current_app.logger.error(f"Can't load package.json from {owner} {repo} {path} {revision}: {exc}")
         raise
-
-
-def get_package_json_directory(owner, repo, revision, directory):
-    return get_package_json(owner, repo, revision, directory=directory)
-
-
-def get_version_txt(owner, repo, revision):
-    return get_file_from_github(owner, repo, "version.txt", revision)
 
 
 def list_xpis(owner, repo, revision):
