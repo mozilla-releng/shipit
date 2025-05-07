@@ -138,6 +138,7 @@ export default function NewXPIRelease() {
         selectedXpi.owner,
         selectedXpi.repo,
         selectedXpi.revision,
+        selectedXpi.install_type,
         selectedXpi.directory
       )
     ).data;

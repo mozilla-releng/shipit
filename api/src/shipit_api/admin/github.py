@@ -237,6 +237,7 @@ def list_xpis(owner, repo, revision):
                     "manifest_revision": revision,
                     "directory": xpi.get("directory", ""),
                     "addon-type": xpi["addon-type"],
+                    "install_type": xpi.get("install-type", "yarn"),
                 }
             )
         except TypeError as exc:
