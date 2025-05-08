@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 160
-target-version = ["py39"]
+target-version = ["py312"]
 include = '\.(wsgi|pyi?)$'
 exclude = '''
 /(
@@ -50,7 +50,7 @@ shipit_trigger_product_details = "shipit_api.admin.cli:trigger_product_details"
 
 [tool.poetry.dependencies]
 # Required by both public and admin apps
-python = "^3.9"
+python = "^3.12"
 connexion = {version = "<3.0", extras = ["swagger-ui"]}
 dockerflow = "*"
 flask = "*"
@@ -85,7 +85,7 @@ pyyaml = "*"
 taskcluster = "*"
 
 [tool.poetry.group.test.dependencies]
-python = "^3.9"
+python = "^3.12"
 aioresponses = "*"
 responses = "*"
 pytest = "*"
