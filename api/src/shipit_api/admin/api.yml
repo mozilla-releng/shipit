@@ -370,10 +370,10 @@ paths:
                 type: array
                 items:
                   type: object
-  /github/package_json/{owner}/{repo}/{revision}:
+  /github/file/{owner}/{repo}/{ref}/{path}:
     get:
-      summary: Returns contents of package.json from a github repo's root directory
-      operationId: shipit_api.admin.github.get_package_json
+      summary: Returns contents of specified file from a github repo
+      operationId: shipit_api.admin.github.get_file_from_github
       parameters:
       - name: owner
         in: path
@@ -387,93 +387,28 @@ paths:
         description: repo name
         schema:
           type: string
-      - name: revision
+      - name: ref 
         in: path
         required: true
-        description: commit revision
+        description: commit revision or branch name
+        schema:
+          type: string
+      - name: path
+        in: path
+        required: true
+        description: file path
         schema:
           type: string
       responses:
         "200":
-          description: Contents of package.json
-          content:
-            application/json:
-              schema:
-                type: object
-  /github/package_json/{owner}/{repo}/{revision}/{directory}:
-    get:
-      summary: Returns contents of package.json from a github repo's root directory
-      operationId: shipit_api.admin.github.get_package_json_directory
-      parameters:
-      - name: owner
-        in: path
-        required: true
-        description: repo owner
-        schema:
-          type: string
-      - name: repo
-        in: path
-        required: true
-        description: repo name
-        schema:
-          type: string
-      - name: revision
-        in: path
-        required: true
-        description: commit revision
-        schema:
-          type: string
-      - name: directory
-        in: path
-        required: true
-        description: directory path
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Contents of package.json
-          content:
-            application/json:
-              schema:
-                type: object
-  /github/version_txt/{owner}/{repo}/{revision}:
-    get:
-      summary: Returns contents of version.txt from a github repo's root directory
-      operationId: shipit_api.admin.github.get_version_txt
-      parameters:
-      - name: owner
-        in: path
-        required: true
-        description: repo owner
-        schema:
-          type: string
-      - name: repo
-        in: path
-        required: true
-        description: repo name
-        schema:
-          type: string
-      - name: revision
-        in: path
-        required: true
-        description: commit revision
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Contents of version.txt
+          description: Contents of specified file
           content:
             text/plain:
               schema:
                 oneOf:
-                  - type: string
-                  # Bug 1815414 text/plain gets parsed as JSON object[1] when
-                  # connexion validates the output. This means "110.0" becomes
-                  # a number. That's why we're accepting both here.
-                  #
-                  # [1] https://github.com/spec-first/connexion/pull/205/files#diff-dfd9a45381cefd560da87f04925f10801539c6d5c45e4f1f3ecb08e06e9fe273R88
                   - type: number
-                example: 1.0.0
+                  - type: object
+                  - type: string
   /github/xpis/{owner}/{repo}/{revision}:
     get:
       summary: List XPIs in the manifest
