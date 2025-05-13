@@ -60,8 +60,13 @@ export async function getXPIVersion(owner, repo, commit, directory = null) {
     path = `${directory}/${path}`;
   }
 
-  const url = `/github/file/${owner}/${repo}/${commit}/${path}`;
-  const req = await axios.get(url, { authRequired: true });
+  const url = `/github/file/${owner}/${repo}/${commit}`;
+  const req = await axios.get(url, {
+    authRequired: true,
+    params: {
+      path,
+    },
+  });
 
   return req.data.version;
 }
@@ -148,7 +153,7 @@ export async function getVersion(repo, revision, appName, versionFile) {
   } else if (isGitHubRepo(repo)) {
     const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
 
-    url = `/github/file/${repoOwner}/${repoName}/${revision}/version.txt`;
+    url = `/github/file/${repoOwner}/${repoName}/${revision}`;
     authRequired = true;
   }
 
@@ -156,6 +161,9 @@ export async function getVersion(repo, revision, appName, versionFile) {
   // strings become integers, "78.0" becomes 78. Return the value as is instead.
   const res = await axios.get(url, {
     authRequired,
+    params: {
+      path: 'version.txt',
+    },
     transformResponse: [data => data],
   });
 

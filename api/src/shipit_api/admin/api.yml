@@ -370,7 +370,7 @@ paths:
                 type: array
                 items:
                   type: object
-  /github/file/{owner}/{repo}/{ref}/{path}:
+  /github/file/{owner}/{repo}/{ref}:
     get:
       summary: Returns contents of specified file from a github repo
       operationId: shipit_api.admin.github.get_file_from_github
@@ -394,7 +394,7 @@ paths:
         schema:
           type: string
       - name: path
-        in: path
+        in: query
         required: true
         description: file path
         schema:
