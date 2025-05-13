@@ -538,11 +538,15 @@ ALLOW_PHASE_SKIPPING = {
 
 @lru_cache(maxsize=10)
 def get_allowed_github_files(owner: str, repo: str) -> set[str]:
+    allowed_paths = {
+        "taskcluster/config.yml",
+        "version.txt",
+    }
+
     match (owner, repo):
         case ("mozilla-extensions", _):
-            return {
-                "package.json",
-                "version.txt",
-            }
-        case _:
-            return {"version.txt"}
+            allowed_paths.add("package.json")
+        case ("mozilla-releng", "staging-xpi-public"):
+            allowed_paths.add("one/package.json")
+
+    return allowed_paths
