@@ -1,4 +1,3 @@
-import json
 import re
 from functools import lru_cache
 from urllib.parse import unquote, urlparse
@@ -214,18 +213,6 @@ def get_taskgraph_config(owner, repo, ref):
     return config
 
 
-def get_package_json(owner, repo, revision, directory=None):
-    path = "package.json"
-    if directory:
-        path = f"{directory.rstrip('/')}/{path}"
-    try:
-        package = json.loads(get_file_from_github(owner, repo, revision, path))
-        return package
-    except TypeError as exc:
-        current_app.logger.error(f"Can't load package.json from {owner} {repo} {path} {revision}: {exc}")
-        raise
-
-
 def list_xpis(owner, repo, revision):
     manifests = get_xpi_manifest(owner, repo, revision)
     config = get_taskgraph_config(owner, repo, revision)
@@ -240,12 +227,10 @@ def list_xpis(owner, repo, revision):
         ref = xpi.get("branch", config["taskgraph"]["repositories"][xpi["repo-prefix"]]["default-ref"])
         commit = ref_to_commit(xpi_owner, xpi_repo, ref)
         try:
-            package = get_package_json(xpi_owner, xpi_repo, commit, directory=xpi.get("directory"))
             xpis.append(
                 {
                     "revision": commit,
                     "branch": xpi.get("branch", "master"),
-                    "version": package["version"],
                     "xpi_name": xpi["name"],
                     "owner": xpi_owner,
                     "repo": xpi_repo,
