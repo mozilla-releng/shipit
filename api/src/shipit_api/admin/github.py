@@ -27,6 +27,7 @@ def get_file_from_github(owner, repo, ref, path):
     if path not in allowed_files:
         raise ValueError(f"Retrieving {path} not allowed for {owner}/{repo}!")
 
+    path = unquote(path)
     query = """query {
       repository(owner:"%(owner)s", name:"%(repo)s") {
         object(expression: "%(ref)s:%(path)s") {
