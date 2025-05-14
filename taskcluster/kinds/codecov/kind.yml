@@ -34,7 +34,4 @@ jobs:
             using: run-task
             cwd: '{checkout}'
             command: >-
-                cd api &&
-                poetry install --only ccov-upload --no-root &&
-                cd .. &&
-                python taskcluster/scripts/codecov-upload.py
+                cd api && uv run --only-group ccov-upload python taskcluster/scripts/codecov-upload.py
