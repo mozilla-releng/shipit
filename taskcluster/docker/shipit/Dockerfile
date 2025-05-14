@@ -4,43 +4,61 @@
 
 # WARNING: Update api/Dockerfile* files when you update this one. Or better,
 # find a way to use the same Dockerfile
-FROM          python:$PYTHON_VERSION
+ARG PYTHON_VERSION
+ARG UV_VERSION
 
-ARG APP_TYPE
+FROM ghcr.io/astral-sh/uv:$UV_VERSION AS uv
+FROM python:$PYTHON_VERSION AS builder
+
+COPY --from=uv /uv /bin
+
+WORKDIR /app
+
+# %include pyproject.toml
+# %include uv.lock
+ADD topsrcdir/pyproject.toml \
+    topsrcdir/uv.lock \
+    /app/
+
+# %include api/products.yml
+# %include api/trust-domains.yml
+# %include api/pyproject.toml
+ADD topsrcdir/api/products.yml \
+    topsrcdir/api/trust-domains.yml \
+    topsrcdir/api/pyproject.toml \
+    /app/api/
+
+# %include api/src
+ADD topsrcdir/api/src \
+    /app/api/src/
+
+# Install dependencies
+RUN uv sync --locked
+
+FROM python:$PYTHON_VERSION
+
+# %include api/docker.d
+ADD topsrcdir/api/docker.d \
+    /app/docker.d/
 
 RUN groupadd --gid 10001 app && \
     useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
 
+WORKDIR /app
+USER app
 
-# %include api
-COPY topsrcdir/api/requirements/poetry.txt /tmp/poetry.txt
-RUN pip install -r /tmp/poetry.txt
-
-ENV POETRY_CACHE_DIR=/builds/worker/poetry_cache
-
-COPY topsrcdir/api/pyproject.toml /app/src/pyproject.toml
-COPY topsrcdir/api/poetry.lock /app/src/poetry.lock
-# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN cd /app/src && poetry install --only main --no-root --no-ansi
-
-ADD topsrcdir/api/ /app/src
-ADD topsrcdir/api/docker.d/init.sh /app/docker.d/
-
-# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN cd /app/src && APP_TYPE=$APP_TYPE poetry install --only-root --no-ansi
-
-ARG TASK_ID
+ARG APP_TYPE
 ARG APP_VERSION
-ARG VCS_HEAD_REV
-ARG VCS_HEAD_REPOSITORY
+ARG TASK_ID
 ARG TASKCLUSTER_ROOT_URL
+ARG VCS_HEAD_REPOSITORY
+ARG VCS_HEAD_REV
 
+COPY --from=builder --chown=app:app /app /app
 RUN echo "{\"commit\": \"$VCS_HEAD_REV\", \"version\": \"$APP_VERSION\", \"source\": \"$VCS_HEAD_REPOSITORY\", \"build\": \"$TASKCLUSTER_ROOT_URL/tasks/$TASK_ID\"}" > /app/version.json
 
-ENV WEB_CONCURRENCY=3
-ENV APP_TYPE=${APP_TYPE}
+ENV WEB_CONCURRENCY 3
+ENV APP_TYPE ${APP_TYPE}
 ENV FLASK_APP shipit_api.$APP_TYPE.flask:app
-USER app
-WORKDIR /app/src
 
-ENTRYPOINT ["/bin/bash", "-c", "/app/docker.d/init.sh $APP_TYPE"]
+ENTRYPOINT ["/bin/bash", "-c", "/app/docker.d/init.sh ${APP_TYPE}"]

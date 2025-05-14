@@ -2,7 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-FROM          python:$PYTHON_VERSION
+# %ARG PYTHON_VERSION
+FROM python:$PYTHON_VERSION
 
 # Add worker user
 RUN mkdir /builds && \
@@ -13,9 +14,8 @@ RUN mkdir /builds && \
 
 # %include-run-task
 
-# %include api/requirements/poetry.txt
-ADD topsrcdir/api/requirements/poetry.txt /tmp/poetry.txt
-RUN pip install -r /tmp/poetry.txt
+# %ARG UV_VERSION
+COPY --from=ghcr.io/astral-sh/uv:$UV_VERSION /uv /uvx /bin/
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \

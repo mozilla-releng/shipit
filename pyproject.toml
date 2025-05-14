@@ -1,0 +1,51 @@
+[project]
+name = "shipit"
+version = "1.0.0"
+description = "Add your description here"
+license = "MPL-2.0"
+authors = [
+    { name = "Mozilla Release Engineering", email = "releng@mozilla.com" },
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["shipit-api"]
+
+[tool.uv.sources]
+shipit-api = { workspace = true }
+
+[tool.uv.workspace]
+members = ["api"]
+
+[tool.black]
+line-length = 160
+target-version = ["py312"]
+include = '\.(wsgi|pyi?)$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | \.cache
+  | \.cache_py3
+  | _build
+  | buck-out
+  | build
+  | dist
+  | ui
+)/
+'''
+
+[tool.isort]
+line_length = 160
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+known_first_party = ["backend_common", "cli_common", "shipit_api"]
+known_third_party = ["taskcluster"]
+
+[tool.coverage.run]
+omit = ["api/tests/*"]

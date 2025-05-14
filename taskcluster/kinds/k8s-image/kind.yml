@@ -11,24 +11,21 @@ transforms:
     - taskgraph.transforms.cached_tasks:transforms
     - taskgraph.transforms.task:transforms
 
+task-defaults:
+    definition: shipit
+    args:
+        PYTHON_VERSION: "3.12"
+        UV_VERSION: "0.7.9"
+        # Use plain text "<self>" instead of using {"task-reference":
+        # "<self>"}, because the docker_image transform expects args to be
+        # {str: str}. Bracket-style templates will be
+        # evaluated by the docker_image transform.
+        TASK_ID: "<self>"
+
 tasks:
     shipit-admin:
-        definition: shipit
         args:
-            PYTHON_VERSION: "3.12"
             APP_TYPE: admin
-            # Use plain text "<self>" instead of using {"task-reference":
-            # "<self>"}, because the docker_image transform expects args to be
-            # {str: str}. Bracket-style templates will be
-            # evaluated by the docker_image transform.
-            TASK_ID: "<self>"
     shipit-public:
-        definition: shipit
         args:
-            PYTHON_VERSION: "3.12"
             APP_TYPE: public
-            # Use plain text "<self>" instead of using {"task-reference":
-            # "<self>"}, because the docker_image transform expects args to be
-            # {str: str}. Bracket-style templates will be
-            # evaluated by the docker_image transform.
-            TASK_ID: "<self>"
