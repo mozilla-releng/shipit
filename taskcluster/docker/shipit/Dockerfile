@@ -11,23 +11,17 @@ ARG APP_TYPE
 RUN groupadd --gid 10001 app && \
     useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
 
-
-# %include api
-COPY topsrcdir/api/requirements/poetry.txt /tmp/poetry.txt
-RUN pip install -r /tmp/poetry.txt
-
-ENV POETRY_CACHE_DIR=/builds/worker/poetry_cache
+COPY --from=ghcr.io/astral-sh/uv:0.7.3 /uv /uvx /bin/
 
 COPY topsrcdir/api/pyproject.toml /app/src/pyproject.toml
-COPY topsrcdir/api/poetry.lock /app/src/poetry.lock
-# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN cd /app/src && poetry install --only main --no-root --no-ansi
+COPY topsrcdir/uv.lock /app/src/uv.lock
+
+RUN cd /app/src && uv sync --no-default-groups
 
 ADD topsrcdir/api/ /app/src
 ADD topsrcdir/api/docker.d/init.sh /app/docker.d/
 
-# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN cd /app/src && APP_TYPE=$APP_TYPE poetry install --only-root --no-ansi
+RUN cd /app/src && APP_TYPE=$APP_TYPE uv sync --no-default-groups
 
 ARG TASK_ID
 ARG APP_VERSION
