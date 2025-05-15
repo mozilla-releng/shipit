@@ -108,9 +108,11 @@ requests = "*"
 [tool.poetry.group.tox.dependencies]
 tox = "*"
 
-
 [tool.poetry.group.dev.dependencies]
 flask-shell-ipython = "^0.5.1"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
 
 [build-system]
 requires = ["poetry-core"]
