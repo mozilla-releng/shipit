@@ -15,7 +15,7 @@ from mozilla_version.mobile import MobileVersion
 import backend_common.auth
 import backend_common.taskcluster
 from shipit_api.admin.api import get_signoff_emails
-from shipit_api.admin.release import bump_version, is_eme_free_enabled, is_partner_enabled, is_rc, parse_version
+from shipit_api.admin.release import bump_version, is_partner_attribution_enabled, is_partner_repacks_enabled, is_rc, parse_version
 from shipit_api.common.models import Release, XPISignoff
 from shipit_api.common.product import Product
 
@@ -97,42 +97,24 @@ def test_bump_version(product, version, result):
 
 
 @pytest.mark.parametrize(
-    "product, version, result",
+    "product, version, repacks_result, attribution_result",
     (
-        ("firefox", "59.0", False),
-        ("firefox", "65.0b3", False),
-        ("firefox", "65.0b8", True),
-        ("firefox", "65.0", True),
-        ("firefox", "65.0.1", True),
-        ("firefox", "60.5.0esr", True),
-        ("fennec", "65.0b8", False),
-        ("fennec", "65.0", False),
-        ("thunderbird", "116.0b2", False),
-        ("thunderbird", "116.0", False),
-        ("thunderbird", "115.2.0esr", False),
+        ("firefox", "59.0", False, False),
+        ("firefox", "65.0b3", False, False),
+        ("firefox", "65.0b8", True, True),
+        ("firefox", "65.0", True, True),
+        ("firefox", "65.0.1", True, True),
+        ("firefox", "60.5.0esr", True, False),
+        ("fennec", "65.0b8", False, False),
+        ("fennec", "65.0", False, False),
+        ("thunderbird", "116.0b2", False, False),
+        ("thunderbird", "116.0", False, False),
+        ("thunderbird", "115.2.0esr", False, False),
     ),
 )
-def test_is_partner_enabled(product, version, result):
-    assert is_partner_enabled(product, version) == result
-
-
-@pytest.mark.parametrize(
-    "product, version, result",
-    (
-        ("firefox", "65.0b3", False),
-        ("firefox", "65.0b8", True),
-        ("firefox", "65.0", True),
-        ("firefox", "65.0.1", True),
-        ("firefox", "60.5.0esr", False),
-        ("fennec", "65.0b8", False),
-        ("fennec", "65.0", False),
-        ("thunderbird", "116.0b2", False),
-        ("thunderbird", "116.0", False),
-        ("thunderbird", "115.2.0esr", False),
-    ),
-)
-def test_is_eme_free_enabled(product, version, result):
-    assert is_eme_free_enabled(product, version) == result
+def test_is_partner_enabled(product, version, repacks_result, attribution_result):
+    assert is_partner_repacks_enabled(product, version) == repacks_result
+    assert is_partner_attribution_enabled(product, version) == attribution_result
 
 
 def test_additional_emails(test_xpi_release):

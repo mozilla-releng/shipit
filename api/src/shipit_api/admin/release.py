@@ -70,14 +70,22 @@ def bump_version(product, version):
     return bumped_version
 
 
-def is_partner_enabled(product, version, min_version=60):
-    if product == "firefox":
-        firefox_version = FirefoxVersion.parse(version)
-        return firefox_version.major_number >= min_version and any(
-            (firefox_version.is_beta and firefox_version.beta_number >= 5, firefox_version.is_release, firefox_version.is_esr)
-        )
+def is_partner_repacks_enabled(product, version, min_version=60):
+    if product != "firefox":
+        return False
 
-    return False
+    firefox_version = FirefoxVersion.parse(version)
+    return firefox_version.major_number >= min_version and any(
+        (firefox_version.is_beta and firefox_version.beta_number >= 5, firefox_version.is_release, firefox_version.is_esr)
+    )
+
+
+def is_partner_attribution_enabled(product, version, min_version=60):
+    if product != "firefox":
+        return False
+
+    firefox_version = FirefoxVersion.parse(version)
+    return is_partner_repacks_enabled(product, version, min_version) and not firefox_version.is_esr
 
 
 def is_eme_free_enabled(product, version):
