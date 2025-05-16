@@ -15,7 +15,15 @@ from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
 from backend_common.taskcluster import get_root_url, get_service
-from shipit_api.admin.release import Product, bump_version, get_locales, is_eme_free_enabled, is_partner_enabled, product_to_appname
+from shipit_api.admin.release import (
+    Product,
+    bump_version,
+    get_locales,
+    is_eme_free_enabled,
+    is_partner_attribution_enabled,
+    is_partner_repacks_enabled,
+    product_to_appname,
+)
 from shipit_api.admin.tasks import (
     ArtifactNotFound,
     UnsupportedFlavor,
@@ -102,12 +110,12 @@ def add_release(body):
             "release_eta": release.release_eta,
             "release_enable_emefree": is_eme_free_enabled(release.product, release.version),
         }
-        partners_enabled = is_partner_enabled(release.product, release.version)
+        partner_repacks_enabled = is_partner_repacks_enabled(release.product, release.version)
         if int(release.version.split(".")[0]) >= 81:
-            common_input["release_enable_partner_repack"] = partners_enabled
-            common_input["release_enable_partner_attribution"] = partners_enabled
+            common_input["release_enable_partner_repack"] = partner_repacks_enabled
+            common_input["release_enable_partner_attribution"] = is_partner_attribution_enabled(release.product, release.version)
         else:
-            common_input["release_enable_partners"] = partners_enabled
+            common_input["release_enable_partners"] = partner_repacks_enabled
         if release.partial_updates:
             common_input["partial_updates"] = release.partial_updates
 
