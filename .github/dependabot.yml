@@ -17,8 +17,6 @@ updates:
         - "patch"
   commit-message:
     prefix: "chore(api)"
-  reviewers:
-    - "mozilla-releng/releng"
 - package-ecosystem: npm
   directory: "/frontend"
   versioning-strategy: increase-if-necessary
