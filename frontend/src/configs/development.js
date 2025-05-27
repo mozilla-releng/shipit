@@ -67,7 +67,9 @@ module.exports = {
         appName: 'firefox-ios',
         branches: [
           {
+            prettyName: 'Try',
             branch: '',
+            disableable: true,
           },
         ],
         repositories: [
