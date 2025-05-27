@@ -36,6 +36,7 @@ def app():
             "TASKCLUSTER_ACCESS_TOKEN": "something",
             "AUTH0_AUTH_SCOPES": {
                 "project:releng:services/shipit_api/add_release/firefox": "releng",
+                "project:releng:services/shipit_api/add_release/firefox-ios": "releng",
                 "project:releng:services/shipit_api/schedule_phase/firefox/promote": "releng",
                 "project:releng:services/shipit_api/schedule_phase/firefox/ship": "releng",
             },

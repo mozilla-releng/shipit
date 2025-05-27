@@ -294,3 +294,4 @@ components:
           - releases/mozilla-beta
           - releases/mozilla-esr68
           - try
+          - ''
