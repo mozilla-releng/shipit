@@ -307,6 +307,7 @@ paths:
           - releases/mozilla-esr68
           - releases/mozilla-beta
           - try
+          - ''
       responses:
         "200":
           description: OK
@@ -1009,6 +1010,7 @@ components:
           - releases/mozilla-beta
           - releases/mozilla-esr68
           - try
+          - ''
     XPIReleaseInput:
       required:
       - xpi_name

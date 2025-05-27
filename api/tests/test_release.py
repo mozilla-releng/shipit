@@ -179,7 +179,7 @@ def mocked_find_decision_task_id(*args):
 
 
 def mocked_get_disabled_products():
-    return {"firefox": ["disabled"]}
+    return {"firefox": ["disabled"], "firefox-ios": [""]}
 
 
 @mock.patch("shipit_api.admin.api.get_service", mocked_get_service)
@@ -236,12 +236,37 @@ def test_add_release(app):
 
             # Non taskcluster users are not affected by disabled releases
             response = client.post("/releases", json={"branch": "disabled", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.2"})
+            assert response.status_code == 201
+
+            response = client.post(
+                "/releases", json={"branch": "release/v139", "build_number": 1, "product": "firefox-ios", "revision": "123", "version": "69.2"}
+            )
+            assert response.status_code == 201
 
     with mock.patch(
         "shipit_api.admin.api.current_user",
-        backend_common.auth.TaskclusterUser({"clientId": "something", "scopes": ["project:releng:services/shipit_api/add_release/firefox"]}),
+        backend_common.auth.TaskclusterUser(
+            {
+                "clientId": "something",
+                "scopes": ["project:releng:services/shipit_api/add_release/firefox", "project:releng:services/shipit_api/add_release/firefox-ios"],
+            }
+        ),
     ):
         with app.test_client() as client:
-            response = client.post("/releases", json={"branch": "disabled", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.2"})
+            response = client.post("/releases", json={"branch": "disabled", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.3"})
             assert "disabled" in response.text
+            assert response.status_code == 401
+
+            response = client.post("/releases", json={"branch": "notdisabled", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.3"})
+            assert response.status_code == 201
+
+            response = client.post(
+                "/releases", json={"branch": "release/v139", "build_number": 1, "product": "firefox-ios", "revision": "123", "version": "69.3"}
+            )
+            assert "disabled" in response.text
+            assert response.status_code == 401
+
+            response = client.post(
+                "/releases", json={"branch": "release/test", "build_number": 1, "product": "firefox-ios", "revision": "123", "version": "69.4"}
+            )
             assert response.status_code == 401
