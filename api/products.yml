@@ -39,6 +39,21 @@ firefox:
   - push_firefox
   - ship_firefox
   version-class: "mozilla_version.gecko.FirefoxVersion"
+merge-automation:
+  can-be-disabled: true
+  authorized-ldap-groups:
+    - shipit_firefox
+    - shipit_relman
+  phases:
+    [
+      "beta-to-release",
+      "bump-central",
+      "bump-esr115",
+      "central-to-beta",
+      "early-to-late-beta",
+      "release-to-esr",
+    ]
+  version-class: "mozilla_version.gecko.FirefoxVersion"
 firefox-android:
   can-be-disabled: true
   authorized-ldap-groups:

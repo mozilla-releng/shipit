@@ -100,6 +100,7 @@ def add_release(body):
     )
     try:
         next_version = bump_version(release.product, release.version)
+        # this is input to the release-promotion action - the merge-automation action has a diff input schema
         common_input = {
             "build_number": release.build_number,
             "next_version": next_version,

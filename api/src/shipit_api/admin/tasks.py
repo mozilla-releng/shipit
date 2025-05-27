@@ -233,8 +233,13 @@ def get_parameters(decision_task_id):
 
 
 def release_promotion_flavors(release, actions, verify_supported_flavors=True):
-    relpro = find_action("release-promotion", actions)
-    avail_flavors = relpro["schema"]["properties"]["release_promotion_flavor"]["enum"]
+    if release.product == "merge-automation":  # I am just exploring, so I special cased merge-automation here (cuz it's not release-promotion)
+        action_name = "merge-automation"
+    else:
+        action_name = "release-promotion"
+    action = find_action(action_name, actions)
+    flavors_key = "release_promotion_flavor" if release.product != "merge-automation" else "behavior"
+    avail_flavors = action["schema"]["properties"][flavors_key]["enum"]
     if verify_supported_flavors:
         return extract_our_flavors(avail_flavors, release.product, release.version, release.partial_updates, release.product_key)
     return [{"name": name, "in_previous_graph_ids": True} for name in avail_flavors]

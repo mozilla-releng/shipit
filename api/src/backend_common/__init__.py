@@ -65,6 +65,8 @@ def create_app(project_name, app_name, root_path, extensions=[], config=None, re
     if redirect_root_to_api:
         app.add_url_rule("/", "root", lambda: flask.redirect(app.api.swagger_url))
 
+    # from pprint import pformat
+    # logger.warn(pformat(build_api_specification(root_path)))
     app.api.register(build_api_specification(root_path))
     logger.debug("Initialized %s", app.name)
     return app
@@ -94,11 +96,14 @@ def _read_specification_file(path):
 
 def get_product_names(include_legacy=False):
     products_config = get_products_config()
+    # logger.warn(products_config)
+    # logger.warn([product_name for product_name, product_config in products_config.items() if not product_config["legacy"] or include_legacy])
     return [product_name for product_name, product_config in products_config.items() if not product_config["legacy"] or include_legacy]
 
 
 @cache
 def get_products_config():
+    # logger.warn(_PRODUCT_YML_PATH)
     with open(_PRODUCT_YML_PATH) as f:
         products_config = yaml.safe_load(f)
 

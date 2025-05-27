@@ -43,10 +43,26 @@ def list_releases(product=None, branch=None, version=None, build_number=None, st
             releases = releases.filter(Release.build_number == build_number)
     elif build_number:
         raise BadRequest(description="Filtering by build_number without version is not supported.")
+    if product == "merge-automation":
+        print(product)
+        print(branch)
+        print(version)
+        print(build_number)
+        print(status)
     releases = releases.filter(Release.status.in_(status))
+    if product == "merge-automation":
+        print(releases)
     releases = [r.json for r in releases.all()]
+    if product == "merge-automation":
+        print(releases)
+        return releases
     # filter out not parsable releases, like 1.1, 1.1b1, etc
     releases = filter(good_version, releases)
+    if product == "merge-automation":
+        print(releases)
+        print(_sort_releases_by_product_then_version(releases))
+    import sys
+    sys.stdout.flush()
     return _sort_releases_by_product_then_version(releases)
 
 
