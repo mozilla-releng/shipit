@@ -144,7 +144,7 @@ def test_additional_emails(test_xpi_release):
     assert len(additional_shipit_emails) == 4
 
 
-def mock_generate_phases(release):
+def mock_generate_phases(release, *args, **kwargs):
     phases = []
     for phase in ["build", "promote", "ship"]:
         phase_obj = release.phase_class(
@@ -174,6 +174,14 @@ def mocked_get_service(name):
     return service
 
 
+def mocked_find_decision_task_id(*args):
+    return "abc"
+
+
+def mocked_get_disabled_products():
+    return {"firefox": ["disabled"]}
+
+
 @mock.patch("shipit_api.admin.api.get_service", mocked_get_service)
 def test_schedule_phase(app):
     release = Release(
@@ -197,3 +205,43 @@ def test_schedule_phase(app):
     assert [p.submitted for p in release.phases] == [True, True, False]
     assert [p.skipped for p in release.phases] == [True, False, False]
     assert [p.task_id for p in release.phases] == ["", "1", ""]
+
+
+@mock.patch("shipit_api.admin.api.generate_phases", mock_generate_phases)
+@mock.patch("shipit_api.admin.api.get_service", mocked_get_service)
+@mock.patch("shipit_api.admin.tasks.find_decision_task_id", mocked_find_decision_task_id)
+@mock.patch("shipit_api.admin.api.get_disabled_products", mocked_get_disabled_products)
+def test_add_release(app):
+    with mock.patch(
+        "shipit_api.admin.api.current_user", backend_common.auth.Auth0User("", {"email": "admin", "https://sso.mozilla.com/claim/groups": "releng"})
+    ):
+        with app.test_client() as client:
+            response = client.post("/releases", json={"branch": "try", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0"})
+            assert response.status_code == 201
+            assert response.json["branch"] == "try"
+            assert response.json["build_number"] == 1
+            assert response.json["name"] == "Firefox-69.0-build1"
+            assert len(response.json["phases"]) == 3
+
+            response = client.post("/releases", json={"branch": "try", "build_number": 1, "product": "other", "revision": "123", "version": "69.0"})
+            assert response.status_code == 400
+            assert "'other' is not one of" in response.text
+
+            response = client.post("/releases", json={"branch": "other", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.1"})
+            assert response.status_code == 201
+            assert response.json["branch"] == "other"
+            assert response.json["build_number"] == 1
+            assert response.json["name"] == "Firefox-69.0.1-build1"
+            assert len(response.json["phases"]) == 3
+
+            # Non taskcluster users are not affected by disabled releases
+            response = client.post("/releases", json={"branch": "disabled", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.2"})
+
+    with mock.patch(
+        "shipit_api.admin.api.current_user",
+        backend_common.auth.TaskclusterUser({"clientId": "something", "scopes": ["project:releng:services/shipit_api/add_release/firefox"]}),
+    ):
+        with app.test_client() as client:
+            response = client.post("/releases", json={"branch": "disabled", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.2"})
+            assert "disabled" in response.text
+            assert response.status_code == 401
