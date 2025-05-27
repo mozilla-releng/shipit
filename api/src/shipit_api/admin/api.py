@@ -71,7 +71,9 @@ def add_release(body):
     product = body["product"]
     branch = body["branch"]
 
-    product_disabled = branch in get_disabled_products().get(product, [])
+    disabled_branches = get_disabled_products().get(product, [])
+    # If a product config has an empty `branch` then disabling the product should disable all branches
+    product_disabled = branch in disabled_branches or "" in disabled_branches
     if current_user.type == AuthType.TASKCLUSTER and product_disabled:
         abort(401, "Taskcluster based submissions are disabled")
 
