@@ -286,6 +286,7 @@ components:
           - firefox
           - devedition
           - firefox-android
+          - firefox-ios
         branch:
           type: string
           example: releases/mozilla-beta

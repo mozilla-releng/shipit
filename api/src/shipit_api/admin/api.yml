@@ -297,6 +297,7 @@ paths:
           - firefox
           - devedition
           - firefox-android
+          - firefox-ios
       - name: branch
         in: query
         required: true
@@ -1002,6 +1003,7 @@ components:
           - firefox
           - devedition
           - firefox-android
+          - firefox-ios
         branch:
           type: string
           example: releases/mozilla-beta
