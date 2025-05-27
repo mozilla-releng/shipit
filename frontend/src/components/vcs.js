@@ -117,26 +117,33 @@ export async function getPushes(repo, branch) {
 }
 
 export async function getBranches(repo) {
-  checkRepoIsSupported(repo);
+  if (!isGitHubRepo(repo)) {
+    throw new Error('Only GitHub repositories are supported.');
+  }
 
   let branches;
+  const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
+  const rawData = await getGithubBranches(repoOwner, repoName);
 
-  if (isHgRepo(repo)) {
-    throw new Error('Not implemented');
-  } else if (isGitHubRepo(repo)) {
-    const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
-    const rawData = await getGithubBranches(repoOwner, repoName);
+  branches = rawData.map(branch => ({
+    branch: branch.name,
+    date: new Date(branch.committer_date),
+    prettyName: branch.name,
+    project: repoName,
+    repo,
+  }));
+  branches.sort((a, b) => b.date - a.date); // Most recent first
 
-    branches = rawData.map(branch => ({
-      branch: branch.name,
-      date: new Date(branch.committer_date),
-      prettyName: branch.name,
-      project: repoName,
-      repo,
-    }));
+  if (branches.length > 10) {
+    const firstTen = branches.slice(0, 10);
+    const twoWeeksAgo = new Date();
 
-    branches.sort((a, b) => b.date - a.date); // Most recent first
-    branches = branches.slice(0, 10); // Only take the 10 most recent branches
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+    const rest = branches
+      .slice(10)
+      .filter(branch => branch.date >= twoWeeksAgo);
+
+    branches = [...firstTen, ...rest];
   }
 
   return branches;
