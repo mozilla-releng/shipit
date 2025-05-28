@@ -45,7 +45,7 @@ tasks:
             command:
                 - sh
                 - -lxce
-                  # --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
+                # --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
                 - >-
                   cd api && poetry install --only tox --no-root --no-ansi && poetry run tox --parallel -e clean,check,py{substitute_version},report
     frontend-node:

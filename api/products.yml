@@ -4,50 +4,50 @@ android-components:
   version-class: "mozilla_version.mobile.MobileVersion"
 app-services:
   authorized-ldap-groups:
-  - releng
-  - shipit_app_services
-  - shipit_relman
+    - releng
+    - shipit_app_services
+    - shipit_relman
   # Phases per product, ordered
   phases:
-  - promote
-  - ship
+    - promote
+    - ship
   repo-url: https://github.com/mozilla/application-services
   version-class: "mozilla_version.gecko.GeckoVersion"
 devedition:
   can-be-disabled: true
   authorized-ldap-groups:
-  - shipit_firefox
-  - shipit_relman
+    - shipit_firefox
+    - shipit_relman
   phases:
-  - promote_devedition
-  - push_devedition
-  - ship_devedition
+    - promote_devedition
+    - push_devedition
+    - ship_devedition
   version-class: "mozilla_version.gecko.DeveditionVersion"
 fenix:
   legacy: true
-  version-class: "mozilla_version.fenix.FenixVersion" # TODO replace with MobileVersion
+  version-class: "mozilla_version.fenix.FenixVersion"  # TODO replace with MobileVersion
 fennec:
   legacy: true
   version-class: "mozilla_version.gecko.FennecVersion"
 firefox:
   can-be-disabled: true
   authorized-ldap-groups:
-  - shipit_firefox
-  - shipit_relman
+    - shipit_firefox
+    - shipit_relman
   phases:
-  - promote_firefox
-  - push_firefox
-  - ship_firefox
+    - promote_firefox
+    - push_firefox
+    - ship_firefox
   version-class: "mozilla_version.gecko.FirefoxVersion"
 firefox-android:
   can-be-disabled: true
   authorized-ldap-groups:
-  - shipit_firefox
-  - shipit_relman
+    - shipit_firefox
+    - shipit_relman
   phases:
-  - promote_android
-  - push_android
-  - ship_android
+    - promote_android
+    - push_android
+    - ship_android
   version-class: "mozilla_version.mobile.MobileVersion"
 focus-android:
   legacy: true
@@ -55,36 +55,36 @@ focus-android:
 firefox-ios:
   can-be-disabled: true
   authorized-ldap-groups:
-  - shipit_firefox
-  - shipit_relman
+    - shipit_firefox
+    - shipit_relman
   phases:
-  - promote
-  - push
-  - ship
+    - promote
+    - push
+    - ship
   version-class: "mozilla_version.ios.MobileIosVersion"
 mozilla-vpn-addons:
   authorized-ldap-groups:
-  - releng
-  - shipit_mozillavpn
+    - releng
+    - shipit_mozillavpn
   phases:
-  - promote-addons
-  - ship-addons
+    - promote-addons
+    - ship-addons
   repo-url: https://github.com/mozilla-mobile/mozilla-vpn-client
   version-class: "mozilla_version.version.BaseVersion"
 mozilla-vpn-client:
   authorized-ldap-groups:
-  - releng
-  - shipit_mozillavpn
+    - releng
+    - shipit_mozillavpn
   phases:
-  - promote-client
-  - ship-client
+    - promote-client
+    - ship-client
   repo-url: https://github.com/mozilla-mobile/mozilla-vpn-client
   version-class: "mozilla_version.version.BaseVersion"
 thunderbird:
   authorized-ldap-groups:
-  - shipit_thunderbird
+    - shipit_thunderbird
   phases:
-  - promote_thunderbird
-  - push_thunderbird
-  - ship_thunderbird
+    - promote_thunderbird
+    - push_thunderbird
+    - ship_thunderbird
   version-class: "mozilla_version.gecko.ThunderbirdVersion"

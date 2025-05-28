@@ -544,7 +544,7 @@ async def get_primary_builds(
     thunderbird_nightly_version: str,
 ) -> PrimaryBuilds:
     """This file contains all the Thunderbird builds we provide per locale. The
-    filesize fields have the same value for all lcoales, this is not a bug,
+    filesize fields have the same value for all locales, this is not a bug,
     we are keeping these fields with this schema for historical reasons only
     but no longer populate them with fresh data.
 
@@ -1261,7 +1261,7 @@ async def rebuild(
     product_details.update(get_regions(old_product_details))
     product_details.update(get_l10n(releases, releases_l10n, old_product_details))
 
-    #  add '1.0/' infront of each file path
+    #  add '1.0/' in front of each file path
     product_details = {f"1.0/{file_}": content for file_, content in product_details.items()}
 
     # create index.html for every folder
@@ -1295,7 +1295,7 @@ async def rebuild(
             else:
                 os.unlink(item)
 
-    # Move new files to be commited
+    # Move new files to be committed
     for item in os.listdir(shipit_api.common.config.PRODUCT_DETAILS_NEW_DIR):
         shutil.move(shipit_api.common.config.PRODUCT_DETAILS_NEW_DIR / item, shipit_api.common.config.PRODUCT_DETAILS_DIR / folder_in_repo / item)
 
@@ -1305,7 +1305,7 @@ async def rebuild(
     # check if there is something to commit
     output = run_check(["git", "status", "--short"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
     if output != b"":
-        # XXX: we need a better commmit message, maybe mention what triggered this update
+        # XXX: we need a better commit message, maybe mention what triggered this update
         commit_message = "Updating product details"
         run_check(["git", "commit", "-m", commit_message], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR, secrets=secrets)
         git_push(git_branch, secrets)

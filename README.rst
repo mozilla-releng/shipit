@@ -96,9 +96,9 @@ way to by-pass the need for a pulse queue.
 
 3. ``poetry run shipit_rebuild_product_details --database-url="postgresql://shipituser:shipitpassword@db/shipitdb" --channel development``
 
-4. This will ask you for some GitHub crendentials. You can provide them if you want to update https://github.com/mozilla-releng/product-details. That said, you can also ``Ctrl+C`` and inspect the content of `/tmp/product-details` in the docker container. Changes are done here before they pushed to the git repo.
+4. This will ask you for some GitHub credentials. You can provide them if you want to update https://github.com/mozilla-releng/product-details. That said, you can also ``Ctrl+C`` and inspect the content of `/tmp/product-details` in the docker container. Changes are done here before they pushed to the git repo.
 
-⚠️ If you decide to provide GitHub crendentials, remember that GitHub accounts that enabled 2-factor-authentication have to provide a GitHub token
+⚠️ If you decide to provide GitHub credentials, remember that GitHub accounts that enabled 2-factor-authentication have to provide a GitHub token
 instead of their regular password. Instructions to generate a token are found above. This time tough, grant the ``public_repo`` scope.
 
 Troubleshooting

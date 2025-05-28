@@ -18,8 +18,9 @@ repos:
     rev: v2.4.1
     hooks:
       - id: codespell
-        entry: codespell -I .codespell-ignore-words.txt
+        entry: codespell --write-changes -I .codespell-ignore-words.txt
         exclude: >
             (?x)^(
-                test/test_util_path.py
+                api/poetry.lock
+                | frontend/yarn.lock
             )$

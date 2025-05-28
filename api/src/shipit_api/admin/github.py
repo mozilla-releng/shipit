@@ -302,7 +302,7 @@ def get_single_item_from_sequence(
         condition: A function that serves to filter items from `sequence`. Function
             must have one argument (a single item from the sequence) and return a boolean.
         ErrorClass (Exception): The error type raised in case the item isn't unique
-        no_item_error_message (str): The message raised when no item matched the condtion
+        no_item_error_message (str): The message raised when no item matched the condition
         too_many_item_error_message (str): The message raised when more than one item matched the condition
         append_sequence_to_error_message (bool): Show or hide what was the tested sequence in the error message.
             Hiding it may prevent sensitive data (such as password) to be exposed to public logs

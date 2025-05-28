@@ -344,7 +344,7 @@ def get_permissions():
 
 def init_app(app):
     if app.config.get("SECRET_KEY") is None:
-        raise Exception("When using `auth` extention you need to specify SECRET_KEY.")
+        raise Exception("When using `auth` extension you need to specify SECRET_KEY.")
 
     auth0.init_app(app)
     auth.init_app(app)
