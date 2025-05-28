@@ -297,6 +297,7 @@ paths:
           - firefox
           - devedition
           - firefox-android
+          - firefox-ios
       - name: branch
         in: query
         required: true
@@ -307,6 +308,7 @@ paths:
           - releases/mozilla-esr68
           - releases/mozilla-beta
           - try
+          - ''
       responses:
         "200":
           description: OK
@@ -1001,6 +1003,7 @@ components:
           - firefox
           - devedition
           - firefox-android
+          - firefox-ios
         branch:
           type: string
           example: releases/mozilla-beta
@@ -1009,6 +1012,7 @@ components:
           - releases/mozilla-beta
           - releases/mozilla-esr68
           - try
+          - ''
     XPIReleaseInput:
       required:
       - xpi_name

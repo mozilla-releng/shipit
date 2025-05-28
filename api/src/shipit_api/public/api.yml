@@ -286,6 +286,7 @@ components:
           - firefox
           - devedition
           - firefox-android
+          - firefox-ios
         branch:
           type: string
           example: releases/mozilla-beta
@@ -294,3 +295,4 @@ components:
           - releases/mozilla-beta
           - releases/mozilla-esr68
           - try
+          - ''

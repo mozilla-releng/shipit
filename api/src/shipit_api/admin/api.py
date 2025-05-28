@@ -71,7 +71,9 @@ def add_release(body):
     product = body["product"]
     branch = body["branch"]
 
-    product_disabled = branch in get_disabled_products().get(product, [])
+    disabled_branches = get_disabled_products().get(product, [])
+    # If a product config has an empty `branch` then disabling the product should disable all branches
+    product_disabled = branch in disabled_branches or "" in disabled_branches
     if current_user.type == AuthType.TASKCLUSTER and product_disabled:
         abort(401, "Taskcluster based submissions are disabled")
 
@@ -338,8 +340,13 @@ def disable_product(body):
     dp = DisabledProduct(product=product, branch=branch)
     session.add(dp)
     session.commit()
-    logger.info("Disabled %s on branch %s", product, branch)
-    notify_via_matrix(product, f"Automatic releases disabled for {product} on {branch}")
+
+    if branch == "":
+        logger.info("Disabled %s on all branches", product)
+        notify_via_matrix(product, f"Automatic releases disabled for {product} on all branches")
+    else:
+        logger.info("Disabled %s on branch %s", product, branch)
+        notify_via_matrix(product, f"Automatic releases disabled for {product} on {branch}")
 
     return 200
 
@@ -355,8 +362,12 @@ def enable_product(product, branch):
     dp = session.query(DisabledProduct).filter(DisabledProduct.product == product).filter(DisabledProduct.branch == branch).first_or_404()
     session.delete(dp)
     session.commit()
-    logger.info("Enabled %s on branch %s", product, branch)
-    notify_via_matrix(product, f"Automatic releases enabled for {product} on {branch}")
+    if branch == "":
+        logger.info("Enabled %s on all branches", product)
+        notify_via_matrix(product, f"Automatic releases enabled for {product} on all branches")
+    else:
+        logger.info("Enabled %s on branch %s", product, branch)
+        notify_via_matrix(product, f"Automatic releases enabled for {product} on {branch}")
 
     return 200
 
