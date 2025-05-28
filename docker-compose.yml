@@ -1,3 +1,4 @@
+---
 version: '3'
 services:
   api:
@@ -27,7 +28,7 @@ services:
       - AUTH_CLIENT_ID=todo
       - AUTH_CLIENT_SECRET=todo
       - AUTH_DOMAIN=auth.mozilla.auth0.com
-      - SECRET_KEY_BASE64=bm90YXNlY3JldA== # notasecret
+      - SECRET_KEY_BASE64=bm90YXNlY3JldA==  # notasecret
       - TASKCLUSTER_CLIENT_ID
       - TASKCLUSTER_ACCESS_TOKEN
       - TASKCLUSTER_ROOT_URL=https://firefox-ci-tc.services.mozilla.com

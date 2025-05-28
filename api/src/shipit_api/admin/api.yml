@@ -1,6 +1,6 @@
 ---
 servers:
-- url: /
+  - url: /
 paths:
   /product-details:
     post:
@@ -34,33 +34,33 @@ paths:
       summary: List releases
       operationId: shipit_api.public.api.list_releases
       parameters:
-      - name: product
-        in: query
-        schema:
-          type: string
-      - name: branch
-        in: query
-        schema:
-          type: string
-      - name: version
-        in: query
-        schema:
-          type: string
-      - name: build_number
-        in: query
-        schema:
-          type: integer
-      - name: status
-        in: query
-        style: form
-        description: >
-            Defaults to listing only "scheduled" releases. Currently supported
-            values are "scheduled", "shipped", and "aborted".
-        explode: false
-        schema:
-          type: array
-          items:
+        - name: product
+          in: query
+          schema:
             type: string
+        - name: branch
+          in: query
+          schema:
+            type: string
+        - name: version
+          in: query
+          schema:
+            type: string
+        - name: build_number
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          style: form
+          description: >
+              Defaults to listing only "scheduled" releases. Currently supported
+              values are "scheduled", "shipped", and "aborted".
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: A list of releases
@@ -95,12 +95,12 @@ paths:
       summary: Release info
       operationId: shipit_api.public.api.get_release
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Returns release representation
@@ -114,12 +114,12 @@ paths:
       summary: Release info
       operationId: shipit_api.admin.api.abandon_release
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Returns release representation
@@ -131,12 +131,12 @@ paths:
       summary: Update release status
       operationId: shipit_api.admin.api.update_release_status
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Release status object
         content:
@@ -161,20 +161,20 @@ paths:
       summary: Release info
       operationId: shipit_api.public.api.get_phase
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      - name: phase
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
+        - name: phase
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
-          description: Retruns phase representation
+          description: Returns phase representation
           content:
             'application/json':
               schema:
@@ -183,17 +183,17 @@ paths:
       summary: Schedule phase
       operationId: shipit_api.admin.api.schedule_phase
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      - name: phase
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
+        - name: phase
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Phase scheduled
@@ -209,20 +209,20 @@ paths:
       summary: Get phase signoff requirements and status
       operationId: shipit_api.public.api.get_phase_signoff
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      - name: phase
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
+        - name: phase
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
-          description: Retruns phase signoff representation
+          description: Returns phase signoff representation
           content:
             'application/json':
               schema:
@@ -231,17 +231,17 @@ paths:
       summary: Sign off a phase
       operationId: shipit_api.admin.api.phase_signoff
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      - name: phase
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
+        - name: phase
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Signoff UID
         content:
@@ -251,7 +251,7 @@ paths:
         required: true
       responses:
         "200":
-          description: Retruns phase signoff representation
+          description: Returns phase signoff representation
           content:
             'application/json':
               schema:
@@ -288,27 +288,27 @@ paths:
       summary: Enable a product+branch
       operationId: shipit_api.admin.api.enable_product
       parameters:
-      - name: product
-        in: query
-        required: true
-        schema:
-          type: string
-          enum:
-          - firefox
-          - devedition
-          - firefox-android
-          - firefox-ios
-      - name: branch
-        in: query
-        required: true
-        schema:
-          type: string
-          enum:
-          - projects/maple
-          - releases/mozilla-esr68
-          - releases/mozilla-beta
-          - try
-          - ''
+        - name: product
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - firefox
+              - devedition
+              - firefox-android
+              - firefox-ios
+        - name: branch
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - projects/maple
+              - releases/mozilla-esr68
+              - releases/mozilla-beta
+              - try
+              - ''
       responses:
         "200":
           description: OK
@@ -319,18 +319,18 @@ paths:
       summary: List git branches of a Github repo
       operationId: shipit_api.admin.github.list_github_branches
       parameters:
-      - name: owner
-        in: path
-        required: true
-        description: repo owner
-        schema:
-          type: string
-      - name: repo
-        in: path
-        required: true
-        description: repo name
-        schema:
-          type: string
+        - name: owner
+          in: path
+          required: true
+          description: repo owner
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: repo name
+          schema:
+            type: string
       responses:
         "200":
           description: List of git branches
@@ -345,24 +345,24 @@ paths:
       summary: List git commits in a Github repo
       operationId: shipit_api.admin.github.list_github_commits
       parameters:
-      - name: owner
-        in: path
-        required: true
-        description: repo owner
-        schema:
-          type: string
-      - name: repo
-        in: path
-        required: true
-        description: repo name
-        schema:
-          type: string
-      - name: branch
-        in: query
-        required: true
-        description: branch name
-        schema:
-          type: string
+        - name: owner
+          in: path
+          required: true
+          description: repo owner
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: repo name
+          schema:
+            type: string
+        - name: branch
+          in: query
+          required: true
+          description: branch name
+          schema:
+            type: string
       responses:
         "200":
           description: List of git commits
@@ -377,30 +377,30 @@ paths:
       summary: Returns contents of specified file from a github repo
       operationId: shipit_api.admin.github.get_file_from_github
       parameters:
-      - name: owner
-        in: path
-        required: true
-        description: repo owner
-        schema:
-          type: string
-      - name: repo
-        in: path
-        required: true
-        description: repo name
-        schema:
-          type: string
-      - name: ref 
-        in: path
-        required: true
-        description: commit revision or branch name
-        schema:
-          type: string
-      - name: path
-        in: query
-        required: true
-        description: file path
-        schema:
-          type: string
+        - name: owner
+          in: path
+          required: true
+          description: repo owner
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: repo name
+          schema:
+            type: string
+        - name: ref
+          in: path
+          required: true
+          description: commit revision or branch name
+          schema:
+            type: string
+        - name: path
+          in: query
+          required: true
+          description: file path
+          schema:
+            type: string
       responses:
         "200":
           description: Contents of specified file
@@ -416,24 +416,24 @@ paths:
       summary: List XPIs in the manifest
       operationId: shipit_api.admin.github.list_xpis
       parameters:
-      - name: owner
-        in: path
-        required: true
-        description: repo owner
-        schema:
-          type: string
-      - name: repo
-        in: path
-        required: true
-        description: repo name
-        schema:
-          type: string
-      - name: revision
-        required: true
-        in: path
-        description: commit revision
-        schema:
-          type: string
+        - name: owner
+          in: path
+          required: true
+          description: repo owner
+          schema:
+            type: string
+        - name: repo
+          in: path
+          required: true
+          description: repo name
+          schema:
+            type: string
+        - name: revision
+          required: true
+          in: path
+          description: commit revision
+          schema:
+            type: string
       responses:
         "200":
           description: List of XPIs in a manifest
@@ -446,26 +446,26 @@ paths:
       summary: List XPI releases
       operationId: shipit_api.admin.xpi.list_releases
       parameters:
-      - name: xpi_name
-        in: query
-        schema:
-          type: string
-      - name: xpi_version
-        in: query
-        schema:
-          type: string
-      - name: build_number
-        in: query
-        schema:
-          type: integer
-      - name: status
-        in: query
-        style: form
-        explode: false
-        schema:
-          type: array
-          items:
+        - name: xpi_name
+          in: query
+          schema:
             type: string
+        - name: xpi_version
+          in: query
+          schema:
+            type: string
+        - name: build_number
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: A list of releases
@@ -497,12 +497,12 @@ paths:
       summary: Release info
       operationId: shipit_api.admin.xpi.get_release
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Returns release representation
@@ -514,12 +514,12 @@ paths:
       summary: Release info
       operationId: shipit_api.admin.xpi.abandon_release_xpi
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Returns release representation
@@ -533,20 +533,20 @@ paths:
       summary: Phase info
       operationId: shipit_api.admin.xpi.get_phase
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      - name: phase
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
+        - name: phase
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
-          description: Retruns phase representation
+          description: Returns phase representation
           content:
             'application/json':
               schema:
@@ -555,17 +555,17 @@ paths:
       summary: Schedule phase
       operationId: shipit_api.admin.xpi.schedule_phase
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      - name: phase
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
+        - name: phase
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Phase scheduled
@@ -581,20 +581,20 @@ paths:
       summary: Get phase signoff requirements and status
       operationId: shipit_api.admin.xpi.get_phase_signoff
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      - name: phase
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
+        - name: phase
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
-          description: Retruns phase signoff representation
+          description: Returns phase signoff representation
           content:
             'application/json':
               schema:
@@ -603,17 +603,17 @@ paths:
       summary: Sign off a phase
       operationId: shipit_api.admin.xpi.phase_signoff
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      - name: phase
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
+        - name: phase
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         description: Signoff UID
         content:
@@ -623,7 +623,7 @@ paths:
         required: true
       responses:
         "200":
-          description: Retruns phase signoff representation
+          description: Returns phase signoff representation
           content:
             'application/json':
               schema:
@@ -636,18 +636,18 @@ paths:
       summary: Get the current version for the given product channel
       operationId: shipit_api.admin.api.get_product_channel_version
       parameters:
-      - name: product
-        in: path
-        description: product name
-        required: true
-        schema:
-          type: string
-      - name: channel
-        in: path
-        description: product channel
-        required: true
-        schema:
-          type: string
+        - name: product
+          in: path
+          description: product name
+          required: true
+          schema:
+            type: string
+        - name: channel
+          in: path
+          description: product channel
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: The current version for the given product channel
@@ -796,11 +796,11 @@ components:
   schemas:
     ReleaseInput:
       required:
-      - branch
-      - build_number
-      - product
-      - revision
-      - version
+        - branch
+        - build_number
+        - product
+        - revision
+        - version
       type: object
       properties:
         product:
@@ -849,20 +849,20 @@ components:
           example: https://github.com/mozilla-mobile/firefox-android
     ReleaseStatus:
       required:
-      - status
+        - status
       type: object
       properties:
         status:
           type: string
           example: scheduled
           enum:
-          - scheduled
-          - shipped
-          - aborted
+            - scheduled
+            - shipped
+            - aborted
     Phase:
       required:
-      - name
-      - submitted
+        - name
+        - submitted
       type: object
       properties:
         name:
@@ -889,14 +889,14 @@ components:
           example: "2017-12-21T15:10:00-05:00"
     Release:
       required:
-      - branch
-      - build_number
-      - name
-      - phases
-      - product
-      - revision
-      - status
-      - version
+        - branch
+        - build_number
+        - name
+        - phases
+        - product
+        - revision
+        - status
+        - version
       type: object
       properties:
         name:
@@ -927,9 +927,9 @@ components:
           type: string
           example: scheduled
           enum:
-          - scheduled
-          - shipped
-          - aborted
+            - scheduled
+            - shipped
+            - aborted
         phases:
           type: array
           items:
@@ -947,7 +947,7 @@ components:
           description: Allow skipping phases. In this case the snowman release model will not skipped phases.
     Signoffs:
       required:
-      - signoffs
+        - signoffs
       type: object
       properties:
         signoffs:
@@ -960,10 +960,10 @@ components:
           format: datetime
     Signoff:
       required:
-      - description
-      - name
-      - permissions
-      - uid
+        - description
+        - name
+        - permissions
+        - uid
       type: object
       properties:
         uid:
@@ -981,7 +981,7 @@ components:
           default: false
         permissions:
           type: string
-          description: Permision required to sign the signoff
+          description: Permission required to sign the signoff
         completed_by:
           type: string
           description: Person who signed off (Auth0 ID - email)
@@ -993,33 +993,33 @@ components:
     DisableProduct:
       type: object
       required:
-      - product
-      - branch
+        - product
+        - branch
       properties:
         product:
           type: string
           example: firefox
           enum:
-          - firefox
-          - devedition
-          - firefox-android
-          - firefox-ios
+            - firefox
+            - devedition
+            - firefox-android
+            - firefox-ios
         branch:
           type: string
           example: releases/mozilla-beta
           enum:
-          - projects/maple
-          - releases/mozilla-beta
-          - releases/mozilla-esr68
-          - try
-          - ''
+            - projects/maple
+            - releases/mozilla-beta
+            - releases/mozilla-esr68
+            - try
+            - ''
     XPIReleaseInput:
       required:
-      - xpi_name
-      - xpi_revision
-      - xpi_version
-      - revision
-      - build_number
+        - xpi_name
+        - xpi_revision
+        - xpi_version
+        - revision
+        - build_number
       type: object
       properties:
         xpi_name:
@@ -1061,9 +1061,9 @@ components:
           type: string
           example: scheduled
           enum:
-          - scheduled
-          - shipped
-          - aborted
+            - scheduled
+            - shipped
+            - aborted
         phases:
           type: array
           items:

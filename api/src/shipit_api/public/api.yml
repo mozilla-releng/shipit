@@ -1,39 +1,39 @@
 ---
 servers:
-- url: /
+  - url: /
 paths:
   /releases:
     get:
       summary: List releases
       operationId: shipit_api.public.api.list_releases
       parameters:
-      - name: product
-        in: query
-        schema:
-          type: string
-      - name: branch
-        in: query
-        schema:
-          type: string
-      - name: version
-        in: query
-        schema:
-          type: string
-      - name: build_number
-        in: query
-        schema:
-          type: integer
-      - name: status
-        in: query
-        style: form
-        description: >
-            Defaults to listing only "scheduled" releases. Currently supported
-            values are "scheduled", "shipped", and "aborted".
-        explode: false
-        schema:
-          type: array
-          items:
+        - name: product
+          in: query
+          schema:
             type: string
+        - name: branch
+          in: query
+          schema:
+            type: string
+        - name: version
+          in: query
+          schema:
+            type: string
+        - name: build_number
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          style: form
+          description: >
+              Defaults to listing only "scheduled" releases. Currently supported
+              values are "scheduled", "shipped", and "aborted".
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: A list of releases
@@ -48,12 +48,12 @@ paths:
       summary: Release info
       operationId: shipit_api.public.api.get_release
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
       responses:
         "200":
           description: Returns release representation
@@ -61,27 +61,27 @@ paths:
             application/json:
               schema:
                 anyOf:
-                - $ref: '#/components/schemas/Release'
-                - $ref: '#/components/schemas/XPIRelease'
+                  - $ref: '#/components/schemas/Release'
+                  - $ref: '#/components/schemas/XPIRelease'
   /releases/{name}/{phase}:
     get:
       summary: Release info
       operationId: shipit_api.public.api.get_phase
       parameters:
-      - name: name
-        in: path
-        description: release name
-        required: true
-        schema:
-          type: string
-      - name: phase
-        in: path
-        required: true
-        schema:
-          type: string
+        - name: name
+          in: path
+          description: release name
+          required: true
+          schema:
+            type: string
+        - name: phase
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
-          description: Retruns phase representation
+          description: Returns phase representation
           content:
             application/json:
               schema:
@@ -102,8 +102,8 @@ components:
   schemas:
     Phase:
       required:
-      - name
-      - submitted
+        - name
+        - submitted
       type: object
       properties:
         name:
@@ -130,14 +130,14 @@ components:
           example: '2017-12-21T15:10:00-05:00'
     Release:
       required:
-      - branch
-      - build_number
-      - name
-      - phases
-      - product
-      - revision
-      - status
-      - version
+        - branch
+        - build_number
+        - name
+        - phases
+        - product
+        - revision
+        - status
+        - version
       type: object
       properties:
         name:
@@ -168,9 +168,9 @@ components:
           type: string
           example: scheduled
           enum:
-          - scheduled
-          - shipped
-          - aborted
+            - scheduled
+            - shipped
+            - aborted
         phases:
           type: array
           items:
@@ -190,14 +190,14 @@ components:
     XPIRelease:
       type: object
       required:
-      - xpi_name
-      - xpi_revision
-      - xpi_version
-      - build_number
-      - name
-      - phases
-      - status
-      - revision
+        - xpi_name
+        - xpi_revision
+        - xpi_version
+        - build_number
+        - name
+        - phases
+        - status
+        - revision
       properties:
         name:
           type: string
@@ -215,9 +215,9 @@ components:
           type: string
           example: scheduled
           enum:
-          - scheduled
-          - shipped
-          - aborted
+            - scheduled
+            - shipped
+            - aborted
         phases:
           type: array
           items:
@@ -230,7 +230,7 @@ components:
           format: dateTime
     Signoffs:
       required:
-      - signoffs
+        - signoffs
       type: object
       properties:
         signoffs:
@@ -243,10 +243,10 @@ components:
           format: datetime
     Signoff:
       required:
-      - description
-      - name
-      - permissions
-      - uid
+        - description
+        - name
+        - permissions
+        - uid
       type: object
       properties:
         uid:
@@ -264,7 +264,7 @@ components:
           default: false
         permissions:
           type: string
-          description: Permision required to sign the signoff
+          description: Permission required to sign the signoff
         completed_by:
           type: string
           description: Person who signed off (Auth0 ID - email)
@@ -276,23 +276,23 @@ components:
     DisableProduct:
       type: object
       required:
-      - product
-      - branch
+        - product
+        - branch
       properties:
         product:
           type: string
           example: firefox
           enum:
-          - firefox
-          - devedition
-          - firefox-android
-          - firefox-ios
+            - firefox
+            - devedition
+            - firefox-android
+            - firefox-ios
         branch:
           type: string
           example: releases/mozilla-beta
           enum:
-          - projects/maple
-          - releases/mozilla-beta
-          - releases/mozilla-esr68
-          - try
-          - ''
+            - projects/maple
+            - releases/mozilla-beta
+            - releases/mozilla-esr68
+            - try
+            - ''

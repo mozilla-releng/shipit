@@ -61,7 +61,7 @@ def run(command, stream=False, handle_stream_line=None, log_command=True, log_ou
                     handle_stream_line(line)
             output = "\n".join(output)
             # TODO: When needed we should also add possibility to stream stdout
-            #  and sterr separatly using asyncio.subprocess:
+            #  and sterr separately using asyncio.subprocess:
             #    https://kevinmccarthy.org/2016/07/25/streaming-subprocess-stdin-and-stdout-with-asyncio-in-python/
             #  You can still pipe stderr into stdout which is enough for now.
             error = ""

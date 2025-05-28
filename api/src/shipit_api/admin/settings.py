@@ -109,7 +109,7 @@ AUTH0_AUTH_SCOPES.update(
 )
 
 # Github scopes
-# The following scope gives permission to all github queries, inlcuding private repos
+# The following scope gives permission to all github queries, including private repos
 AUTH0_AUTH_SCOPES.setdefault("github", []).extend(
     list(
         set(
