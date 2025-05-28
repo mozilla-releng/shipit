@@ -195,7 +195,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
       !phases.map(p => p.tcStatus).find(st => st === 'running') &&
       (idx === 0 || // The first phase can be scheduled anytime
       allowPhaseSkipping || // Can schedule anything
-      phases[idx - 1].tcStatus === 'completed' || // previsous phase is done
+      phases[idx - 1].tcStatus === 'completed' || // previous phase is done
         // Special case for Firefox RC.
         // push_firefox can be scheduled even if ship_firefox_rc (the previous
         // phase) is not ready. We still need to be sure that
