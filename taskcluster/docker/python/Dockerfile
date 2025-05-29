@@ -13,9 +13,7 @@ RUN mkdir /builds && \
 
 # %include-run-task
 
-# %include api/requirements/poetry.txt
-ADD topsrcdir/api/requirements/poetry.txt /tmp/poetry.txt
-RUN pip install -r /tmp/poetry.txt
+COPY --from=ghcr.io/astral-sh/uv:0.7.3 /uv /uvx /bin/
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \

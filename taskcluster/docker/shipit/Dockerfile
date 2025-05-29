@@ -4,30 +4,33 @@
 
 # WARNING: Update api/Dockerfile* files when you update this one. Or better,
 # find a way to use the same Dockerfile
-FROM          python:$PYTHON_VERSION
+FROM python:3.12
 
 ARG APP_TYPE
 
 RUN groupadd --gid 10001 app && \
     useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
 
+WORKDIR /app
+
+COPY --from=ghcr.io/astral-sh/uv:0.7.3 /uv /uvx /bin/
+
+# %include api/pyproject.toml
+# %include pyproject.toml
+# %include uv.lock
+ADD topsrcdir/api/pyproject.toml api/pyproject.toml
+ADD topsrcdir/pyproject.toml pyproject.toml
+ADD topsrcdir/uv.lock uv.lock
+
+# Install dependencies
+RUN uv sync --no-install-project --locked
 
 # %include api
-COPY topsrcdir/api/requirements/poetry.txt /tmp/poetry.txt
-RUN pip install -r /tmp/poetry.txt
+ADD topsrcdir/api/ src
+ADD topsrcdir/api/docker.d/init.sh docker.d/
 
-ENV POETRY_CACHE_DIR=/builds/worker/poetry_cache
-
-COPY topsrcdir/api/pyproject.toml /app/src/pyproject.toml
-COPY topsrcdir/api/poetry.lock /app/src/poetry.lock
-# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN cd /app/src && poetry install --only main --no-root --no-ansi
-
-ADD topsrcdir/api/ /app/src
-ADD topsrcdir/api/docker.d/init.sh /app/docker.d/
-
-# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN cd /app/src && APP_TYPE=$APP_TYPE poetry install --only-root --no-ansi
+# Install the project
+RUN uv sync --no-default-groups --locked
 
 ARG TASK_ID
 ARG APP_VERSION
@@ -37,8 +40,8 @@ ARG TASKCLUSTER_ROOT_URL
 
 RUN echo "{\"commit\": \"$VCS_HEAD_REV\", \"version\": \"$APP_VERSION\", \"source\": \"$VCS_HEAD_REPOSITORY\", \"build\": \"$TASKCLUSTER_ROOT_URL/tasks/$TASK_ID\"}" > /app/version.json
 
-ENV WEB_CONCURRENCY=3
-ENV APP_TYPE=${APP_TYPE}
+ENV WEB_CONCURRENCY 3
+ENV APP_TYPE ${APP_TYPE}
 ENV FLASK_APP shipit_api.$APP_TYPE.flask:app
 USER app
 WORKDIR /app/src

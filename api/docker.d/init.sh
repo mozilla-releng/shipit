@@ -28,4 +28,4 @@ then
     EXTRA_ARGS="--bind $HOST:$PORT --workers 1 --timeout 3600 --reload --reload-engine=poll --certfile=$cert --keyfile=$key"
 fi
 
-exec poetry run gunicorn $FLASK_APP --log-file - $EXTRA_ARGS
+exec uv run gunicorn $FLASK_APP --log-file - $EXTRA_ARGS
