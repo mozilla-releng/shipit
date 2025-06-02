@@ -117,8 +117,7 @@ def fetch_artifact(task_id, artifact):
         url = queue.buildUrl("getLatestArtifact", task_id, artifact)
         q = requests.get(url)
         q.raise_for_status()
-        q.encoding = "utf-8"
-        return yaml.safe_load(q.text)
+        return yaml.safe_load(q.content)
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
             raise ArtifactNotFound
