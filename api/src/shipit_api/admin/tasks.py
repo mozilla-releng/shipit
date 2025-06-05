@@ -17,6 +17,7 @@ from backend_common.taskcluster import get_service
 from shipit_api.admin.github import extract_github_repo_owner_and_name
 from shipit_api.admin.release import is_rc
 from shipit_api.common.config import SUPPORTED_FLAVORS
+from shipit_api.common.models import XPIRelease
 
 logger = logging.getLogger(__name__)
 
@@ -232,8 +233,17 @@ def get_parameters(decision_task_id):
     return fetch_artifact(decision_task_id, "public/parameters.yml")
 
 
+def get_release_promotion_action_name(release):
+    if isinstance(release, XPIRelease) and release.xpi_type.startswith("system_"):
+        return "release-promotion-system"
+    return "release-promotion"
+
+
 def release_promotion_flavors(release, actions, verify_supported_flavors=True):
-    relpro = find_action("release-promotion", actions)
+    action_name = get_release_promotion_action_name(release)
+    relpro = find_action(action_name, actions)
+    assert relpro
+
     avail_flavors = relpro["schema"]["properties"]["release_promotion_flavor"]["enum"]
     if verify_supported_flavors:
         return extract_our_flavors(avail_flavors, release.product, release.version, release.partial_updates, release.product_key)
