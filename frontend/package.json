@@ -1,23 +1,20 @@
 {
   "devDependencies": {
-    "@mozilla-frontend-infra/react-lint": "2.0.1",
-    "@neutrinojs/jest": "9.5.0",
-    "@neutrinojs/react": "9.5.0",
     "dotenv": "16.0.1",
     "dotenv-cli": "4.1.1",
     "eslint": "7.32.0",
     "jest": "26.6.3",
-    "neutrino": "9.5.0",
     "webpack": "4.46.0",
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.3",
     "worker-loader": "3.0.8"
   },
   "scripts": {
-    "build": "dotenv webpack -- --mode production",
-    "start": "dotenv webpack-dev-server -- --mode development",
+    "build": "dotenv webpack -- --mode production --env production",
+    "start": "dotenv webpack-dev-server -- --mode development --env development",
     "test": "jest",
-    "lint": "eslint --cache --format codeframe --ext mjs,jsx,js src"
+    "lint": "eslint --cache --format codeframe --ext mjs,jsx,js src test webpack.config.js .eslintrc.js __jest__ jest.config.js",
+    "lint:fix": "eslint --fix --cache --format codeframe --ext mjs,jsx,js src test webpack.config.js .eslintrc.js __jest__ jest.config.js"
   },
   "name": "shipit-ui",
   "version": "1.0.0",
@@ -26,6 +23,9 @@
   "license": "MIT",
   "comment": "@date-io/date-fns is pinned because of https://github.com/mui-org/material-ui-pickers/issues/1440",
   "dependencies": {
+    "@babel/plugin-syntax-dynamic-import": "7.8.3",
+    "@babel/preset-env": "7.12.11",
+    "@babel/preset-react": "7.12.10",
     "@date-io/date-fns": "1.x",
     "@hot-loader/react-dom": "16.14.0",
     "@material-ui/core": "4.12.4",
@@ -36,9 +36,30 @@
     "@mozilla-frontend-infra/components": "3.0.7",
     "@mozilla-protocol/core": "^17.0.1",
     "axios": "0.27.2",
+    "babel-eslint": "10.1.0",
+    "babel-loader": "8.2.2",
+    "babel-plugin-transform-react-remove-prop-types": "0.4.24",
+    "clean-webpack-plugin": "3.0.0",
     "clipboard-copy": "^4.0.1",
+    "css-loader": "3.6.0",
     "date-fns": "2.28.0",
+    "eslint-config-airbnb": "18.2.0",
+    "eslint-config-airbnb-base": "14.2.0",
+    "eslint-config-prettier": "6.11.0",
+    "eslint-plugin-babel": "5.3.1",
+    "eslint-plugin-import": "2.22.0",
+    "eslint-plugin-jest": "23.20.0",
+    "eslint-plugin-jsx-a11y": "6.3.1",
+    "eslint-plugin-prettier": "3.1.4",
+    "eslint-plugin-react": "7.22.0",
+    "eslint-plugin-react-hooks": "4.2.0",
+    "eslint-webpack-plugin": "2",
+    "file-loader": "6.2.0",
+    "html-loader": "0.5.5",
+    "html-webpack-plugin": "4.5.1",
     "is-absolute-url": "4.0.1",
+    "mini-css-extract-plugin": "0.12.0",
+    "prettier": "1.19.1",
     "prop-types": "15.8.1",
     "react": "16.14.0",
     "react-auth0-components": "1.0.4",
@@ -48,6 +69,7 @@
     "react-interval": "2.1.2",
     "react-router-dom": "5.3.3",
     "react-time-ago": "6.2.4",
-    "taskcluster-lib-urls": "13.0.1"
+    "taskcluster-lib-urls": "13.0.1",
+    "url-loader": "4.1.1"
   }
 }
