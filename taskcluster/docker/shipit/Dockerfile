@@ -4,43 +4,57 @@
 
 # WARNING: Update api/Dockerfile* files when you update this one. Or better,
 # find a way to use the same Dockerfile
-FROM          python:$PYTHON_VERSION
+# %ARG PYTHON_VERSION
+FROM python:$PYTHON_VERSION
 
-ARG APP_TYPE
 
 RUN groupadd --gid 10001 app && \
     useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
 
+WORKDIR /app
+USER app
 
-# %include api
-COPY topsrcdir/api/requirements/poetry.txt /tmp/poetry.txt
-RUN pip install -r /tmp/poetry.txt
+# %ARG UV_VERSION
+COPY --from=ghcr.io/astral-sh/uv:$UV_VERSION /uv /uvx /bin/
 
-ENV POETRY_CACHE_DIR=/builds/worker/poetry_cache
+# %include pyproject.toml
+# %include uv.lock
+ADD --chown=app:app \
+    topsrcdir/pyproject.toml \
+    topsrcdir/uv.lock \
+    /app/
 
-COPY topsrcdir/api/pyproject.toml /app/src/pyproject.toml
-COPY topsrcdir/api/poetry.lock /app/src/poetry.lock
-# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN cd /app/src && poetry install --only main --no-root --no-ansi
+# %include api/products.yml
+# %include api/pyproject.toml
+ADD --chown=app:app \
+    topsrcdir/api/products.yml \
+    topsrcdir/api/pyproject.toml \
+    /app/api/
 
-ADD topsrcdir/api/ /app/src
-ADD topsrcdir/api/docker.d/init.sh /app/docker.d/
+# %include api/docker.d
+ADD --chown=app:app \
+    topsrcdir/api/docker.d \
+    /app/api/docker.d/
 
-# --no-ansi is needed due to https://github.com/python-poetry/poetry/issues/7148
-RUN cd /app/src && APP_TYPE=$APP_TYPE poetry install --only-root --no-ansi
+# %include api/src
+ADD --chown=app:app \
+    topsrcdir/api/src \
+    /app/api/src/
 
-ARG TASK_ID
+# Install dependencies
+RUN uv sync --locked --project api
+
+ARG APP_TYPE
 ARG APP_VERSION
-ARG VCS_HEAD_REV
-ARG VCS_HEAD_REPOSITORY
+ARG TASK_ID
 ARG TASKCLUSTER_ROOT_URL
+ARG VCS_HEAD_REPOSITORY
+ARG VCS_HEAD_REV
 
 RUN echo "{\"commit\": \"$VCS_HEAD_REV\", \"version\": \"$APP_VERSION\", \"source\": \"$VCS_HEAD_REPOSITORY\", \"build\": \"$TASKCLUSTER_ROOT_URL/tasks/$TASK_ID\"}" > /app/version.json
 
-ENV WEB_CONCURRENCY=3
-ENV APP_TYPE=${APP_TYPE}
+ENV WEB_CONCURRENCY 3
+ENV APP_TYPE ${APP_TYPE}
 ENV FLASK_APP shipit_api.$APP_TYPE.flask:app
-USER app
-WORKDIR /app/src
 
-ENTRYPOINT ["/bin/bash", "-c", "/app/docker.d/init.sh $APP_TYPE"]
+ENTRYPOINT ["/bin/bash", "-c", "/app/api/docker.d/init.sh admin"]

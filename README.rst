@@ -40,12 +40,12 @@ Setting up for the Admin API:
 
     docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
 
-3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using Poetry
+3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using uv
 
 ::
 
     export FLASK_APP="shipit_api.admin.flask:app"
-    poetry run flask shell
+    uv run flask shell
 
 Setting up for the Public API:
 
@@ -61,12 +61,12 @@ Setting up for the Public API:
 
     docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
 
-3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using Poetry
+3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using uv
 
 ::
 
     export FLASK_APP="shipit_api.public.flask:app"
-    poetry run flask shell
+    uv run flask shell
 
 To provide all required sign offs on staging xpi releases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,7 +94,7 @@ way to by-pass the need for a pulse queue.
 
     docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
 
-3. ``poetry run shipit_rebuild_product_details --database-url="postgresql://shipituser:shipitpassword@db/shipitdb" --channel development``
+3. ``uv run shipit_rebuild_product_details --database-url="postgresql://shipituser:shipitpassword@db/shipitdb" --channel development``
 
 4. This will ask you for some GitHub credentials. You can provide them if you want to update https://github.com/mozilla-releng/product-details. That said, you can also ``Ctrl+C`` and inspect the content of `/tmp/product-details` in the docker container. Changes are done here before they pushed to the git repo.
 

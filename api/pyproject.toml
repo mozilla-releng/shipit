@@ -1,119 +1,78 @@
-[tool.black]
-line-length = 160
-target-version = ["py312"]
-include = '\.(wsgi|pyi?)$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | \.cache
-  | \.cache_py3
-  | _build
-  | buck-out
-  | build
-  | dist
-  | ui
-)/
-'''
-
-[tool.isort]
-line_length=160
-multi_line_output=3
-include_trailing_comma=true
-force_grid_wrap=0
-use_parentheses=true
-
-[tool.coverage.run]
-omit = ["api/tests/*"]
-
-[tool.poetry]
+[project]
 name = "shipit-api"
 version = "1.0.0"
 description = ""
-authors = ["Release Engineering <releng@mozilla.com>"]
-license = "MPL2"
-packages = [
-    {include = "backend_common", from = "src"},
-    {include = "cli_common", from = "src"},
-    {include = "shipit_api", from = "src"},
+requires-python = ">=3.12"
+dependencies = [
+    # Required by both public and admin apps
+    "connexion[swagger-ui]<3.0",
+    "dockerflow",
+    "flask",
+    "flask_cors",
+    "flask_migrate",
+    "flask_talisman",
+    "mozilla-version~=4.0",
+    "python-decouple",
+    "sentry-sdk[flask]",
+    "slugid",
+    "sqlalchemy",
+    # deployment
+    "gunicorn",
+    "psycopg2",
+
+    # Required only by the admin app
+    "aioamqp",
+    "aiohttp[speedup]",
+    "arrow",
+    "backoff",
+    # to support signals in Flask
+    "blinker",
+    "deepmerge",
+    "flask_login",
+    "flask_oidc",
+    "json-e",
+    "kombu",
+    "mohawk",
+    "mypy",
+    "mypy_extensions",
+    "pyyaml",
+    "taskcluster",
 ]
 
-[tool.poetry.scripts]
+[tool.uv]
+dev-dependencies = [
+    "aioresponses",
+    "black",
+    "check-manifest",
+    "coverage",
+    "dpath",
+    "flake8",
+    "isort",
+    "openapi-spec-validator",
+    "oyaml",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-mock",
+    "pytest-xdist",
+    "responses",
+    "tox",
+    "tox-uv",
+]
+
+[project.scripts]
 shipit_upload_product_details = "shipit_api.admin.cli:download_product_details"
 shipit_rebuild_product_details = "shipit_api.admin.cli:rebuild_product_details"
 shipit_import = "shipit_api.admin.cli:shipit_import"
 shipit_trigger_product_details = "shipit_api.admin.cli:trigger_product_details"
 
-[tool.poetry.dependencies]
-# Required by both public and admin apps
-python = "^3.12"
-connexion = {version = "<3.0", extras = ["swagger-ui"]}
-dockerflow = "*"
-flask = "*"
-flask_cors = "*"
-flask_migrate = "*"
-flask_talisman = "*"
-mozilla-version = "^4"
-python-decouple = "*"
-sentry-sdk = {version = "*", extras = ["flask"]}
-slugid = "*"
-sqlalchemy = "*"
-# deployment
-gunicorn = "*"
-psycopg2 = "*"
+[dependency-groups]
+ccov-upload = ["requests"]
+dev = ["flask-shell-ipython~=0.5.1"]
 
-# Required only by the admin app
-aioamqp = "*"
-aiohttp = {version = "*", extras = ["speedup"]}
-arrow = "*"
-backoff = "*"
-# to support signals in Flask
-blinker = "*"
-deepmerge = "*"
-flask_login = "*"
-flask_oidc = "*"
-json-e = "*"
-kombu = "*"
-mohawk = "*"
-mypy = "*"
-mypy_extensions = "*"
-pyyaml = "*"
-taskcluster = "*"
-
-[tool.poetry.group.test.dependencies]
-python = "^3.12"
-aioresponses = "*"
-responses = "*"
-pytest = "*"
-pytest-asyncio = "*"
-pytest-cov = "*"
-pytest-mock = "*"
-pytest-xdist = "*"
-black = "*"
-check-manifest = "*"
-isort = "*"
-coverage = "*"
-dpath = "*"
-flake8 = "*"
-openapi-spec-validator = "*"
-oyaml = "*"
-
-[tool.poetry.group.ccov-upload.dependencies]
-requests = "*"
-
-[tool.poetry.group.tox.dependencies]
-tox = "*"
-
-[tool.poetry.group.dev.dependencies]
-flask-shell-ipython = "^0.5.1"
-
-[tool.pytest.ini_options]
-asyncio_default_fixture_loop_scope = "function"
+[tool.hatch.build.targets.wheel]
+packages = ["src/backend_common", "src/cli_common", "src/shipit_api"]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
