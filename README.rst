@@ -40,7 +40,7 @@ Setting up for the Admin API:
 
     docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
 
-3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using uv 
+3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using uv
 
 ::
 
@@ -61,7 +61,7 @@ Setting up for the Public API:
 
     docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
 
-3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using uv 
+3. Once inside the container, set the environment variable for the Flask application and start the interactive Flask shell using uv
 
 ::
 

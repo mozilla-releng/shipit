@@ -39,14 +39,8 @@ dependencies = [
     "taskcluster",
 ]
 
-[project.scripts]
-shipit_upload_product_details = "shipit_api.admin.cli:download_product_details"
-shipit_rebuild_product_details = "shipit_api.admin.cli:rebuild_product_details"
-shipit_import = "shipit_api.admin.cli:shipit_import"
-shipit_trigger_product_details = "shipit_api.admin.cli:trigger_product_details"
-
-[dependency-groups]
-test = [
+[tool.uv]
+dev-dependencies = [
     "aioresponses",
     "black",
     "check-manifest",
@@ -63,7 +57,16 @@ test = [
     "pytest-xdist",
     "responses",
     "tox",
+    "tox-uv",
 ]
+
+[project.scripts]
+shipit_upload_product_details = "shipit_api.admin.cli:download_product_details"
+shipit_rebuild_product_details = "shipit_api.admin.cli:rebuild_product_details"
+shipit_import = "shipit_api.admin.cli:shipit_import"
+shipit_trigger_product_details = "shipit_api.admin.cli:trigger_product_details"
+
+[dependency-groups]
 ccov-upload = ["requests"]
 dev = ["flask-shell-ipython~=0.5.1"]
 

@@ -42,7 +42,7 @@ ADD --chown=app:app \
     /app/api/src/
 
 # Install dependencies
-RUN uv sync --locked
+RUN uv sync --locked --project api
 
 ARG APP_TYPE
 ARG APP_VERSION

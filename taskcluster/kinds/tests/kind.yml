@@ -46,7 +46,7 @@ tasks:
                 - sh
                 - -lxce
                 - >-
-                  cd api && uv run --only-group test tox --parallel -e clean,check,py{substitute_version},report
+                  cd api && uv run tox --parallel -e clean,check,py{substitute_version},report
     frontend-node:
         description: "{name} node{substitute_version}"
         substitute-versions:
