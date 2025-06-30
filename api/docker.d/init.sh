@@ -4,6 +4,11 @@ pushd `dirname $0` &>/dev/null
 MY_DIR=$(pwd)
 popd &>/dev/null
 
+if [ $1 == "worker" ]; then
+    poetry run flask worker
+    exit $?
+fi
+
 if [ $1 == "public" ]; then
     export FLASK_APP="shipit_api.public.flask:app"
 elif [ $1 == "admin" ]; then
