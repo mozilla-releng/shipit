@@ -1,8 +1,8 @@
 ---
 version: 2
 updates:
-  - package-ecosystem: pip
-    directory: "/api"
+  - package-ecosystem: uv
+    directory: "/"
     versioning-strategy: increase-if-necessary
     schedule:
       interval: weekly

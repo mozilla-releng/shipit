@@ -15,6 +15,7 @@ tasks:
         definition: python
         args:
             PYTHON_VERSION: "3.12.8"
+            UV_VERSION: "0.7.9"
     node14:
         definition: node
         args:

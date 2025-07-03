@@ -5,7 +5,7 @@ MY_DIR=$(pwd)
 popd &>/dev/null
 
 if [ $1 == "worker" ]; then
-    poetry run flask worker
+    /app/.venv/bin/flask worker
     exit $?
 fi
 
@@ -33,4 +33,4 @@ then
     EXTRA_ARGS="--bind $HOST:$PORT --workers 1 --timeout 3600 --reload --reload-engine=poll --certfile=$cert --keyfile=$key"
 fi
 
-exec poetry run gunicorn $FLASK_APP --log-file - $EXTRA_ARGS
+exec /app/.venv/bin/gunicorn $FLASK_APP --log-file - $EXTRA_ARGS

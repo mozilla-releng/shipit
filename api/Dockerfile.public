@@ -7,15 +7,13 @@ RUN groupadd --gid 10001 app && \
 
 WORKDIR /app
 
-COPY requirements/poetry.txt /tmp/poetry.txt
-RUN pip install -r /tmp/poetry.txt
+COPY --from=ghcr.io/astral-sh/uv:0.7.9 /uv /uvx /bin/
 
 COPY . /app
 
 ENV WEB_CONCURRENCY=3
 USER app
 
-RUN poetry install --only main
-RUN poetry install --only dev
+RUN uv sync --group dev
 
 CMD ["/app/docker.d/init.sh", "public"]
