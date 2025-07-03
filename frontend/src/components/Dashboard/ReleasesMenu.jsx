@@ -1,3 +1,4 @@
+import { withAuth0 } from '@auth0/auth0-react';
 import React, { useState, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/styles';
@@ -13,7 +14,6 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import Link from '../../utils/Link';
-import { withUser } from '../../utils/AuthContext';
 import menuItems from './menuItems';
 
 export function hasChildren(item) {
@@ -49,10 +49,10 @@ const useStyles = makeStyles(() => ({
     color: 'inherit',
   },
 }));
-const SingleLevel = withUser(({ item, disabled, user }) => {
+const SingleLevel = withAuth0(({ item, disabled, auth0 }) => {
   const classes = useStyles();
 
-  if ((!user || disabled) && item.to.includes('new')) {
+  if ((!auth0.user || disabled) && item.to.includes('new')) {
     return '';
   }
 
