@@ -6,11 +6,11 @@
 FROM python:$PYTHON_VERSION
 
 # Add worker user
-RUN mkdir /builds && \
+RUN mkdir -p /builds && \
     groupadd -g 1000 -o worker && \
     useradd -d /builds/worker -s /bin/bash -m worker -g 1000 -o -u 1000 && \
-    mkdir /builds/worker/artifacts && \
-    chown worker:worker /builds/worker/artifacts
+    mkdir -p /builds/worker/artifacts && \
+    chown worker:worker /builds/worker /builds/worker/artifacts
 
 # %include-run-task
 
@@ -22,7 +22,7 @@ ENV SHELL=/bin/bash \
     PATH=/builds/worker/.local/bin:$PATH
 
 VOLUME /builds/worker/checkouts
-VOLUME /builds/worker/.cache
+VOLUME /builds/worker/.task-cache/uv
 WORKDIR /builds/worker
 
 # Set a default command useful for debugging

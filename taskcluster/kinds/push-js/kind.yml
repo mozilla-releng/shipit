@@ -18,7 +18,7 @@ task-defaults:
     worker-type: b-linux
     run:
         using: run-task
-        cache-dotcache: false
+        use-caches: [checkout, npm]
         checkout:
             shipit: {}
         cwd: '{checkout}'

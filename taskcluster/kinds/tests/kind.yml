@@ -19,7 +19,6 @@ task-defaults:
     worker-type: t-linux
     run:
         using: run-task
-        cache-dotcache: false
         checkout:
             shipit: {}
         cwd: '{checkout}'
@@ -42,6 +41,7 @@ tasks:
                 COVERAGE_REPORT_COMMAND: "coverage xml --omit=*test* -o /builds/worker/artifacts/coverage.xml"
                 TOX_PARALLEL_NO_SPINNER: "1"
         run:
+            use-caches: [checkout, uv]
             command:
                 - sh
                 - -lxce
@@ -55,6 +55,7 @@ tasks:
             docker-image: {in-tree: 'node{substitute_version}'}
             max-run-time: 1800
         run:
+            use-caches: [checkout, npm]
             command:
                 - sh
                 - -lxce
