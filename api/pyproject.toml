@@ -22,7 +22,7 @@ dependencies = [
 
     # Required only by the admin app
     "aioamqp",
-    "aiohttp[speedup]",
+    "aiohttp[speedups]",
     "arrow",
     "backoff",
     # to support signals in Flask
