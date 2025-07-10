@@ -38,14 +38,14 @@ tasks:
     shipit-admin:
         description: "Push to shipit-admin repository."
         dependencies:
-            k8s-image: build-docker-image-shipit-admin
+            k8s-image: docker-image-shipit-admin
         worker:
             env:
                 DOCKER_REPO: docker.io/mozilla/releng-shipit-admin
     shipit-public:
         description: "Push to shipit-public repository."
         dependencies:
-            k8s-image: build-docker-image-shipit-public
+            k8s-image: docker-image-shipit-public
         worker:
             env:
                 DOCKER_REPO: docker.io/mozilla/releng-shipit-public
