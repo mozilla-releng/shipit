@@ -35,7 +35,7 @@
     "@material-ui/styles": "4.11.5",
     "@mozilla-frontend-infra/components": "3.0.7",
     "@mozilla-protocol/core": "^17.0.1",
-    "axios": "0.27.2",
+    "axios": "^1.10.0",
     "babel-eslint": "10.1.0",
     "babel-loader": "8.2.2",
     "babel-plugin-transform-react-remove-prop-types": "0.4.24",
