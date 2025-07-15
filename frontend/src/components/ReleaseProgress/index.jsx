@@ -1,3 +1,4 @@
+import { Auth0Context } from '@auth0/auth0-react';
 import React, { useState, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
@@ -19,7 +20,6 @@ import PhaseProgress from '../PhaseProgress';
 import { cancelRelease as cancelReleaseAPI } from '../api';
 import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
-import { AuthContext } from '../../utils/AuthContext';
 import config from '../../config';
 import { repoUrlBuilder } from '../../utils/helpers';
 
@@ -49,7 +49,7 @@ export default function ReleaseProgress({
   const location = useLocation();
   const group = new URLSearchParams(location.search).get('group') || 'firefox';
   const classes = useStyles();
-  const authContext = useContext(AuthContext);
+  const authContext = useContext(Auth0Context);
   const mutable = authContext.user && !readOnly;
   const [open, setOpen] = useState(false);
   const [cancelState, cancelAction] = useAction(cancelReleaseAPI);

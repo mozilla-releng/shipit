@@ -1,3 +1,4 @@
+import { Auth0Context } from '@auth0/auth0-react';
 import 'date-fns';
 import React, { useState, useContext } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
@@ -26,7 +27,6 @@ import Dashboard from '../../components/Dashboard';
 import config from '../../config';
 import maybeShorten from '../../components/text';
 import { getBranches, getPushes, getVersion } from '../../components/vcs';
-import { AuthContext } from '../../utils/AuthContext';
 import {
   guessBuildNumber,
   guessPartialVersions,
@@ -50,7 +50,7 @@ export default function NewRelease() {
   const group = new URLSearchParams(location.search).get('group') || 'firefox';
   const groupTitle = group.charAt(0).toUpperCase() + group.slice(1);
   const classes = useStyles();
-  const authContext = useContext(AuthContext);
+  const authContext = useContext(Auth0Context);
   const [selectedProduct, setSelectedProduct] = useState('');
   const [selectedRepository, setSelectedRepository] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');

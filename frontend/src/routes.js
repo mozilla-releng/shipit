@@ -2,9 +2,6 @@ import lazy from './utils/lazy';
 
 /* eslint-disable import/no-cycle */
 
-const Login = lazy(() =>
-  import(/* webpackChunkName: 'Login' */ './views/Login')
-);
 const Releases = lazy(() =>
   import(/* webpackChunkName: 'Releases' */ './views/Releases')
 );
@@ -16,10 +13,6 @@ const NewXPIRelease = lazy(() =>
 );
 
 export default [
-  {
-    component: Login,
-    path: '/login',
-  },
   {
     component: Releases,
     path: '/',

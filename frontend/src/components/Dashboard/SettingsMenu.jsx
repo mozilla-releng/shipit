@@ -1,3 +1,4 @@
+import { withAuth0 } from '@auth0/auth0-react';
 import React, { useState, Fragment } from 'react';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/styles';
@@ -16,7 +17,6 @@ import UpdateIcon from '@material-ui/icons/Update';
 import { ListItemIcon } from '@material-ui/core';
 import LinkVariantIcon from 'mdi-react/LinkVariantIcon';
 import Link from '../../utils/Link';
-import { withUser } from '../../utils/AuthContext';
 import { rebuildProductDetails } from '../api';
 import useAction from '../../hooks/useAction';
 
@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function SettingsMenu({ user, disabled }) {
+function SettingsMenu({ auth0, disabled }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const handleMenuOpen = e => setAnchorEl(e.currentTarget);
@@ -54,7 +54,7 @@ function SettingsMenu({ user, disabled }) {
 
   return (
     <Fragment>
-      {!user || disabled ? (
+      {!auth0.user || disabled ? (
         ''
       ) : (
         <Button
@@ -137,4 +137,4 @@ function SettingsMenu({ user, disabled }) {
   );
 }
 
-export default withUser(SettingsMenu);
+export default withAuth0(SettingsMenu);

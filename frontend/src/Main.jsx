@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Switch } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import axios from 'axios';
@@ -8,6 +9,7 @@ import ErrorPanel from './components/ErrorPanel';
 import RouteWithProps from './components/RouteWithProps';
 import routes from './routes';
 import useAction from './hooks/useAction';
+import { SHIPIT_API_URL, SHIPIT_PUBLIC_API_URL } from './config';
 
 const useStyles = makeStyles({
   '@global': {
@@ -20,7 +22,66 @@ const useStyles = makeStyles({
   },
 });
 
+function setupAxiosInterceptors(getAccessTokenSilently, getIdTokenClaims) {
+  axios.interceptors.request.use(async config => {
+    const result = config;
+
+    if (!config.url.startsWith('http')) {
+      // No need to use tokens etc when the public API is used
+      if (config.usePublicApi) {
+        result.baseURL = SHIPIT_PUBLIC_API_URL;
+
+        return result;
+      }
+
+      result.baseURL = SHIPIT_API_URL;
+
+      if (config.authRequired) {
+        const claims = getIdTokenClaims();
+
+        if (claims) {
+          const accessToken = await getAccessTokenSilently();
+
+          result.headers.Authorization = `Bearer ${accessToken}`;
+        }
+      }
+    }
+
+    return result;
+  });
+
+  axios.interceptors.response.use(
+    response => response,
+    error => {
+      const errorMsg = error.response
+        ? error.response.data.exception || error.response.data.detail || null
+        : error.message;
+
+      // If we found a more detailed error message
+      // raise an Error with that instead.
+      if (errorMsg !== null) {
+        throw new Error(errorMsg);
+      }
+
+      throw error;
+    }
+  );
+}
+
 function Main() {
+  const { isLoading, getAccessTokenSilently, getIdTokenClaims } = useAuth0();
+  const [isReady, setReady] = useState(false);
+
+  useEffect(() => {
+    setupAxiosInterceptors(getAccessTokenSilently, getIdTokenClaims);
+  }, [getAccessTokenSilently, isLoading]);
+
+  useEffect(() => {
+    if (!isReady && !isLoading) {
+      setReady(true);
+    }
+  }, [isLoading]);
+
   useStyles();
   const [backendStatus, checkBackendStatus] = useAction(() =>
     axios.get('/__heartbeat__')
@@ -30,7 +91,7 @@ function Main() {
     checkBackendStatus();
   }, []);
 
-  if (backendStatus.loading) {
+  if (!isReady || backendStatus.loading) {
     return (
       <BrowserRouter>
         <Dashboard disabled>

@@ -1,3 +1,4 @@
+import { Auth0Context } from '@auth0/auth0-react';
 import React, { Fragment, useState, useContext } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
@@ -13,7 +14,6 @@ import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import Toolbar from '@material-ui/core/Toolbar';
 import Spinner from '@mozilla-frontend-infra/components/Spinner';
-import { AuthContext } from '../../utils/AuthContext';
 
 const useStyles = makeStyles(() => ({
   appBar: {
@@ -32,7 +32,7 @@ export default function ProductDisabler({
   error,
 }) {
   const classes = useStyles();
-  const authContext = useContext(AuthContext);
+  const authContext = useContext(Auth0Context);
   const mutable = authContext.user;
   const [showModal, setShowModal] = useState(false);
   const [modalItem, setModalItem] = useState(null);
