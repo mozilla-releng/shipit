@@ -1,7 +1,5 @@
 {
   "devDependencies": {
-    "dotenv": "16.0.1",
-    "dotenv-cli": "4.1.1",
     "eslint": "7.32.0",
     "jest": "26.6.3",
     "webpack": "4.46.0",
@@ -10,8 +8,8 @@
     "worker-loader": "3.0.8"
   },
   "scripts": {
-    "build": "dotenv webpack -- --mode production --env production",
-    "start": "dotenv webpack-dev-server -- --mode development --env development",
+    "build": "webpack --env production",
+    "start": "webpack-dev-server --env development",
     "test": "jest",
     "lint": "eslint --cache --format codeframe --ext mjs,jsx,js src test webpack.config.js .eslintrc.js __jest__ jest.config.js",
     "lint:fix": "eslint --fix --cache --format codeframe --ext mjs,jsx,js src test webpack.config.js .eslintrc.js __jest__ jest.config.js"
