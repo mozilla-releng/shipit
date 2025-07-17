@@ -22,8 +22,6 @@ const App = () => {
           scope: config.AUTH0.scope,
         }}
         leeway={30}
-        useRefreshTokens
-        useRefreshTokensFallback
         cacheLocation="localstorage">
         <ThemeProvider theme={theme}>
           <Main />
