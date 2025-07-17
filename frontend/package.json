@@ -2,7 +2,8 @@
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
     "eslint": "7.32.0",
-    "jest": "26.6.3",
+    "jest": "30.0.4",
+    "jest-environment-jsdom": "30.0.4",
     "react-refresh": "^0.17.0",
     "webpack": "5.100.2",
     "webpack-cli": "6.0.1",
