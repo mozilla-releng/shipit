@@ -27,10 +27,10 @@ tasks:
     frontend:
         description: "Push to shipit-ui bucket."
         worker:
-            docker-image: {in-tree: node14}
+            docker-image: {in-tree: node18}
             max-run-time: 3600
         dependencies:
-            tests-js: tests-frontend-node-14
+            tests-js: tests-frontend-node-18
             tests-api: tests-api-python-312
         run:
             command:

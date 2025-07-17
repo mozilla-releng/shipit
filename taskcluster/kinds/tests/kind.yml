@@ -50,7 +50,7 @@ tasks:
     frontend-node:
         description: "{name} node{substitute_version}"
         substitute-versions:
-            - 14
+            - 18
         worker:
             docker-image: {in-tree: 'node{substitute_version}'}
             max-run-time: 1800

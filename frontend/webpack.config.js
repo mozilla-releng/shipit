@@ -38,21 +38,15 @@ const connectSrc = [
 // DO NOT USE DEVTOOLS THAT RELY ON EVAL IN PRODUCTION
 // These include tools such as
 // 'cheap-module-eval-source-map' and 'react-hot-loader/babel'
-module.exports = env => {
+module.exports = (_, { mode }) => {
   return {
-    mode: env,
-    devtool: env === 'production' ? false : 'cheap-module-eval-source-map',
+    devtool: mode === 'production' ? false : 'eval-cheap-module-source-map',
     target: 'web',
     context: __dirname,
     stats: {
       children: false,
       entrypoints: false,
       modules: false,
-    },
-    node: {
-      Buffer: false,
-      fs: 'empty',
-      tls: 'empty',
     },
     output: {
       path: `${__dirname}/build`,
@@ -74,11 +68,17 @@ module.exports = env => {
         '.js',
         '.json',
       ],
+      fallback: {
+        Buffer: false,
+        fs: false,
+        tls: false,
+        assert: 'assert',
+      },
     },
     devServer: {
       host,
       port,
-      https: true,
+      server: 'https',
       historyApiFallback: {
         disableDotRule: true,
       },
@@ -115,6 +115,12 @@ module.exports = env => {
           ],
         },
         {
+          test: /\.m?js/,
+          resolve: {
+            fullySpecified: false,
+          },
+        },
+        {
           test: /\.(js|jsx)$/,
           include: [`${__dirname}/src`, `${__dirname}/test`],
           use: [
@@ -146,7 +152,7 @@ module.exports = env => {
                   [
                     '@babel/preset-react',
                     {
-                      development: env === 'development',
+                      development: mode === 'development',
                       useSpread: true,
                     },
                   ],
@@ -159,7 +165,7 @@ module.exports = env => {
                       removeImport: true,
                     },
                   ],
-                  ...(env === 'development' ? ['react-hot-loader/babel'] : []),
+                  ...(mode === 'development' ? ['react-hot-loader/babel'] : []),
                 ],
               },
             },
@@ -206,27 +212,11 @@ module.exports = env => {
         },
         {
           test: /\.(eot|ttf|woff|woff2)(\?v=\d+\.\d+\.\d+)?$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: 'assets/[name].[hash:8].[ext]',
-              },
-            },
-          ],
+          type: 'asset/resource',
         },
         {
           test: /\.(ico|png|jpg|jpeg|gif|svg|webp)(\?v=\d+\.\d+\.\d+)?$/,
-          use: [
-            {
-              loader: 'url-loader',
-              options: {
-                limit: 8192,
-                name: 'assets/[name].[hash:8].[ext]',
-                fallback: require.resolve('file-loader'),
-              },
-            },
-          ],
+          type: 'asset/resource',
         },
         {
           test: /.worker\.js$/,
@@ -248,6 +238,7 @@ module.exports = env => {
       runtimeChunk: 'single',
     },
     plugins: [
+      new webpack.ProvidePlugin({ process: 'process/browser' }),
       new webpack.EnvironmentPlugin({
         HOST: host,
         PORT: port,
