@@ -33,7 +33,7 @@ function UserMenu(props) {
   const handleCopyAccessToken = async () => {
     const accessToken = await auth0.getAccessTokenSilently();
 
-    navigator.clipboard.writeText(accessToken);
+    await navigator.clipboard.writeText(accessToken);
     handleMenuClose();
   };
 
