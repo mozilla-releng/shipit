@@ -85,8 +85,7 @@ services:
       retries: 5
 
   ui:
-    # SSL doesn't work with node:current
-    image: node:16
+    image: node:18
     ports:
       - "8010:8010"
     volumes:
