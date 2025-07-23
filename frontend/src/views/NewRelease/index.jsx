@@ -2,7 +2,7 @@ import { Auth0Context } from '@auth0/auth0-react';
 import 'date-fns';
 import React, { useState, useContext } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-import ReactTimeAgo from 'react-time-ago';
+import TimeAgo from 'react-timeago';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
@@ -231,7 +231,7 @@ export default function NewRelease() {
           m={1}
           className={classes.lessImportantData}
           key={branch.branch}>
-          updated <ReactTimeAgo date={branch.date} />
+          updated <TimeAgo date={branch.date} />
         </Box>
       );
     }
