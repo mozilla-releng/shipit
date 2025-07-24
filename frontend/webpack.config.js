@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -36,8 +37,7 @@ const connectSrc = [
 ].join(' ');
 
 // DO NOT USE DEVTOOLS THAT RELY ON EVAL IN PRODUCTION
-// These include tools such as
-// 'cheap-module-eval-source-map' and 'react-hot-loader/babel'
+// These include tools such as 'cheap-module-eval-source-map'
 module.exports = (_, { mode }) => {
   return {
     devtool: mode === 'production' ? false : 'eval-cheap-module-source-map',
@@ -57,7 +57,6 @@ module.exports = (_, { mode }) => {
     resolve: {
       alias: {
         'react-native': 'react-native-web',
-        'react-dom': '@hot-loader/react-dom',
       },
       extensions: [
         '.web.jsx',
@@ -154,7 +153,7 @@ module.exports = (_, { mode }) => {
                       removeImport: true,
                     },
                   ],
-                  ...(mode === 'development' ? ['react-hot-loader/babel'] : []),
+                  ...(mode === 'development' ? ['react-refresh/babel'] : []),
                 ],
               },
             },
@@ -282,6 +281,7 @@ module.exports = (_, { mode }) => {
         files: [`${__dirname}/src`, `${__dirname}/test`],
         ...eslintConfig,
       }),
+      ...(mode === 'development' ? [new ReactRefreshWebpackPlugin()] : []),
     ],
     entry: {
       index: [`${__dirname}/src/index`],
