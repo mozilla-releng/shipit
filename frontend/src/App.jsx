@@ -1,4 +1,3 @@
-import { hot } from 'react-hot-loader/root';
 import React, { Fragment } from 'react';
 import { Auth0Provider } from '@auth0/auth0-react';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -31,4 +30,4 @@ const App = () => {
   );
 };
 
-export default hot(App);
+export default App;
