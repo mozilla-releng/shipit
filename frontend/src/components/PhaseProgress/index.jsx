@@ -1,35 +1,35 @@
-import React, { useState, useContext } from 'react';
-import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import AndroidIcon from 'mdi-react/AndroidIcon';
-import Stepper from '@material-ui/core/Stepper';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import Link from '@material-ui/core/Link';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
 import StepLabel from '@material-ui/core/StepLabel';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
-import libUrls from 'taskcluster-lib-urls';
+import Stepper from '@material-ui/core/Stepper';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Link from '@material-ui/core/Link';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
-import { makeStyles } from '@material-ui/core/styles';
+import Spinner from '@mozilla-frontend-infra/components/Spinner';
+import AndroidIcon from 'mdi-react/AndroidIcon';
+import React, { useContext, useState } from 'react';
+import libUrls from 'taskcluster-lib-urls';
 import config from '../../config';
-import { schedulePhase, phaseSignOff } from '../api';
 import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
-import { phasePrettyName } from '../text';
+import { phaseSignOff, schedulePhase } from '../api';
 import MouseOverPopover from '../Shared/MouseOverPopover';
+import { phasePrettyName } from '../text';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   label: {
     lineHeight: '0.5',
   },
@@ -45,9 +45,8 @@ const useStyles = makeStyles(theme => ({
 export default function PhaseProgress({ release, readOnly, xpi }) {
   const classes = useStyles();
   const { fetchReleases, productBranches } = useContext(ReleaseContext);
-  const [disableScheduleOrSignoff, setDisableScheduleOrSignoff] = useState(
-    false
-  );
+  const [disableScheduleOrSignoff, setDisableScheduleOrSignoff] =
+    useState(false);
   const [open, setOpen] = useState(false);
   const [phase, setPhase] = useState({});
   const [selectedSignoffUID, setSelectedSignoffUID] = useState(null);
@@ -55,10 +54,10 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
   const [phaseSignOffState, phaseSignOffAction] = useAction(phaseSignOff);
   const taskGroupUrlPrefix = libUrls.ui(
     config.TASKCLUSTER_ROOT_URL,
-    '/tasks/groups'
+    '/tasks/groups',
   );
   const loading = schedulePhaseState.loading || phaseSignOffState.loading;
-  const handleClickOpen = phase => {
+  const handleClickOpen = (phase) => {
     setPhase(phase);
     setOpen(true);
   };
@@ -79,7 +78,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
         release.name,
         phase.name,
         selectedSignoffUID,
-        xpi ? '/xpi/signoff' : '/signoff'
+        xpi ? '/xpi/signoff' : '/signoff',
       );
 
       setDisableScheduleOrSignoff(false);
@@ -91,7 +90,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
       const result = await schedulePhaseAction(
         release.name,
         phase.name,
-        xpi ? '/xpi/releases' : '/releases'
+        xpi ? '/xpi/releases' : '/releases',
       );
 
       setDisableScheduleOrSignoff(false);
@@ -128,7 +127,8 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
               inProgress
                 ? { icon: <Spinner loading size={30} /> }
                 : { classes: { completed: classes.completed } }
-            }>
+            }
+          >
             <Link href={`${taskGroupUrlPrefix}/${phase.actionTaskId}`}>
               {prettyName} task
             </Link>
@@ -153,11 +153,12 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                 marginTop=".15rem"
                 popoverContent={
                   <React.Fragment>
-                    {phase.signoffs.map(signoff => (
+                    {phase.signoffs.map((signoff) => (
                       <Typography
                         key={signoff.name}
                         variant="caption"
-                        display="block">
+                        display="block"
+                      >
                         {`${signoff.completed_by}, ${signoff.name}`}
                       </Typography>
                     ))}
@@ -170,7 +171,8 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                 fontSize=".80rem"
                 fontWeight={500}
                 marginTop="1.6rem"
-                position="absolute">
+                position="absolute"
+              >
                 <Link href={phase.xpiUrl}>
                   xpi package
                   <LinkOutlinedIcon
@@ -192,10 +194,10 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
     const canBeScheduled =
       !readOnly &&
       // don't schedule anything if something is still in progress
-      !phases.map(p => p.tcStatus).find(st => st === 'running') &&
+      !phases.map((p) => p.tcStatus).find((st) => st === 'running') &&
       (idx === 0 || // The first phase can be scheduled anytime
-      allowPhaseSkipping || // Can schedule anything
-      phases[idx - 1].tcStatus === 'completed' || // previous phase is done
+        allowPhaseSkipping || // Can schedule anything
+        phases[idx - 1].tcStatus === 'completed' || // previous phase is done
         // Special case for Firefox RC.
         // push_firefox can be scheduled even if ship_firefox_rc (the previous
         // phase) is not ready. We still need to be sure that
@@ -221,7 +223,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
     );
   };
 
-  const handleSignoffChange = event => {
+  const handleSignoffChange = (event) => {
     setSelectedSignoffUID(event.target.value);
   };
 
@@ -236,8 +238,9 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
         <RadioGroup
           name="currentSignoff"
           value={selectedSignoffUID}
-          onChange={handleSignoffChange}>
-          {phase.signoffs.map(signoff => (
+          onChange={handleSignoffChange}
+        >
+          {phase.signoffs.map((signoff) => (
             <FormControlLabel
               key={signoff.uid}
               value={signoff.uid}
@@ -267,9 +270,10 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
     <React.Fragment>
       <Stepper
         nonLinear={release.allow_phase_skipping}
-        className={classes.stepper}>
+        className={classes.stepper}
+      >
         {release.phases.map((phase, idx) =>
-          renderPhase(phase, idx, release.phases, release.allow_phase_skipping)
+          renderPhase(phase, idx, release.phases, release.allow_phase_skipping),
         )}
       </Stepper>
       <Dialog open={open} onClose={handleClose}>
@@ -303,7 +307,8 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             disabled={disableScheduleOrSignoff}
             onClick={() => scheduleOrSignoff(release.name, phase.name)}
             variant="contained"
-            color="primary">
+            color="primary"
+          >
             {phase.signoffs && phase.signoffs.length > 0
               ? 'Sign Off'
               : 'Schedule'}

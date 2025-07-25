@@ -58,7 +58,7 @@ export async function getXPIVersion(
   repo,
   commit,
   installType,
-  directory = null
+  directory = null,
 ) {
   let path = installType === 'mach' ? 'manifest.json' : 'package.json';
 
@@ -96,7 +96,7 @@ export async function getPushes(repo, branch) {
     const rawData = await getHgPushes(repo);
 
     latestPushes = Object.values(rawData.pushes)
-      .map(push => ({
+      .map((push) => ({
         ...push.changesets[0],
         date: new Date(push.date * 1000),
       }))
@@ -105,7 +105,7 @@ export async function getPushes(repo, branch) {
     const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
     const rawData = await getGithubCommits(repoOwner, repoName, branch);
 
-    latestPushes = rawData.map(commit => ({
+    latestPushes = rawData.map((commit) => ({
       author: commit.author,
       date: new Date(commit.committer_date),
       desc: commit.message,
@@ -125,7 +125,7 @@ export async function getBranches(repo) {
   const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
   const rawData = await getGithubBranches(repoOwner, repoName);
 
-  branches = rawData.map(branch => ({
+  branches = rawData.map((branch) => ({
     branch: branch.name,
     date: new Date(branch.committer_date),
     prettyName: branch.name,
@@ -141,7 +141,7 @@ export async function getBranches(repo) {
     twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
     const rest = branches
       .slice(10)
-      .filter(branch => branch.date >= twoWeeksAgo);
+      .filter((branch) => branch.date >= twoWeeksAgo);
 
     branches = [...firstTen, ...rest];
   }
@@ -177,7 +177,7 @@ export async function getVersion(repo, revision, appName, versionFile) {
     params: {
       path: 'version.txt',
     },
-    transformResponse: [data => data],
+    transformResponse: [(data) => data],
   });
 
   if (res.status === 200) {

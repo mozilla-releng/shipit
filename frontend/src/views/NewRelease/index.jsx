@@ -1,40 +1,40 @@
 import { Auth0Context } from '@auth0/auth0-react';
 import 'date-fns';
-import React, { useState, useContext } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import TimeAgo from 'react-timeago';
+import DateFnsUtils from '@date-io/date-fns';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Collapse from '@material-ui/core/Collapse';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider, DateTimePicker } from '@material-ui/pickers';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
-import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
-import Dashboard from '../../components/Dashboard';
-import config from '../../config';
-import maybeShorten from '../../components/text';
-import { getBranches, getPushes, getVersion } from '../../components/vcs';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import Spinner from '@mozilla-frontend-infra/components/Spinner';
+import React, { useContext, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import TimeAgo from 'react-timeago';
 import {
   guessBuildNumber,
   guessPartialVersions,
   submitRelease,
 } from '../../components/api';
+import Dashboard from '../../components/Dashboard';
+import maybeShorten from '../../components/text';
+import { getBranches, getPushes, getVersion } from '../../components/vcs';
+import config from '../../config';
 import useAction from '../../hooks/useAction';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 500,
@@ -65,20 +65,18 @@ export default function NewRelease() {
   const [getBranchesState, getBranchesAction] = useAction(getBranches);
   const [getPushesState, getPushesAction] = useAction(getPushes);
   const [submitReleaseState, submitReleaseAction] = useAction(submitRelease);
-  const [guessPartialVersionsState, guessPartialVersionsAction] = useAction(
-    guessPartialVersions
-  );
+  const [guessPartialVersionsState, guessPartialVersionsAction] =
+    useAction(guessPartialVersions);
   const [getVersionState, getVersionAction] = useAction(getVersion);
-  const [guessBuildNumberState, guessBuildNumberAction] = useAction(
-    guessBuildNumber
-  );
+  const [guessBuildNumberState, guessBuildNumberAction] =
+    useAction(guessBuildNumber);
   const loading =
     getBranchesState.loading ||
     getPushesState.loading ||
     getVersionState.loading ||
     guessBuildNumberState.loading ||
     guessPartialVersionsState.loading;
-  const revisionPretty = rev =>
+  const revisionPretty = (rev) =>
     `${rev.date.toDateString()} - ${rev.node.substring(0, 8)} - ${
       rev.author
     } - ${maybeShorten(rev.desc)}`;
@@ -93,12 +91,12 @@ export default function NewRelease() {
     setReleaseEta(null);
   };
 
-  const handleProduct = product => {
+  const handleProduct = (product) => {
     reset();
     setSelectedProduct(product);
   };
 
-  const handleRepository = async repository => {
+  const handleRepository = async (repository) => {
     reset();
     const repo = { ...repository };
     const branches = await getBranchesAction(repo.repo);
@@ -107,17 +105,17 @@ export default function NewRelease() {
     setSelectedRepository(repo);
   };
 
-  const handleBranch = async branch => {
+  const handleBranch = async (branch) => {
     reset();
     setSelectedBranch(branch);
     const pushes = await getPushesAction(branch.repo, branch.branch);
 
     setSuggestedRevisions(
-      pushes.data.filter(push => push.desc.indexOf('DONTBUILD') === -1)
+      pushes.data.filter((push) => push.desc.indexOf('DONTBUILD') === -1),
     );
   };
 
-  const handleRevisionInputChange = async rev => {
+  const handleRevisionInputChange = async (rev) => {
     setRevision(rev);
 
     if (!rev) {
@@ -133,7 +131,7 @@ export default function NewRelease() {
         selectedBranch.repo,
         rev,
         selectedProduct.appName,
-        selectedBranch.versionFile
+        selectedBranch.versionFile,
       )
     ).data;
     const nextBuildNumber = (
@@ -147,27 +145,27 @@ export default function NewRelease() {
       const parts = await guessPartialVersionsAction(
         selectedProduct,
         selectedBranch,
-        ver
+        ver,
       );
 
       setPartialVersions(parts.data);
     }
   };
 
-  const handleRevisionChange = async rev => {
+  const handleRevisionChange = async (rev) => {
     // This will trigger value change and handleRevisionInputChange
     setRevision(rev);
   };
 
-  const handleReleaseEta = date => {
+  const handleReleaseEta = (date) => {
     setReleaseEta(date);
   };
 
-  const handlePartials = partials => {
+  const handlePartials = (partials) => {
     setPartialVersions(
       typeof partials === 'string'
-        ? partials.split(',').map(x => x.trim())
-        : partials
+        ? partials.split(',').map((x) => x.trim())
+        : partials,
     );
   };
 
@@ -176,7 +174,7 @@ export default function NewRelease() {
       version !== '' &&
       buildNumber > 0 &&
       (selectedProduct.enablePartials && partialFieldEnabled
-        ? partialVersions.filter(x => x).length > 0
+        ? partialVersions.filter((x) => x).length > 0
         : true) &&
       !loading &&
       submitReleaseState.data === null &&
@@ -190,8 +188,9 @@ export default function NewRelease() {
         <InputLabel>Product</InputLabel>
         <Select
           value={selectedProduct}
-          onChange={event => handleProduct(event.target.value)}>
-          {config.PRODUCTS[group].map(product => (
+          onChange={(event) => handleProduct(event.target.value)}
+        >
+          {config.PRODUCTS[group].map((product) => (
             <MenuItem value={product} key={product.product}>
               {product.prettyName}
             </MenuItem>
@@ -209,8 +208,9 @@ export default function NewRelease() {
           <Select
             value={selectedRepository}
             renderValue={() => selectedRepository.prettyName}
-            onChange={event => handleRepository(event.target.value)}>
-            {selectedProduct.repositories.map(repository => (
+            onChange={(event) => handleRepository(event.target.value)}
+          >
+            {selectedProduct.repositories.map((repository) => (
               <MenuItem value={repository} key={repository.repo}>
                 {repository.prettyName}
               </MenuItem>
@@ -221,7 +221,7 @@ export default function NewRelease() {
     );
   };
 
-  const getBranchLabel = branch => {
+  const getBranchLabel = (branch) => {
     const label = [branch.prettyName];
 
     if (branch.date) {
@@ -230,9 +230,10 @@ export default function NewRelease() {
           component="span"
           m={1}
           className={classes.lessImportantData}
-          key={branch.branch}>
+          key={branch.branch}
+        >
           updated <TimeAgo date={branch.date} />
-        </Box>
+        </Box>,
       );
     }
 
@@ -244,9 +245,7 @@ export default function NewRelease() {
 
     if (selectedRepository.branches && selectedRepository.branches.length > 0) {
       branches = selectedRepository.branches;
-    } else if (
-      selectedProduct.branches?.some(b => !!b.branch)
-    ) {
+    } else if (selectedProduct.branches?.some((b) => !!b.branch)) {
       branches = selectedProduct.branches;
     }
 
@@ -257,8 +256,9 @@ export default function NewRelease() {
           <InputLabel>Branch</InputLabel>
           <Select
             value={selectedBranch}
-            onChange={event => handleBranch(event.target.value)}>
-            {branches.map(branch => (
+            onChange={(event) => handleBranch(event.target.value)}
+          >
+            {branches.map((branch) => (
               <MenuItem value={branch} key={branch.branch}>
                 {getBranchLabel(branch)}
               </MenuItem>
@@ -277,13 +277,13 @@ export default function NewRelease() {
           freeSolo
           forcePopupIcon
           options={suggestedRevisions || []}
-          getOptionLabel={rev => rev.node}
+          getOptionLabel={(rev) => rev.node}
           onChange={(_event, value) =>
             value && handleRevisionChange(value.node)
           }
           onInputChange={(_event, value) => handleRevisionInputChange(value)}
-          renderOption={option => revisionPretty(option)}
-          renderInput={params => (
+          renderOption={(option) => revisionPretty(option)}
+          renderInput={(params) => (
             <TextField
               {...params}
               inputProps={{ ...params.inputProps, value: revision }}
@@ -294,7 +294,8 @@ export default function NewRelease() {
         />
         {revision !== '' && selectedRepository.enableTreeherder !== false && (
           <a
-            href={`${config.TREEHERDER_URL}/jobs?repo=${selectedBranch.project}&revision=${revision}`}>
+            href={`${config.TREEHERDER_URL}/jobs?repo=${selectedBranch.project}&revision=${revision}`}
+          >
             Treeherder
           </a>
         )}
@@ -333,7 +334,7 @@ export default function NewRelease() {
             disabled={!partialFieldEnabled}
             variant="outlined"
             value={partialVersions}
-            onChange={event => handlePartials(event.target.value)}
+            onChange={(event) => handlePartials(event.target.value)}
             className={classes.formControl}
             helperText="Comma-separated list of versions with build number, e.g. 59.0b8build7."
           />
@@ -382,7 +383,8 @@ export default function NewRelease() {
             }}
             color="default"
             autoFocus
-            variant="contained">
+            variant="contained"
+          >
             Close
           </Button>
           <Button
@@ -394,12 +396,13 @@ export default function NewRelease() {
                 releaseEta,
                 partialVersions,
                 version,
-                buildNumber
+                buildNumber,
               )
             }
             color="primary"
             disabled={!readyToSubmit()}
-            variant="contained">
+            variant="contained"
+          >
             Submit
           </Button>
         </DialogActions>
@@ -427,7 +430,8 @@ export default function NewRelease() {
           color="primary"
           variant="contained"
           disabled={!readyToSubmit()}
-          onClick={() => setOpen(true)}>
+          onClick={() => setOpen(true)}
+        >
           Create Release
         </Button>
         {loading && <Spinner loading />}
@@ -452,7 +456,8 @@ export default function NewRelease() {
         in={
           selectedProduct.repositories &&
           selectedProduct.repositories.length > 0
-        }>
+        }
+      >
         {renderRepositoriesSelect()}
       </Collapse>
       <Collapse
@@ -461,7 +466,8 @@ export default function NewRelease() {
           (selectedRepository?.branches &&
             selectedRepository.branches.length > 0) ||
           (selectedProduct.branches && selectedProduct.branches.length > 0)
-        }>
+        }
+      >
         {renderBranchesSelect()}
       </Collapse>
       <Collapse in={selectedBranch.repo && selectedBranch.repo.length > 0}>

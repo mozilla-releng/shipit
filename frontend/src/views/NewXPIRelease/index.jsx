@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
-import Typography from '@material-ui/core/Typography';
 import Collapse from '@material-ui/core/Collapse';
-import { makeStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Dashboard from '../../components/Dashboard';
-import config from '../../config';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import Spinner from '@mozilla-frontend-infra/components/Spinner';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { getXPIBuildNumbers, submitXPIRelease } from '../../components/api';
-import useAction from '../../hooks/useAction';
-import {
-  getLatestGithubCommit,
-  getGithubCommits,
-  getXpis,
-  getXPIVersion,
-} from '../../components/vcs';
+import Dashboard from '../../components/Dashboard';
 import maybeShorten from '../../components/text';
+import {
+  getGithubCommits,
+  getLatestGithubCommit,
+  getXPIVersion,
+  getXpis,
+} from '../../components/vcs';
+import config from '../../config';
+import useAction from '../../hooks/useAction';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 500,
@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
 export default function NewXPIRelease() {
   const classes = useStyles();
   const [manifestCommit, fetchManifestCommit] = useAction(
-    getLatestGithubCommit
+    getLatestGithubCommit,
   );
   const history = useHistory();
   const [xpis, fetchXpis] = useAction(getXpis);
@@ -57,10 +57,10 @@ export default function NewXPIRelease() {
     xpiVersion.loading ||
     buildNumbers.loading ||
     manifestCommit.loading;
-  const revisionPretty = commit =>
+  const revisionPretty = (commit) =>
     `${maybeShorten(commit.revision, 8, '')} - ${maybeShorten(
       commit.message,
-      45
+      45,
     )}`;
   const init = async () => {
     const { owner, project, branch } = config.XPI_MANIFEST;
@@ -78,7 +78,7 @@ export default function NewXPIRelease() {
     init();
   }, []);
 
-  const handleXpiSelect = async xpi => {
+  const handleXpiSelect = async (xpi) => {
     setSelectedXpiRevision('');
     setSelectedXpi(xpi);
     setBuildNumber(0);
@@ -105,8 +105,9 @@ export default function NewXPIRelease() {
           <Select
             className={classes.formControl}
             value={selectedXpi}
-            onChange={event => handleXpiSelect(event.target.value)}>
-            {xpis.data.xpis.map(xpi => (
+            onChange={(event) => handleXpiSelect(event.target.value)}
+          >
+            {xpis.data.xpis.map((xpi) => (
               <MenuItem value={xpi} key={xpi.xpi_name}>
                 {xpi.xpi_name}
               </MenuItem>
@@ -125,12 +126,12 @@ export default function NewXPIRelease() {
     return nextBuildNumber;
   };
 
-  const handleXpiRevisionChange = async revision => {
+  const handleXpiRevisionChange = async (revision) => {
     // This will trigger handleXpiRevisionInputChange
     setSelectedXpiRevision(revision);
   };
 
-  const handleXpiRevisionInputChange = async revision => {
+  const handleXpiRevisionInputChange = async (revision) => {
     setSelectedXpiRevision(revision);
 
     const version = (
@@ -139,7 +140,7 @@ export default function NewXPIRelease() {
         selectedXpi.repo,
         selectedXpi.revision,
         selectedXpi.install_type,
-        selectedXpi.directory
+        selectedXpi.directory,
       )
     ).data;
     const buildNumber = await guessBuildNumber(selectedXpi.xpi_name, version);
@@ -168,15 +169,15 @@ export default function NewXPIRelease() {
             freeSolo
             forcePopupIcon
             options={xpiCommits.data || []}
-            getOptionLabel={commit => commit.revision}
+            getOptionLabel={(commit) => commit.revision}
             onChange={(_event, value) =>
               value && handleXpiRevisionChange(value.revision)
             }
             onInputChange={(_event, value) =>
               handleXpiRevisionInputChange(value)
             }
-            renderOption={option => revisionPretty(option)}
-            renderInput={params => (
+            renderOption={(option) => revisionPretty(option)}
+            renderInput={(params) => (
               <TextField
                 {...params}
                 inputProps={{
@@ -232,7 +233,8 @@ export default function NewXPIRelease() {
           color="primary"
           variant="contained"
           disabled={!readyToSubmit()}
-          onClick={() => setOpen(true)}>
+          onClick={() => setOpen(true)}
+        >
           Create Release
         </Button>
       </Grid>
@@ -278,7 +280,8 @@ export default function NewXPIRelease() {
             }}
             color="default"
             autoFocus
-            variant="contained">
+            variant="contained"
+          >
             Close
           </Button>
           <Button
@@ -288,12 +291,13 @@ export default function NewXPIRelease() {
                 selectedXpiRevision,
                 selectedXpi.xpi_name,
                 xpiVersion.data,
-                buildNumber
+                buildNumber,
               )
             }
             color="primary"
             disabled={!readyToSubmit()}
-            variant="contained">
+            variant="contained"
+          >
             Submit
           </Button>
         </DialogActions>
