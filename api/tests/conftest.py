@@ -44,8 +44,8 @@ def app():
     )
     app = shipit_api.admin.create_app(config)
 
-    with app.app_context():
-        backend_common.testing.configure_app(app)
+    with app.app.app_context():
+        backend_common.testing.configure_app(app.app)
         yield app
 
 

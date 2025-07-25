@@ -3,17 +3,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import flask_cors
+import connexion
+from connexion.middleware import MiddlewarePosition
+from starlette.middleware.cors import CORSMiddleware
 
-cors = flask_cors.CORS()
 
-
-def init_app(app):
-    origins = app.config.get("CORS_ORIGINS") or "*"
+def init_app(app: connexion.App):
+    origins = app.app.config.get("CORS_ORIGINS") or "*"
     origins = origins.split(" ")
-    resources = app.config.get("CORS_RESOURCES")
-    if resources is not None:
-        cors.init_app(app, resources=resources)
-    else:
-        cors.init_app(app, origins=origins)
-    return cors
+    app.add_middleware(
+        CORSMiddleware,
+        MiddlewarePosition.BEFORE_ROUTING,
+        allow_origins=origins,
+        allow_methods=["*"],
+        allow_headers=["authorization"],
+    )
