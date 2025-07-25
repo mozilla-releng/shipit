@@ -1,7 +1,5 @@
 import lazy from './utils/lazy';
 
-/* eslint-disable import/no-cycle */
-
 const Releases = lazy(() =>
   import(/* webpackChunkName: 'Releases' */ './views/Releases')
 );

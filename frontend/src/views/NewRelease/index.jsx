@@ -245,8 +245,7 @@ export default function NewRelease() {
     if (selectedRepository.branches && selectedRepository.branches.length > 0) {
       branches = selectedRepository.branches;
     } else if (
-      selectedProduct.branches &&
-      selectedProduct.branches.some(b => !!b.branch)
+      selectedProduct.branches?.some(b => !!b.branch)
     ) {
       branches = selectedProduct.branches;
     }
@@ -459,8 +458,7 @@ export default function NewRelease() {
       <Collapse
         in={
           getBranchesState.loading ||
-          (selectedRepository &&
-            selectedRepository.branches &&
+          (selectedRepository?.branches &&
             selectedRepository.branches.length > 0) ||
           (selectedProduct.branches && selectedProduct.branches.length > 0)
         }>

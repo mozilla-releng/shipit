@@ -61,7 +61,7 @@ export async function getReleasesForProductBranches(
     })
   );
 
-  return releases.flatMap(x => x);
+  return releases.flat();
 }
 
 /**
@@ -97,7 +97,7 @@ export async function getRecentReleases(productBranches, limit = 4) {
     limit
   );
 
-  return recentReleases.flatMap(x => x);
+  return recentReleases.flat();
 }
 
 export async function getXPIBuildNumbers(xpiName, xpiVersion) {
@@ -325,7 +325,7 @@ async function getTaskStatus(taskId) {
     const req = await axios.get(url);
 
     return req.data;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -342,7 +342,7 @@ async function getTaskGroup(taskId) {
     const req = await axios.get(url);
 
     return req.data;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -457,7 +457,7 @@ export async function getPendingReleasesForProductBranches(productBranches) {
     })
   );
 
-  return pendingReleases.flatMap(x => x);
+  return pendingReleases.flat();
 }
 
 export async function schedulePhase(releaseName, phaseName, url) {
