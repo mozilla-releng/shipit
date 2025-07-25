@@ -1,12 +1,13 @@
 #!/bin/bash
 
+set -e
+
 pushd `dirname $0` &>/dev/null
 MY_DIR=$(pwd)
 popd &>/dev/null
 
 if [ $1 == "worker" ]; then
-    /app/.venv/bin/flask worker
-    exit $?
+    exec /app/.venv/bin/flask worker
 fi
 
 if [ $1 == "public" ]; then
