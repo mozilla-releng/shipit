@@ -39,8 +39,17 @@ dependencies = [
     "taskcluster",
 ]
 
-[tool.uv]
-dev-dependencies = [
+
+[project.scripts]
+shipit_upload_product_details = "shipit_api.admin.cli:download_product_details"
+shipit_rebuild_product_details = "shipit_api.admin.cli:rebuild_product_details"
+shipit_import = "shipit_api.admin.cli:shipit_import"
+shipit_trigger_product_details = "shipit_api.admin.cli:trigger_product_details"
+
+[dependency-groups]
+ccov-upload = ["requests"]
+dev = [
+    "flask-shell-ipython~=0.5.1",
     "aioresponses",
     "black",
     "check-manifest",
@@ -59,16 +68,6 @@ dev-dependencies = [
     "tox",
     "tox-uv",
 ]
-
-[project.scripts]
-shipit_upload_product_details = "shipit_api.admin.cli:download_product_details"
-shipit_rebuild_product_details = "shipit_api.admin.cli:rebuild_product_details"
-shipit_import = "shipit_api.admin.cli:shipit_import"
-shipit_trigger_product_details = "shipit_api.admin.cli:trigger_product_details"
-
-[dependency-groups]
-ccov-upload = ["requests"]
-dev = ["flask-shell-ipython~=0.5.1"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/backend_common", "src/cli_common", "src/shipit_api"]
