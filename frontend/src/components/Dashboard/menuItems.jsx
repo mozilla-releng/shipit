@@ -1,7 +1,7 @@
-import React from 'react';
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import React from 'react';
 
 export default [
   {

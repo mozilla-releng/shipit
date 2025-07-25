@@ -1,22 +1,22 @@
-import React, { useEffect } from 'react';
-import { useLocation, BrowserRouter } from 'react-router-dom';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Spinner from '@mozilla-frontend-infra/components/Spinner';
-import Box from '@material-ui/core/Box';
 import RefreshIcon from 'mdi-react/RefreshIcon';
-import Dashboard from '../../components/Dashboard';
-import ErrorPanel from '../../components/ErrorPanel';
+import React, { useEffect } from 'react';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import {
   getPendingReleases,
   getPendingReleasesForProductBranches,
   getRecentReleases,
   getRecentXPIReleases,
 } from '../../components/api';
-import useAction from '../../hooks/useAction';
+import Dashboard from '../../components/Dashboard';
+import ErrorPanel from '../../components/ErrorPanel';
 import ReleaseProgress from '../../components/ReleaseProgress';
-import ReleaseContext from '../../utils/ReleaseContext';
-import config from '../../config';
 import { getXpis } from '../../components/vcs';
+import config from '../../config';
+import useAction from '../../hooks/useAction';
+import ReleaseContext from '../../utils/ReleaseContext';
 
 function getProductBranches(group) {
   if (!(group in config.PRODUCTS)) return [];
@@ -24,9 +24,8 @@ function getProductBranches(group) {
   // A list of all product/branch variants:
   // [[product, branch], [product, branch]]
   return config.PRODUCTS[group]
-    .map(p => [p.branches.map(b => [p.product, b.branch])])
-    .flatMap(x => x)
-    .flatMap(x => x);
+    .flatMap((p) => [p.branches.map((b) => [p.product, b.branch])])
+    .flat();
 }
 
 export default function Releases({ recent = false, xpi = false }) {
@@ -52,10 +51,10 @@ export default function Releases({ recent = false, xpi = false }) {
     }
   } else if (recent) {
     // read-only, aka recent releases
-    releaseFetcher = productBranches => getRecentReleases(productBranches);
+    releaseFetcher = (productBranches) => getRecentReleases(productBranches);
   } else {
     // releases in progress
-    releaseFetcher = productBranches =>
+    releaseFetcher = (productBranches) =>
       getPendingReleasesForProductBranches(productBranches);
   }
 
@@ -89,15 +88,18 @@ export default function Releases({ recent = false, xpi = false }) {
     <ReleaseContext.Provider value={{ fetchReleases, productBranches }}>
       <Dashboard
         group={xpi ? 'Extensions' : groupTitle}
-        title={recent ? 'Recent Releases' : 'Pending Releases'}>
+        title={recent ? 'Recent Releases' : 'Pending Releases'}
+      >
         <Box
           display="flex"
           justifyContent="right"
           alignItems="right"
-          marginRight="1%">
+          marginRight="1%"
+        >
           <Button
             startIcon={<RefreshIcon />}
-            onClick={async () => fetchReleases(productBranches)}>
+            onClick={async () => fetchReleases(productBranches)}
+          >
             Refresh
           </Button>
         </Box>
@@ -106,9 +108,9 @@ export default function Releases({ recent = false, xpi = false }) {
         {releases.data && releases.data.length < 1 && (
           <h2>No {recent ? 'recent' : 'pending'} releases</h2>
         )}
-        {(xpi ? xpis && xpis.data : true) &&
+        {(xpi ? xpis?.data : true) &&
           releases.data &&
-          releases.data.map(release => (
+          releases.data.map((release) => (
             <ReleaseProgress
               release={release}
               key={release.name}

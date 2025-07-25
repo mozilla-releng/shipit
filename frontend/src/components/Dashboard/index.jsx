@@ -1,21 +1,21 @@
-import React, { Fragment } from 'react';
-import { string, node, bool } from 'prop-types';
-import { Helmet } from 'react-helmet';
-import { makeStyles, useTheme } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Box from '@material-ui/core/Box';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Paper from '@material-ui/core/Paper';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 import ExtensionIcon from '@material-ui/icons/Extension';
-import UserMenu from './UserMenu';
-import SettingsMenu from './SettingsMenu';
-import ReleasesMenu from './ReleasesMenu';
+import { makeStyles, useTheme } from '@material-ui/styles';
+import { bool, node, string } from 'prop-types';
+import React, { Fragment } from 'react';
+import { Helmet } from 'react-helmet';
+import { APP_BAR_HEIGHT, CONTENT_MAX_WIDTH } from '../../utils/constants';
 import Footer from '../../views/Footer';
-import { CONTENT_MAX_WIDTH, APP_BAR_HEIGHT } from '../../utils/constants';
+import ReleasesMenu from './ReleasesMenu';
+import SettingsMenu from './SettingsMenu';
+import UserMenu from './UserMenu';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   appbar: {
     height: APP_BAR_HEIGHT,
   },
@@ -64,7 +64,7 @@ function Logo(props) {
   const { group } = props;
   const classes = useStyles();
 
-  if (group && group.toLowerCase().includes('firefox')) {
+  if (group?.toLowerCase().includes('firefox')) {
     return (
       <Box
         component="div"
@@ -73,7 +73,7 @@ function Logo(props) {
     );
   }
 
-  if (group && group.toLowerCase().includes('extensions')) {
+  if (group?.toLowerCase().includes('extensions')) {
     return <ExtensionIcon className={classes.extensionIcon} />;
   }
 

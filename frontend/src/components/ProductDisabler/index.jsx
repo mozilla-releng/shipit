@@ -1,19 +1,19 @@
 import { Auth0Context } from '@auth0/auth0-react';
-import React, { Fragment, useState, useContext } from 'react';
 import AppBar from '@material-ui/core/AppBar';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { makeStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
-import Toolbar from '@material-ui/core/Toolbar';
+import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import Spinner from '@mozilla-frontend-infra/components/Spinner';
+import React, { Fragment, useContext, useState } from 'react';
 
 const useStyles = makeStyles(() => ({
   appBar: {
@@ -48,7 +48,7 @@ export default function ProductDisabler({
     return <CheckCircleOutlineIcon style={{ fill: '#fff' }} />;
   };
 
-  const openModal = pb => {
+  const openModal = (pb) => {
     setShowModal(true);
     setModalItem(pb);
   };
@@ -78,31 +78,35 @@ export default function ProductDisabler({
         <Breadcrumbs
           aria-label="breadcrumb"
           separator="|"
-          className={classes.title}>
+          className={classes.title}
+        >
           <Typography color="inherit" variant="subtitle1" noWrap>
             Automated Release Status
           </Typography>
-          {productBranches.map(pb => (
+          {productBranches.map((pb) => (
             <Typography
               color="inherit"
               variant="subtitle1"
               noWrap
               className={classes.products}
-              key={`${pb.product}-${pb.branch}`}>
+              key={`${pb.product}-${pb.branch}`}
+            >
               {pb.prettyProduct}: {pb.prettyBranch}
               {mutable ? (
                 <Button
                   style={{ minWidth: '30px', padding: '0px' }}
                   onClick={() => openModal(pb)}
                   disabled={loading}
-                  color={pb.disabled ? 'secondary' : 'default'}>
+                  color={pb.disabled ? 'secondary' : 'default'}
+                >
                   {getIcon(loading, pb.disabled)}
                 </Button>
               ) : (
                 <Button
                   style={{ minWidth: '30px', padding: '0px' }}
                   disabled
-                  color={pb.disabled ? 'secondary' : 'default'}>
+                  color={pb.disabled ? 'secondary' : 'default'}
+                >
                   {getIcon(loading, pb.disabled)}
                 </Button>
               )}
@@ -127,7 +131,8 @@ export default function ProductDisabler({
                     variant="contained"
                     onClick={closeModal}
                     color="default"
-                    autoFocus>
+                    autoFocus
+                  >
                     Close
                   </Button>
                   <Button
@@ -137,7 +142,8 @@ export default function ProductDisabler({
                       await onStateChange(modalItem);
                       closeModal();
                     }}
-                    color="primary">
+                    color="primary"
+                  >
                     {modalItem.disabled ? 'Enable' : 'Disable'}
                   </Button>
                 </DialogActions>
