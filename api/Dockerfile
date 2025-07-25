@@ -16,4 +16,7 @@ USER app
 
 RUN uv sync --group dev
 
-CMD ["/app/docker.d/init.sh", "admin"]
+ARG APP_TYPE=admin
+ENV APP_TYPE=${APP_TYPE}
+
+CMD /app/docker.d/init.sh "${APP_TYPE}"

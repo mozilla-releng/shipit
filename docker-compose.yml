@@ -48,7 +48,9 @@ services:
   public:
     build:
       context: api
-      dockerfile: Dockerfile.public
+      dockerfile: Dockerfile
+      args:
+        APP_TYPE: public
     ports:
       - "8016:8016"
     # See comment on the api container for the reasoning behind these mounts
