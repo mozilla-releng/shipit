@@ -120,10 +120,9 @@ export default function ReleaseProgress({
     const { PRODUCTS, TREEHERDER_URL } = config;
     let trimmedRevision = release.revision.substring(0, 13);
     const product =
-      PRODUCTS &&
-      PRODUCTS[group].find(product => product.product === release.product);
+      PRODUCTS?.[group].find(product => product.product === release.product);
 
-    if (product && product.branches) {
+    if (product?.branches) {
       productBranch = product.branches.find(
         item =>
           item.branch === release.branch && item.project === release.project
@@ -154,7 +153,7 @@ export default function ReleaseProgress({
         `https://github.com/${owner}/${repo}`,
         release.xpi_revision
       );
-    } else if (productBranch && productBranch.repo) {
+    } else if (productBranch?.repo) {
       url = repoUrlBuilder(productBranch.repo, release.revision);
       enableTreeherder = productBranch.enableTreeherder !== false;
     }

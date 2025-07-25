@@ -60,4 +60,4 @@ tasks:
                 - sh
                 - -lxce
                 - >-
-                  cd frontend && yarn install && yarn lint && yarn test --passWithNoTests && yarn build
+                  cd frontend && yarn install && yarn lint:ci && yarn test --passWithNoTests && yarn build

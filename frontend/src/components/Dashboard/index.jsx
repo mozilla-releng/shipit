@@ -64,7 +64,7 @@ function Logo(props) {
   const { group } = props;
   const classes = useStyles();
 
-  if (group && group.toLowerCase().includes('firefox')) {
+  if (group?.toLowerCase().includes('firefox')) {
     return (
       <Box
         component="div"
@@ -73,7 +73,7 @@ function Logo(props) {
     );
   }
 
-  if (group && group.toLowerCase().includes('extensions')) {
+  if (group?.toLowerCase().includes('extensions')) {
     return <ExtensionIcon className={classes.extensionIcon} />;
   }
 

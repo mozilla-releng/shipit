@@ -24,9 +24,8 @@ function getProductBranches(group) {
   // A list of all product/branch variants:
   // [[product, branch], [product, branch]]
   return config.PRODUCTS[group]
-    .map(p => [p.branches.map(b => [p.product, b.branch])])
-    .flatMap(x => x)
-    .flatMap(x => x);
+    .flatMap(p => [p.branches.map(b => [p.product, b.branch])])
+    .flat();
 }
 
 export default function Releases({ recent = false, xpi = false }) {
@@ -106,7 +105,7 @@ export default function Releases({ recent = false, xpi = false }) {
         {releases.data && releases.data.length < 1 && (
           <h2>No {recent ? 'recent' : 'pending'} releases</h2>
         )}
-        {(xpi ? xpis && xpis.data : true) &&
+        {(xpi ? xpis?.data : true) &&
           releases.data &&
           releases.data.map(release => (
             <ReleaseProgress
