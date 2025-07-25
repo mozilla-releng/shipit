@@ -5,10 +5,9 @@ description = ""
 requires-python = ">=3.12"
 dependencies = [
     # Required by both public and admin apps
-    "connexion[swagger-ui]<3.0",
+    "connexion[swagger-ui,flask,uvicorn]>3.0,<4.0",
     "dockerflow",
     "flask",
-    "flask_cors",
     "flask_migrate",
     "flask_talisman",
     "mozilla-version~=4.0",
@@ -16,10 +15,7 @@ dependencies = [
     "sentry-sdk[flask]",
     "slugid",
     "sqlalchemy",
-    # deployment
-    "gunicorn",
     "psycopg2",
-
     # Required only by the admin app
     "aioamqp",
     "aiohttp[speedups]",

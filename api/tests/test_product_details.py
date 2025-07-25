@@ -138,12 +138,12 @@ async def test_rebuild(app, tmp_path):
         status="shipped",
         partial_updates=None,
     )
-    app.db.session.add(fxnightly)
-    app.db.session.add(tbnightly)
-    app.db.session.add(deved)
-    app.db.session.add(beta)
-    app.db.session.add(release)
-    app.db.session.commit()
+    app.app.db.session.add(fxnightly)
+    app.app.db.session.add(tbnightly)
+    app.app.db.session.add(deved)
+    app.app.db.session.add(beta)
+    app.app.db.session.add(release)
+    app.app.db.session.commit()
     with (
         mock.patch("shipit_api.common.config.PRODUCT_DETAILS_DIR", tmp_path / "product-details"),
         mock.patch("shipit_api.common.config.PRODUCT_DETAILS_NEW_DIR", tmp_path / "product-details-new"),
@@ -204,7 +204,7 @@ async def test_rebuild(app, tmp_path):
                 "release": "2025-01-07 14:00:00+00:00",
             },
         )
-        await rebuild(app.db.session, "testing", "https://github.com/mozilla-releng/product-details", "public", 130)
+        await rebuild(app.app.db.session, "testing", "https://github.com/mozilla-releng/product-details", "public", 130)
 
     parent = tmp_path / "product-details" / "public" / "1.0"
     with (parent / "firefox_versions.json").open() as f:

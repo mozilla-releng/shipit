@@ -9,11 +9,13 @@ import os
 from functools import cache
 from pathlib import PosixPath
 
+import connexion
 import flask
 import yaml
+from connexion.middleware.main import ConnexionMiddleware, ServerErrorMiddleware
 from deepmerge import merge_or_raise
 
-EXTENSIONS = ["dockerflow", "log", "security", "cors", "api", "auth", "pulse", "db"]
+EXTENSIONS = ["dockerflow", "log", "security", "cors", "auth", "pulse", "db"]
 
 _PRODUCT_YML_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "products.yml"))
 _TRUST_DOMAIN_YML_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), "..", "..", "trust-domains.yml"))
@@ -22,7 +24,20 @@ _MANDATORY_KEYS_IN_PRODUCT_YML = ("version-class",)
 logger = logging.getLogger(__name__)
 
 
-def create_app(project_name, app_name, root_path, extensions=[], config=None, redirect_root_to_api=True, **kwargs):
+class ShipitServerErrorMiddleware(ServerErrorMiddleware):
+    def __init__(self, next_app):
+        # bypass ServerErrorMiddleware.__init__
+        super(ServerErrorMiddleware, self).__init__(next_app, handler=self.error_response)
+
+
+# Work around type incompatibility between connexion and starlette
+# Replace ServerErrorMiddleware to set the handler so it can be async
+middlewares = ConnexionMiddleware.default_middlewares.copy()
+assert middlewares[0] is ServerErrorMiddleware
+middlewares[0] = ShipitServerErrorMiddleware
+
+
+def create_app(project_name, app_name, root_path, extensions=(), config=None, redirect_root_to_api=True, **kwargs):
     """
     Create a new Flask backend application
     app_name is the Python application name, used as Flask import_name
@@ -30,20 +45,21 @@ def create_app(project_name, app_name, root_path, extensions=[], config=None, re
     """
     logger.debug("Initializing %s", app_name)
 
-    app = flask.Flask(import_name=app_name, root_path=root_path, **kwargs)
-    app.name = project_name
-    app.__extensions = extensions
+    app = connexion.App(import_name=app_name, middlewares=middlewares[:], **kwargs)
+    flask_app = app.app
+    flask_app.name = project_name
+    flask_app.__extensions = extensions
 
     if config:
         if isinstance(config, str):
-            app.config.from_pyfile(config)
+            flask_app.config.from_pyfile(config)
         elif isinstance(config, PosixPath):
-            app.config.from_pyfile(str(config))
+            flask_app.config.from_pyfile(str(config))
         else:
-            app.config.from_mapping(config)
+            flask_app.config.from_mapping(config)
 
     for extension_name in EXTENSIONS:
-        if app.config.get("TESTING") and extension_name in ["security", "cors"]:
+        if flask_app.config.get("TESTING") and extension_name == "security":
             continue
 
         if extension_name not in extensions:
@@ -58,15 +74,15 @@ def create_app(project_name, app_name, root_path, extensions=[], config=None, re
 
         extension = extension_init_app(app)
         if extension and extension_name is not None:
-            setattr(app, extension_name, extension)
+            setattr(flask_app, extension_name, extension)
 
         logger.debug("Extension %s initialized", extension_name)
 
     if redirect_root_to_api:
-        app.add_url_rule("/", "root", lambda: flask.redirect(app.api.swagger_url))
+        app.add_url_rule("/", "root", lambda: flask.redirect("/ui/"))
 
-    app.api.register(build_api_specification(root_path))
-    logger.debug("Initialized %s", app.name)
+    app.add_api(build_api_specification(root_path))
+    logger.debug("Initialized %s", flask_app.name)
     return app
 
 
