@@ -1,26 +1,26 @@
 import { withAuth0 } from '@auth0/auth0-react';
-import React, { useState, Fragment } from 'react';
+import { ListItemIcon } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/styles';
-import Menu from '@material-ui/core/Menu';
-import ListItem from '@material-ui/core/ListItem';
-import SettingsOutlineIcon from 'mdi-react/SettingsOutlineIcon';
-import MenuDownIcon from 'mdi-react/MenuDownIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import Typography from '@material-ui/core/Typography';
 import UpdateIcon from '@material-ui/icons/Update';
-import { ListItemIcon } from '@material-ui/core';
+import { makeStyles } from '@material-ui/styles';
+import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import LinkVariantIcon from 'mdi-react/LinkVariantIcon';
+import MenuDownIcon from 'mdi-react/MenuDownIcon';
+import SettingsOutlineIcon from 'mdi-react/SettingsOutlineIcon';
+import React, { Fragment, useState } from 'react';
+import useAction from '../../hooks/useAction';
 import Link from '../../utils/Link';
 import { rebuildProductDetails } from '../api';
-import useAction from '../../hooks/useAction';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   button: {
     color: '#fff',
     display: 'flex',
@@ -45,11 +45,11 @@ const useStyles = makeStyles(theme => ({
 function SettingsMenu({ auth0, disabled }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
-  const handleMenuOpen = e => setAnchorEl(e.currentTarget);
+  const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
   const [showModal, setShowModal] = useState(false);
   const [rebuildProductDetailsState, rebuildProductDetailsAction] = useAction(
-    rebuildProductDetails
+    rebuildProductDetails,
   );
 
   return (
@@ -67,7 +67,8 @@ function SettingsMenu({ auth0, disabled }) {
           aria-label="user menu"
           startIcon={<SettingsOutlineIcon className={classes.icon} />}
           endIcon={<MenuDownIcon className={classes.icon} />}
-          onClick={handleMenuOpen}>
+          onClick={handleMenuOpen}
+        >
           <Typography color="inherit" variant="h6" noWrap>
             Settings
           </Typography>
@@ -79,7 +80,8 @@ function SettingsMenu({ auth0, disabled }) {
         open={Boolean(anchorEl)}
         getContentAnchorEl={null}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        onClose={handleMenuClose}>
+        onClose={handleMenuClose}
+      >
         <ListItem button>
           <ListItemIcon style={{ minWidth: '30px' }}>
             <UpdateIcon />
@@ -92,7 +94,8 @@ function SettingsMenu({ auth0, disabled }) {
         <Link
           nav
           to="https://product-details.mozilla.org/1.0/"
-          className={classes.listItemLink}>
+          className={classes.listItemLink}
+        >
           <ListItem button>
             <ListItemIcon style={{ minWidth: '30px' }}>
               <LinkVariantIcon />
@@ -118,7 +121,8 @@ function SettingsMenu({ auth0, disabled }) {
             variant="contained"
             onClick={() => setShowModal(false)}
             color="default"
-            autoFocus>
+            autoFocus
+          >
             Close
           </Button>
           <Button
@@ -128,7 +132,8 @@ function SettingsMenu({ auth0, disabled }) {
               await rebuildProductDetailsAction();
               setShowModal(false);
             }}
-            color="primary">
+            color="primary"
+          >
             Update
           </Button>
         </DialogActions>

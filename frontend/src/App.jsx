@@ -1,10 +1,10 @@
-import React, { Fragment } from 'react';
 import { Auth0Provider } from '@auth0/auth0-react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/styles';
-import theme from './theme';
-import Main from './Main';
+import React, { Fragment } from 'react';
 import config from './config';
+import Main from './Main';
+import theme from './theme';
 
 const App = () => {
   return (
@@ -21,7 +21,8 @@ const App = () => {
           scope: config.AUTH0.scope,
         }}
         leeway={30}
-        cacheLocation="localstorage">
+        cacheLocation="localstorage"
+      >
         <ThemeProvider theme={theme}>
           <Main />
         </ThemeProvider>

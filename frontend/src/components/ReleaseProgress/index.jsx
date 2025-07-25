@@ -1,29 +1,29 @@
 import { Auth0Context } from '@auth0/auth0-react';
-import React, { useState, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import CancelIcon from 'mdi-react/CancelIcon';
-import AndroidIcon from 'mdi-react/AndroidIcon';
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
 import Spinner from '@mozilla-frontend-infra/components/Spinner';
-import PhaseProgress from '../PhaseProgress';
-import { cancelRelease as cancelReleaseAPI } from '../api';
-import useAction from '../../hooks/useAction';
-import ReleaseContext from '../../utils/ReleaseContext';
+import AndroidIcon from 'mdi-react/AndroidIcon';
+import CancelIcon from 'mdi-react/CancelIcon';
+import React, { useContext, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import config from '../../config';
+import useAction from '../../hooks/useAction';
 import { repoUrlBuilder } from '../../utils/helpers';
+import ReleaseContext from '../../utils/ReleaseContext';
+import { cancelRelease as cancelReleaseAPI } from '../api';
+import PhaseProgress from '../PhaseProgress';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   cardActions: {
     justifyContent: 'flex-end',
   },
@@ -60,10 +60,10 @@ export default function ReleaseProgress({
     setOpen(false);
   };
 
-  const cancelRelease = async releaseName => {
+  const cancelRelease = async (releaseName) => {
     const result = await cancelAction(
       releaseName,
-      xpi ? '/xpi/releases' : '/releases'
+      xpi ? '/xpi/releases' : '/releases',
     );
 
     if (!result.error) {
@@ -89,7 +89,8 @@ export default function ReleaseProgress({
           }}
           startIcon={<CancelIcon className={classes.icon} />}
           onClick={() => setOpen(true)}
-          color="secondary">
+          color="secondary"
+        >
           Cancel
         </Button>
         <Dialog open={open} onClose={handleClose}>
@@ -104,7 +105,8 @@ export default function ReleaseProgress({
               onClick={() => cancelRelease(release.name)}
               variant="contained"
               disabled={releaseCancelled || cancelState.loading}
-              color="secondary">
+              color="secondary"
+            >
               Cancel
             </Button>
           </DialogActions>
@@ -119,20 +121,21 @@ export default function ReleaseProgress({
     let enableTreeherder = true;
     const { PRODUCTS, TREEHERDER_URL } = config;
     let trimmedRevision = release.revision.substring(0, 13);
-    const product =
-      PRODUCTS?.[group].find(product => product.product === release.product);
+    const product = PRODUCTS?.[group].find(
+      (product) => product.product === release.product,
+    );
 
     if (product?.branches) {
       productBranch = product.branches.find(
-        item =>
-          item.branch === release.branch && item.project === release.project
+        (item) =>
+          item.branch === release.branch && item.project === release.project,
       );
     }
 
     // non-hg or firefox projects are formatted differently in the config files
     if (!productBranch && product && product.repositories) {
       productBranch = product.repositories.find(
-        item => item.project === release.product
+        (item) => item.project === release.product,
       );
     }
 
@@ -142,7 +145,7 @@ export default function ReleaseProgress({
       let repo = '';
       let owner = '';
 
-      xpis.data.xpis.forEach(xpi => {
+      xpis.data.xpis.forEach((xpi) => {
         if (xpi.xpi_name === release.xpi_name) {
           repo = xpi.repo;
           owner = xpi.owner;
@@ -151,7 +154,7 @@ export default function ReleaseProgress({
 
       url = repoUrlBuilder(
         `https://github.com/${owner}/${repo}`,
-        release.xpi_revision
+        release.xpi_revision,
       );
     } else if (productBranch?.repo) {
       url = repoUrlBuilder(productBranch.repo, release.revision);
@@ -174,7 +177,8 @@ export default function ReleaseProgress({
             .{' '}
             <Link
               target="_blank"
-              href={`${TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}>
+              href={`${TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}
+            >
               View in Treeherder
             </Link>
           </span>

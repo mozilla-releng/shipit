@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import config from '../../config';
-import ProductDisabler from '../../components/ProductDisabler';
-import useAction from '../../hooks/useAction';
 import {
-  getDisabledProducts,
   disableProduct,
   enableProduct,
+  getDisabledProducts,
 } from '../../components/api';
+import ProductDisabler from '../../components/ProductDisabler';
+import config from '../../config';
+import useAction from '../../hooks/useAction';
 
 export default function Footer() {
   const location = useLocation();
   const group = new URLSearchParams(location.search).get('group') || 'firefox';
   const [disabledProducts, setDisabledProducts] = useState([]);
-  const [getDisabledProductsState, getDisabledProductsAction] = useAction(
-    getDisabledProducts
-  );
+  const [getDisabledProductsState, getDisabledProductsAction] =
+    useAction(getDisabledProducts);
   const [disableProductState, disableProductAction] = useAction(disableProduct);
   const [enableProductState, enableProductAction] = useAction(enableProduct);
   const loading =
@@ -36,7 +35,7 @@ export default function Footer() {
     init();
   }, []);
 
-  const handleStateChange = async productBranch => {
+  const handleStateChange = async (productBranch) => {
     if (productBranch.disabled) {
       await enableProductAction(productBranch.product, productBranch.branch);
     } else {
@@ -48,10 +47,10 @@ export default function Footer() {
 
   return (
     <ProductDisabler
-      productBranches={config.PRODUCTS[group].flatMap(product =>
+      productBranches={config.PRODUCTS[group].flatMap((product) =>
         product.branches
-          .filter(branch => branch.disableable)
-          .map(pb => ({
+          .filter((branch) => branch.disableable)
+          .map((pb) => ({
             product: product.product,
             branch: pb.branch,
             prettyProduct: product.prettyName,
@@ -59,7 +58,7 @@ export default function Footer() {
             disabled:
               product.product in disabledProducts &&
               disabledProducts[product.product].includes(pb.branch),
-          }))
+          })),
       )}
       onStateChange={handleStateChange}
       loading={loading}

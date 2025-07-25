@@ -96,8 +96,7 @@ module.exports = {
           {
             prettyName: 'Staging Application Services',
             project: 'app-services',
-            repo:
-              'https://github.com/mozilla-releng/staging-application-services',
+            repo: 'https://github.com/mozilla-releng/staging-application-services',
             enableReleaseEta: false,
             enableTreeherder: false,
           },
@@ -137,8 +136,7 @@ module.exports = {
           {
             prettyName: 'Staging Mozilla VPN Client',
             project: 'mozilla-vpn-client',
-            repo:
-              'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
+            repo: 'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
             enableReleaseEta: false,
             enableTreeherder: false,
           },
@@ -158,8 +156,7 @@ module.exports = {
           {
             prettyName: 'Staging Mozilla VPN Client',
             project: 'mozilla-vpn-addons',
-            repo:
-              'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
+            repo: 'https://github.com/mozilla-releng/staging-mozilla-vpn-client',
             enableReleaseEta: false,
             enableTreeherder: false,
           },
