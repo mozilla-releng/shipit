@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const DEFAULT_HOST = 'localhost';
-const DEFAULT_PORT = 8010;
+const DEFAULT_PORT = 8014;
 const host = process.env.HOST || DEFAULT_HOST;
 const port = process.env.PORT || DEFAULT_PORT;
 const SHIPIT_PUBLIC_API_URL =

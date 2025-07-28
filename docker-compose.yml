@@ -89,13 +89,13 @@ services:
   ui:
     image: node:18
     ports:
-      - "8010:8010"
+      - "8014:8014"
     volumes:
       - ./frontend:/app
       - node_modules:/app/node_modules
     environment:
       - HOST=0.0.0.0
-      - PORT=8010
+      - PORT=8014
       - SHIPIT_API_URL=https://localhost:8015
       - SHIPIT_PUBLIC_API_URL=https://localhost:8016
       - DEPLOYMENT_BRANCH=development
