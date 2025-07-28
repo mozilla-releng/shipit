@@ -1,5 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -18,7 +19,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import AndroidIcon from 'mdi-react/AndroidIcon';
 import React, { useContext, useState } from 'react';
 import libUrls from 'taskcluster-lib-urls';
@@ -125,7 +125,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             error={taskError}
             StepIconProps={
               inProgress
-                ? { icon: <Spinner loading size={30} /> }
+                ? { icon: <CircularProgress loading size={30} /> }
                 : { classes: { completed: classes.completed } }
             }
           >
@@ -299,7 +299,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             : renderSchedulePhase()}
         </DialogContent>
         <DialogActions>
-          {loading && <Spinner loading />}
+          {loading && <CircularProgress loading />}
           <Button onClick={handleClose} variant="contained" color="default">
             Close
           </Button>

@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import RefreshIcon from 'mdi-react/RefreshIcon';
 import React, { useEffect } from 'react';
 import { BrowserRouter, useLocation } from 'react-router-dom';
@@ -103,7 +103,11 @@ export default function Releases({ recent = false, xpi = false }) {
             Refresh
           </Button>
         </Box>
-        {(releases.loading || (xpi && xpis.loading)) && <Spinner loading />}
+        {(releases.loading || (xpi && xpis.loading)) && (
+          <Box style={{ textAlign: 'center' }}>
+            <CircularProgress loading />
+          </Box>
+        )}
 
         {releases.data && releases.data.length < 1 && (
           <h2>No {recent ? 'recent' : 'pending'} releases</h2>

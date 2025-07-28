@@ -1,4 +1,6 @@
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Collapse from '@material-ui/core/Collapse';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -13,7 +15,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { getXPIBuildNumbers, submitXPIRelease } from '../../components/api';
@@ -87,7 +88,11 @@ export default function NewXPIRelease() {
 
   const renderXpiSelect = () => {
     if (xpis.loading) {
-      return <Spinner loading />;
+      return (
+        <Box style={{ textAlign: 'center' }}>
+          <CircularProgress loading />
+        </Box>
+      );
     }
 
     if (xpis.error) {
@@ -150,7 +155,7 @@ export default function NewXPIRelease() {
 
   const renderXpiRevisionSelect = () => {
     if (xpiCommits.loading) {
-      return <Spinner loading />;
+      return <CircularProgress loading />;
     }
 
     if (xpiCommits.error) {
@@ -198,7 +203,7 @@ export default function NewXPIRelease() {
     const loading = buildNumbers.loading || xpiVersion.loading;
 
     if (loading) {
-      return <Spinner loading />;
+      return <CircularProgress loading />;
     }
 
     return (
@@ -269,7 +274,7 @@ export default function NewXPIRelease() {
         <DialogTitle>Create XPI Release</DialogTitle>
         <DialogContent>{renderDialogText()}</DialogContent>
         <DialogActions>
-          {submitReleaseState.loading && <Spinner loading />}
+          {submitReleaseState.loading && <CircularProgress loading />}
           <Button
             onClick={() => {
               setOpen(false);

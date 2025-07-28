@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -11,7 +12,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/styles';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import AndroidIcon from 'mdi-react/AndroidIcon';
 import CancelIcon from 'mdi-react/CancelIcon';
 import React, { useContext, useState } from 'react';
@@ -97,7 +97,7 @@ export default function ReleaseProgress({
           <DialogTitle>Cancel Release</DialogTitle>
           <DialogContent>{renderDialogContent()}</DialogContent>
           <DialogActions>
-            {cancelState.loading && <Spinner loading />}
+            {cancelState.loading && <CircularProgress loading />}
             <Button onClick={handleClose} variant="contained" color="default">
               Close
             </Button>
