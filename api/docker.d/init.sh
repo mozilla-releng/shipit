@@ -29,9 +29,8 @@ then
     key="${MY_DIR}/key.pem"
 
     # Local development only - we don't want these in deployed environments
-    # More than 1 worker causes race conditions when migrating the database.
-    # They resolve themselves after a restart...but it's preferable not to have them at all.
-    EXTRA_ARGS="--bind $HOST:$PORT --workers 1 --timeout 3600 --reload --reload-engine=poll --certfile=$cert --keyfile=$key"
+    # >1 worker is incompatible with --reload
+    EXTRA_ARGS="--host $HOST --port $PORT --workers 1 --reload --ssl-certfile=$cert --ssl-keyfile=$key"
 fi
 
-exec /app/.venv/bin/gunicorn $FLASK_APP --log-file - $EXTRA_ARGS
+exec /app/.venv/bin/uvicorn $FLASK_APP $EXTRA_ARGS
