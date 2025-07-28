@@ -1,22 +1,22 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Collapse from '@material-ui/core/Collapse';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
+import { makeStyles } from 'tss-react/mui';
 import { getXPIBuildNumbers, submitXPIRelease } from '../../components/api';
 import Dashboard from '../../components/Dashboard';
 import maybeShorten from '../../components/text';
@@ -29,7 +29,7 @@ import {
 import config from '../../config';
 import useAction from '../../hooks/useAction';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 500,
@@ -37,11 +37,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function NewXPIRelease() {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [manifestCommit, fetchManifestCommit] = useAction(
     getLatestGithubCommit,
   );
-  const history = useHistory();
+  const navigate = useNavigate();
   const [xpis, fetchXpis] = useAction(getXpis);
   const [xpiCommits, fetchXpiCommits] = useAction(getGithubCommits);
   const [xpiVersion, fetchXpiVersion] = useAction(getXPIVersion);
@@ -90,7 +90,7 @@ export default function NewXPIRelease() {
     if (xpis.loading) {
       return (
         <Box style={{ textAlign: 'center' }}>
-          <CircularProgress loading />
+          <CircularProgress />
         </Box>
       );
     }
@@ -105,9 +105,10 @@ export default function NewXPIRelease() {
 
     if (xpis.data) {
       return (
-        <FormControl className={classes.formControl}>
+        <FormControl variant="standard" className={classes.formControl}>
           <InputLabel className={classes.formControl}>Extension</InputLabel>
           <Select
+            variant="standard"
             className={classes.formControl}
             value={selectedXpi}
             onChange={(event) => handleXpiSelect(event.target.value)}
@@ -155,7 +156,7 @@ export default function NewXPIRelease() {
 
   const renderXpiRevisionSelect = () => {
     if (xpiCommits.loading) {
-      return <CircularProgress loading />;
+      return <CircularProgress />;
     }
 
     if (xpiCommits.error) {
@@ -168,7 +169,7 @@ export default function NewXPIRelease() {
 
     if (xpiCommits.data) {
       return (
-        <FormControl className={classes.formControl}>
+        <FormControl variant="standard" className={classes.formControl}>
           <Autocomplete
             className={classes.formControl}
             freeSolo
@@ -181,7 +182,9 @@ export default function NewXPIRelease() {
             onInputChange={(_event, value) =>
               handleXpiRevisionInputChange(value)
             }
-            renderOption={(option) => revisionPretty(option)}
+            renderOption={(props, option, _state) => (
+              <div {...props}> {revisionPretty(option)} </div>
+            )}
             renderInput={(params) => (
               <TextField
                 {...params}
@@ -203,7 +206,7 @@ export default function NewXPIRelease() {
     const loading = buildNumbers.loading || xpiVersion.loading;
 
     if (loading) {
-      return <CircularProgress loading />;
+      return <CircularProgress />;
     }
 
     return (
@@ -274,16 +277,15 @@ export default function NewXPIRelease() {
         <DialogTitle>Create XPI Release</DialogTitle>
         <DialogContent>{renderDialogText()}</DialogContent>
         <DialogActions>
-          {submitReleaseState.loading && <CircularProgress loading />}
+          {submitReleaseState.loading && <CircularProgress />}
           <Button
             onClick={() => {
               setOpen(false);
 
               if (!readyToSubmit()) {
-                history.push('/xpi');
+                navigate('/xpi');
               }
             }}
-            color="default"
             autoFocus
             variant="contained"
           >

@@ -1,5 +1,4 @@
-import { createTheme } from '@material-ui/core/styles';
-// import '../node_modules/@mozilla-protocol/core/protocol/css/protocol.css';
+import { createTheme } from '@mui/material/styles';
 import '../node_modules/@mozilla-protocol/core/protocol/css/protocol-components.css';
 
 export default createTheme({
@@ -23,7 +22,9 @@ export default createTheme({
       fontFamily: "'Inter', sans-serif",
     },
     caption: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: "'Roboto', sans-serif",
+      fontWeight: 'normal',
+      fontSize: '0.85rem',
     },
     button: {
       fontFamily: "'Inter', sans-serif",

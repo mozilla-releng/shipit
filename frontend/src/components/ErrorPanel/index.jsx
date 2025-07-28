@@ -1,8 +1,9 @@
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/material/Alert';
 import { string } from 'prop-types';
 import React, { useState } from 'react';
 
-export default function ErrorPanel({ error }) {
+export default function ErrorPanel({ error = null }) {
+  console.log('hi');
   const [currentError, setCurrentError] = useState(null);
   const [previousError, setPreviousError] = useState(null);
   const handleErrorClose = () => {
@@ -24,8 +25,4 @@ export default function ErrorPanel({ error }) {
 ErrorPanel.propTypes = {
   /** Error to display. */
   error: string,
-};
-
-ErrorPanel.defaultProps = {
-  error: null,
 };

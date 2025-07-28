@@ -1,27 +1,27 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import Link from '@material-ui/core/Link';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Step from '@material-ui/core/Step';
-import StepButton from '@material-ui/core/StepButton';
-import StepLabel from '@material-ui/core/StepLabel';
-import Stepper from '@material-ui/core/Stepper';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import LinkOutlinedIcon from '@material-ui/icons/LinkOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import Link from '@mui/material/Link';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Step from '@mui/material/Step';
+import StepButton from '@mui/material/StepButton';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
+import Typography from '@mui/material/Typography';
 import AndroidIcon from 'mdi-react/AndroidIcon';
 import React, { useContext, useState } from 'react';
 import libUrls from 'taskcluster-lib-urls';
+import { makeStyles } from 'tss-react/mui';
 import config from '../../config';
 import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
@@ -29,13 +29,14 @@ import { phaseSignOff, schedulePhase } from '../api';
 import MouseOverPopover from '../Shared/MouseOverPopover';
 import { phasePrettyName } from '../text';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   label: {
     lineHeight: '0.5',
   },
   stepper: {
     backgroundColor: theme.palette.background.paper,
     paddingTop: '40px',
+    padding: '24px',
   },
   completed: {
     fill: theme.palette.success.dark,
@@ -43,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function PhaseProgress({ release, readOnly, xpi }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { fetchReleases, productBranches } = useContext(ReleaseContext);
   const [disableScheduleOrSignoff, setDisableScheduleOrSignoff] =
     useState(false);
@@ -125,11 +126,14 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             error={taskError}
             StepIconProps={
               inProgress
-                ? { icon: <CircularProgress loading size={30} /> }
+                ? { icon: <CircularProgress size={30} /> }
                 : { classes: { completed: classes.completed } }
             }
           >
-            <Link href={`${taskGroupUrlPrefix}/${phase.actionTaskId}`}>
+            <Link
+              href={`${taskGroupUrlPrefix}/${phase.actionTaskId}`}
+              underline="hover"
+            >
               {prettyName} task
             </Link>
             {phase.signoffs && phase.signoffs.length > 0 && (
@@ -173,7 +177,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                 marginTop="1.6rem"
                 position="absolute"
               >
-                <Link href={phase.xpiUrl}>
+                <Link href={phase.xpiUrl} underline="hover">
                   xpi package
                   <LinkOutlinedIcon
                     fontSize="small"
@@ -209,7 +213,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
     if (canBeScheduled) {
       return (
         <Step key={phase.name} disabled={false}>
-          <StepButton onClick={() => handleClickOpen(phase)} completed={false}>
+          <StepButton onClick={() => handleClickOpen(phase)}>
             {prettyName}
           </StepButton>
         </Step>
@@ -233,7 +237,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
     }
 
     return (
-      <FormControl component="fieldset">
+      <FormControl variant="standard" component="fieldset">
         <FormLabel component="legend">Sign Off As</FormLabel>
         <RadioGroup
           name="currentSignoff"
@@ -299,8 +303,8 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             : renderSchedulePhase()}
         </DialogContent>
         <DialogActions>
-          {loading && <CircularProgress loading />}
-          <Button onClick={handleClose} variant="contained" color="default">
+          {loading && <CircularProgress />}
+          <Button onClick={handleClose} variant="contained">
             Close
           </Button>
           <Button

@@ -1,21 +1,20 @@
-import AppBar from '@material-ui/core/AppBar';
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Paper from '@material-ui/core/Paper';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import { makeStyles, useTheme } from '@material-ui/styles';
+import ExtensionIcon from '@mui/icons-material/Extension';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Paper from '@mui/material/Paper';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import { bool, node, string } from 'prop-types';
 import React, { Fragment } from 'react';
-import { Helmet } from 'react-helmet';
+import { makeStyles } from 'tss-react/mui';
 import { APP_BAR_HEIGHT, CONTENT_MAX_WIDTH } from '../../utils/constants';
 import Footer from '../../views/Footer';
 import ReleasesMenu from './ReleasesMenu';
 import SettingsMenu from './SettingsMenu';
 import UserMenu from './UserMenu';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   appbar: {
     height: APP_BAR_HEIGHT,
   },
@@ -26,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: CONTENT_MAX_WIDTH,
     height: '100%',
     margin: '0 auto',
-    padding: `${theme.spacing(12)}px ${APP_BAR_HEIGHT}px`,
+    padding: `${theme.spacing(12)} ${APP_BAR_HEIGHT}px`,
   },
   nav: {
     display: 'flex',
@@ -51,8 +50,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: 'transparent',
   },
   protocolLogo: {
-    margin: '0px',
-    marginRight: '.7%',
+    margin: '0px !important',
+    marginRight: '.7% !important',
   },
   extensionIcon: {
     margin: '0px',
@@ -62,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Logo(props) {
   const { group } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   if (group?.toLowerCase().includes('firefox')) {
     return (
@@ -86,39 +85,23 @@ function Logo(props) {
 }
 
 export default function Dashboard(props) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const { title, children, disabled, group } = props;
-  const theme = useTheme();
-  const css = `
-    #root {
-      height: auto;
-    }
-
-    html body {
-      background-color: ${theme.palette.background.default};
-    }
-  `;
 
   return (
     <Fragment>
-      <Helmet>
-        <title>
-          Ship-It / {group ? `${group} / ` : ''}
-          {title || ''}
-        </title>
-        <style>{css}</style>
-      </Helmet>
+      <title>{`Ship-It / ${group ? `${group} / ` : ''}${title ?? ''}`}</title>
       <AppBar className={classes.appbar} position="fixed">
         <Toolbar>
           <Logo group={group} />
           <Breadcrumbs aria-label="breadcrumb" className={classes.title}>
             {group && (
-              <Typography color="inherit" variant="h6" noWrap>
+              <Typography variant="h6" noWrap>
                 {group}
               </Typography>
             )}
             {title && (
-              <Typography color="inherit" variant="h6" noWrap>
+              <Typography variant="h6" noWrap>
                 {title}
               </Typography>
             )}

@@ -87,7 +87,7 @@ services:
       retries: 5
 
   ui:
-    image: node:18
+    image: node:20
     ports:
       - "8010:8010"
     volumes:

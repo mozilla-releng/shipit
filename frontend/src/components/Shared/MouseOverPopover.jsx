@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Popover from '@material-ui/core/Popover';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import Popover from '@mui/material/Popover';
 import React from 'react';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   popover: {
     pointerEvents: 'none',
   },
@@ -17,11 +17,11 @@ export default function MouseOverPopover({
   text,
   fontSize,
   fontWeight,
-  position,
+  position = 'relative',
   marginTop,
   marginLeft,
 }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -72,7 +72,3 @@ export default function MouseOverPopover({
     </div>
   );
 }
-
-MouseOverPopover.defaultProps = {
-  position: 'relative',
-};

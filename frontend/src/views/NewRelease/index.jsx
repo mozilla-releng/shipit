@@ -1,28 +1,28 @@
 import { Auth0Context } from '@auth0/auth0-react';
-import 'date-fns';
-import DateFnsUtils from '@date-io/date-fns';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Collapse from '@material-ui/core/Collapse';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Switch from '@material-ui/core/Switch';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import Autocomplete from '@mui/material/Autocomplete';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
 import React, { useContext, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import TimeAgo from 'react-timeago';
+import { makeStyles } from 'tss-react/mui';
 import {
   guessBuildNumber,
   guessPartialVersions,
@@ -34,7 +34,7 @@ import { getBranches, getPushes, getVersion } from '../../components/vcs';
 import config from '../../config';
 import useAction from '../../hooks/useAction';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 500,
@@ -46,10 +46,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function NewRelease() {
   const location = useLocation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const group = new URLSearchParams(location.search).get('group') || 'firefox';
   const groupTitle = group.charAt(0).toUpperCase() + group.slice(1);
-  const classes = useStyles();
+  const { classes } = useStyles();
   const authContext = useContext(Auth0Context);
   const [selectedProduct, setSelectedProduct] = useState('');
   const [selectedRepository, setSelectedRepository] = useState('');
@@ -76,10 +76,11 @@ export default function NewRelease() {
     getVersionState.loading ||
     guessBuildNumberState.loading ||
     guessPartialVersionsState.loading;
-  const revisionPretty = (rev) =>
-    `${rev.date.toDateString()} - ${rev.node.substring(0, 8)} - ${
+  const revisionPretty = (rev) => {
+    return `${rev.date.toDateString()} - ${rev.node.substring(0, 8)} - ${
       rev.author
     } - ${maybeShorten(rev.desc)}`;
+  };
   const reset = () => {
     setSelectedBranch('');
     setSuggestedRevisions(null);
@@ -184,9 +185,10 @@ export default function NewRelease() {
 
   const renderProductsSelect = () => {
     return (
-      <FormControl className={classes.formControl}>
+      <FormControl variant="standard" className={classes.formControl}>
         <InputLabel>Product</InputLabel>
         <Select
+          variant="standard"
           value={selectedProduct}
           onChange={(event) => handleProduct(event.target.value)}
         >
@@ -203,9 +205,10 @@ export default function NewRelease() {
   const renderRepositoriesSelect = () => {
     return (
       selectedProduct.repositories && (
-        <FormControl className={classes.formControl}>
+        <FormControl variant="standard" className={classes.formControl}>
           <InputLabel>Repository</InputLabel>
           <Select
+            variant="standard"
             value={selectedRepository}
             renderValue={() => selectedRepository.prettyName}
             onChange={(event) => handleRepository(event.target.value)}
@@ -250,11 +253,12 @@ export default function NewRelease() {
     }
 
     return (
-      (getBranchesState.loading && <CircularProgress loading />) ||
+      (getBranchesState.loading && <CircularProgress />) ||
       (branches && (
-        <FormControl className={classes.formControl}>
+        <FormControl variant="standard" className={classes.formControl}>
           <InputLabel>Branch</InputLabel>
           <Select
+            variant="standard"
             value={selectedBranch}
             onChange={(event) => handleBranch(event.target.value)}
           >
@@ -282,7 +286,9 @@ export default function NewRelease() {
             value && handleRevisionChange(value.node)
           }
           onInputChange={(_event, value) => handleRevisionInputChange(value)}
-          renderOption={(option) => revisionPretty(option)}
+          renderOption={(props, option, _state) => (
+            <div {...props}> {revisionPretty(option)} </div>
+          )}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -306,21 +312,31 @@ export default function NewRelease() {
   const renderReleaseEta = () => {
     return (
       selectedBranch.enableReleaseEta && (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DateTimePicker
+            referenceDate={new Date()}
             className={classes.formControl}
+            viewRenderers={{
+              hours: renderTimeViewClock,
+              minutes: renderTimeViewClock,
+              seconds: renderTimeViewClock,
+            }}
             margin="normal"
             inputVariant="outlined"
             ampm={false}
             label="Release ETA (Local time)"
             disablePast
-            clearable
+            slotProps={{
+              actionBar: {
+                actions: ['clear', 'cancel', 'accept'],
+              },
+            }}
             value={releaseEta}
             onChange={handleReleaseEta}
             minutesStep={15}
-            format="yyyy/MM/dd, HH:mm (O)"
+            format="yyyy/MM/dd, HH:mm"
           />
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
       )
     );
   };
@@ -340,6 +356,7 @@ export default function NewRelease() {
           />
           {selectedProduct.canTogglePartials && (
             <Switch
+              color="secondary"
               checked={partialFieldEnabled}
               onChange={() => {
                 setPartialFieldEnabled(!partialFieldEnabled);
@@ -372,16 +389,15 @@ export default function NewRelease() {
         <DialogTitle>Create Release</DialogTitle>
         <DialogContent>{renderDialogText()}</DialogContent>
         <DialogActions>
-          {submitReleaseState.loading && <CircularProgress loading />}
+          {submitReleaseState.loading && <CircularProgress />}
           <Button
             onClick={() => {
               setOpen(false);
 
               if (!readyToSubmit()) {
-                history.push(`/?group=${group}`);
+                navigate(`/?group=${group}`);
               }
             }}
-            color="default"
             autoFocus
             variant="contained"
           >
@@ -434,7 +450,7 @@ export default function NewRelease() {
         >
           Create Release
         </Button>
-        {loading && <CircularProgress loading />}
+        {loading && <CircularProgress />}
       </Grid>
     );
   };

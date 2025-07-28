@@ -228,7 +228,7 @@ module.exports = (_, { mode }) => {
         templateContent: false,
         filename: 'index.html',
         publicPath: 'auto',
-        hash: false,
+        hash: true,
         inject: 'body',
         scriptLoading: 'blocking',
         compile: true,
