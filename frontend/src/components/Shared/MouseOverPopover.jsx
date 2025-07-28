@@ -1,9 +1,9 @@
-import React from 'react';
-import Popover from '@material-ui/core/Popover';
 import Box from '@material-ui/core/Box';
+import Popover from '@material-ui/core/Popover';
 import { makeStyles } from '@material-ui/core/styles';
+import React from 'react';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   popover: {
     pointerEvents: 'none',
   },
@@ -23,7 +23,7 @@ export default function MouseOverPopover({
 }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const handlePopoverOpen = event => {
+  const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -44,7 +44,8 @@ export default function MouseOverPopover({
         fontWeight={fontWeight}
         marginTop={marginTop}
         marginLeft={marginLeft}
-        position={position}>
+        position={position}
+      >
         {text}
       </Box>
       <Popover
@@ -64,7 +65,8 @@ export default function MouseOverPopover({
           horizontal: 'left',
         }}
         onClose={handlePopoverClose}
-        disableRestoreFocus>
+        disableRestoreFocus
+      >
         <Box>{popoverContent}</Box>
       </Popover>
     </div>

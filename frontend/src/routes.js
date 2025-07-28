@@ -1,15 +1,13 @@
 import lazy from './utils/lazy';
 
-/* eslint-disable import/no-cycle */
-
-const Releases = lazy(() =>
-  import(/* webpackChunkName: 'Releases' */ './views/Releases')
+const Releases = lazy(
+  () => import(/* webpackChunkName: 'Releases' */ './views/Releases'),
 );
-const NewRelease = lazy(() =>
-  import(/* webpackChunkName: 'NewRelease' */ './views/NewRelease')
+const NewRelease = lazy(
+  () => import(/* webpackChunkName: 'NewRelease' */ './views/NewRelease'),
 );
-const NewXPIRelease = lazy(() =>
-  import(/* webpackChunkName: 'NewXPIRelease' */ './views/NewXPIRelease')
+const NewXPIRelease = lazy(
+  () => import(/* webpackChunkName: 'NewXPIRelease' */ './views/NewXPIRelease'),
 );
 
 export default [

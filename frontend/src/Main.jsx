@@ -1,15 +1,15 @@
 import { useAuth0 } from '@auth0/auth0-react';
+import { makeStyles } from '@material-ui/styles';
+import Spinner from '@mozilla-frontend-infra/components/Spinner';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Switch } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
-import axios from 'axios';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import Dashboard from './components/Dashboard';
 import ErrorPanel from './components/ErrorPanel';
 import RouteWithProps from './components/RouteWithProps';
-import routes from './routes';
-import useAction from './hooks/useAction';
 import { SHIPIT_API_URL, SHIPIT_PUBLIC_API_URL } from './config';
+import useAction from './hooks/useAction';
+import routes from './routes';
 
 const useStyles = makeStyles({
   '@global': {
@@ -23,7 +23,7 @@ const useStyles = makeStyles({
 });
 
 function setupAxiosInterceptors(getAccessTokenSilently, getIdTokenClaims) {
-  axios.interceptors.request.use(async config => {
+  axios.interceptors.request.use(async (config) => {
     const result = config;
 
     if (!config.url.startsWith('http')) {
@@ -51,8 +51,8 @@ function setupAxiosInterceptors(getAccessTokenSilently, getIdTokenClaims) {
   });
 
   axios.interceptors.response.use(
-    response => response,
-    error => {
+    (response) => response,
+    (error) => {
       const errorMsg = error.response
         ? error.response.data.exception || error.response.data.detail || null
         : error.message;
@@ -64,7 +64,7 @@ function setupAxiosInterceptors(getAccessTokenSilently, getIdTokenClaims) {
       }
 
       throw error;
-    }
+    },
   );
 }
 
@@ -84,7 +84,7 @@ function Main() {
 
   useStyles();
   const [backendStatus, checkBackendStatus] = useAction(() =>
-    axios.get('/__heartbeat__')
+    axios.get('/__heartbeat__'),
   );
 
   useEffect(() => {
