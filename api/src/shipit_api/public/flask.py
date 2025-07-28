@@ -8,4 +8,5 @@ from pathlib import Path
 from shipit_api.public import create_app
 
 settings = Path(".") / "settings.py"
-app = create_app(config=settings).app
+app = create_app(config=settings)
+flask_app = app.app
