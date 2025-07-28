@@ -3,6 +3,7 @@ import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Collapse from '@material-ui/core/Collapse';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -19,7 +20,6 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import React, { useContext, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import TimeAgo from 'react-timeago';
@@ -250,7 +250,7 @@ export default function NewRelease() {
     }
 
     return (
-      (getBranchesState.loading && <Spinner loading />) ||
+      (getBranchesState.loading && <CircularProgress loading />) ||
       (branches && (
         <FormControl className={classes.formControl}>
           <InputLabel>Branch</InputLabel>
@@ -372,7 +372,7 @@ export default function NewRelease() {
         <DialogTitle>Create Release</DialogTitle>
         <DialogContent>{renderDialogText()}</DialogContent>
         <DialogActions>
-          {submitReleaseState.loading && <Spinner loading />}
+          {submitReleaseState.loading && <CircularProgress loading />}
           <Button
             onClick={() => {
               setOpen(false);
@@ -434,7 +434,7 @@ export default function NewRelease() {
         >
           Create Release
         </Button>
-        {loading && <Spinner loading />}
+        {loading && <CircularProgress loading />}
       </Grid>
     );
   };

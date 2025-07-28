@@ -2,6 +2,7 @@ import { Auth0Context } from '@auth0/auth0-react';
 import AppBar from '@material-ui/core/AppBar';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -12,7 +13,6 @@ import Typography from '@material-ui/core/Typography';
 import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import React, { Fragment, useContext, useState } from 'react';
 
 const useStyles = makeStyles(() => ({
@@ -126,7 +126,7 @@ export default function ProductDisabler({
                   {error && <p>{error.toString()}</p>}
                 </DialogContent>
                 <DialogActions>
-                  {loading && <Spinner loading />}
+                  {loading && <CircularProgress loading />}
                   <Button
                     variant="contained"
                     onClick={closeModal}

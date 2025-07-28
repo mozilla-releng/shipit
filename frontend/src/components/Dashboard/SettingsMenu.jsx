@@ -1,6 +1,7 @@
 import { withAuth0 } from '@auth0/auth0-react';
 import { ListItemIcon } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -11,7 +12,6 @@ import Menu from '@material-ui/core/Menu';
 import Typography from '@material-ui/core/Typography';
 import UpdateIcon from '@material-ui/icons/Update';
 import { makeStyles } from '@material-ui/styles';
-import Spinner from '@mozilla-frontend-infra/components/Spinner';
 import LinkVariantIcon from 'mdi-react/LinkVariantIcon';
 import MenuDownIcon from 'mdi-react/MenuDownIcon';
 import SettingsOutlineIcon from 'mdi-react/SettingsOutlineIcon';
@@ -116,7 +116,7 @@ function SettingsMenu({ auth0, disabled }) {
           )}
         </DialogContent>
         <DialogActions>
-          {rebuildProductDetailsState.loading && <Spinner loading />}
+          {rebuildProductDetailsState.loading && <CircularProgress loading />}
           <Button
             variant="contained"
             onClick={() => setShowModal(false)}
