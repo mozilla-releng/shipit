@@ -59,6 +59,5 @@ RUN echo "{\"commit\": \"$VCS_HEAD_REV\", \"version\": \"$APP_VERSION\", \"sourc
 
 ENV WEB_CONCURRENCY 3
 ENV APP_TYPE ${APP_TYPE}
-ENV FLASK_APP shipit_api.$APP_TYPE.flask:app
 
 ENTRYPOINT ["/bin/bash", "-c", "/app/docker.d/init.sh ${APP_TYPE}"]
