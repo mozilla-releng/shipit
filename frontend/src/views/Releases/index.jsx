@@ -76,7 +76,7 @@ export default function Releases({ recent = false, xpi = false }) {
     return (
       <BrowserRouter>
         <Dashboard disabled>
-          <ErrorPanel fixed error={`Unknown group: ${group}.`} />
+          <ErrorPanel error={`Unknown group: ${group}.`} />
         </Dashboard>
       </BrowserRouter>
     );

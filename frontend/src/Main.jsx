@@ -109,7 +109,6 @@ function Main() {
       <BrowserRouter>
         <Dashboard disabled>
           <ErrorPanel
-            fixed
             error={`Error contacting Shipit backend: ${backendStatus.error.toString()}. Are you connected to the VPN?`}
           />
         </Dashboard>
