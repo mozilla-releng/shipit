@@ -1,6 +1,6 @@
-import AddBoxIcon from '@material-ui/icons/AddBox';
-import AutorenewIcon from '@material-ui/icons/Autorenew';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import React from 'react';
 
 export default [
