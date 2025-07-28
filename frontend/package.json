@@ -2,6 +2,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
+    "mdi-react": "^4.0.0",
     "jest": "30.0.4",
     "jest-environment-jsdom": "30.0.4",
     "react-refresh": "^0.17.0",
@@ -37,7 +38,6 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "^4.11.5",
-    "@mozilla-frontend-infra/components": "3.0.7",
     "@mozilla-protocol/core": "^21.1.0",
     "assert": "2.1.0",
     "axios": "^1.10.0",
