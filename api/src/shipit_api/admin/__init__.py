@@ -13,12 +13,12 @@ from shipit_api.common.config import APP_NAME
 
 def create_app(config=None):
     app = backend_common.create_app(
-        app_name=__name__,
-        project_name=APP_NAME,
+        project_name=__name__,
+        app_name=APP_NAME,
         config=config,
-        extensions=["dockerflow", "log", "security", "cors", "auth", "db", "pulse"],
+        extensions=["dockerflow", "log", "security", "cors", "api", "auth", "db", "pulse"],
         root_path=os.path.dirname(__file__),
     )
-    app.app.cli.add_command(cmd, "worker")
+    app.cli.add_command(cmd, "worker")
 
     return app

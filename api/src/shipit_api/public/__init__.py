@@ -19,10 +19,10 @@ def create_app(config=None):
     api_public.yml`
     """
     app = backend_common.create_app(
-        app_name=__name__,
-        project_name=APP_NAME,
+        project_name=__name__,
+        app_name=APP_NAME,
         config=config,
-        extensions=["log", "security", "cors", "db", "dockerflow"],
+        extensions=["log", "security", "cors", "api", "db", "dockerflow"],
         root_path=os.path.dirname(__file__),
     )
     return app

@@ -17,5 +17,5 @@ dockerflow = Dockerflow(version_path="/app")
 def init_app(app):
     # Suppress heartbeat logs
     dockerflow.logger.setLevel(logging.ERROR)
-    dockerflow.init_app(app.app)
+    dockerflow.init_app(app)
     return dockerflow

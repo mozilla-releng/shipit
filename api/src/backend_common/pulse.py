@@ -54,13 +54,13 @@ class Pulse(object):
 
 def init_app(app):
     return Pulse(
-        app.app.config.get("PULSE_HOST"),
-        app.app.config.get("PULSE_PORT"),
-        app.app.config.get("PULSE_USER"),
-        app.app.config.get("PULSE_PASSWORD"),
-        app.app.config.get("PULSE_VIRTUAL_HOST"),
-        app.app.config.get("PULSE_USE_SSL"),
-        app.app.config.get("PULSE_CONNECTION_TIMEOUT"),
+        app.config.get("PULSE_HOST"),
+        app.config.get("PULSE_PORT"),
+        app.config.get("PULSE_USER"),
+        app.config.get("PULSE_PASSWORD"),
+        app.config.get("PULSE_VIRTUAL_HOST"),
+        app.config.get("PULSE_USE_SSL"),
+        app.config.get("PULSE_CONNECTION_TIMEOUT"),
     )
 
 

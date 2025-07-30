@@ -19,8 +19,8 @@ def init_app(app):
     """
     configure_logging()
     # Log to sentry
-    environment = app.app.config.get("APP_CHANNEL")
-    sentry_dsn = app.app.config.get("SENTRY_DSN")
+    environment = app.config.get("APP_CHANNEL")
+    sentry_dsn = app.config.get("SENTRY_DSN")
     if environment and sentry_dsn:
         configure_sentry(environment, sentry_dsn)
 
