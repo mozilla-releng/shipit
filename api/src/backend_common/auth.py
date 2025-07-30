@@ -9,7 +9,6 @@ import json
 import logging
 import tempfile
 
-import connexion
 import flask
 import flask_login
 import flask_oidc
@@ -343,12 +342,12 @@ def get_permissions():
     return flask.Response(status=200, response=json.dumps(response), headers={"Content-Type": "application/json", "Cache-Control": "public, max-age=60"})
 
 
-def init_app(app: connexion.App):
-    if app.app.config.get("SECRET_KEY") is None:
+def init_app(app):
+    if app.config.get("SECRET_KEY") is None:
         raise Exception("When using `auth` extension you need to specify SECRET_KEY.")
 
-    auth0.init_app(app.app)
-    auth.init_app(app.app)
+    auth0.init_app(app)
+    auth.init_app(app)
 
     app.add_url_rule("/__permissions__", view_func=get_permissions)
 

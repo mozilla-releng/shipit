@@ -188,7 +188,7 @@ def test_schedule_phase(app):
         product="firefox", version="90.0", branch="mozilla-release", revision="0" * 40, build_number=1, release_eta=None, partial_updates=None, status=None
     )
     release.phases = mock_generate_phases(release)
-    session = app.app.db.session
+    session = app.db.session
     session.add(release)
     session.commit()
 
@@ -218,10 +218,10 @@ def test_add_release(app):
         with app.test_client() as client:
             response = client.post("/releases", json={"branch": "try", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0"})
             assert response.status_code == 201
-            assert response.json()["branch"] == "try"
-            assert response.json()["build_number"] == 1
-            assert response.json()["name"] == "Firefox-69.0-build1"
-            assert len(response.json()["phases"]) == 3
+            assert response.json["branch"] == "try"
+            assert response.json["build_number"] == 1
+            assert response.json["name"] == "Firefox-69.0-build1"
+            assert len(response.json["phases"]) == 3
 
             response = client.post("/releases", json={"branch": "try", "build_number": 1, "product": "other", "revision": "123", "version": "69.0"})
             assert response.status_code == 400
@@ -229,10 +229,10 @@ def test_add_release(app):
 
             response = client.post("/releases", json={"branch": "other", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.1"})
             assert response.status_code == 201
-            assert response.json()["branch"] == "other"
-            assert response.json()["build_number"] == 1
-            assert response.json()["name"] == "Firefox-69.0.1-build1"
-            assert len(response.json()["phases"]) == 3
+            assert response.json["branch"] == "other"
+            assert response.json["build_number"] == 1
+            assert response.json["name"] == "Firefox-69.0.1-build1"
+            assert len(response.json["phases"]) == 3
 
             # Non taskcluster users are not affected by disabled releases
             response = client.post("/releases", json={"branch": "disabled", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.2"})

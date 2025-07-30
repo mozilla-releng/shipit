@@ -44,7 +44,7 @@ Setting up for the Admin API:
 
 ::
 
-    export FLASK_APP="shipit_api.admin.flask:flask_app"
+    export FLASK_APP="shipit_api.admin.flask:app"
     uv run flask shell
 
 Setting up for the Public API:
@@ -65,7 +65,7 @@ Setting up for the Public API:
 
 ::
 
-    export FLASK_APP="shipit_api.public.flask:flask_app"
+    export FLASK_APP="shipit_api.public.flask:app"
     uv run flask shell
 
 To provide all required sign offs on staging xpi releases

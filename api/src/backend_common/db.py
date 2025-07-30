@@ -6,7 +6,6 @@
 import logging
 import os
 
-import connexion
 import flask
 import flask_migrate
 import flask_sqlalchemy
@@ -19,7 +18,7 @@ db = flask_sqlalchemy.SQLAlchemy()
 migrate = flask_migrate.Migrate(db=db)
 
 
-def init_database(app: flask.Flask):
+def init_database(app):
     """
     Run Migrations through Alembic
     """
@@ -47,15 +46,15 @@ def init_database(app: flask.Flask):
                 db.create_all()
 
 
-def init_app(app: connexion.App):
-    db.init_app(app.app)
+def init_app(app):
+    db.init_app(app)
 
     # Try to run migrations on the app or direct db creation
-    init_database(app.app)
+    init_database(app)
     dockerflow.init_check(checks.check_database_connected, db)
 
-    @app.app.before_request
+    @app.before_request
     def setup_request():
-        flask.g.db = app.app.db
+        flask.g.db = app.db
 
     return db
