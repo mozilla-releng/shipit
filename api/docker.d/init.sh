@@ -7,14 +7,13 @@ MY_DIR=$(pwd)
 popd &>/dev/null
 
 if [ $1 == "worker" ]; then
-    export FLASK_APP="shipit_api.admin.flask:flask_app"
     exec /app/.venv/bin/flask worker
 fi
 
 if [ $1 == "public" ]; then
-    export ASGI_APP="shipit_api.public.flask:app"
+    export FLASK_APP="shipit_api.public.flask:app"
 elif [ $1 == "admin" ]; then
-    export ASGI_APP="shipit_api.admin.flask:app"
+    export FLASK_APP="shipit_api.admin.flask:app"
 else
     echo "first arg must be 'public' or 'admin'"
     exit 1
@@ -34,4 +33,4 @@ then
     EXTRA_ARGS="--host $HOST --port $PORT --workers 1 --reload --ssl-certfile=$cert --ssl-keyfile=$key"
 fi
 
-exec /app/.venv/bin/uvicorn $ASGI_APP $EXTRA_ARGS
+exec /app/.venv/bin/uvicorn $FLASK_APP $EXTRA_ARGS
