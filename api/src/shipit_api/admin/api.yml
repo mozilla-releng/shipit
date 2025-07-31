@@ -298,6 +298,7 @@ paths:
               - devedition
               - firefox-android
               - firefox-ios
+              - focus-ios
         - name: branch
           in: query
           required: true
@@ -1004,6 +1005,7 @@ components:
             - devedition
             - firefox-android
             - firefox-ios
+            - focus-ios
         branch:
           type: string
           example: releases/mozilla-beta
