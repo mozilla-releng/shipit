@@ -1,9 +1,9 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import RefreshIcon from 'mdi-react/RefreshIcon';
 import React, { useEffect } from 'react';
-import { BrowserRouter, useLocation } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router';
 import {
   getPendingReleases,
   getPendingReleasesForProductBranches,
@@ -105,7 +105,7 @@ export default function Releases({ recent = false, xpi = false }) {
         </Box>
         {(releases.loading || (xpi && xpis.loading)) && (
           <Box style={{ textAlign: 'center' }}>
-            <CircularProgress loading />
+            <CircularProgress />
           </Box>
         )}
 

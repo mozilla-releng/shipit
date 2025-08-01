@@ -1,27 +1,14 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles } from '@material-ui/styles';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router';
 import Dashboard from './components/Dashboard';
 import ErrorPanel from './components/ErrorPanel';
-import RouteWithProps from './components/RouteWithProps';
 import { SHIPIT_API_URL, SHIPIT_PUBLIC_API_URL } from './config';
 import useAction from './hooks/useAction';
 import routes from './routes';
-
-const useStyles = makeStyles({
-  '@global': {
-    'html, body': {
-      height: '100%',
-    },
-    '#root': {
-      height: '100%',
-    },
-  },
-});
 
 function setupAxiosInterceptors(getAccessTokenSilently, getIdTokenClaims) {
   axios.interceptors.request.use(async (config) => {
@@ -70,7 +57,8 @@ function setupAxiosInterceptors(getAccessTokenSilently, getIdTokenClaims) {
 }
 
 function Main() {
-  const { isLoading, getAccessTokenSilently, getIdTokenClaims } = useAuth0();
+  const { isLoading, getAccessTokenSilently, getIdTokenClaims, user } =
+    useAuth0();
   const [isReady, setReady] = useState(false);
 
   useEffect(() => {
@@ -83,7 +71,6 @@ function Main() {
     }
   }, [isLoading]);
 
-  useStyles();
   const [backendStatus, checkBackendStatus] = useAction(() =>
     axios.get('/__heartbeat__'),
   );
@@ -97,7 +84,7 @@ function Main() {
       <BrowserRouter>
         <Dashboard disabled>
           <Box style={{ textAlign: 'center' }}>
-            <CircularProgress loading />
+            <CircularProgress />
           </Box>
         </Dashboard>
       </BrowserRouter>
@@ -118,11 +105,25 @@ function Main() {
 
   return (
     <BrowserRouter>
-      <Switch>
-        {routes.map(({ path, ...rest }) => (
-          <RouteWithProps key={path || 'not-found'} path={path} {...rest} />
+      <Routes>
+        {routes.map(({ path, component, requiresAuth, exact, ...rest }) => (
+          <Route
+            key={path || 'not-found'}
+            path={path}
+            exact={exact}
+            Component={component}
+            render={() => (
+              <Suspense fallback={null}>
+                {requiresAuth && !user ? (
+                  <Redirect to="/" />
+                ) : (
+                  <component {...renderProps} {...rest} />
+                )}
+              </Suspense>
+            )}
+          />
         ))}
-      </Switch>
+      </Routes>
     </BrowserRouter>
   );
 }

@@ -1,12 +1,15 @@
-import { matchPath } from 'react-router-dom';
+import { matchPath } from 'react-router';
 
 // Returns an array of matched routes.
 const matchRoutes = (path, routes, branch = []) => {
   const matchingRoute = routes.find((route) =>
-    matchPath(path, {
-      path: route.path,
-      exact: route.exact,
-    }),
+    matchPath(
+      {
+        path: route.path,
+        caseSensitive: route.exact,
+      },
+      path,
+    ),
   );
 
   if (matchingRoute) {
