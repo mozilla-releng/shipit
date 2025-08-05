@@ -10,7 +10,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
 import MenuDownIcon from 'mdi-react/MenuDownIcon';
-import RocketIcon from 'mdi-react/RocketIcon';
+import RocketLaunchIcon from 'mdi-react/RocketLaunchIcon';
 import React, { Fragment, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import Link from '../../utils/Link';
@@ -122,7 +122,7 @@ function ReleasesMenu({ disabled }) {
         aria-haspopup="true"
         aria-controls="user-menu"
         aria-label="user menu"
-        startIcon={<RocketIcon />}
+        startIcon={<RocketLaunchIcon />}
         endIcon={<MenuDownIcon />}
         onClick={handleMenuOpen}
       >
