@@ -36,9 +36,11 @@ export default [
   {
     component: NewRelease,
     path: '/new',
+    requiresAuth: true,
   },
   {
     component: NewXPIRelease,
     path: '/newxpi',
+    requiresAuth: true,
   },
 ];
