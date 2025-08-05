@@ -62,6 +62,16 @@ firefox-ios:
     - push
     - ship
   version-class: "mozilla_version.ios.MobileIosVersion"
+focus-ios:
+  can-be-disabled: false
+  authorized-ldap-groups:
+    - shipit_firefox
+    - shipit_relman
+  phases:
+    - promote_focus
+    - push_focus
+    - ship_focus
+  version-class: "mozilla_version.ios.MobileIosVersion"
 mozilla-vpn-addons:
   authorized-ldap-groups:
     - releng

@@ -135,6 +135,26 @@ module.exports = {
         enablePartials: false,
       },
       {
+        product: 'focus-ios',
+        prettyName: 'Focus iOS',
+        appName: 'focus-ios',
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        repositories: [
+          {
+            prettyName: 'Focus iOS',
+            project: 'firefox-ios',
+            repo: 'https://github.com/mozilla-mobile/firefox-ios',
+            enableReleaseEta: false,
+            enableTreeherder: true,
+          },
+        ],
+        enablePartials: false,
+      },
+      {
         product: 'app-services',
         prettyName: 'Application Services',
         appName: 'app-services',
