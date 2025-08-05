@@ -1,26 +1,26 @@
 import { withAuth0 } from '@auth0/auth0-react';
-import { ListItemIcon } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import Typography from '@material-ui/core/Typography';
-import UpdateIcon from '@material-ui/icons/Update';
-import { makeStyles } from '@material-ui/styles';
+import UpdateIcon from '@mui/icons-material/Update';
+import { ListItemIcon } from '@mui/material';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import Typography from '@mui/material/Typography';
 import LinkVariantIcon from 'mdi-react/LinkVariantIcon';
 import MenuDownIcon from 'mdi-react/MenuDownIcon';
 import SettingsOutlineIcon from 'mdi-react/SettingsOutlineIcon';
 import React, { Fragment, useState } from 'react';
+import { makeStyles } from 'tss-react/mui';
 import useAction from '../../hooks/useAction';
 import Link from '../../utils/Link';
 import { rebuildProductDetails } from '../api';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   button: {
     color: '#fff',
     display: 'flex',
@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SettingsMenu({ auth0, disabled }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -69,7 +69,7 @@ function SettingsMenu({ auth0, disabled }) {
           endIcon={<MenuDownIcon className={classes.icon} />}
           onClick={handleMenuOpen}
         >
-          <Typography color="inherit" variant="h6" noWrap>
+          <Typography variant="h6" noWrap>
             Settings
           </Typography>
         </Button>
@@ -78,11 +78,13 @@ function SettingsMenu({ auth0, disabled }) {
         id="user-menu"
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
-        getContentAnchorEl={null}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         onClose={handleMenuClose}
+        slotProps={{
+          root: { sx: { '.MuiList-root': { padding: 0 } } },
+        }}
       >
-        <ListItem button>
+        <ListItemButton>
           <ListItemIcon style={{ minWidth: '30px' }}>
             <UpdateIcon />
           </ListItemIcon>
@@ -90,18 +92,18 @@ function SettingsMenu({ auth0, disabled }) {
             primary="Update product details"
             onClick={() => setShowModal(true)}
           />
-        </ListItem>
+        </ListItemButton>
         <Link
           nav
           to="https://product-details.mozilla.org/1.0/"
           className={classes.listItemLink}
         >
-          <ListItem button>
+          <ListItemButton>
             <ListItemIcon style={{ minWidth: '30px' }}>
               <LinkVariantIcon />
             </ListItemIcon>
             <ListItemText primary="Go to product details" />
-          </ListItem>
+          </ListItemButton>
         </Link>
       </Menu>
       <Dialog open={showModal} onClose={() => setShowModal(false)}>
@@ -116,11 +118,10 @@ function SettingsMenu({ auth0, disabled }) {
           )}
         </DialogContent>
         <DialogActions>
-          {rebuildProductDetailsState.loading && <CircularProgress loading />}
+          {rebuildProductDetailsState.loading && <CircularProgress />}
           <Button
             variant="contained"
             onClick={() => setShowModal(false)}
-            color="default"
             autoFocus
           >
             Close

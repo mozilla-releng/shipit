@@ -1,18 +1,18 @@
 import { withAuth0 } from '@auth0/auth0-react';
-import Button from '@material-ui/core/Button';
-import Collapse from '@material-ui/core/Collapse';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import Typography from '@material-ui/core/Typography';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { makeStyles } from '@material-ui/styles';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import Typography from '@mui/material/Typography';
 import MenuDownIcon from 'mdi-react/MenuDownIcon';
 import RocketIcon from 'mdi-react/RocketIcon';
 import React, { Fragment, useState } from 'react';
+import { makeStyles } from 'tss-react/mui';
 import Link from '../../utils/Link';
 import menuItems from './menuItems';
 
@@ -34,7 +34,7 @@ export function hasChildren(item) {
   return true;
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   button: {
     color: '#fff',
     display: 'flex',
@@ -50,7 +50,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 const SingleLevel = withAuth0(({ item, disabled, auth0 }) => {
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   if ((!auth0.user || disabled) && item.to.includes('new')) {
     return '';
@@ -63,10 +63,10 @@ const SingleLevel = withAuth0(({ item, disabled, auth0 }) => {
       to={item.to ? item.to : ''}
       className={classes.listItemLink}
     >
-      <ListItem button>
+      <ListItemButton>
         <ListItemIcon style={{ minWidth: '30px' }}>{item.Icon}</ListItemIcon>
         <ListItemText primary={item.title} />
-      </ListItem>
+      </ListItemButton>
     </Link>
   );
 });
@@ -79,10 +79,10 @@ const MultiLevel = ({ item }) => {
 
   return (
     <React.Fragment>
-      <ListItem button onClick={handleClick}>
+      <ListItemButton onClick={handleClick}>
         <ListItemText primary={item.title} />
         {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      </ListItem>
+      </ListItemButton>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           {children.map((child) => (
@@ -107,7 +107,7 @@ function MenuItems({ disabled }) {
 }
 
 function ReleasesMenu({ disabled }) {
-  const classes = useStyles();
+  const { classes } = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
@@ -126,7 +126,7 @@ function ReleasesMenu({ disabled }) {
         endIcon={<MenuDownIcon />}
         onClick={handleMenuOpen}
       >
-        <Typography color="inherit" variant="h6" noWrap>
+        <Typography variant="h6" noWrap>
           Releases
         </Typography>
       </Button>
@@ -134,10 +134,12 @@ function ReleasesMenu({ disabled }) {
         id="user-menu"
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
-        getContentAnchorEl={null}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         onClose={handleMenuClose}
         className={classes.menu}
+        slotProps={{
+          root: { sx: { '.MuiList-root': { padding: 0 } } },
+        }}
       >
         <MenuItems disabled={disabled} />
       </Menu>

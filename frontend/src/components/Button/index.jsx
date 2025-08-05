@@ -1,7 +1,6 @@
-import MuiButton from '@material-ui/core/Button';
-import { red } from '@material-ui/core/colors';
-import { createTheme } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/styles';
+import MuiButton from '@mui/material/Button';
+import { red } from '@mui/material/colors';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { oneOf } from 'prop-types';
 import React from 'react';
 
@@ -12,7 +11,7 @@ const dangerTheme = createTheme({
 });
 
 // A Material UI Button augmented with a danger color
-function Button({ color, ...rest }) {
+function Button({ color = 'inherit', ...rest }) {
   if (color === 'danger') {
     return (
       <ThemeProvider theme={dangerTheme}>
@@ -25,11 +24,7 @@ function Button({ color, ...rest }) {
 }
 
 Button.propTypes = {
-  color: oneOf(['default', 'inherit', 'primary', 'secondary', 'danger']),
-};
-
-Button.defaultProps = {
-  color: 'default',
+  color: oneOf(['inherit', 'primary', 'secondary', 'danger']),
 };
 
 export default Button;

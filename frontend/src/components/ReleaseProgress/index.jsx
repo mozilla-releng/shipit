@@ -1,21 +1,21 @@
 import { Auth0Context } from '@auth0/auth0-react';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/styles';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
 import AndroidIcon from 'mdi-react/AndroidIcon';
 import CancelIcon from 'mdi-react/CancelIcon';
 import React, { useContext, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
+import { makeStyles } from 'tss-react/mui';
 import config from '../../config';
 import useAction from '../../hooks/useAction';
 import { repoUrlBuilder } from '../../utils/helpers';
@@ -23,7 +23,7 @@ import ReleaseContext from '../../utils/ReleaseContext';
 import { cancelRelease as cancelReleaseAPI } from '../api';
 import PhaseProgress from '../PhaseProgress';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   cardActions: {
     justifyContent: 'flex-end',
   },
@@ -48,7 +48,7 @@ export default function ReleaseProgress({
 }) {
   const location = useLocation();
   const group = new URLSearchParams(location.search).get('group') || 'firefox';
-  const classes = useStyles();
+  const { classes } = useStyles();
   const authContext = useContext(Auth0Context);
   const mutable = authContext.user && !readOnly;
   const [open, setOpen] = useState(false);
@@ -97,8 +97,8 @@ export default function ReleaseProgress({
           <DialogTitle>Cancel Release</DialogTitle>
           <DialogContent>{renderDialogContent()}</DialogContent>
           <DialogActions>
-            {cancelState.loading && <CircularProgress loading />}
-            <Button onClick={handleClose} variant="contained" color="default">
+            {cancelState.loading && <CircularProgress />}
+            <Button onClick={handleClose} variant="contained">
               Close
             </Button>
             <Button
@@ -164,13 +164,12 @@ export default function ReleaseProgress({
     return (
       <React.Fragment>
         {url ? (
-          <Link target="_blank" href={url}>
+          <Link target="_blank" href={url} underline="hover">
             {trimmedRevision}
           </Link>
         ) : (
           trimmedRevision
         )}
-
         {enableTreeherder && TREEHERDER_URL && (
           <span>
             {' '}
@@ -178,6 +177,7 @@ export default function ReleaseProgress({
             <Link
               target="_blank"
               href={`${TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}
+              underline="hover"
             >
               View in Treeherder
             </Link>
@@ -195,7 +195,7 @@ export default function ReleaseProgress({
         <Typography component="h3" variant="h6">
           {release.name}
         </Typography>
-        <Box fontSize=".85rem" fontWeight="fontWeightRegular" display="block">
+        <Box typography="caption" display="block">
           Created on {dateCreated} with {renderReleaseTitle(xpi, release)}
         </Box>
         <div style={{ position: 'relative' }}>

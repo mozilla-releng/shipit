@@ -16,9 +16,9 @@ tasks:
         args:
             PYTHON_VERSION: "3.12.8"
             UV_VERSION: "0.7.9"
-    node18:
+    node20:
         definition: node
         args:
-            NODE_VERSION: "18"
+            NODE_VERSION: "20"
     fetch: {}
     skopeo: {}
