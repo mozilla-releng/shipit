@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import Dashboard from './components/Dashboard';
 import ErrorPanel from './components/ErrorPanel';
 import { SHIPIT_API_URL, SHIPIT_PUBLIC_API_URL } from './config';
@@ -106,23 +106,24 @@ function Main() {
   return (
     <BrowserRouter>
       <Routes>
-        {routes.map(({ path, component, requiresAuth, exact, ...rest }) => (
-          <Route
-            key={path || 'not-found'}
-            path={path}
-            exact={exact}
-            Component={component}
-            render={() => (
-              <Suspense fallback={null}>
-                {requiresAuth && !user ? (
-                  <Redirect to="/" />
-                ) : (
-                  <component {...renderProps} {...rest} />
-                )}
-              </Suspense>
-            )}
-          />
-        ))}
+        {routes.map(
+          ({ path, component: Component, requiresAuth, exact, ...rest }) => (
+            <Route
+              key={path || 'not-found'}
+              path={path}
+              exact={exact}
+              element={
+                <>
+                  {requiresAuth && !user ? (
+                    <Navigate to="/" replace />
+                  ) : (
+                    <Component {...rest} />
+                  )}
+                </>
+              }
+            />
+          ),
+        )}
       </Routes>
     </BrowserRouter>
   );
