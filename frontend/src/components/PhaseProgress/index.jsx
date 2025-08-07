@@ -1,3 +1,4 @@
+import AndroidIcon from '@mui/icons-material/Android';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
 import Box from '@mui/material/Box';
@@ -18,7 +19,6 @@ import StepButton from '@mui/material/StepButton';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import AndroidIcon from 'mdi-react/AndroidIcon';
 import React, { useContext, useState } from 'react';
 import libUrls from 'taskcluster-lib-urls';
 import { makeStyles } from 'tss-react/mui';
@@ -281,22 +281,19 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
         )}
       </Stepper>
       <Dialog open={open} onClose={handleClose}>
-        <div style={{ position: 'relative' }}>
-          <div style={{ width: '50%', position: 'absolute' }}>
-            {release.name.toLowerCase().includes('android') && (
-              <AndroidIcon
-                style={{
-                  color: '#20ac5f',
-                  height: '3em',
-                  width: '3em',
-                  marginTop: '2em',
-                  marginLeft: '28.75em',
-                }}
-              />
-            )}
-          </div>
-        </div>
-        <DialogTitle>Schedule Phase</DialogTitle>
+        <DialogTitle>
+          Schedule Phase
+          {release.name.toLowerCase().includes('android') && (
+            <AndroidIcon
+              sx={{
+                color: '#20ac5f',
+                verticalAlign: 'middle',
+                fontSize: '1.5em',
+                marginLeft: '0.2em',
+              }}
+            />
+          )}
+        </DialogTitle>
         <DialogContent>
           {phase.signoffs && phase.signoffs.length > 0
             ? renderSignoffs()

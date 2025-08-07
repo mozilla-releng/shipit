@@ -1,4 +1,6 @@
 import { Auth0Context } from '@auth0/auth0-react';
+import AndroidIcon from '@mui/icons-material/Android';
+import CancelIcon from '@mui/icons-material/Block';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -11,8 +13,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import AndroidIcon from 'mdi-react/AndroidIcon';
-import CancelIcon from 'mdi-react/CancelIcon';
 import React, { useContext, useState } from 'react';
 import { useLocation } from 'react-router';
 import { makeStyles } from 'tss-react/mui';
@@ -198,21 +198,19 @@ export default function ReleaseProgress({
         <Box typography="caption" display="block">
           Created on {dateCreated} with {renderReleaseTitle(xpi, release)}
         </Box>
-        <div style={{ position: 'relative' }}>
-          <div style={{ width: '50%', position: 'absolute' }}>
+        <Box sx={{ position: 'relative' }}>
+          <Box sx={{ width: '50%', position: 'absolute' }}>
             {release.name.toLowerCase().includes('android') && (
               <AndroidIcon
-                style={{
+                sx={{
                   color: '#20ac5f',
-                  height: '2.5em',
-                  width: '2.5em',
-                  left: 0,
-                  marginTop: '1em',
+                  height: '1.5em',
+                  width: '1.5em',
                 }}
               />
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
         <PhaseProgress release={release} readOnly={!mutable} xpi={xpi} />
       </CardContent>
       <CardActions className={classes.cardActions}>

@@ -1,10 +1,10 @@
 import { withAuth0 } from '@auth0/auth0-react';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import ContentCopyIcon from 'mdi-react/ContentCopyIcon';
 import React, { Fragment, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import Button from '../Button';

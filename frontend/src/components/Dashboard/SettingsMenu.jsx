@@ -1,4 +1,7 @@
 import { withAuth0 } from '@auth0/auth0-react';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import LinkIcon from '@mui/icons-material/Link';
+import SettingsOutlineIcon from '@mui/icons-material/SettingsOutlined';
 import UpdateIcon from '@mui/icons-material/Update';
 import { ListItemIcon } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -11,9 +14,6 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
-import LinkVariantIcon from 'mdi-react/LinkVariantIcon';
-import MenuDownIcon from 'mdi-react/MenuDownIcon';
-import SettingsOutlineIcon from 'mdi-react/SettingsOutlineIcon';
 import React, { Fragment, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import useAction from '../../hooks/useAction';
@@ -66,7 +66,7 @@ function SettingsMenu({ auth0, disabled }) {
           aria-controls="user-menu"
           aria-label="user menu"
           startIcon={<SettingsOutlineIcon className={classes.icon} />}
-          endIcon={<MenuDownIcon className={classes.icon} />}
+          endIcon={<ArrowDropDownIcon className={classes.icon} />}
           onClick={handleMenuOpen}
         >
           <Typography variant="h6" noWrap>
@@ -100,7 +100,7 @@ function SettingsMenu({ auth0, disabled }) {
         >
           <ListItemButton>
             <ListItemIcon style={{ minWidth: '30px' }}>
-              <LinkVariantIcon />
+              <LinkIcon />
             </ListItemIcon>
             <ListItemText primary="Go to product details" />
           </ListItemButton>

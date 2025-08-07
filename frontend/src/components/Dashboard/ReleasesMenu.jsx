@@ -1,6 +1,8 @@
 import { withAuth0 } from '@auth0/auth0-react';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import List from '@mui/material/List';
@@ -9,8 +11,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
-import MenuDownIcon from 'mdi-react/MenuDownIcon';
-import RocketLaunchIcon from 'mdi-react/RocketLaunchIcon';
 import React, { Fragment, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import Link from '../../utils/Link';
@@ -123,7 +123,7 @@ function ReleasesMenu({ disabled }) {
         aria-controls="user-menu"
         aria-label="user menu"
         startIcon={<RocketLaunchIcon />}
-        endIcon={<MenuDownIcon />}
+        endIcon={<ArrowDropDownIcon />}
         onClick={handleMenuOpen}
       >
         <Typography variant="h6" noWrap>

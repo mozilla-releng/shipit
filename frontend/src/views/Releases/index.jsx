@@ -1,7 +1,7 @@
+import RefreshIcon from '@mui/icons-material/Refresh';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import RefreshIcon from 'mdi-react/RefreshIcon';
 import React, { useEffect } from 'react';
 import { BrowserRouter, useLocation } from 'react-router';
 import {
