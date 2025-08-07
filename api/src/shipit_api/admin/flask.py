@@ -9,4 +9,3 @@ from shipit_api.admin import create_app
 
 settings = Path(".") / "settings.py"
 app = create_app(config=settings)
-flask_app = app.app
