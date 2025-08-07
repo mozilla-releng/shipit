@@ -188,7 +188,7 @@ AUTH0_AUTH_SCOPES = {f"{SCOPE_PREFIX}/{scope}": list(set(ldap_groups + LDAP_GROU
 # fmt: off
 if APP_CHANNEL == "production":
     MATRIX_NOTIFICATIONS_OWNERS_PER_PRODUCT = {
-        "thunderbird": ["rjl", "wsmwk", "dandarnell"],
+        "thunderbird": ["tb-drivers"],
         "default": ["sheriffduty", "ciduty", "releaseduty"]
     }
     MATRIX_NOTIFICATIONS_ROOMS_PER_PRODUCT = {
