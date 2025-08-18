@@ -24,6 +24,9 @@
       "complexity": {
         // All the ones it was giving were actually not useless...
         "noUselessFragments": "off"
+      },
+      "suspicious": {
+        "noConsole": "error"
       }
     },
     "domains": {

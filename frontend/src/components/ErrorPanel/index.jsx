@@ -3,7 +3,6 @@ import { string } from 'prop-types';
 import React, { useState } from 'react';
 
 export default function ErrorPanel({ error = null }) {
-  console.log('hi');
   const [currentError, setCurrentError] = useState(null);
   const [previousError, setPreviousError] = useState(null);
   const handleErrorClose = () => {
