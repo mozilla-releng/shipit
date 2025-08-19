@@ -10,7 +10,7 @@ dependencies = [
     "flask",
     "flask_migrate",
     "flask_talisman",
-    "mozilla-version~=4.0",
+    "mozilla-version~=5.0",
     "python-decouple",
     "sentry-sdk[flask]",
     "slugid",
