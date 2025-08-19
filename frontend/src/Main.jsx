@@ -66,18 +66,28 @@ function Main() {
   }, [getAccessTokenSilently, isLoading]);
 
   useEffect(() => {
+    const validateTokenOnFirstLoad = async () => {
+      if (user && !isLoading) {
+        await getAccessTokenSilently();
+      }
+    };
+
     if (!isReady && !isLoading) {
-      setReady(true);
+      validateTokenOnFirstLoad()
+        .catch(() => {})
+        .finally(() => setReady(true));
     }
-  }, [isLoading]);
+  }, [isLoading, user, getAccessTokenSilently, isReady]);
 
   const [backendStatus, checkBackendStatus] = useAction(() =>
     axios.get('/__heartbeat__'),
   );
 
   useEffect(() => {
-    checkBackendStatus();
-  }, []);
+    if (isReady) {
+      checkBackendStatus();
+    }
+  }, [isReady]);
 
   if (!isReady || backendStatus.loading) {
     return (
