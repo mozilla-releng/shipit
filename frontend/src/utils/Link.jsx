@@ -23,7 +23,9 @@ export default function Link({ viewName, nav = false, to, ...props }) {
     if (!isPathAbsolute) {
       const matchingRoutes = matchRoutes(path, routes);
 
-      matchingRoutes.forEach(({ component }) => component.preload());
+      matchingRoutes.forEach(({ component }) => {
+        component.preload();
+      });
     }
 
     setPrefetchFlag(true);
