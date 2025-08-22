@@ -126,6 +126,10 @@ def add_release(body):
         session.commit()
     except UnsupportedFlavor as e:
         raise BadRequest(description=e.description)
+    except ValueError as e:
+        # This can happen when bump_version fails due to the version not matching
+        # what would be expected for a release
+        abort(400, str(e))
     except (IntegrityError, TaskclusterRestFailure) as e:
         # Report back Taskcluster and SQL failures for better visibility of the
         # actual issue. Usually it happens when we cannot find the indexed
