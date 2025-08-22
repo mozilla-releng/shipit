@@ -13,7 +13,7 @@ def init_app(app: connexion.App):
     origins = origins.split(" ")
     app.add_middleware(
         CORSMiddleware,
-        MiddlewarePosition.BEFORE_ROUTING,
+        MiddlewarePosition.BEFORE_EXCEPTION,
         allow_origins=origins,
         allow_methods=["*"],
         allow_headers=["authorization"],
