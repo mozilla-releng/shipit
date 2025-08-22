@@ -70,7 +70,7 @@ export default function Releases({ recent = false, xpi = false }) {
 
       fetchReleases(productBranches);
     }
-  }, [group]);
+  }, [group, recent, xpi]);
 
   if (!(group in config.PRODUCTS)) {
     return (
