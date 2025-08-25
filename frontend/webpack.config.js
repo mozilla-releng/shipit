@@ -13,7 +13,7 @@ const SHIPIT_API_URL = process.env.SHIPIT_API_URL || 'https://localhost:8015';
 const FRONTEND_TASKCLUSTER_ROOT_URL =
   process.env.FRONTEND_TASKCLUSTER_ROOT_URL ||
   'https://firefox-ci-tc.services.mozilla.com';
-const DEPLOYMENT_BRANCH = process.env.DEPLOYMENT_BRANCH || 'development';
+const DEPLOYMENT_BRANCH = process.env.DEPLOYMENT_BRANCH || 'local';
 const connectSrc = [
   'https://hg.mozilla.org',
   'https://hg-edge.mozilla.org',

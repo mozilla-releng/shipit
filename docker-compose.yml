@@ -23,7 +23,7 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8015
-      - APP_CHANNEL=development
+      - APP_CHANNEL=local
       - DATABASE_URL=postgresql://shipituser:shipitpassword@db/shipitdb
       - AUTH_CLIENT_ID=todo
       - AUTH_CLIENT_SECRET=todo
@@ -62,7 +62,7 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=8016
-      - APP_CHANNEL=development
+      - APP_CHANNEL=local
       - DATABASE_URL=postgresql://shipituserreadonly:shipitpasswordreadonly@db/shipitdb
       - LOG_FORMAT=plain
     depends_on:
@@ -98,7 +98,7 @@ services:
       - PORT=8010
       - SHIPIT_API_URL=https://localhost:8015
       - SHIPIT_PUBLIC_API_URL=https://localhost:8016
-      - DEPLOYMENT_BRANCH=development
+      - DEPLOYMENT_BRANCH=local
       - FRONTEND_TASKCLUSTER_ROOT_URL=https://firefox-ci-tc.services.mozilla.com
     entrypoint:
       - /bin/bash
