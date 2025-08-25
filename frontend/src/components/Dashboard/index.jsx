@@ -2,12 +2,14 @@ import ExtensionIcon from '@mui/icons-material/Extension';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { bool, node, string } from 'prop-types';
 import React, { Fragment } from 'react';
 import { makeStyles } from 'tss-react/mui';
+import { DEPLOYMENT_BRANCH } from '../../config';
 import { APP_BAR_HEIGHT, CONTENT_MAX_WIDTH } from '../../utils/constants';
 import Footer from '../../views/Footer';
 import ReleasesMenu from './ReleasesMenu';
@@ -56,6 +58,19 @@ const useStyles = makeStyles()((theme) => ({
   extensionIcon: {
     margin: '0px',
     marginRight: '.5%',
+  },
+  environmentChip: {
+    marginLeft: theme.spacing(2),
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    '&.local': {
+      backgroundColor: theme.palette.success.main,
+      color: theme.palette.success.contrastText,
+    },
+    '&.dev': {
+      backgroundColor: theme.palette.warning.main,
+      color: theme.palette.warning.contrastText,
+    },
   },
 }));
 
@@ -106,6 +121,13 @@ export default function Dashboard(props) {
               </Typography>
             )}
           </Breadcrumbs>
+          {DEPLOYMENT_BRANCH !== 'production' && (
+            <Chip
+              label={DEPLOYMENT_BRANCH}
+              size="small"
+              className={`${classes.environmentChip} ${DEPLOYMENT_BRANCH}`}
+            />
+          )}
           <nav className={classes.nav}>
             <ReleasesMenu disabled={disabled} />
             <SettingsMenu disabled={disabled} />
