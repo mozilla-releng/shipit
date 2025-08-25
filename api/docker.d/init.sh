@@ -21,7 +21,7 @@ else
 fi
 
 EXTRA_ARGS=""
-if [ "$APP_CHANNEL" == "development" ]
+if [ "$APP_CHANNEL" == "local" ]
 then
     test $HOST
     test $PORT

@@ -94,7 +94,7 @@ way to by-pass the need for a pulse queue.
 
     docker exec -it "$SHIPIT_API_CONTAINER" /bin/bash
 
-3. ``uv run shipit_rebuild_product_details --database-url="postgresql://shipituser:shipitpassword@db/shipitdb" --channel development``
+3. ``uv run shipit_rebuild_product_details --database-url="postgresql://shipituser:shipitpassword@db/shipitdb" --channel local``
 
 4. This will ask you for some GitHub credentials. You can provide them if you want to update https://github.com/mozilla-releng/product-details. That said, you can also ``Ctrl+C`` and inspect the content of `/tmp/product-details` in the docker container. Changes are done here before they pushed to the git repo.
 

@@ -88,7 +88,7 @@ async def download_product_details(url: str, download_dir: str):
 @click.option("--folder-in-repo", type=str, required=True, default="public/")
 @click.option(
     "--channel",
-    type=click.Choice(["development", "main", "testing", "dev", "staging", "production"]),
+    type=click.Choice(["local", "main", "testing", "dev", "production"]),
     required=True,
     default=os.environ.get("DEPLOYMENT_BRANCH", "main"),
 )
@@ -99,7 +99,7 @@ async def rebuild_product_details(
     database_url: str, git_repo_url: str, folder_in_repo: str, channel: str, breakpoint_version: typing.Optional[int] = None, clean_working_copy: bool = False
 ):
     configure_logging()
-    if channel == "development":
+    if channel == "local":
         channel = "main"
     engine = sqlalchemy.create_engine(database_url)
     session = sqlalchemy.orm.sessionmaker(bind=engine)()

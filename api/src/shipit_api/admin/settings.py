@@ -12,8 +12,7 @@ from backend_common.auth import create_auth0_secrets_file
 from shipit_api.admin.auth0 import assign_ldap_groups_to_scopes
 from shipit_api.common.config import SCOPE_PREFIX, SYSTEM_ADDONS, XPI_LAX_SIGN_OFF
 
-# TODO: 1) rename "development" to "local" 2) remove "staging" when fully migrated
-supported_channels = ["dev", "development", "staging", "production"]
+supported_channels = ["local", "dev", "production"]
 
 # required
 APP_CHANNEL = config("APP_CHANNEL")

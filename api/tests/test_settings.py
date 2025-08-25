@@ -7,7 +7,7 @@ def flatten(lst):
 
 def test_scopes(monkeypatch):
     FAKE_ENV = dict(
-        APP_CHANNEL="development",
+        APP_CHANNEL="local",
         TASKCLUSTER_ROOT_URL="fake",
         TASKCLUSTER_CLIENT_ID="fake",
         TASKCLUSTER_ACCESS_TOKEN="fake",
