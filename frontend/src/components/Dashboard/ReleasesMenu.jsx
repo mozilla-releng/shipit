@@ -1,19 +1,14 @@
 import { withAuth0 } from '@auth0/auth0-react';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Menu from '@mui/material/Menu';
-import Typography from '@mui/material/Typography';
-import React, { Fragment, useState } from 'react';
-import { makeStyles } from 'tss-react/mui';
-import Link from '../../utils/Link';
+import React, { useState } from 'react';
+import DashboardMenu from './DashboardMenu';
+import { LinkMenuItem } from './MenuComponents';
 import menuItems from './menuItems';
 
 export function hasChildren(item) {
@@ -34,40 +29,18 @@ export function hasChildren(item) {
   return true;
 }
 
-const useStyles = makeStyles()(() => ({
-  button: {
-    color: '#fff',
-    display: 'flex',
-    textTransform: 'none',
-    marginRight: '.15%',
-  },
-  endIcon: {
-    margin: '0px',
-  },
-  listItemLink: {
-    textDecoration: 'none',
-    color: 'inherit',
-  },
-}));
 const SingleLevel = withAuth0(({ item, disabled, auth0 }) => {
-  const { classes } = useStyles();
-
   if ((!auth0.user || disabled) && item.to.includes('new')) {
     return '';
   }
 
   return (
-    <Link
+    <LinkMenuItem
       key={item.title}
-      nav
-      to={item.to ? item.to : ''}
-      className={classes.listItemLink}
-    >
-      <ListItemButton>
-        <ListItemIcon style={{ minWidth: '30px' }}>{item.Icon}</ListItemIcon>
-        <ListItemText primary={item.title} />
-      </ListItemButton>
-    </Link>
+      icon={item.Icon}
+      text={item.title}
+      to={item.to || ''}
+    />
   );
 });
 const MultiLevel = ({ item }) => {
@@ -107,43 +80,16 @@ function MenuItems({ disabled }) {
 }
 
 function ReleasesMenu({ disabled }) {
-  const { classes } = useStyles();
-  const [anchorEl, setAnchorEl] = useState(null);
-  const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
-  const handleMenuClose = () => setAnchorEl(null);
-
   return (
-    <Fragment>
-      <Button
-        className={classes.button}
-        classes={{
-          endIcon: classes.endIcon,
-        }}
-        aria-haspopup="true"
-        aria-controls="user-menu"
-        aria-label="user menu"
-        startIcon={<RocketLaunchIcon />}
-        endIcon={<ArrowDropDownIcon />}
-        onClick={handleMenuOpen}
-      >
-        <Typography variant="h6" noWrap>
-          Releases
-        </Typography>
-      </Button>
-      <Menu
-        id="user-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        onClose={handleMenuClose}
-        className={classes.menu}
-        slotProps={{
-          root: { sx: { '.MuiList-root': { padding: 0 } } },
-        }}
-      >
-        <MenuItems disabled={disabled} />
-      </Menu>
-    </Fragment>
+    <DashboardMenu
+      title="Releases"
+      icon={<RocketLaunchIcon />}
+      menuId="releases-menu"
+      ariaLabel="releases menu"
+      disabled={disabled}
+    >
+      <MenuItems disabled={disabled} />
+    </DashboardMenu>
   );
 }
 
