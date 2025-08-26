@@ -3,7 +3,8 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import Typography from '@mui/material/Typography';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import { useLocation } from 'react-router';
 import { makeStyles } from 'tss-react/mui';
 
 const useStyles = makeStyles()(() => ({
@@ -31,9 +32,14 @@ function DashboardMenu({
   auth0,
 }) {
   const { classes } = useStyles();
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const handleMenuOpen = (e) => setAnchorEl(e.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
+
+  useEffect(() => {
+    setAnchorEl(null);
+  }, [location]);
 
   if (!auth0.user || disabled) {
     return '';
