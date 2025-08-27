@@ -1,4 +1,3 @@
-import { Auth0Context } from '@auth0/auth0-react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -19,7 +18,7 @@ import Typography from '@mui/material/Typography';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import TimeAgo from 'react-timeago';
 import { makeStyles } from 'tss-react/mui';
@@ -50,7 +49,6 @@ export default function NewRelease() {
   const group = new URLSearchParams(location.search).get('group') || 'firefox';
   const groupTitle = group.charAt(0).toUpperCase() + group.slice(1);
   const { classes } = useStyles();
-  const authContext = useContext(Auth0Context);
   const [selectedProduct, setSelectedProduct] = useState('');
   const [selectedRepository, setSelectedRepository] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
@@ -454,16 +452,6 @@ export default function NewRelease() {
       </Grid>
     );
   };
-
-  if (!authContext.user) {
-    return (
-      <Dashboard group={groupTitle} title="New Release">
-        <Typography variant="h6" component="h2">
-          Auth required
-        </Typography>
-      </Dashboard>
-    );
-  }
 
   return (
     <Dashboard group={groupTitle} title="New Release">
