@@ -6,11 +6,10 @@
 import datetime
 import logging
 
+import dockerflow
 import kombu
 from dockerflow.flask import checks
 from flask import current_app
-
-from backend_common.dockerflow import dockerflow
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +63,7 @@ def init_app(app):
     )
 
 
-@dockerflow.check(name="pulse")
+@dockerflow.checks.register(name="pulse")
 def app_heartbeat():
     if current_app.config.get("PULSE_USER") and current_app.config.get("PULSE_PASSWORD"):
         try:
