@@ -10,9 +10,8 @@ import connexion
 import flask
 import flask_migrate
 import flask_sqlalchemy
-from dockerflow.flask import checks
-
-from backend_common.dockerflow import dockerflow
+from dockerflow import checks
+from dockerflow.flask.checks import check_database_connected
 
 logger = logging.getLogger(__name__)
 db = flask_sqlalchemy.SQLAlchemy()
@@ -52,7 +51,7 @@ def init_app(app: connexion.App):
 
     # Try to run migrations on the app or direct db creation
     init_database(app.app)
-    dockerflow.init_check(checks.check_database_connected, db)
+    checks.register_partial(check_database_connected, db)
 
     @app.app.before_request
     def setup_request():

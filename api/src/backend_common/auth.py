@@ -10,6 +10,7 @@ import logging
 import tempfile
 
 import connexion
+import dockerflow
 import flask
 import flask_login
 import flask_oidc
@@ -17,7 +18,6 @@ import requests
 import taskcluster.utils
 from dockerflow.flask import checks
 
-from backend_common.dockerflow import dockerflow
 from backend_common.taskcluster import get_service
 
 logger = logging.getLogger(__name__)
@@ -355,7 +355,7 @@ def init_app(app: connexion.App):
     return auth
 
 
-@dockerflow.check(name="auth")
+@dockerflow.checks.register(name="auth")
 def app_heartbeat():
     config = flask.current_app.config
     results = []
