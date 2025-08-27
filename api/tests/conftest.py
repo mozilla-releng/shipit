@@ -19,7 +19,7 @@ def responses():
 
 
 @pytest.fixture(scope="session")
-def app():
+def global_app():
     """Load shipit_api in test mode"""
     import shipit_api.admin
 
@@ -47,6 +47,15 @@ def app():
     with app.app.app_context():
         backend_common.testing.configure_app(app.app)
         yield app
+
+
+@pytest.fixture(scope="function")
+def app(global_app):
+    global_app.app.db.create_all()
+    try:
+        yield global_app
+    finally:
+        global_app.app.db.drop_all()
 
 
 def mock_generate_phases(release):
