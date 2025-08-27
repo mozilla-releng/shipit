@@ -30,7 +30,6 @@ dependencies = [
     "kombu",
     "mohawk",
     "mypy",
-    "mypy_extensions",
     "pyyaml",
     "taskcluster",
 ]
