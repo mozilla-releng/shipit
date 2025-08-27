@@ -17,12 +17,12 @@ import shutil
 import typing
 import urllib.parse
 from datetime import datetime, timedelta, timezone
+from typing import TypedDict
 
 import aiohttp
 import arrow
 import backoff
 import click
-import mypy_extensions
 import sqlalchemy
 import sqlalchemy.orm
 from mozilla_version.gecko import FirefoxVersion
@@ -38,19 +38,19 @@ from shipit_api.common.product import Product, ProductCategory
 logger = logging.getLogger(__name__)
 
 File = str
-ReleaseDetails = mypy_extensions.TypedDict(
+ReleaseDetails = TypedDict(
     "ReleaseDetails",
     {"category": str, "product": str, "build_number": int, "description": typing.Optional[str], "is_security_driven": bool, "version": str, "date": str},
 )
-Releases = mypy_extensions.TypedDict("Releases", {"releases": typing.Dict[str, ReleaseDetails]})
+Releases = TypedDict("Releases", {"releases": typing.Dict[str, ReleaseDetails]})
 L10n = str
-ReleaseL10n = mypy_extensions.TypedDict("ReleaseL10n", {"platforms": typing.List[str], "revision": str})
+ReleaseL10n = TypedDict("ReleaseL10n", {"platforms": typing.List[str], "revision": str})
 ReleaseL10ns = typing.Dict[L10n, ReleaseL10n]
 ReleasesHistory = typing.Dict[str, str]
-PrimaryBuildDetails = mypy_extensions.TypedDict("PrimaryBuildDetails", {"filesize": float})
-PrimaryBuild = mypy_extensions.TypedDict("PrimaryBuild", {"Linux": PrimaryBuildDetails, "OS X": PrimaryBuildDetails, "Windows": PrimaryBuildDetails})
+PrimaryBuildDetails = TypedDict("PrimaryBuildDetails", {"filesize": float})
+PrimaryBuild = TypedDict("PrimaryBuild", {"Linux": PrimaryBuildDetails, "OS X": PrimaryBuildDetails, "Windows": PrimaryBuildDetails})
 PrimaryBuilds = typing.Dict[str, typing.Dict[str, PrimaryBuild]]
-FirefoxVersions = mypy_extensions.TypedDict(
+FirefoxVersions = TypedDict(
     "FirefoxVersions",
     {
         "FIREFOX_NIGHTLY": str,
@@ -73,14 +73,14 @@ FirefoxVersions = mypy_extensions.TypedDict(
         "NEXT_RELEASE_DATE": str,
     },
 )
-L10nChangeset = mypy_extensions.TypedDict("L10nChangeset", {"changeset": str})
-L10n = mypy_extensions.TypedDict("L10n", {"locales": typing.Dict[str, L10nChangeset], "submittedAt": str, "shippedAt": str, "name": str})
-Language = mypy_extensions.TypedDict("Language", {"English": str, "native": str})
+L10nChangeset = TypedDict("L10nChangeset", {"changeset": str})
+L10n = TypedDict("L10n", {"locales": typing.Dict[str, L10nChangeset], "submittedAt": str, "shippedAt": str, "name": str})
+Language = TypedDict("Language", {"English": str, "native": str})
 Languages = typing.Dict[str, Language]
-MobileDetailsBuildLocale = mypy_extensions.TypedDict("MobileDetailsBuildLocale", {"code": str, "english": str, "native": str})
-MobileDetailsBuildDownload = mypy_extensions.TypedDict("MobileDetailsBuildDownload", {"android": str})
-MobileDetailsBuild = mypy_extensions.TypedDict("MobileDetailsBuild", {"locale": MobileDetailsBuildLocale, "download": MobileDetailsBuildDownload})
-MobileDetails = mypy_extensions.TypedDict(
+MobileDetailsBuildLocale = TypedDict("MobileDetailsBuildLocale", {"code": str, "english": str, "native": str})
+MobileDetailsBuildDownload = TypedDict("MobileDetailsBuildDownload", {"android": str})
+MobileDetailsBuild = TypedDict("MobileDetailsBuild", {"locale": MobileDetailsBuildLocale, "download": MobileDetailsBuildDownload})
+MobileDetails = TypedDict(
     "MobileDetails",
     {
         "nightly_version": str,
@@ -94,11 +94,11 @@ MobileDetails = mypy_extensions.TypedDict(
         "alpha_builds": typing.List[MobileDetailsBuild],
     },
 )
-MobileVersions = mypy_extensions.TypedDict(
+MobileVersions = TypedDict(
     "MobileVersions", {"nightly_version": str, "alpha_version": str, "beta_version": str, "version": str, "ios_beta_version": str, "ios_version": str}
 )
 Region = typing.Dict[str, str]
-ThunderbirdVersions = mypy_extensions.TypedDict(
+ThunderbirdVersions = TypedDict(
     "ThunderbirdVersions",
     {
         "LATEST_THUNDERBIRD_VERSION": str,
