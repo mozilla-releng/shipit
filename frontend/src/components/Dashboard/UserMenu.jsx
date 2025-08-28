@@ -39,6 +39,19 @@ function UserMenu(props) {
 
   const handleLogin = auth0.loginWithPopup;
 
+  function avatarFromName(name) {
+    const initials = name
+      .split(' ')
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join('');
+    return (
+      <Avatar sx={{ backgroundColor: '#16a085', fontSize: '1rem' }} alt={name}>
+        {initials}
+      </Avatar>
+    );
+  }
+
   return (
     <Fragment>
       {auth0.isAuthenticated ? (
@@ -50,11 +63,7 @@ function UserMenu(props) {
           onClick={handleMenuOpen}
           size="large"
         >
-          {auth0.user.picture ? (
-            <Avatar alt={auth0.user.nickname} src={auth0.user.picture} />
-          ) : (
-            <Avatar alt={auth0.user.name}>{auth0.user.name[0]}</Avatar>
-          )}
+          {avatarFromName(auth0.user.name)}
         </IconButton>
       ) : (
         <Button
