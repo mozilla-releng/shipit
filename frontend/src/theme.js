@@ -12,14 +12,14 @@ export default createTheme({
   },
   typography: {
     fontDisplay: 'swap',
-    fontFamily: "'Zilla Slab', 'Inter', sans-serif",
+    fontFamily: "'Zilla Slab', sans-serif",
     fontStyle: 'normal',
     fontWeight: 'normal',
     body1: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'sans-serif',
     },
     body2: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'sans-serif',
     },
     caption: {
       fontFamily: "'Roboto', sans-serif",
@@ -27,10 +27,10 @@ export default createTheme({
       fontSize: '0.85rem',
     },
     button: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'sans-serif',
     },
     overline: {
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'sans-serif',
     },
   },
   palette: {
