@@ -10,8 +10,7 @@ import matchRoutes from './matchRoutes';
  * with pre-fetching capabilities.
  */
 export default function Link({ viewName, nav = false, to, ...props }) {
-  const path = typeof to === 'string' ? to : to.pathname;
-  const isPathAbsolute = isAbsolute(path);
+  const isPathAbsolute = isAbsolute(to);
   const Component = nav ? NavLink : RouterLink;
   const [prefetchFlag, setPrefetchFlag] = useState(false);
 
@@ -21,7 +20,7 @@ export default function Link({ viewName, nav = false, to, ...props }) {
     }
 
     if (!isPathAbsolute) {
-      const matchingRoutes = matchRoutes(path, routes);
+      const matchingRoutes = matchRoutes(to, routes);
 
       matchingRoutes.forEach(({ component }) => {
         component.preload();
