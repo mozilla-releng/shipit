@@ -455,6 +455,7 @@ def _get_phases_definitions(phases):
 SUPPORTED_FLAVORS = _get_supported_flavors()
 
 SYSTEM_ADDONS = (
+    "data-leak-blocker",
     "newtab",
     "webcompat",
 )
