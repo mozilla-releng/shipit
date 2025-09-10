@@ -56,6 +56,7 @@ def app(global_app):
         yield global_app
     finally:
         global_app.app.db.drop_all()
+        global_app.app.db.session.close()
 
 
 def mock_generate_phases(release):
