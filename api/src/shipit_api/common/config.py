@@ -36,8 +36,8 @@ BREAKPOINT_VERSION = 114
 # set to current ESR major version.  When we have 2 ESR releases, ESR_CURRENT
 # should be using the major version of the older release, while ESR_NEXT should
 # be using the major version of the release with greater version.
-CURRENT_ESR = "128"
-ESR_NEXT = "140"
+CURRENT_ESR = "140"
+ESR_NEXT = ""
 # Pre Firefox version
 LATEST_FIREFOX_OLDER_VERSION = "3.6.28"
 # TODO: move the branch configs to secrets
