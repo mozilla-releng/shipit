@@ -137,7 +137,7 @@ class Release(db.Model, ReleaseBase):
     build_number = sa.Column(sa.Integer, nullable=False)
     release_eta = sa.Column(sa.DateTime)
     status = sa.Column(sa.String)  # TODO: move to Enum: shipped, abandoned, scheduled
-    phases = sqlalchemy.orm.relationship("Phase", order_by=Phase.id, back_populates="release")
+    phases = sqlalchemy.orm.relationship("Phase", order_by=Phase.id, back_populates="release", lazy="selectin")
     created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
     completed = sa.Column(sa.DateTime)
 
@@ -224,7 +224,7 @@ class XPIRelease(db.Model, ReleaseBase):
     xpi_version = sa.Column(sa.String, nullable=False)
     revision = sa.Column(sa.String, nullable=False)
     status = sa.Column(sa.String)
-    phases = sqlalchemy.orm.relationship("XPIPhase", order_by=XPIPhase.id, back_populates="release")
+    phases = sqlalchemy.orm.relationship("XPIPhase", order_by=XPIPhase.id, back_populates="release", lazy="selectin")
     created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
     completed = sa.Column(sa.DateTime)
 
