@@ -466,6 +466,10 @@ paths:
             type: array
             items:
               type: string
+        - name: limit
+          in: query
+          schema:
+            type: number
       responses:
         "200":
           description: A list of releases
