@@ -52,7 +52,7 @@ def add_release(body):
     return release.json, 201
 
 
-def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["scheduled"]):
+def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["scheduled"], limit=None):
     session = current_app.db.session
     releases = session.query(XPIRelease)
     if xpi_name:
@@ -64,6 +64,8 @@ def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["s
     elif build_number:
         raise BadRequest(description="Filtering by build_number without version is not supported.")
     releases = releases.filter(XPIRelease.status.in_(status))
+    if limit:
+        releases = releases.limit(limit)
     response = [r.json for r in releases.all()]
     # Add an xpiUrl for the completed promote phases within xpi releases.
     # The xpi's created during the release's promote phase are signed and

@@ -114,10 +114,11 @@ export async function getXPIBuildNumbers(xpiName, xpiVersion) {
   return releases.map((release) => release.build_number);
 }
 
-export async function getShippedXPIReleases() {
+export async function getShippedXPIReleases(limit) {
   const releases = await getReleases(
     {
       status: 'shipped',
+      limit: limit,
     },
     '/xpi/releases',
     false,
@@ -127,9 +128,7 @@ export async function getShippedXPIReleases() {
 }
 
 export async function getRecentXPIReleases(limit = 4) {
-  const releases = await getShippedXPIReleases();
-
-  return releases.slice(0, limit);
+  return await getShippedXPIReleases(limit);
 }
 
 export async function guessBuildNumber(product, version) {
