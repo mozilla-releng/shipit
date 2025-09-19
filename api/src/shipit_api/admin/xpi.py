@@ -64,6 +64,7 @@ def list_releases(xpi_name=None, xpi_version=None, build_number=None, status=["s
     elif build_number:
         raise BadRequest(description="Filtering by build_number without version is not supported.")
     releases = releases.filter(XPIRelease.status.in_(status))
+    releases = releases.order_by(XPIRelease.completed.desc(), XPIRelease.created.desc())
     if limit:
         releases = releases.limit(limit)
     response = [r.json for r in releases.all()]
