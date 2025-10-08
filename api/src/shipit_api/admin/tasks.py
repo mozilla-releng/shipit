@@ -85,6 +85,63 @@ def generate_artifact_url(task_id, artifact_path):
         raise Exception(f"task {task_id} exception {exc}")
 
 
+def cancel_action_task_group(action_task_id):
+    """
+    This function cancels the resulting task group from running an action task.
+    To prevent racyness, it does the following:
+
+    - Cancel the action task itself. If the action task is done, that's a no-op,
+      but if it was still running then it'll prevent any downstream task from ever being scheduled.
+    - Call the cancel-all action on the action task group if it exists. If the cancellation above didn't do it,
+      then we cancel every task in the resulting action task group.
+    - Seal the task group to prevent accidental out of sync between shipit and taskcluster.
+      We avoid people being able to easily rerun/retrigger tasks in the action task group.
+    """
+    queue = get_service("queue", authenticated=True)
+
+    try:
+        queue.cancelTask(action_task_id)
+    except Exception as exc:
+        logger.warning("Failed to cancel task %s. %s", action_task_id, exc, exc_info=True)
+
+    try:
+        actions = get_actions(action_task_id)
+        parameters = get_parameters(action_task_id)
+        cancel_action = find_action("cancel-all", actions)
+        if not cancel_action:
+            logger.info("Task with ID %s does not have `cancel-all` action. Skipping...", action_task_id)
+            return
+    except ArtifactNotFound:
+        logger.info("Task with ID %s does not have actions yet. Skipping...", action_task_id, exc_info=True)
+        return
+
+    hooks = get_service("hooks")
+    client_id = hooks.options["credentials"]["clientId"].decode("utf-8")
+
+    context = {
+        "parameters": parameters,
+        "taskGroupId": action_task_id,
+        "taskId": None,
+        "task": None,
+        "input": {},
+        "clientId": client_id,
+    }
+
+    hook_payload_rendered = render_action_hook(payload=cancel_action["hookPayload"], context=context)
+    result = hooks.triggerHook(
+        cancel_action["hookGroupId"],
+        cancel_action["hookId"],
+        hook_payload_rendered,
+    )
+    logger.debug("Triggered cancel-all action, task ID: %s", result["status"]["taskId"])
+
+    try:
+        queue.sealTaskGroup(action_task_id)
+        logger.debug("Sealed task group %s", action_task_id)
+    except Exception as exc:
+        logger.warning("Failed to seal task group %s. %s", action_task_id, exc, exc_info=True)
+
+
 def generate_xpi_url(task_id):
     """
     Generates a taskcluster url pointing to a phase's .xpi artifact.
