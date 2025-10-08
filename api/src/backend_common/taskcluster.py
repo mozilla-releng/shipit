@@ -13,13 +13,13 @@ def get_root_url():
     return current_app.config["TASKCLUSTER_ROOT_URL"]
 
 
-def get_options(service_name):
+def get_options(service_name, authenticated=False):
     """
     Build Taskcluster credentials options
     """
 
     tc_options = {"rootUrl": get_root_url(), "maxRetries": 12}
-    if service_name in TC_SERVICES_REQUIRE_AUTH:
+    if service_name in TC_SERVICES_REQUIRE_AUTH or authenticated:
         client_id = current_app.config["TASKCLUSTER_CLIENT_ID"]
         access_token = current_app.config["TASKCLUSTER_ACCESS_TOKEN"]
         tc_options.update({"credentials": {"clientId": client_id, "accessToken": access_token}})
@@ -27,9 +27,9 @@ def get_options(service_name):
     return tc_options
 
 
-def get_service(service_name):
+def get_service(service_name, *, authenticated=False):
     """
     Build a Taskcluster service instance
     """
-    options = get_options(service_name)
+    options = get_options(service_name, authenticated)
     return getattr(taskcluster, service_name.capitalize())(options)
