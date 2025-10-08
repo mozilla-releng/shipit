@@ -24,17 +24,7 @@ from shipit_api.admin.release import (
     is_partner_repacks_enabled,
     product_to_appname,
 )
-from shipit_api.admin.tasks import (
-    ArtifactNotFound,
-    UnsupportedFlavor,
-    find_action,
-    generate_action_hook,
-    generate_phases,
-    get_actions,
-    get_parameters,
-    render_action_hook,
-    rendered_hook_payload,
-)
+from shipit_api.admin.tasks import UnsupportedFlavor, cancel_action_task_group, generate_phases, rendered_hook_payload
 from shipit_api.common.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
 from shipit_api.common.models import DisabledProduct, Phase, Release, Signoff, Version, XPIRelease
 from shipit_api.public.api import get_disabled_products, list_releases
@@ -214,27 +204,8 @@ def abandon_release(name):
     # Cancel all submitted task groups first
     for phase in filter(lambda x: x.submitted and not x.skipped, release.phases):
         try:
-            actions = get_actions(phase.task_id)
-            parameters = get_parameters(phase.task_id)
-            cancel_action = find_action("cancel-all", actions)
-            if not cancel_action:
-                logger.info("%s %s does not have `cancel-all` action, skipping...", release.name, phase.name)
-                continue
-        except ArtifactNotFound:
-            logger.info("Ignoring not completed action task %s", phase.task_id)
-            continue
-
-        hook = generate_action_hook(task_group_id=phase.task_id, action_name="cancel-all", actions=actions, parameters=parameters, input_={})
-        hooks = get_service("hooks")
-        client_id = hooks.options["credentials"]["clientId"].decode("utf-8")
-        hook["context"]["clientId"] = client_id
-        hook_payload_rendered = render_action_hook(
-            payload=hook["hook_payload"], context=hook["context"], delete_params=["existing_tasks", "release_history", "release_partner_config"]
-        )
-        logger.info("Cancel phase %s by hook %s with payload: %s", phase.name, hook["hook_id"], hook_payload_rendered)
-        try:
-            result = hooks.triggerHook(hook["hook_group_id"], hook["hook_id"], hook_payload_rendered)
-            logger.debug("Done: %s", result)
+            logger.info("Cancelling phase %s for release %s", phase.name, release.name)
+            cancel_action_task_group(phase.task_id)
         except TaskclusterRestFailure as e:
             abort(400, str(e))
 
