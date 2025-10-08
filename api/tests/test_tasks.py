@@ -1,7 +1,9 @@
 from contextlib import nullcontext as does_not_raise
 from copy import deepcopy
+from unittest import mock
 
 import pytest
+import taskcluster
 
 from shipit_api.admin import tasks
 
@@ -148,3 +150,90 @@ def test_extract_our_flavors_warnings(caplog, avail_flavors, expected_records, e
 def test_get_trust_domain(repo_url, product, expectation, trust_domain):
     with expectation:
         assert tasks.get_trust_domain(repo_url, product) == trust_domain
+
+
+@pytest.mark.parametrize(
+    "test_case",
+    [
+        pytest.param(
+            {
+                "actions": {"actions": [{"name": "cancel-all", "hookGroupId": "hg", "hookId": "hi", "hookPayload": {"decision": {"parameters": {}}}}]},
+                "parameters": {"test": "params"},
+                "raise_artifact_error": False,
+                "expect_cancel": True,
+                "expect_trigger": True,
+                "expect_seal": True,
+            },
+            id="happy-path",
+        ),
+        pytest.param(
+            {
+                "actions": None,
+                "parameters": None,
+                "raise_artifact_error": True,
+                "expect_cancel": True,
+                "expect_trigger": False,
+                "expect_seal": False,
+            },
+            id="artifact-not-found",
+        ),
+        pytest.param(
+            {
+                "actions": {"actions": [{"name": "other-action", "hookGroupId": "hg", "hookId": "hi", "hookPayload": {}}]},
+                "parameters": {"test": "params"},
+                "raise_artifact_error": False,
+                "expect_cancel": True,
+                "expect_trigger": False,
+                "expect_seal": False,
+            },
+            id="no-cancel-all-action",
+        ),
+    ],
+)
+def test_cancel_action_task_group(app, test_case):
+    tc_options = {"rootUrl": "https://taskcluster.example.com", "credentials": {"clientId": "client-id", "accessToken": "access-token"}}
+    real_queue = taskcluster.Queue(tc_options)
+    real_hooks = taskcluster.Hooks(tc_options)
+
+    mocked_queue = mock.Mock(wraps=real_queue)
+    mocked_queue.cancelTask = mock.Mock()
+    mocked_queue.sealTaskGroup = mock.Mock()
+
+    mocked_hooks = mock.Mock(wraps=real_hooks)
+    mocked_hooks.options = real_hooks.options
+    mocked_hooks.triggerHook.return_value = {"status": {"taskId": "triggered-task-id"}}
+
+    def mocked_get_service(name, **kwargs):
+        if name == "queue":
+            return mocked_queue
+        elif name == "hooks":
+            return mocked_hooks
+        assert False, "cancel_action tried to access an unexpected tc service"
+
+    if test_case["raise_artifact_error"]:
+        mock_get_actions = mock.Mock(side_effect=tasks.ArtifactNotFound)
+    else:
+        mock_get_actions = mock.Mock(return_value=test_case["actions"])
+
+    with (
+        mock.patch("shipit_api.admin.tasks.get_service", mocked_get_service),
+        mock.patch("shipit_api.admin.tasks.get_actions", mock_get_actions),
+        mock.patch("shipit_api.admin.tasks.get_parameters", return_value=test_case["parameters"]),
+    ):
+
+        tasks.cancel_action_task_group("abc")
+
+        if test_case["expect_cancel"]:
+            mocked_queue.cancelTask.assert_called_once_with("abc")
+        else:
+            mocked_queue.cancelTask.assert_not_called()
+
+        if test_case["expect_trigger"]:
+            mocked_hooks.triggerHook.assert_called_once()
+        else:
+            mocked_hooks.triggerHook.assert_not_called()
+
+        if test_case["expect_seal"]:
+            mocked_queue.sealTaskGroup.assert_called_once_with("abc")
+        else:
+            mocked_queue.sealTaskGroup.assert_not_called()
