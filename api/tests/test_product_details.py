@@ -138,6 +138,23 @@ async def test_rebuild(app, tmp_path):
         status="shipped",
         partial_updates=None,
     )
+    for branch, version in (
+        ("release/v135", "135.0"),
+        ("release/v135", "135.1"),
+        ("release/v135", "135.1.1"),
+        ("release/v136", "136.0"),
+    ):
+        ios_release = Release(
+            product="firefox-ios",
+            branch=branch,
+            version=version,
+            revision="9fb87e89c26069198ce2a59a0a790a264d225169",
+            build_number=1,
+            release_eta=None,
+            status="shipped",
+            partial_updates=None,
+        )
+        app.app.db.session.add(ios_release)
     app.app.db.session.add(fxnightly)
     app.app.db.session.add(tbnightly)
     app.app.db.session.add(deved)
@@ -220,3 +237,8 @@ async def test_rebuild(app, tmp_path):
 
     assert not list(parent.glob("l10n/Devedition-*"))
     assert next(parent.glob("l10n/Firefox-134.0b8-*")).name == "Firefox-134.0b8-build1.json"
+
+    with (parent / "mobile_versions.json").open() as f:
+        mobile_versions = json.load(f)
+        assert mobile_versions["ios_beta_version"] == "136.0"
+        assert mobile_versions["ios_version"] == "135.1.1"
