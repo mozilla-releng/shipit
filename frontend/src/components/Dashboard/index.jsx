@@ -48,7 +48,7 @@ const useStyles = makeStyles()((theme) => ({
     paddingLeft: theme.spacing(2),
   },
   paper: {
-    height: '100%',
+    minHeight: '100%',
     backgroundColor: 'transparent',
   },
   protocolLogo: {
