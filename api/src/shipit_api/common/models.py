@@ -5,6 +5,7 @@
 
 import dataclasses
 import datetime
+import enum
 import json
 
 import slugid
@@ -174,6 +175,58 @@ class DisabledProduct(db.Model):
 
     product = sa.Column(sa.String, nullable=False, primary_key=True)
     branch = sa.Column(sa.String, nullable=False, primary_key=True)
+
+
+class TaskStatus(enum.Enum):
+    Pending = enum.auto()
+    Running = enum.auto()
+    Failed = enum.auto()
+    Completed = enum.auto()
+
+
+class MergeAutomation(db.Model):
+    __tablename__ = "shipit_api_merge_automation"
+    id = sa.Column(sa.Integer, primary_key=True)
+
+    # User controlled properties
+    product = sa.Column(sa.String, nullable=False)
+    behavior = sa.Column(sa.String, nullable=False)
+    revision = sa.Column(sa.String, nullable=False)
+    dry_run = sa.Column(sa.Boolean, default=True, nullable=False)
+
+    created = sa.Column(sa.DateTime, default=lambda: datetime.datetime.now(datetime.UTC), nullable=False)
+    completed = sa.Column(sa.DateTime)
+    status = sa.Column(sa.types.Enum(TaskStatus), nullable=False, default=TaskStatus.Pending)
+    task_id = sa.Column(sa.String)
+
+    # "Cached" values to avoid querying hg again
+    version = sa.Column(sa.String, nullable=False)
+    commit_message = sa.Column(sa.Text)
+    commit_author = sa.Column(sa.String)
+
+    # Stored config values to avoid depending on configuration values that might be gone
+    repo = sa.Column(sa.String, nullable=False)
+    pretty_name = sa.Column(sa.String, nullable=False)
+    project = sa.Column(sa.String, nullable=False)
+
+    @property
+    def json(self):
+        return {
+            "id": self.id,
+            "product": self.product,
+            "behavior": self.behavior,
+            "revision": self.revision,
+            "dry_run": self.dry_run,
+            "created": self.created.isoformat(),
+            "completed": self.completed.isoformat() if self.completed else None,
+            "status": self.status.name.lower(),
+            "task_id": self.task_id,
+            "version": self.version,
+            "commit_message": self.commit_message,
+            "commit_author": self.commit_author,
+            "repo": self.repo,
+            "pretty_name": self.pretty_name,
+        }
 
 
 @dataclasses.dataclass
