@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
 import pathlib
 import re
 import tempfile
@@ -559,3 +560,81 @@ def get_allowed_github_files(owner: str, repo: str) -> set[re.Pattern]:
             allowed_paths.add(r"one/package.json")
 
     return {re.compile(s) for s in allowed_paths}
+
+
+# NOTE: This duplicates some configuration between the backend and the frontend (mainly the repo names).
+# However, the frontend should never have half of the config it has in the first place and it should get moved at some point.
+# See bug 1879910
+_MERGE_BEHAVIORS_PER_PRODUCT = {
+    "firefox": {
+        "main-to-beta": {
+            "pretty_name": "Main -> beta",
+            "by-env": {
+                "local": {
+                    "always-target-tip": False,
+                    "repo": "https://hg.mozilla.org/try",
+                    "project": "try",
+                    "version_path": "browser/config/version_display.txt",
+                },
+                "staging": {
+                    "always-target-tip": False,
+                    "repo": "https://hg.mozilla.org/try",
+                    "project": "try",
+                    "version_path": "browser/config/version_display.txt",
+                },
+                "production": {
+                    "always-target-tip": True,
+                    "repo": "https://hg.mozilla.org/mozilla-central",
+                    "project": "mozilla-central",
+                    "version_path": "browser/config/version_display.txt",
+                },
+            },
+        },
+        "beta-to-release": {
+            "pretty_name": "Beta -> release",
+            "by-env": {
+                "local": {
+                    "always-target-tip": True,
+                    "repo": "https://hg.mozilla.org/releases/mozilla-beta",
+                    "project": "mozilla-beta",
+                    "version_path": "browser/config/version_display.txt",
+                },
+                "staging": {
+                    "always-target-tip": False,
+                    "repo": "https://hg.mozilla.org/try",
+                    "project": "try",
+                    "version_path": "browser/config/version_display.txt",
+                },
+                "production": {
+                    "always-target-tip": True,
+                    "repo": "https://hg.mozilla.org/releases/mozilla-beta",
+                    "project": "mozilla-beta",
+                    "version_path": "browser/config/version_display.txt",
+                },
+            },
+        },
+    }
+}
+
+
+def resolve_config_by_environment(config, environment):
+    def _resolve(obj):
+        if isinstance(obj, dict) and "by-env" in obj:
+            env_mapping = obj["by-env"]
+            env_value = env_mapping[environment]
+
+            result = {k: _resolve(v) for k, v in obj.items() if k != "by-env"}
+            if isinstance(env_value, dict):
+                result.update(_resolve(env_value))
+            else:
+                return _resolve(env_value)
+            return result
+
+        if isinstance(obj, dict):
+            return {k: _resolve(v) for k, v in obj.items()}
+        return obj
+
+    return _resolve(config)
+
+
+MERGE_BEHAVIORS_PER_PRODUCT = resolve_config_by_environment(_MERGE_BEHAVIORS_PER_PRODUCT, os.environ.get("APP_CHANNEL", "local"))
