@@ -21,6 +21,8 @@ def _get_auth0_scopes(product_name, product_config):
     scopes = [
         f"add_release/{product_name}",
         f"abandon_release/{product_name}",
+        f"add_merge_automation/{product_name}",
+        f"cancel_merge_automation/{product_name}",
     ]
     phases = [f["name"] for f in SUPPORTED_FLAVORS.get(product_name, [])]
     if product_name == "firefox":
