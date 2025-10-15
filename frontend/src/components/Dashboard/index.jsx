@@ -14,6 +14,7 @@ import { makeStyles } from 'tss-react/mui';
 import { DEPLOYMENT_BRANCH } from '../../config';
 import { APP_BAR_HEIGHT, CONTENT_MAX_WIDTH } from '../../utils/constants';
 import Footer from '../../views/Footer';
+import MergeAutomationMenu from './MergeAutomationMenu';
 import ReleasesMenu from './ReleasesMenu';
 import SettingsMenu from './SettingsMenu';
 import UserMenu from './UserMenu';
@@ -144,6 +145,7 @@ export default function Dashboard(props) {
             />
           )}
           <nav className={classes.nav}>
+            <MergeAutomationMenu disabled={disabled} />
             <ReleasesMenu disabled={disabled} />
             <SettingsMenu disabled={disabled} />
             <UserMenu />
