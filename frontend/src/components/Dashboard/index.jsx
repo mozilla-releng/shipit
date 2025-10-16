@@ -8,7 +8,7 @@ import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { bool, node, string } from 'prop-types';
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { makeStyles } from 'tss-react/mui';
 import { DEPLOYMENT_BRANCH } from '../../config';
