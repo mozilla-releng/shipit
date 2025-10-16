@@ -43,6 +43,187 @@ paths:
                   state:
                     type: string
                     enum: [ready, missing]
+  /merge-automation:
+    get:
+      summary: Get the list of merge automations for the given product
+      operationId: shipit_api.admin.merge_automation.list_merge_automation
+      parameters:
+        - name: product
+          in: query
+          description: product_name
+          required: true
+          schema:
+            $ref: '#/components/schemas/ProductInput'
+      responses:
+        "200":
+          description: The list of merge automations triggered for this product, limited to the 20 more recent
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      summary: Submit a new merge automation for the given product
+      operationId: shipit_api.admin.merge_automation.submit_merge_automation
+      requestBody:
+        description: Merge automation object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MergeAutomationInput'
+        required: true
+      responses:
+        "201":
+          description: The merge automation has been successfully submitted
+        "405":
+          description: Invalid input
+  /merge-automation/{automation_id}:
+    delete:
+      summary: Cancel a merge automation
+      operationId: shipit_api.admin.merge_automation.cancel_merge_automation
+      parameters:
+        - name: automation_id
+          in: path
+          description: automation id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Merge automation cancelled successfully
+        "404":
+          description: Merge automation not found
+  /merge-automation/{automation_id}/start:
+    post:
+      summary: Start a pending merge automation
+      operationId: shipit_api.admin.merge_automation.start_merge_automation
+      parameters:
+        - name: automation_id
+          in: path
+          description: automation id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Merge automation started successfully
+        "404":
+          description: Merge automation not found
+        "400":
+          description: Merge automation cannot be started
+  /merge-automation/{automation_id}/task-status:
+    get:
+      summary: Get taskcluster task status for a merge automation
+      operationId: shipit_api.admin.merge_automation.get_merge_automation_task_status
+      parameters:
+        - name: automation_id
+          in: path
+          description: automation id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Task status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                  state:
+                    type: string
+                    enum: [ready, missing]
+                  automation:
+                    type: object
+                  decisionTask:
+                    type: object
+                  taskGroup:
+                    type: object
+        "404":
+          description: Merge automation not found
+  /merge-automation/behaviors/{product}:
+    get:
+      summary: Get the list of available merge behaviors for the given product
+      operationId: shipit_api.admin.merge_automation.list_behaviors
+      parameters:
+        - name: product
+          in: path
+          description: product name
+          required: true
+          schema:
+            $ref: '#/components/schemas/ProductInput'
+      responses:
+        "200":
+          description: The list of available merge behaviors
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: No merge behaviors found for the given product
+  /merge-automation/{product}/{behavior_name}:
+    get:
+      summary: >-
+        Get information regarding the target revision for the given merge
+        automation behavior.
+      operationId: shipit_api.admin.merge_automation.revisions_for_behavior
+      parameters:
+        - name: product
+          in: path
+          description: product name
+          required: true
+          schema:
+            $ref: '#/components/schemas/ProductInput'
+        - name: behavior_name
+          in: path
+          description: behavior name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The list of valid revisions for this product/behavior
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: Either the product or the merge behavior for it wasn't found.
+  /merge-automation/{product}/{behavior_name}/{revision}:
+    get:
+      summary: >-
+        Get information about the merge behavior of a product for the given revision
+        such as its current version, author and commit message
+      operationId: shipit_api.admin.merge_automation.info_for_behavior_revision
+      parameters:
+        - name: product
+          in: path
+          description: product name
+          required: true
+          schema:
+            $ref: '#/components/schemas/ProductInput'
+        - name: behavior_name
+          in: path
+          description: behavior name
+          required: true
+          schema:
+            type: string
+        - name: revision
+          in: path
+          description: revision SHA
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The relevant information about the revision for the given merge automation.
+          content:
+            application/json:
+              schema:
+                type: object
+        "404":
+          description: Either the product, the merge behavior or the revision wasn't found.
   /product-details:
     post:
       summary: Trigger a rebuild of product details
@@ -839,6 +1020,24 @@ paths:
 
 components:
   schemas:
+    MergeAutomationInput:
+      required:
+        - product
+        - behavior
+        - revision
+        - dryRun
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/ProductInput'
+        behavior:
+          type: string
+          example: beta-to-release
+        revision:
+          type: string
+          example: 706aadff79254a41b5b5d9616b51d8365cbae573
+        dryRun:
+          type: boolean
     ReleaseInput:
       required:
         - branch
