@@ -26,6 +26,9 @@ export default createTheme({
       fontWeight: 'normal',
       fontSize: '0.85rem',
     },
+    inlineCode: {
+      fontFamily: 'Monospace',
+    },
     button: {
       fontFamily: 'sans-serif',
     },
