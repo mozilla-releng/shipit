@@ -28,12 +28,10 @@ from shipit_api.common.models import Release
 
 def coroutine(f):
     """A generic function to create a main asyncio loop"""
-    coroutine_f = asyncio.coroutine(f)
 
-    @functools.wraps(coroutine_f)
+    @functools.wraps(f)
     def wrapper(*args, **kwargs):
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(coroutine_f(*args, **kwargs))
+        return asyncio.run(f(*args, **kwargs))
 
     return wrapper
 
