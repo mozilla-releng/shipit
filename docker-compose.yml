@@ -20,11 +20,11 @@ services:
     # If we don't volume mount at all, python code changes are not picked up
     # until we rebuild the docker container
     volumes:
-      - ./api/src/backend_common:/app/src/backend_common
-      - ./api/src/cli_common:/app/src/cli_common
-      - ./api/src/shipit_api:/app/src/shipit_api
-      - "./api/products.yml:/app/products.yml"
-      - "./api/trust-domains.yml:/app/trust-domains.yml"
+      - ./api/src/backend_common:/app/api/src/backend_common
+      - ./api/src/cli_common:/app/api/src/cli_common
+      - ./api/src/shipit_api:/app/api/src/shipit_api
+      - "./api/products.yml:/app/api/products.yml"
+      - "./api/trust-domains.yml:/app/api/trust-domains.yml"
     environment:
       - HOST=0.0.0.0
       - PORT=8015
@@ -63,10 +63,10 @@ services:
       - "8016:8016"
     # See comment on the api container for the reasoning behind these mounts
     volumes:
-      - ./api/src/backend_common:/app/src/backend_common
-      - ./api/src/cli_common:/app/src/cli_common
-      - ./api/src/shipit_api:/app/src/shipit_api
-      - "./api/products.yml:/app/products.yml"
+      - ./api/src/backend_common:/app/api/src/backend_common
+      - ./api/src/cli_common:/app/api/src/cli_common
+      - ./api/src/shipit_api:/app/api/src/shipit_api
+      - "./api/products.yml:/app/api/products.yml"
     environment:
       - HOST=0.0.0.0
       - PORT=8016
