@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# WARNING: Update api/Dockerfile when you update this one. Or better,
-# find a way to use the same Dockerfile
 ARG PYTHON_VERSION
 ARG UV_VERSION
 
@@ -14,22 +12,24 @@ COPY --from=uv /uv /bin
 
 WORKDIR /app
 
+ARG SRC=topsrcdir
+
 # %include pyproject.toml
 # %include uv.lock
-ADD topsrcdir/pyproject.toml \
-    topsrcdir/uv.lock \
+ADD ${SRC}/pyproject.toml \
+    ${SRC}/uv.lock \
     /app/
 
 # %include api/products.yml
 # %include api/trust-domains.yml
 # %include api/pyproject.toml
-ADD topsrcdir/api/products.yml \
-    topsrcdir/api/trust-domains.yml \
-    topsrcdir/api/pyproject.toml \
+ADD ${SRC}/api/products.yml \
+    ${SRC}/api/trust-domains.yml \
+    ${SRC}/api/pyproject.toml \
     /app/api/
 
 # %include api/src
-ADD topsrcdir/api/src \
+ADD ${SRC}/api/src \
     /app/api/src/
 
 # Install dependencies
@@ -37,12 +37,12 @@ RUN uv sync --locked
 
 FROM python:$PYTHON_VERSION
 
-# %include api/docker.d
-ADD topsrcdir/api/docker.d \
-    /app/docker.d/
-
 RUN groupadd --gid 10001 app && \
     useradd -g app --uid 10001 --shell /usr/sbin/nologin --create-home --home-dir /app app
+
+# %include api/docker.d
+ADD ${SRC}/api/docker.d \
+    /app/docker.d/
 
 WORKDIR /app
 USER app

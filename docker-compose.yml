@@ -3,8 +3,13 @@ version: '3'
 services:
   api:
     build:
-      context: api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: taskcluster/docker/shipit/Dockerfile
+      args:
+        APP_TYPE: admin
+        SRC: .
+        UV_VERSION: 0.7.9
+        PYTHON_VERSION: 3.12
     ports:
       - "8015:8015"
     # Mounting these three specific volumes is done to ensure that autoreloading
@@ -47,10 +52,13 @@ services:
 
   public:
     build:
-      context: api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: taskcluster/docker/shipit/Dockerfile
       args:
         APP_TYPE: public
+        SRC: .
+        UV_VERSION: 0.7.9
+        PYTHON_VERSION: 3.12
     ports:
       - "8016:8016"
     # See comment on the api container for the reasoning behind these mounts
