@@ -9,8 +9,8 @@ import sys
 
 import sentry_sdk
 from dockerflow.logging import JsonLogFormatter
-from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.starlette import StarletteIntegration
 
 
 def init_app(app):
@@ -41,4 +41,9 @@ def configure_logging():
 
 
 def configure_sentry(environment, sentry_dsn):
-    sentry_sdk.init(dsn=sentry_dsn, environment=environment, integrations=[LoggingIntegration(), FlaskIntegration()])
+    sentry_sdk.init(
+        dsn=sentry_dsn,
+        environment=environment,
+        integrations=[LoggingIntegration(), StarletteIntegration()],
+        auto_enabling_integrations=False,
+    )
