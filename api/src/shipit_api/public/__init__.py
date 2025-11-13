@@ -5,6 +5,8 @@
 
 import os
 
+from connexion.options import SwaggerUIOptions
+
 import backend_common
 from shipit_api.common.config import APP_NAME
 
@@ -18,11 +20,13 @@ def create_app(config=None):
     subset API spec by running `python ../../scripts/openapi_subset.py api.yml
     api_public.yml`
     """
+    swagger_ui_options = SwaggerUIOptions(swagger_ui=False)
     app = backend_common.create_app(
         app_name=__name__,
         project_name=APP_NAME,
         config=config,
         extensions=["log", "security", "cors", "db", "dockerflow"],
         root_path=os.path.dirname(__file__),
+        swagger_ui_options=swagger_ui_options,
     )
     return app
