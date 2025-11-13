@@ -3,8 +3,28 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import flask_talisman
-import flask_talisman.talisman
+from connexion.middleware import MiddlewarePosition
+from starlette.datastructures import MutableHeaders
+
+class CSPMiddleware:
+    def __init__(self, app, headers):
+        self.app = app
+        self.headers = headers
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+
+        async def send_with_extra_headers(message):
+            if message["type"] == "http.response.start":
+                headers = MutableHeaders(scope=message)
+                for key, value in self.headers:
+                    headers.append(key, value)
+
+            await send(message)
+
+        await self.app(scope, receive, send_with_extra_headers)
+
 
 # TODO: we need to remove unsafe-inline
 DEFAULT_CSP_POLICY = {
@@ -14,27 +34,14 @@ DEFAULT_CSP_POLICY = {
     "img-src": "'self'",
     "connect-src": "'self'",
 }
-
-DEFAULT_CONFIG = dict(
-    force_https=False,
-    force_https_permanent=False,
-    force_file_save=False,
-    frame_options=flask_talisman.talisman.SAMEORIGIN,
-    frame_options_allow_from=None,
-    strict_transport_security=True,
-    strict_transport_security_preload=False,
-    strict_transport_security_max_age=flask_talisman.talisman.ONE_YEAR_IN_SECS,
-    strict_transport_security_include_subdomains=True,
-    content_security_policy=DEFAULT_CSP_POLICY,
-    content_security_policy_report_uri=None,
-    content_security_policy_report_only=False,
-    session_cookie_secure=True,
-    session_cookie_http_only=True,
-)
-
-security = flask_talisman.Talisman()
-
+CSP = "; ".join(f"{k}: {v}" for (k, v) in DEFAULT_CSP_POLICY.items())
+DEFAULT_HEADERS = [
+    ("x-frame-options", "SAMEORIGIN"),
+    ("x-content-type-options", "nosniff"),
+    ("strict-transport-security", f"max-age={365 * 24 * 60 * 60}; includeSubDomains"),
+    ("content-security-policy", CSP),
+    ("referrer-policy", "strict-origin-when-cross-origin"),
+]
 
 def init_app(app):
-    security.init_app(app.app, **DEFAULT_CONFIG)
-    return security
+    app.add_middleware(CSPMiddleware, MiddlewarePosition.BEFORE_EXCEPTION, headers=DEFAULT_HEADERS)
