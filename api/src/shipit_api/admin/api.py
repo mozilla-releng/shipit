@@ -24,7 +24,7 @@ from shipit_api.admin.release import (
     is_partner_repacks_enabled,
     product_to_appname,
 )
-from shipit_api.admin.tasks import UnsupportedFlavor, cancel_action_task_group, generate_phases, rendered_hook_payload
+from shipit_api.admin.tasks import UnsupportedFlavor, cancel_action_task_group, find_decision_task_id, generate_phases, rendered_hook_payload
 from shipit_api.common.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
 from shipit_api.common.models import DisabledProduct, Phase, Release, Signoff, Version, XPIRelease
 from shipit_api.public.api import get_disabled_products, list_releases
@@ -421,3 +421,23 @@ def create_product_channel_version(product, channel, body):
             "product": new_version.product_name,
             "channel": new_version.product_channel,
         }, 201
+
+
+def check_decision_task(body):
+    product = body["product"]
+    revision = body["revision"]
+    branch = body["branch"]
+    project = branch.split("/")[-1]
+    repo_url = body.get("repo_url", "")
+
+    try:
+        task_id = find_decision_task_id(repo_url, project, revision, product)
+        return {
+            "task_id": task_id,
+            "state": "ready",
+        }
+    except Exception as exc:
+        logger.debug("Failed to get decision task: %s", exc)
+        return {
+            "state": "missing",
+        }

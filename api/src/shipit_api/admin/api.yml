@@ -2,6 +2,47 @@
 servers:
   - url: /
 paths:
+  /decision-task/status:
+    post:
+      summary: Check the status of a decision task
+      operationId: shipit_api.admin.api.check_decision_task
+      requestBody:
+        description: Decision task check parameters
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - product
+                - revision
+                - branch
+              properties:
+                product:
+                  type: string
+                  description: Product name (e.g., firefox, devedition)
+                repo_url:
+                  type: string
+                  description: Repository URL
+                revision:
+                  type: string
+                  description: Revision hash
+                branch:
+                  type: string
+                  description: Branch name
+        required: true
+      responses:
+        "200":
+          description: Decision task status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  task_id:
+                    type: string
+                  state:
+                    type: string
+                    enum: [ready, missing]
   /product-details:
     post:
       summary: Trigger a rebuild of product details
