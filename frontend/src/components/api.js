@@ -5,6 +5,31 @@ import isRc from './releases';
 import { getLocales } from './vcs';
 
 /**
+ * Check the status of a decision task
+ */
+export async function checkDecisionTaskStatus(
+  product,
+  branch,
+  revision,
+  repoUrl,
+) {
+  const req = await axios.post(
+    '/decision-task/status',
+    {
+      product,
+      branch,
+      revision,
+      repo_url: repoUrl,
+    },
+    {
+      authRequired: false,
+    },
+  );
+
+  return req.data;
+}
+
+/**
  * Get releases
  *
  * This will fetch releases for the given params. Params may optionally include
