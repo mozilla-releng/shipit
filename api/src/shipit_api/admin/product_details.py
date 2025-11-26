@@ -26,6 +26,7 @@ import click
 import sqlalchemy
 import sqlalchemy.orm
 from mozilla_version.gecko import FirefoxVersion
+from mozilla_version.ios import MobileIosVersion
 from mozilla_version.mobile import MobileVersion
 
 import cli_common.command
@@ -996,9 +997,14 @@ def get_mobile_versions(releases: typing.List[shipit_api.common.models.Release],
             "ios_version": "9.0",
         }
     """
+
+    def is_version_ios_beta(version):
+        version = MobileIosVersion.parse(version)
+        return version.minor_number == 0 and version.patch_number is None
+
     return dict(
-        ios_beta_version=shipit_api.common.config.IOS_BETA_VERSION,
-        ios_version=shipit_api.common.config.IOS_VERSION,
+        ios_beta_version=get_latest_version(releases, Product.FIREFOX_IOS, filter_closure=lambda r: is_version_ios_beta(r.version)),
+        ios_version=get_latest_version(releases, Product.FIREFOX_IOS, filter_closure=lambda r: not is_version_ios_beta(r.version)),
         nightly_version=firefox_nightly_version,
         alpha_version=firefox_nightly_version,
         beta_version=get_latest_version(releases, Product.FIREFOX_ANDROID, filter_closure=lambda r: MobileVersion.parse(r.version).is_beta),
