@@ -20,7 +20,7 @@ workers:
             provisioner: releng-{level}
             implementation: docker-worker
             os: linux
-            worker-type: 'linux-gcp'
+            worker-type: 'linux-docker'
         t-linux:
             provisioner: releng-t
             implementation: docker-worker
@@ -30,7 +30,7 @@ workers:
             provisioner: releng-{level}
             implementation: docker-worker
             os: linux
-            worker-type: 'b-linux-gcp'
+            worker-type: 'linux-docker'
 deploy:
     dev:
         frontend-bucket: "relengstatic-staging-shipitfrontend-static-website"
