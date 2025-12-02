@@ -162,68 +162,6 @@ paths:
                 type: object
         "404":
           description: No merge behaviors found for the given product
-  /merge-automation/{product}/{behavior_name}:
-    get:
-      summary: >-
-        Get information regarding the target revision for the given merge
-        automation behavior.
-      operationId: shipit_api.admin.merge_automation.revisions_for_behavior
-      parameters:
-        - name: product
-          in: path
-          description: product name
-          required: true
-          schema:
-            $ref: '#/components/schemas/ProductInput'
-        - name: behavior_name
-          in: path
-          description: behavior name
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The list of valid revisions for this product/behavior
-          content:
-            application/json:
-              schema:
-                type: object
-        "404":
-          description: Either the product or the merge behavior for it wasn't found.
-  /merge-automation/{product}/{behavior_name}/{revision}:
-    get:
-      summary: >-
-        Get information about the merge behavior of a product for the given revision
-        such as its current version, author and commit message
-      operationId: shipit_api.admin.merge_automation.info_for_behavior_revision
-      parameters:
-        - name: product
-          in: path
-          description: product name
-          required: true
-          schema:
-            $ref: '#/components/schemas/ProductInput'
-        - name: behavior_name
-          in: path
-          description: behavior name
-          required: true
-          schema:
-            type: string
-        - name: revision
-          in: path
-          description: revision SHA
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: The relevant information about the revision for the given merge automation.
-          content:
-            application/json:
-              schema:
-                type: object
-        "404":
-          description: Either the product, the merge behavior or the revision wasn't found.
   /product-details:
     post:
       summary: Trigger a rebuild of product details
