@@ -4,11 +4,8 @@ import pytest
 
 from backend_common.db import db
 from shipit_api.admin.merge_automation import (
-    get_commit_info_from_hg,
-    get_hg_pushes,
     get_task_group_status,
     get_task_status,
-    get_version_from_hg,
     trigger_merge_automation_action,
 )
 from shipit_api.common.models import MergeAutomation, TaskStatus
@@ -47,43 +44,6 @@ def test_list_behaviors(app, product, expected_error):
             assert_key_is("repo", str, behavior)
             assert_key_is("pretty_name", str, behavior)
             assert_key_is("always-target-tip", bool, behavior)
-
-
-@pytest.mark.parametrize(
-    "product,behavior,expected_version",
-    (
-        pytest.param("thunderbird", "main-to-beta", None),
-        pytest.param("firefox", "invalid", None),
-        pytest.param("firefox", "main-to-beta", "131.0.1"),
-    ),
-)
-def test_info_for_behavior_revision(app, product, behavior, expected_version):
-    with (
-        app.test_client() as client,
-        patch("shipit_api.admin.merge_automation.get_version_from_hg") as mock_get_version,
-        patch("shipit_api.admin.merge_automation.get_commit_info_from_hg") as mock_get_commit,
-    ):
-        mock_get_version.return_value = expected_version
-        mock_get_commit.return_value = {
-            "desc": "Test commit message",
-            "author": "test@example.com",
-            "node": "abc123",
-            "date": 1234567890,
-        }
-
-        response = client.get(f"/merge-automation/{product}/{behavior}/abc123")
-        if expected_version is None:
-            assert response.status_code == 404
-            mock_get_version.assert_not_called()
-            mock_get_commit.assert_not_called()
-            return
-
-        assert response.status_code == 200
-        mock_get_version.assert_called_once_with("https://hg.mozilla.org/try", "abc123", "browser/config/version_display.txt")
-        mock_get_commit.assert_called_once_with("https://hg.mozilla.org/try", "abc123")
-
-        data = response.json()
-        assert data == {"commit_author": "test@example.com", "commit_message": "Test commit message", "version": expected_version}
 
 
 def test_list_merge_automation_no_data(app):
@@ -184,20 +144,16 @@ def test_list_merge_automation_with_data(app):
 def test_submit_merge_automation_success(mock_user, app):
     mock_user.has_permissions.return_value = True
 
-    with (
-        app.test_client() as client,
-        patch("shipit_api.admin.merge_automation.get_version_from_hg") as mock_get_version,
-        patch("shipit_api.admin.merge_automation.get_commit_info_from_hg") as mock_get_commit,
-    ):
-        mock_get_version.return_value = "130.0"
-        mock_get_commit.return_value = {
-            "desc": "Test commit message",
-            "author": "test@example.com",
-            "node": "abc123",
-            "date": 1234567890,
+    with app.test_client() as client:
+        payload = {
+            "product": "firefox",
+            "behavior": "main-to-beta",
+            "revision": "abc123",
+            "dryRun": True,
+            "version": "130.0",
+            "commitMessage": "Test commit message",
+            "commitAuthor": "test@example.com",
         }
-
-        payload = {"product": "firefox", "behavior": "main-to-beta", "revision": "abc123", "dryRun": True}
 
         response = client.post("/merge-automation", json=payload)
         assert response.status_code == 201
@@ -218,7 +174,15 @@ def test_submit_merge_automation_invalid_inputs(mock_user, app, product, behavio
     mock_user.has_permissions.return_value = True
 
     with app.test_client() as client:
-        payload = {"product": product, "behavior": behavior, "revision": "abc123", "dryRun": True}
+        payload = {
+            "product": product,
+            "behavior": behavior,
+            "revision": "abc123",
+            "dryRun": True,
+            "version": "130.0",
+            "commitMessage": "Test commit",
+            "commitAuthor": "test@example.com",
+        }
 
         response = client.post("/merge-automation", json=payload)
         assert response.status_code == 404
@@ -400,50 +364,6 @@ def test_start_merge_automation_taskcluster_failure(mock_trigger, mock_user, app
         assert updated_automation.task_id is None
 
 
-@pytest.mark.parametrize(
-    "product,behavior,expected_pushes",
-    (
-        pytest.param("thunderbird", "main-to-beta", None),
-        pytest.param("firefox", "invalid", None),
-        pytest.param("firefox", "main-to-beta", {"abc": {"date": 0, "desc": "foo", "author": "bar"}, "def": {"date": 1, "desc": "baz", "author": "qux"}}),
-        pytest.param("firefox", "main-to-beta-tip", {"def": {"date": 1, "desc": "baz", "author": "qux"}}),
-    ),
-)
-def test_revisions_for_behavior(app, product, behavior, expected_pushes):
-    mock_behaviors = {
-        "firefox": {
-            "main-to-beta": {
-                "pretty_name": "Main -> beta",
-                "repo": "https://hg.mozilla.org/try",
-                "always-target-tip": False,
-            },
-            "main-to-beta-tip": {
-                "pretty_name": "Main -> beta (tip)",
-                "repo": "https://hg.mozilla.org/try",
-                "always-target-tip": True,
-            },
-        }
-    }
-
-    with (
-        app.test_client() as client,
-        patch("shipit_api.admin.merge_automation.get_hg_pushes") as mock_get_pushes,
-        patch("shipit_api.admin.merge_automation.MERGE_BEHAVIORS_PER_PRODUCT", mock_behaviors),
-    ):
-        mock_get_pushes.return_value = {
-            "def": {"date": 1, "desc": "baz", "author": "qux"},
-            "abc": {"date": 0, "desc": "foo", "author": "bar"},
-        }
-
-        response = client.get(f"/merge-automation/{product}/{behavior}")
-        if expected_pushes is None:
-            assert response.status_code == 404
-            return
-
-        pushes = response.json()
-        assert pushes == expected_pushes
-
-
 @patch("shipit_api.admin.merge_automation.get_service")
 @patch("shipit_api.admin.merge_automation.find_decision_task_id")
 @patch("shipit_api.admin.merge_automation.get_actions")
@@ -523,60 +443,6 @@ def test_trigger_merge_automation_action_missing_action(mock_get_actions, mock_f
 
     with pytest.raises(ValueError, match="merge-automation action not found in decision task"):
         trigger_merge_automation_action(automation)
-
-
-@patch("shipit_api.admin.merge_automation.requests.get")
-def test_get_hg_pushes(mock_get, app):
-    mock_response = Mock()
-    mock_response.json.return_value = {
-        "pushes": {
-            "1": {"date": 1234567890, "changesets": [{"node": "abc123", "desc": "Test commit 1", "author": "author1@example.com"}]},
-            "2": {"date": 1234567891, "changesets": [{"node": "def456", "desc": "Test commit 2", "author": "author2@example.com"}]},
-        }
-    }
-    mock_get.return_value = mock_response
-
-    result = get_hg_pushes("https://hg.mozilla.org/test")
-
-    mock_get.assert_called_once_with("https://hg.mozilla.org/test/json-pushes?version=2&full=1&tipsonly=1&branch=default")
-    mock_response.raise_for_status.assert_called_once()
-
-    expected = {
-        "abc123": {"date": 1234567890, "desc": "Test commit 1", "author": "author1@example.com"},
-        "def456": {"date": 1234567891, "desc": "Test commit 2", "author": "author2@example.com"},
-    }
-    assert result == expected
-
-
-@patch("shipit_api.admin.merge_automation.requests.get")
-def test_get_commit_info_from_hg(mock_get, app):
-    mock_response = Mock()
-    mock_response.json.return_value = {
-        "entries": [{"desc": "Test commit message", "user": "test@example.com", "node": "abc123def456", "date": [1234567890, 0]}]
-    }
-    mock_get.return_value = mock_response
-
-    result = get_commit_info_from_hg("https://hg.mozilla.org/test", "abc123")
-
-    mock_get.assert_called_once_with("https://hg.mozilla.org/test/json-log?rev=abc123")
-    mock_response.raise_for_status.assert_called_once()
-
-    expected = {"desc": "Test commit message", "author": "test@example.com", "node": "abc123def456", "date": 1234567890}
-    assert result == expected
-
-
-@patch("shipit_api.admin.merge_automation.requests.get")
-def test_get_version_from_hg(mock_get, app):
-    mock_response = Mock()
-    mock_response.text = "130.0.1\n"
-    mock_get.return_value = mock_response
-
-    result = get_version_from_hg("https://hg.mozilla.org/test", "abc123", "browser/config/version_display.txt")
-
-    mock_get.assert_called_once_with("https://hg.mozilla.org/test/raw-file/abc123/browser/config/version_display.txt")
-    mock_response.raise_for_status.assert_called_once()
-
-    assert result == "130.0.1"
 
 
 @pytest.mark.parametrize(
@@ -740,7 +606,15 @@ def test_submit_merge_automation_permission_denied(mock_user, app):
     mock_user.get_permissions = Mock(return_value=["some:other:permission"])
 
     with app.test_client() as client:
-        payload = {"product": "firefox", "behavior": "main-to-beta", "revision": "abc123", "dryRun": True}
+        payload = {
+            "product": "firefox",
+            "behavior": "main-to-beta",
+            "revision": "abc123",
+            "dryRun": True,
+            "version": "130.0",
+            "commitMessage": "Test commit",
+            "commitAuthor": "test@example.com",
+        }
 
         response = client.post("/merge-automation", json=payload)
         assert response.status_code == 401

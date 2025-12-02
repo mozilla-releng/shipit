@@ -81,7 +81,7 @@ export default function NewMergeAutomation() {
   }, [product]);
 
   useEffect(() => {
-    if (selectedBehavior === '') {
+    if (selectedBehavior === '' || !mergeBehaviors) {
       return;
     }
 
@@ -89,9 +89,9 @@ export default function NewMergeAutomation() {
 
     async function updateMergeRevisions() {
       try {
+        const behaviorConfig = mergeBehaviors[selectedBehavior];
         const newMergeRevisions = await getMergeRevisions(
-          product,
-          selectedBehavior,
+          behaviorConfig,
           abortController.signal,
         );
         setMergeRevisions(newMergeRevisions);
@@ -119,10 +119,10 @@ export default function NewMergeAutomation() {
     return () => {
       abortController.abort();
     };
-  }, [selectedBehavior]);
+  }, [selectedBehavior, mergeBehaviors]);
 
   useEffect(() => {
-    if (selectedRevision === '') {
+    if (selectedRevision === '' || !mergeBehaviors || !selectedBehavior) {
       setRevisionInfo(null);
       return;
     }
@@ -131,9 +131,9 @@ export default function NewMergeAutomation() {
 
     async function updateRevisionInfo() {
       try {
+        const behaviorConfig = mergeBehaviors[selectedBehavior];
         const info = await getMergeInfo(
-          product,
-          selectedBehavior,
+          behaviorConfig,
           selectedRevision,
           abortController.signal,
         );
@@ -155,7 +155,7 @@ export default function NewMergeAutomation() {
     return () => {
       abortController.abort();
     };
-  }, [selectedRevision, selectedBehavior, product]);
+  }, [selectedRevision, selectedBehavior, mergeBehaviors]);
 
   function renderMergeBehaviors() {
     if (mergeBehaviors === null) {
@@ -297,6 +297,9 @@ export default function NewMergeAutomation() {
                 selectedBehavior,
                 selectedRevision,
                 dryRun,
+                revisionInfo.version,
+                revisionInfo.commit_message,
+                revisionInfo.commit_author,
               );
 
               setDialogOpen(false);
