@@ -1,8 +1,6 @@
 import datetime
 import logging
-from functools import lru_cache
 
-import requests
 from flask import abort, request
 from flask_login import current_user
 from taskcluster.exceptions import TaskclusterRestFailure
@@ -34,72 +32,6 @@ def list_behaviors(product):
     return MERGE_BEHAVIORS_PER_PRODUCT[product]
 
 
-def revisions_for_behavior(product, behavior_name):
-    behavior = get_behavior_for_product(product, behavior_name)
-
-    pushes = get_hg_pushes(behavior["repo"])
-
-    if not behavior.get("always-target-tip", False):
-        return pushes
-
-    push = next(iter(pushes.items()))
-    return {push[0]: push[1]}
-
-
-def info_for_behavior_revision(product, behavior_name, revision):
-    behavior = get_behavior_for_product(product, behavior_name)
-
-    current_version = get_version_from_hg(behavior["repo"], revision, behavior["version_path"])
-    commit_info = get_commit_info_from_hg(behavior["repo"], revision)
-
-    commit_message = commit_info.get("desc", "").split("\n")[0]
-    commit_author = commit_info.get("author", "")
-
-    return {
-        "version": current_version,
-        "commit_message": commit_message,
-        "commit_author": commit_author,
-    }
-
-
-def get_hg_pushes(repo):
-    url = f"{repo}/json-pushes?version=2&full=1&tipsonly=1&branch=default"
-
-    logger.debug(f"Getting hg pushes from {url}")
-    response = requests.get(url)
-    response.raise_for_status()
-    results = response.json()
-
-    commits = {}
-    for push in results["pushes"].values():
-        for changeset in push["changesets"]:
-            commits[changeset["node"]] = {"date": push["date"], "desc": changeset["desc"], "author": changeset["author"]}
-
-    return commits
-
-
-@lru_cache(maxsize=20)
-def get_commit_info_from_hg(repo_url, revision):
-    url = f"{repo_url}/json-log?rev={revision}"
-
-    logger.debug(f"Getting hg pushes commit info from {url}")
-    response = requests.get(url)
-    response.raise_for_status()
-    log_data = response.json()
-
-    commit_data = log_data["entries"][0]
-    return {"desc": commit_data["desc"], "author": commit_data["user"], "node": commit_data["node"], "date": commit_data["date"][0]}
-
-
-@lru_cache(maxsize=20)
-def get_version_from_hg(repo_url, revision, version_path):
-    url = f"{repo_url}/raw-file/{revision}/{version_path}"
-    logger.debug(f"Getting version info from {url}")
-    response = requests.get(url)
-    response.raise_for_status()
-    version = response.text.strip()
-
-    return version
 
 
 def submit_merge_automation():
@@ -114,13 +46,11 @@ def submit_merge_automation():
     behavior_name = body["behavior"]
     revision = body["revision"]
     dry_run = body.get("dryRun", True)
+    version = body["version"]
+    commit_message = body["commitMessage"]
+    commit_author = body["commitAuthor"]
 
     behavior = get_behavior_for_product(product, behavior_name)
-
-    version = get_version_from_hg(behavior["repo"], revision, behavior["version_path"])
-    commit_info = get_commit_info_from_hg(behavior["repo"], revision)
-    commit_message = commit_info.get("desc", "").split("\n")[0]
-    commit_author = commit_info.get("author", "")
 
     automation = MergeAutomation(
         product=product,
