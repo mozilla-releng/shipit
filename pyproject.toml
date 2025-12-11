@@ -16,6 +16,11 @@ shipit-api = { workspace = true }
 [tool.uv.workspace]
 members = ["api"]
 
+[tool.uv]
+constraint-dependencies = [
+    "pycares<5" # https://github.com/saghul/aiodns/issues/214
+]
+
 [tool.black]
 line-length = 160
 target-version = ["py312"]
