@@ -115,6 +115,28 @@ def cancel_merge_automation(automation_id):
     return automation.json
 
 
+def mark_merge_automation_completed(automation_id):
+    automation = db.session.get(MergeAutomation, automation_id)
+    if not automation:
+        return abort(404, f"Merge automation with id {automation_id} not found")
+
+    required_permission = f"{SCOPE_PREFIX}/mark_merge_automation_completed/{automation.product}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+
+    if automation.status in (TaskStatus.Completed, TaskStatus.Canceled):
+        return abort(400, f"Cannot update automation in {automation.status.name} status")
+
+    automation.status = TaskStatus.Completed
+    automation.completed = datetime.datetime.now(datetime.UTC)
+
+    db.session.commit()
+    logger.info(f"Merge automation {automation_id} marked as completed")
+
+    return automation.json
+
+
 def start_merge_automation(automation_id):
     automation = db.session.get(MergeAutomation, automation_id)
     if not automation:
@@ -154,6 +176,7 @@ def trigger_merge_automation_action(automation):
     action_input = {
         "behavior": automation.behavior,
         "force-dry-run": automation.dry_run,
+        "merge-automation-id": automation.id,
     }
 
     hooks = get_service("hooks")
@@ -222,21 +245,15 @@ def get_merge_automation_task_status(automation_id):
     if not automation or not automation.task_id:
         return abort(404, "Automation not found or no task ID")
 
+    if automation.status in (TaskStatus.Completed, TaskStatus.Canceled):
+        return {
+            "automation": automation.json,
+            "decisionTask": {"taskId": automation.task_id, "state": automation.status.name.lower()},
+            "taskGroup": {"overallStatus": automation.status.name.lower()},
+        }
+
     decision_task_status = get_task_status(automation.task_id)
     overall_status = get_task_group_status(automation.task_id)
-
-    # Update automation status based on task group status
-    status_changed = False
-    if overall_status == TaskStatus.Completed and automation.status != TaskStatus.Completed:
-        automation.status = TaskStatus.Completed
-        automation.completed = datetime.datetime.now(datetime.UTC)
-        status_changed = True
-    elif overall_status == TaskStatus.Failed and automation.status != TaskStatus.Failed:
-        automation.status = TaskStatus.Failed
-        status_changed = True
-
-    if status_changed:
-        db.session.commit()
 
     return {
         "automation": automation.json,
