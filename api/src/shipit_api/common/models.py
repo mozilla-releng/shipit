@@ -182,6 +182,7 @@ class TaskStatus(enum.Enum):
     Running = enum.auto()
     Failed = enum.auto()
     Completed = enum.auto()
+    Canceled = enum.auto()
 
 
 class MergeAutomation(db.Model):
