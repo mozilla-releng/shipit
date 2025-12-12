@@ -205,10 +205,11 @@ def test_cancel_merge_automation_success(mock_cancel, mock_user, app):
     with app.test_client() as client:
         response = client.delete(f"/merge-automation/{automation_id}")
         assert response.status_code == 200
-        assert response.json() == {"message": "Merge automation deleted successfully"}
+        assert response.json()["status"] == "canceled"
 
-        deleted_automation = db.session.get(MergeAutomation, automation_id)
-        assert deleted_automation is None
+        canceled_automation = db.session.get(MergeAutomation, automation_id)
+        assert canceled_automation is not None
+        assert canceled_automation.status == TaskStatus.Canceled
 
 
 @patch("shipit_api.admin.merge_automation.current_user")
@@ -231,10 +232,11 @@ def test_cancel_merge_automation_with_taskcluster_task(mock_cancel, mock_user, a
     with app.test_client() as client:
         response = client.delete(f"/merge-automation/{automation_id}")
         assert response.status_code == 200
-        assert response.json() == {"message": "Merge automation deleted successfully"}
+        assert response.json()["status"] == "canceled"
 
-        deleted_automation = db.session.get(MergeAutomation, automation_id)
-        assert deleted_automation is None
+        canceled_automation = db.session.get(MergeAutomation, automation_id)
+        assert canceled_automation is not None
+        assert canceled_automation.status == TaskStatus.Canceled
 
         mock_cancel.assert_called_once_with("fakeTaskId")
 
@@ -266,10 +268,11 @@ def test_cancel_merge_automation_failed_status(mock_cancel, mock_user, app):
     with app.test_client() as client:
         response = client.delete(f"/merge-automation/{automation_id}")
         assert response.status_code == 200
-        assert response.json() == {"message": "Merge automation deleted successfully"}
+        assert response.json()["status"] == "canceled"
 
-        deleted_automation = db.session.get(MergeAutomation, automation_id)
-        assert deleted_automation is None
+        canceled_automation = db.session.get(MergeAutomation, automation_id)
+        assert canceled_automation is not None
+        assert canceled_automation.status == TaskStatus.Canceled
 
 
 @patch("shipit_api.admin.merge_automation.current_user")

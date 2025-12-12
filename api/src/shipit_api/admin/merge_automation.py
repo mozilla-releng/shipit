@@ -32,8 +32,6 @@ def list_behaviors(product):
     return MERGE_BEHAVIORS_PER_PRODUCT[product]
 
 
-
-
 def submit_merge_automation():
     body = request.get_json()
     product = body["product"]
@@ -77,6 +75,7 @@ def list_merge_automation(product):
 
     merge_automations = (
         MergeAutomation.query.filter_by(product=product)
+        .filter(MergeAutomation.status != TaskStatus.Canceled)
         .order_by(db.case((MergeAutomation.status == TaskStatus.Completed, 1), else_=0), MergeAutomation.created.desc())
         .limit(20)
         .all()
@@ -102,10 +101,10 @@ def cancel_merge_automation(automation_id):
         except TaskclusterRestFailure as e:
             abort(400, str(e))
 
-    db.session.delete(automation)
+    automation.status = TaskStatus.Canceled
     db.session.commit()
 
-    return {"message": "Merge automation deleted successfully"}
+    return automation.json
 
 
 def start_merge_automation(automation_id):
