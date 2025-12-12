@@ -92,6 +92,23 @@ paths:
           description: Merge automation cancelled successfully
         "404":
           description: Merge automation not found
+    patch:
+      summary: Mark merge automation as completed
+      operationId: shipit_api.admin.merge_automation.mark_merge_automation_completed
+      parameters:
+        - name: automation_id
+          in: path
+          description: automation id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Merge automation marked as completed
+        "400":
+          description: Merge automation cannot be marked as completed
+        "404":
+          description: Merge automation not found
   /merge-automation/{automation_id}/start:
     post:
       summary: Start a pending merge automation
