@@ -7,7 +7,15 @@ from taskcluster.exceptions import TaskclusterRestFailure
 
 from backend_common.db import db
 from backend_common.taskcluster import get_service
-from shipit_api.admin.tasks import cancel_action_task_group, find_action, find_decision_task_id, get_actions, get_parameters, render_action_hook
+from shipit_api.admin.tasks import (
+    cancel_action_task_group,
+    fetch_group_tasks,
+    find_action,
+    find_decision_task_id,
+    get_actions,
+    get_parameters,
+    render_action_hook,
+)
 from shipit_api.common.config import MERGE_BEHAVIORS_PER_PRODUCT, SCOPE_PREFIX
 from shipit_api.common.models import MergeAutomation, TaskStatus
 
@@ -188,17 +196,15 @@ def get_task_status(task_id):
 
 
 def get_task_group_status(task_group_id):
-    queue = get_service("queue")
-
     try:
-        task_group = queue.listTaskGroup(task_group_id)
+        tasks = fetch_group_tasks(task_group_id)
     except TaskclusterRestFailure as e:
         if e.status_code == 404:
             return TaskStatus.Pending
         raise
 
     group_status = TaskStatus.Completed
-    for task in task_group["tasks"]:
+    for task in tasks:
         state = task["status"]["state"]
 
         if state in ("failed", "exception"):
