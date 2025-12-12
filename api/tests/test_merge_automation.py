@@ -414,6 +414,7 @@ def test_trigger_merge_automation_action_hook_payload(mock_render_hook, mock_get
         "input": {
             "behavior": "main-to-beta",
             "force-dry-run": True,
+            "merge-automation-id": automation.id,
         },
         "clientId": "test-client",
     }
@@ -445,17 +446,16 @@ def test_trigger_merge_automation_action_missing_action(mock_get_actions, mock_f
 
 
 @pytest.mark.parametrize(
-    "initial_status,task_states,expected_final_status,expected_completed_set",
+    "initial_status,task_states,expected_task_group_status",
     [
-        (TaskStatus.Running, ["completed", "completed"], TaskStatus.Completed, True),
-        (TaskStatus.Running, ["completed", "failed"], TaskStatus.Failed, False),
-        (TaskStatus.Completed, ["completed", "completed"], TaskStatus.Completed, False),
-        (TaskStatus.Running, ["running", "completed"], TaskStatus.Running, False),
+        (TaskStatus.Running, ["completed", "completed"], TaskStatus.Completed),
+        (TaskStatus.Running, ["completed", "failed"], TaskStatus.Failed),
+        (TaskStatus.Running, ["running", "completed"], TaskStatus.Running),
     ],
 )
 @patch("shipit_api.admin.merge_automation.get_service")
 @patch("shipit_api.admin.tasks.get_service")
-def test_get_merge_automation_task_status_scenarios(mock_tasks_get_service, mock_get_service, app, initial_status, task_states, expected_final_status, expected_completed_set):
+def test_get_merge_automation_task_status_scenarios(mock_tasks_get_service, mock_get_service, app, initial_status, task_states, expected_task_group_status):
     task_group_response = {"tasks": [{"status": {"state": state}} for state in task_states]}
 
     def mock_list_task_group(task_id, paginationHandler):
@@ -483,7 +483,6 @@ def test_get_merge_automation_task_status_scenarios(mock_tasks_get_service, mock
     )
     db.session.add(automation)
     db.session.commit()
-    original_completed = automation.completed
 
     with app.test_client() as client:
         response = client.get(f"/merge-automation/{automation.id}/task-status")
@@ -491,18 +490,9 @@ def test_get_merge_automation_task_status_scenarios(mock_tasks_get_service, mock
 
         data = response.json()
         assert data["automation"]["id"] == automation.id
-        assert data["automation"]["status"] == expected_final_status.name.lower()
+        assert data["automation"]["status"] == initial_status.name.lower()
         assert data["decisionTask"]["taskId"] == "fakeTaskId"
-        assert data["taskGroup"]["overallStatus"] == expected_final_status.name.lower()
-
-        updated_automation = db.session.get(MergeAutomation, automation.id)
-        assert updated_automation.status == expected_final_status
-
-        if expected_completed_set:
-            assert updated_automation.completed is not None
-            assert updated_automation.completed != original_completed
-        else:
-            assert updated_automation.completed == original_completed
+        assert data["taskGroup"]["overallStatus"] == expected_task_group_status.name.lower()
 
 
 def test_get_merge_automation_task_status_not_found(app):
@@ -529,6 +519,60 @@ def test_get_merge_automation_task_status_no_task_id(app):
         response = client.get(f"/merge-automation/{automation.id}/task-status")
         assert response.status_code == 404
         assert response.json()["detail"] == "Automation not found or no task ID"
+
+
+@patch("shipit_api.admin.merge_automation.current_user")
+def test_mark_merge_automation_completed(mock_user, app):
+    mock_user.has_permissions.return_value = True
+    automation = create_merge_automation_with_defaults(
+        product="firefox",
+        behavior="main-to-beta",
+        revision="abc123",
+        version="130.0",
+        status=TaskStatus.Running,
+        task_id="fakeTaskId",
+        dry_run=True,
+    )
+    db.session.add(automation)
+    db.session.commit()
+    automation_id = automation.id
+
+    with app.test_client() as client:
+        response = client.patch(f"/merge-automation/{automation_id}")
+        assert response.status_code == 200
+        assert response.json()["status"] == "completed"
+
+        updated_automation = db.session.get(MergeAutomation, automation_id)
+        assert updated_automation.status == TaskStatus.Completed
+        assert updated_automation.completed is not None
+
+
+def test_mark_merge_automation_completed_not_found(app):
+    with app.test_client() as client:
+        response = client.patch("/merge-automation/999")
+        assert response.status_code == 404
+
+
+@pytest.mark.parametrize("initial_status", [TaskStatus.Completed, TaskStatus.Canceled])
+@patch("shipit_api.admin.merge_automation.current_user")
+def test_mark_merge_automation_completed_already_terminal(mock_user, app, initial_status):
+    mock_user.has_permissions.return_value = True
+    automation = create_merge_automation_with_defaults(
+        product="firefox",
+        behavior="main-to-beta",
+        revision="abc123",
+        version="130.0",
+        status=initial_status,
+        task_id="fakeTaskId",
+        dry_run=True,
+    )
+    db.session.add(automation)
+    db.session.commit()
+
+    with app.test_client() as client:
+        response = client.patch(f"/merge-automation/{automation.id}")
+        assert response.status_code == 400
+        assert f"Cannot update automation in {initial_status.name} status" in response.json()["detail"]
 
 
 @pytest.mark.parametrize(
@@ -673,4 +717,27 @@ def test_cancel_merge_automation_permission_denied(mock_user, app):
         response = client.delete(f"/merge-automation/{automation.id}")
         assert response.status_code == 401
         assert "required permission: project:releng:services/shipit_api/cancel_merge_automation/firefox" in response.json()["detail"]
+        assert "user permissions: some:other:permission" in response.json()["detail"]
+
+
+@patch("shipit_api.admin.merge_automation.current_user", new_callable=lambda: Mock())
+def test_mark_merge_automation_completed_permission_denied(mock_user, app):
+    mock_user.has_permissions = Mock(return_value=False)
+    mock_user.get_permissions = Mock(return_value=["some:other:permission"])
+
+    automation = create_merge_automation_with_defaults(
+        product="firefox",
+        behavior="main-to-beta",
+        revision="abc123",
+        version="130.0",
+        status=TaskStatus.Running,
+        dry_run=True,
+    )
+    db.session.add(automation)
+    db.session.commit()
+
+    with app.test_client() as client:
+        response = client.patch(f"/merge-automation/{automation.id}")
+        assert response.status_code == 401
+        assert "required permission: project:releng:services/shipit_api/mark_merge_automation_completed/firefox" in response.json()["detail"]
         assert "user permissions: some:other:permission" in response.json()["detail"]
