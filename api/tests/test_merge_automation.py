@@ -3,11 +3,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from backend_common.db import db
-from shipit_api.admin.merge_automation import (
-    get_task_group_status,
-    get_task_status,
-    trigger_merge_automation_action,
-)
+from shipit_api.admin.merge_automation import get_task_group_status, get_task_status, trigger_merge_automation_action
 from shipit_api.common.models import MergeAutomation, TaskStatus
 
 
@@ -458,7 +454,13 @@ def test_trigger_merge_automation_action_missing_action(mock_get_actions, mock_f
     ],
 )
 @patch("shipit_api.admin.merge_automation.get_service")
-def test_get_merge_automation_task_status_scenarios(mock_get_service, app, initial_status, task_states, expected_final_status, expected_completed_set):
+@patch("shipit_api.admin.tasks.get_service")
+def test_get_merge_automation_task_status_scenarios(mock_tasks_get_service, mock_get_service, app, initial_status, task_states, expected_final_status, expected_completed_set):
+    task_group_response = {"tasks": [{"status": {"state": state}} for state in task_states]}
+
+    def mock_list_task_group(task_id, paginationHandler):
+        paginationHandler(task_group_response)
+
     mock_queue = Mock()
     mock_queue.status.return_value = {
         "status": {
@@ -466,8 +468,9 @@ def test_get_merge_automation_task_status_scenarios(mock_get_service, app, initi
             "state": "completed",
         }
     }
-    mock_queue.listTaskGroup.return_value = {"tasks": [{"status": {"state": state}} for state in task_states]}
+    mock_queue.listTaskGroup.side_effect = mock_list_task_group
     mock_get_service.return_value = mock_queue
+    mock_tasks_get_service.return_value = mock_queue
 
     automation = create_merge_automation_with_defaults(
         product="firefox",
@@ -588,16 +591,18 @@ def test_get_task_status(mock_get_service, app, task_id, task_state):
         ),
     ],
 )
-@patch("shipit_api.admin.merge_automation.get_service")
+@patch("shipit_api.admin.tasks.get_service")
 def test_get_task_group_status(mock_get_service, app, task_group_id, tasks, expected_status):
+    task_group_response = {"tasks": tasks}
+
+    def mock_list_task_group(task_id, paginationHandler):
+        paginationHandler(task_group_response)
+
     mock_queue = Mock()
-    mock_queue.listTaskGroup.return_value = {"tasks": tasks}
+    mock_queue.listTaskGroup.side_effect = mock_list_task_group
     mock_get_service.return_value = mock_queue
 
     result = get_task_group_status(task_group_id)
-
-    mock_get_service.assert_called_once_with("queue")
-    mock_queue.listTaskGroup.assert_called_once_with(task_group_id)
 
     assert result == expected_status
 
