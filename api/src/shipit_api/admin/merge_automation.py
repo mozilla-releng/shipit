@@ -253,7 +253,11 @@ def get_merge_automation_task_status(automation_id):
         }
 
     decision_task_status = get_task_status(automation.task_id)
-    overall_status = get_task_group_status(automation.task_id)
+
+    if decision_task_status["state"] == "completed":
+        overall_status = get_task_group_status(automation.task_id)
+    else:
+        overall_status = TaskStatus.Pending
 
     return {
         "automation": automation.json,
