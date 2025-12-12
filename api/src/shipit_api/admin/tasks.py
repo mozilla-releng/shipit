@@ -62,10 +62,17 @@ def find_decision_task_id(repo_url, project, revision, product):
 
 def fetch_group_tasks(task_id):
     queue = get_service("queue")
+    tasks = []
+
+    def collect_tasks(response):
+        tasks.extend(response["tasks"])
+
     try:
-        return queue.listTaskGroup(task_id)["tasks"]
+        queue.listTaskGroup(task_id, paginationHandler=collect_tasks)
     except Exception as exc:
-        raise Exception(f"task {task_id} exception {exc}")
+        logging.exception(f"task {task_id} exception {exc}")
+        raise
+    return tasks
 
 
 def fetch_latest_artifacts(task_id):
