@@ -25,10 +25,8 @@ const App = () => {
         <Auth0Provider
           domain={config.AUTH0.domain}
           clientId={config.AUTH0.clientID}
-          redirectUri={config.AUTH0.redirectUri}
-          audience={config.AUTH0.audience}
-          scope={config.AUTH0.scope}
           authorizationParams={{
+            redirect_uri: config.AUTH0.redirectUri,
             audience: config.AUTH0.audience,
             scope: config.AUTH0.scope,
           }}
