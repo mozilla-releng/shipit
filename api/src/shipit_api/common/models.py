@@ -198,7 +198,7 @@ class MergeAutomation(db.Model):
     created = sa.Column(sa.DateTime, default=lambda: datetime.datetime.now(datetime.UTC), nullable=False)
     completed = sa.Column(sa.DateTime)
     status = sa.Column(sa.types.Enum(TaskStatus), nullable=False, default=TaskStatus.Pending)
-    task_id = sa.Column(sa.String)
+    task_id = sa.Column(sa.String, unique=True)
 
     # "Cached" values to avoid querying hg again
     version = sa.Column(sa.String, nullable=False)
