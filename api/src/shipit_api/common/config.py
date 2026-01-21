@@ -562,8 +562,9 @@ def get_allowed_github_files(owner: str, repo: str) -> set[re.Pattern]:
     return {re.compile(s) for s in allowed_paths}
 
 
-def _fx_merge_behavior(pretty_name, prod_repo, prod_project):
+def _fx_merge_behavior(behavior, pretty_name, prod_repo, prod_project):
     return {
+        "behavior": behavior,
         "pretty_name": pretty_name,
         "by-env": {
             "local": {
@@ -592,15 +593,15 @@ def _fx_merge_behavior(pretty_name, prod_repo, prod_project):
 # However, the frontend should never have half of the config it has in the first place and it should get moved at some point.
 # See bug 1879910
 _MERGE_BEHAVIORS_PER_PRODUCT = {
-    "firefox": {
-        "main-to-beta": _fx_merge_behavior("Main -> beta", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
-        "early-to-late-beta": _fx_merge_behavior("Early -> late beta", "https://hg.mozilla.org/releases/mozilla-beta", "mozilla-beta"),
-        "beta-to-release": _fx_merge_behavior("Beta -> release", "https://hg.mozilla.org/releases/mozilla-beta", "mozilla-beta"),
-        "release-to-esr": _fx_merge_behavior("Release -> ESR", "https://hg.mozilla.org/releases/mozilla-release", "mozilla-release"),
-        "bump-main": _fx_merge_behavior("Bump main", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
-        "bump-esr115": _fx_merge_behavior("Bump ESR 115", "https://hg.mozilla.org/releases/mozilla-esr115", "mozilla-esr115"),
-        "bump-esr140": _fx_merge_behavior("Bump ESR 140", "https://hg.mozilla.org/releases/mozilla-esr140", "mozilla-esr140"),
-    }
+    "firefox": [
+        _fx_merge_behavior("main-to-beta", "Main -> beta", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
+        _fx_merge_behavior("early-to-late-beta", "Early -> late beta", "https://hg.mozilla.org/releases/mozilla-beta", "mozilla-beta"),
+        _fx_merge_behavior("beta-to-release", "Beta -> release", "https://hg.mozilla.org/releases/mozilla-beta", "mozilla-beta"),
+        _fx_merge_behavior("release-to-esr", "Release -> ESR", "https://hg.mozilla.org/releases/mozilla-release", "mozilla-release"),
+        _fx_merge_behavior("bump-main", "Bump main", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
+        _fx_merge_behavior("bump-esr140", "Bump ESR 140", "https://hg.mozilla.org/releases/mozilla-esr140", "mozilla-esr140"),
+        _fx_merge_behavior("bump-esr115", "Bump ESR 115", "https://hg.mozilla.org/releases/mozilla-esr115", "mozilla-esr115"),
+    ]
 }
 
 
@@ -619,6 +620,8 @@ def resolve_config_by_environment(config, environment):
 
         if isinstance(obj, dict):
             return {k: _resolve(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [_resolve(item) for item in obj]
         return obj
 
     return _resolve(config)

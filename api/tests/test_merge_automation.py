@@ -36,7 +36,8 @@ def test_list_behaviors(app, product, expected_error):
         def assert_key_is(key, ty, obj):
             assert key in obj and isinstance(obj[key], ty)
 
-        for name, behavior in response.json().items():
+        for behavior in response.json():
+            assert_key_is("behavior", str, behavior)
             assert_key_is("repo", str, behavior)
             assert_key_is("pretty_name", str, behavior)
             assert_key_is("always-target-tip", bool, behavior)
