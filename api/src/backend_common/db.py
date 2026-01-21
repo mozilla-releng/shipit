@@ -25,6 +25,10 @@ def init_database(app: flask.Flask):
     migrations_dir = os.path.abspath(os.path.join(app.root_path, "..", "migrations"))
 
     with app.app_context():
+        if flask.current_app.config.get("READONLY_API"):
+            logger.info("Skipping migrations for read-only app %s", app.name)
+            return
+
         if os.path.isdir(migrations_dir):
             # Needed to init potential migrations later on
             # Use a separate alembic_version table per app
@@ -39,11 +43,8 @@ def init_database(app: flask.Flask):
                 logger.exception("Migrations failure %s", app.name)
 
         else:
-            if flask.current_app.config.get("READONLY_API"):
-                logger.info("Skipping DB creation for a read-only app %s", app.name)
-            else:
-                logger.info("No migrations: creating full DB, %s", app.name)
-                db.create_all()
+            logger.info("No migrations: creating full DB, %s", app.name)
+            db.create_all()
 
 
 def init_app(app: connexion.App):
