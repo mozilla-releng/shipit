@@ -562,57 +562,44 @@ def get_allowed_github_files(owner: str, repo: str) -> set[re.Pattern]:
     return {re.compile(s) for s in allowed_paths}
 
 
+def _fx_merge_behavior(pretty_name, prod_repo, prod_project):
+    return {
+        "pretty_name": pretty_name,
+        "by-env": {
+            "local": {
+                "always-target-tip": False,
+                "repo": "https://hg.mozilla.org/try",
+                "project": "try",
+                "version_path": "browser/config/version_display.txt",
+            },
+            "staging": {
+                "always-target-tip": False,
+                "repo": "https://hg.mozilla.org/try",
+                "project": "try",
+                "version_path": "browser/config/version_display.txt",
+            },
+            "production": {
+                "always-target-tip": True,
+                "repo": prod_repo,
+                "project": prod_project,
+                "version_path": "browser/config/version_display.txt",
+            },
+        },
+    }
+
+
 # NOTE: This duplicates some configuration between the backend and the frontend (mainly the repo names).
 # However, the frontend should never have half of the config it has in the first place and it should get moved at some point.
 # See bug 1879910
 _MERGE_BEHAVIORS_PER_PRODUCT = {
     "firefox": {
-        "main-to-beta": {
-            "pretty_name": "Main -> beta",
-            "by-env": {
-                "local": {
-                    "always-target-tip": False,
-                    "repo": "https://hg.mozilla.org/try",
-                    "project": "try",
-                    "version_path": "browser/config/version_display.txt",
-                },
-                "staging": {
-                    "always-target-tip": False,
-                    "repo": "https://hg.mozilla.org/try",
-                    "project": "try",
-                    "version_path": "browser/config/version_display.txt",
-                },
-                "production": {
-                    "always-target-tip": True,
-                    "repo": "https://hg.mozilla.org/mozilla-central",
-                    "project": "mozilla-central",
-                    "version_path": "browser/config/version_display.txt",
-                },
-            },
-        },
-        "beta-to-release": {
-            "pretty_name": "Beta -> release",
-            "by-env": {
-                "local": {
-                    "always-target-tip": True,
-                    "repo": "https://hg.mozilla.org/releases/mozilla-beta",
-                    "project": "mozilla-beta",
-                    "version_path": "browser/config/version_display.txt",
-                },
-                "staging": {
-                    "always-target-tip": False,
-                    "repo": "https://hg.mozilla.org/try",
-                    "project": "try",
-                    "version_path": "browser/config/version_display.txt",
-                },
-                "production": {
-                    "always-target-tip": True,
-                    "repo": "https://hg.mozilla.org/releases/mozilla-beta",
-                    "project": "mozilla-beta",
-                    "version_path": "browser/config/version_display.txt",
-                },
-            },
-        },
+        "main-to-beta": _fx_merge_behavior("Main -> beta", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
+        "early-to-late-beta": _fx_merge_behavior("Early -> late beta", "https://hg.mozilla.org/releases/mozilla-beta", "mozilla-beta"),
+        "beta-to-release": _fx_merge_behavior("Beta -> release", "https://hg.mozilla.org/releases/mozilla-beta", "mozilla-beta"),
+        "release-to-esr": _fx_merge_behavior("Release -> ESR", "https://hg.mozilla.org/releases/mozilla-release", "mozilla-release"),
+        "bump-main": _fx_merge_behavior("Bump main", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
+        "bump-esr115": _fx_merge_behavior("Bump ESR 115", "https://hg.mozilla.org/releases/mozilla-esr115", "mozilla-esr115"),
+        "bump-esr140": _fx_merge_behavior("Bump ESR 140", "https://hg.mozilla.org/releases/mozilla-esr140", "mozilla-esr140"),
     }
 }
 
