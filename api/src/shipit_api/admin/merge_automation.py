@@ -26,7 +26,7 @@ def get_behavior_for_product(product, behavior_name):
     if product not in MERGE_BEHAVIORS_PER_PRODUCT:
         abort(404, f"No merge behavior found for product: {product}")
 
-    behavior = MERGE_BEHAVIORS_PER_PRODUCT[product].get(behavior_name)
+    behavior = next((b for b in MERGE_BEHAVIORS_PER_PRODUCT[product] if b["behavior"] == behavior_name), None)
     if not behavior:
         abort(404, f"Behavior {behavior_name} not found for product: {product}")
 
