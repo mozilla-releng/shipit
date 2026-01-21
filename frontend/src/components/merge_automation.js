@@ -4,7 +4,8 @@ export async function getMergeBehaviors(product) {
   const url = `/merge-automation/behaviors/${product}`;
   const req = await axios.get(url, { authRequired: true });
 
-  return req.data;
+  // [{behavior, ...}] -> {behavior: {...}}
+  return Object.fromEntries(req.data.map((b) => [b.behavior, b]));
 }
 
 async function getHgPushes(repo, alwaysTargetTip) {
