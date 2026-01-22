@@ -573,7 +573,7 @@ def _fx_merge_behavior(behavior, pretty_name, prod_repo, prod_project):
                 "project": "try",
                 "version_path": "browser/config/version_display.txt",
             },
-            "staging": {
+            "dev": {
                 "always-target-tip": False,
                 "repo": "https://hg.mozilla.org/try",
                 "project": "try",
