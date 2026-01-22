@@ -87,11 +87,9 @@ def test_get_specifications_from_openapi_yaml_files_overriden_value(monkeypatch)
 def test_read_specification_file(tmp_path):
     file_path = tmp_path / "api.yml"
     with open(file_path, mode="w") as f:
-        f.write(
-            """---
+        f.write("""---
 some-param: some-value
-"""
-        )
+""")
 
     assert backend_common._read_specification_file(file_path) == {"some-param": "some-value"}
 

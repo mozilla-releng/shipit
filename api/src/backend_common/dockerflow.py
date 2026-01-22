@@ -7,6 +7,7 @@
 Provide API endpoint for Dockerflow
 https://github.com/mozilla-services/Dockerflow
 """
+
 import logging
 
 from dockerflow.flask import Dockerflow
