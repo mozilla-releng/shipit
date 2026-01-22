@@ -36,9 +36,7 @@ def get_file_from_github(owner, repo, ref, path):
         }
       }
     }
-    """ % dict(
-        owner=owner, repo=repo, ref=ref, path=path
-    )
+    """ % dict(owner=owner, repo=repo, ref=ref, path=path)
     content = query_api(query)
     return content["data"]["repository"]["object"]["text"]
 
@@ -64,9 +62,7 @@ def get_files_from_github(owner, repo, file_path, ref):
         }
       }
     }
-    """ % dict(
-        owner=owner, repo=repo, ref=ref, file_path=file_path
-    )
+    """ % dict(owner=owner, repo=repo, ref=ref, file_path=file_path)
     content = query_api(query)
 
     entries = content["data"]["repository"]["object"]["entries"]
@@ -110,9 +106,7 @@ def ref_to_commit(owner, repo, ref):
         }
       }
     }
-    """ % dict(
-        owner=owner, repo=repo, ref=ref
-    )
+    """ % dict(owner=owner, repo=repo, ref=ref)
     commit = query_api(query)
     return commit["data"]["repository"]["ref"]["target"]["oid"]
 
@@ -148,9 +142,7 @@ def list_github_branches(owner, repo, limit=100):
             }
           }
         }
-        """ % dict(
-            owner=owner, repo=repo, limit=limit, after=after
-        )
+        """ % dict(owner=owner, repo=repo, limit=limit, after=after)
         content = query_api(query)
         page = content["data"]["repository"]["refs"]["pageInfo"]
 
@@ -188,9 +180,7 @@ def list_github_commits(owner, repo, branch, limit=10):
         }
       }
     }
-    """ % dict(
-        owner=owner, repo=repo, branch=branch, limit=limit
-    )
+    """ % dict(owner=owner, repo=repo, branch=branch, limit=limit)
     commits = query_api(query)
     edges = commits["data"]["repository"]["ref"]["target"]["history"]["edges"]
     return [

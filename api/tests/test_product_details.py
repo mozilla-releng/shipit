@@ -71,7 +71,7 @@ async def test_fetch_l10n_data():
     url = re.compile(r"^https://hg\.mozilla\.org/")
     with aioresponses() as m:
         m.get(url, status=200, payload=dict(a="a"))
-        (_, changesets) = await fetch_l10n_data(session, release, raise_on_failure=True, use_cache=False)
+        _, changesets = await fetch_l10n_data(session, release, raise_on_failure=True, use_cache=False)
         assert changesets == {"a": "a"}
 
         # simulate HTTP errors.
@@ -79,7 +79,7 @@ async def test_fetch_l10n_data():
         m.get(url, status=500)
         # Return proper result second time
         m.get(url, status=200, payload=dict(a="a"))
-        (_, changesets) = await fetch_l10n_data(session, release, raise_on_failure=True, use_cache=False)
+        _, changesets = await fetch_l10n_data(session, release, raise_on_failure=True, use_cache=False)
         assert changesets == {"a": "a"}
 
         # simulate timeout
@@ -87,7 +87,7 @@ async def test_fetch_l10n_data():
         m.get(url, timeout=True)
         # Return proper result second time
         m.get(url, status=200, payload=dict(a="a"))
-        (_, changesets) = await fetch_l10n_data(session, release, raise_on_failure=True, use_cache=False)
+        _, changesets = await fetch_l10n_data(session, release, raise_on_failure=True, use_cache=False)
         assert changesets == {"a": "a"}
 
 
