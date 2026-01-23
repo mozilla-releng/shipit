@@ -71,10 +71,11 @@ const SectionLabel = styled(Typography)(({ theme }) => ({
   textTransform: 'uppercase',
 }));
 
-const StatusValue = styled(Typography)({
+const StatusValue = styled(Typography)(({ theme, color }) => ({
   fontSize: '0.875rem',
   fontWeight: 500,
-});
+  color: theme.palette[color]?.dark,
+}));
 
 function getStatusColor(status) {
   const statusMap = {
