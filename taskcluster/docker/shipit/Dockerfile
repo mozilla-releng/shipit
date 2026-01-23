@@ -33,7 +33,7 @@ ADD ${SRC}/api/src \
     /app/api/src/
 
 # Install dependencies
-RUN uv sync --locked
+RUN uv sync --locked --no-dev
 
 FROM python:$PYTHON_VERSION
 
