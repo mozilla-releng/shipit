@@ -2,7 +2,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import Dashboard from './components/Dashboard';
 import ErrorPanel from './components/ErrorPanel';
@@ -128,26 +128,34 @@ function Main() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        {routes.map(
-          ({ path, component: Component, requiresAuth, exact, ...rest }) => (
-            <Route
-              key={path || 'not-found'}
-              path={path}
-              exact={exact}
-              element={
-                <>
-                  {requiresAuth && !user ? (
+      <Suspense
+        fallback={
+          <Dashboard disabled>
+            <Box style={{ textAlign: 'center' }}>
+              <CircularProgress />
+            </Box>
+          </Dashboard>
+        }
+      >
+        <Routes>
+          {routes.map(
+            ({ path, component: Component, requiresAuth, exact, ...rest }) => (
+              <Route
+                key={path || 'not-found'}
+                path={path}
+                exact={exact}
+                element={
+                  requiresAuth && !user ? (
                     <Navigate to="/" replace />
                   ) : (
                     <Component {...rest} />
-                  )}
-                </>
-              }
-            />
-          ),
-        )}
-      </Routes>
+                  )
+                }
+              />
+            ),
+          )}
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
