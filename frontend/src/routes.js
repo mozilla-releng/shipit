@@ -58,7 +58,6 @@ export default [
   {
     component: ListMergeAutomation,
     path: '/merge-automation',
-    requiresAuth: true,
   },
   {
     component: NewMergeAutomation,
