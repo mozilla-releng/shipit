@@ -110,7 +110,7 @@ export async function submitMergeAutomation(
 
 export async function getMergeAutomations(product) {
   const url = `/merge-automation?product=${product}`;
-  const req = await axios.get(url, { authRequired: true });
+  const req = await axios.get(url);
 
   return req.data;
 }
