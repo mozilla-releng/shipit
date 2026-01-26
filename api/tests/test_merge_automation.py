@@ -307,7 +307,7 @@ def test_start_merge_automation_success(mock_trigger, mock_user, app):
     "automation_id,automation_status,expected_status_code,expected_error",
     [
         (999, None, 404, "Merge automation with id 999 not found"),
-        (None, TaskStatus.Running, 400, "Cannot start automation in Running status"),
+        (None, TaskStatus.Running, 409, "Cannot start automation in Running status"),
     ],
 )
 @patch("shipit_api.admin.merge_automation.current_user")
@@ -572,7 +572,7 @@ def test_mark_merge_automation_completed_already_terminal(mock_user, app, initia
 
     with app.test_client() as client:
         response = client.patch(f"/merge-automation/{automation.id}")
-        assert response.status_code == 400
+        assert response.status_code == 409
         assert f"Cannot update automation in {initial_status.name} status" in response.json()["detail"]
 
 

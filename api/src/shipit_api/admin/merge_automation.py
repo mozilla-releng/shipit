@@ -104,7 +104,7 @@ def cancel_merge_automation(automation_id):
         try:
             cancel_action_task_group(automation.task_id)
         except TaskclusterRestFailure as e:
-            abort(400, str(e))
+            abort(500, str(e))
 
     automation.status = TaskStatus.Canceled
     db.session.commit()
@@ -123,7 +123,7 @@ def mark_merge_automation_completed(automation_id):
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     if automation.status in (TaskStatus.Completed, TaskStatus.Canceled):
-        return abort(400, f"Cannot update automation in {automation.status.name} status")
+        return abort(409, f"Cannot update automation in {automation.status.name} status")
 
     automation.status = TaskStatus.Completed
     automation.completed = datetime.datetime.now(datetime.UTC)
@@ -146,7 +146,7 @@ def start_merge_automation(automation_id):
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
     if automation.status != TaskStatus.Pending:
-        return abort(400, f"Cannot start automation in {automation.status.name} status")
+        return abort(409, f"Cannot start automation in {automation.status.name} status")
 
     try:
         task_id = trigger_merge_automation_action(automation)
@@ -199,7 +199,7 @@ def trigger_merge_automation_action(automation):
             hook_payload_rendered,
         )
     except TaskclusterRestFailure as e:
-        abort(400, str(e))
+        abort(500, str(e))
 
     task_id = result["status"]["taskId"]
     logger.info(f"Triggered merge automation action, task ID: {task_id}")
