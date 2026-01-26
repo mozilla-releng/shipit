@@ -96,6 +96,7 @@ def mock_setup_working_copy(branch, url, secrets):
     subprocess.check_call(["git", "checkout", "-b", branch, "906b7cd284728a2acec695ddcba9193b44d38982"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR)
     subprocess.check_call(["git", "config", "user.email", "release-services+robot@mozilla.com"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR)
     subprocess.check_call(["git", "config", "user.name", "Release Services Robot"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR)
+    subprocess.check_call(["git", "config", "commit.gpgsign", "false"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR)
 
 
 def mock_git_push(branch, secrets):
