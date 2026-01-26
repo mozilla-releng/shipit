@@ -51,8 +51,8 @@ def test_list_merge_automation_no_data(app):
 
     with app.test_client() as client:
         response = client.get("/merge-automation?product=thunderbird")
-        assert response.status_code == 404
-        assert response.json()["detail"] == "No merge behavior found for product: thunderbird"
+        assert response.status_code == 200
+        assert response.json() == []
 
 
 def test_list_merge_automation_with_data(app):
