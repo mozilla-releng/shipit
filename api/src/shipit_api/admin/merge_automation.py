@@ -113,7 +113,7 @@ def cancel_merge_automation(automation_id):
 
 
 def mark_merge_automation_completed(automation_id):
-    automation = db.session.get(MergeAutomation, automation_id)
+    automation = db.session.get(MergeAutomation, automation_id, with_for_update=True)
     if not automation:
         return abort(404, f"Merge automation with id {automation_id} not found")
 
@@ -135,7 +135,7 @@ def mark_merge_automation_completed(automation_id):
 
 
 def start_merge_automation(automation_id):
-    automation = db.session.get(MergeAutomation, automation_id)
+    automation = db.session.get(MergeAutomation, automation_id, with_for_update=True)
     if not automation:
         return abort(404, f"Merge automation with id {automation_id} not found")
 
