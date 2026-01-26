@@ -78,9 +78,6 @@ def submit_merge_automation():
 
 
 def list_merge_automation(product):
-    if product not in MERGE_BEHAVIORS_PER_PRODUCT:
-        return abort(404, f"No merge behavior found for product: {product}")
-
     merge_automations = (
         MergeAutomation.query.filter_by(product=product)
         .filter(MergeAutomation.status != TaskStatus.Canceled)
