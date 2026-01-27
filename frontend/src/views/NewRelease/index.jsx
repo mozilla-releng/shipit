@@ -433,7 +433,7 @@ export default function NewRelease() {
                 selectedBranch,
                 revision,
                 releaseEta,
-                partialVersions,
+                partialFieldEnabled ? partialVersions : [],
                 version,
                 buildNumber,
               )
