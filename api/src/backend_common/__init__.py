@@ -6,14 +6,20 @@
 import importlib
 import logging
 import os
-from functools import cache
+from functools import cache, partial
 from pathlib import PosixPath
 
 import connexion
 import flask
 import yaml
+from a2wsgi import WSGIMiddleware
 from connexion.middleware.main import ConnexionMiddleware, ServerErrorMiddleware
 from deepmerge import merge_or_raise
+
+# WSGIMiddleware has a default value of 10 workers that we cannot override through connexion
+# 10 threads is absolutely overkill since the GIL is still a thing and we have very little I/O bound requests
+# Reduce the number to 3 to reduce the RAM usage
+connexion.apps.flask.WSGIMiddleware = partial(WSGIMiddleware, workers=3)
 
 EXTENSIONS = ["dockerflow", "log", "security", "cors", "auth", "pulse", "db"]
 
