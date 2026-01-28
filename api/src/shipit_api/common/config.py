@@ -3,6 +3,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
 import pathlib
 import re
 import tempfile
@@ -559,3 +560,71 @@ def get_allowed_github_files(owner: str, repo: str) -> set[re.Pattern]:
             allowed_paths.add(r"one/package.json")
 
     return {re.compile(s) for s in allowed_paths}
+
+
+def _fx_merge_behavior(behavior, pretty_name, prod_repo, prod_project):
+    return {
+        "behavior": behavior,
+        "pretty_name": pretty_name,
+        "by-env": {
+            "local": {
+                "always-target-tip": False,
+                "repo": "https://hg.mozilla.org/try",
+                "project": "try",
+                "version_path": "browser/config/version_display.txt",
+            },
+            "dev": {
+                "always-target-tip": False,
+                "repo": "https://hg.mozilla.org/try",
+                "project": "try",
+                "version_path": "browser/config/version_display.txt",
+            },
+            "production": {
+                "always-target-tip": True,
+                "repo": prod_repo,
+                "project": prod_project,
+                "version_path": "browser/config/version_display.txt",
+            },
+        },
+    }
+
+
+# NOTE: This duplicates some configuration between the backend and the frontend (mainly the repo names).
+# However, the frontend should never have half of the config it has in the first place and it should get moved at some point.
+# See bug 1879910
+_MERGE_BEHAVIORS_PER_PRODUCT = {
+    "firefox": [
+        _fx_merge_behavior("main-to-beta", "Main -> beta", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
+        _fx_merge_behavior("early-to-late-beta", "Early -> late beta", "https://hg.mozilla.org/releases/mozilla-beta", "mozilla-beta"),
+        _fx_merge_behavior("beta-to-release", "Beta -> release", "https://hg.mozilla.org/releases/mozilla-beta", "mozilla-beta"),
+        _fx_merge_behavior("release-to-esr", "Release -> ESR", "https://hg.mozilla.org/releases/mozilla-release", "mozilla-release"),
+        _fx_merge_behavior("bump-main", "Bump main", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
+        _fx_merge_behavior("bump-esr140", "Bump ESR 140", "https://hg.mozilla.org/releases/mozilla-esr140", "mozilla-esr140"),
+        _fx_merge_behavior("bump-esr115", "Bump ESR 115", "https://hg.mozilla.org/releases/mozilla-esr115", "mozilla-esr115"),
+    ]
+}
+
+
+def resolve_config_by_environment(config, environment):
+    def _resolve(obj):
+        if isinstance(obj, dict) and "by-env" in obj:
+            env_mapping = obj["by-env"]
+            env_value = env_mapping[environment]
+
+            result = {k: _resolve(v) for k, v in obj.items() if k != "by-env"}
+            if isinstance(env_value, dict):
+                result.update(_resolve(env_value))
+            else:
+                return _resolve(env_value)
+            return result
+
+        if isinstance(obj, dict):
+            return {k: _resolve(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [_resolve(item) for item in obj]
+        return obj
+
+    return _resolve(config)
+
+
+MERGE_BEHAVIORS_PER_PRODUCT = resolve_config_by_environment(_MERGE_BEHAVIORS_PER_PRODUCT, os.environ.get("APP_CHANNEL", "local"))
