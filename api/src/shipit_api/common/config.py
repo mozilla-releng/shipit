@@ -49,10 +49,6 @@ ESR_BRANCH_PREFIX = "releases/mozilla-esr"
 # still rely on this value.
 FIREFOX_AURORA = ""
 
-# IOS versions
-IOS_BETA_VERSION = ""
-IOS_VERSION = ""
-
 # Thunderbird configs
 LATEST_THUNDERBIRD_ALPHA_VERSION = "54.0a2"
 
