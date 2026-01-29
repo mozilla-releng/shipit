@@ -9,7 +9,7 @@ import sys
 
 import sentry_sdk
 from dockerflow.logging import JsonLogFormatter
-from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration, ignore_logger
 from sentry_sdk.integrations.starlette import StarletteIntegration
 
 
@@ -41,6 +41,9 @@ def configure_logging():
 
 
 def configure_sentry(environment, sentry_dsn):
+    # dockerflow logs exceptions as error, including those that turn into a 4xx
+    # Tell sentry to not create alert from those, we'll get one for actual errors
+    ignore_logger("request.summary")
     sentry_sdk.init(
         dsn=sentry_dsn,
         environment=environment,
