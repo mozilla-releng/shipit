@@ -9,6 +9,18 @@ const NewRelease = lazy(
 const NewXPIRelease = lazy(
   () => import(/* webpackChunkName: 'NewXPIRelease' */ './views/NewXPIRelease'),
 );
+const NewMergeAutomation = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'NewMergeAutomation' */ './views/NewMergeAutomation'
+    ),
+);
+const ListMergeAutomation = lazy(
+  () =>
+    import(
+      /* webpackChunkName: 'ListMergeAutomation' */ './views/ListMergeAutomation'
+    ),
+);
 
 export default [
   {
@@ -41,6 +53,15 @@ export default [
   {
     component: NewXPIRelease,
     path: '/newxpi',
+    requiresAuth: true,
+  },
+  {
+    component: ListMergeAutomation,
+    path: '/merge-automation',
+  },
+  {
+    component: NewMergeAutomation,
+    path: '/merge-automation/new',
     requiresAuth: true,
   },
 ];

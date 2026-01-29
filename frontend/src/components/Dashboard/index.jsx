@@ -1,4 +1,5 @@
 import ExtensionIcon from '@mui/icons-material/Extension';
+import Alert from '@mui/material/Alert';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -7,11 +8,13 @@ import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { bool, node, string } from 'prop-types';
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
+import { useLocation } from 'react-router';
 import { makeStyles } from 'tss-react/mui';
 import { DEPLOYMENT_BRANCH } from '../../config';
 import { APP_BAR_HEIGHT, CONTENT_MAX_WIDTH } from '../../utils/constants';
 import Footer from '../../views/Footer';
+import MergeAutomationMenu from './MergeAutomationMenu';
 import ReleasesMenu from './ReleasesMenu';
 import SettingsMenu from './SettingsMenu';
 import UserMenu from './UserMenu';
@@ -102,6 +105,19 @@ function Logo(props) {
 export default function Dashboard(props) {
   const { classes } = useStyles();
   const { title, children, disabled, group } = props;
+  const { state } = useLocation();
+  const [successMessage, setSuccessMessage] = useState(state?.successMessage);
+
+  useEffect(() => {
+    if (state?.successMessage) {
+      // Clear from history state so it doesn't persist on page refresh
+      window.history.replaceState({}, '');
+    }
+  }, []);
+
+  const handleSuccessClose = () => {
+    setSuccessMessage(null);
+  };
 
   return (
     <Fragment>
@@ -129,6 +145,7 @@ export default function Dashboard(props) {
             />
           )}
           <nav className={classes.nav}>
+            <MergeAutomationMenu disabled={disabled} />
             <ReleasesMenu disabled={disabled} />
             <SettingsMenu disabled={disabled} />
             <UserMenu />
@@ -136,7 +153,18 @@ export default function Dashboard(props) {
         </Toolbar>
       </AppBar>
       <Paper square elevation={0} className={classes.paper}>
-        <main className={classes.main}>{children}</main>
+        <main className={classes.main}>
+          {successMessage && (
+            <Alert
+              severity="success"
+              variant="filled"
+              onClose={handleSuccessClose}
+            >
+              {successMessage}
+            </Alert>
+          )}
+          {children}
+        </main>
       </Paper>
       {!disabled && <Footer />}
     </Fragment>
