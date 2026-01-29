@@ -21,7 +21,7 @@ task-defaults:
         docker-image: {in-tree: skopeo}
         max-run-time: 3600
     dependencies:
-        tests-js: tests-frontend-node-20
+        tests-js: tests-frontend-node-24
         tests-api: tests-api-python-312
     run:
         using: run-task
