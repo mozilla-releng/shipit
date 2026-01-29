@@ -135,7 +135,6 @@ module.exports = (_, { mode }) => {
                   ],
                 ],
                 plugins: [
-                  '@babel/plugin-syntax-dynamic-import',
                   [
                     'transform-react-remove-prop-types',
                     {
