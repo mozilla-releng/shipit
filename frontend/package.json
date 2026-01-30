@@ -36,7 +36,6 @@
     "@babel/preset-env": "7.28.6",
     "@babel/preset-react": "7.28.5",
     "@mozilla-protocol/core": "^22.0.0",
-    "assert": "2.1.0",
     "axios": "^1.10.0",
     "babel-loader": "10.0.0",
     "css-loader": "7.1.2",
