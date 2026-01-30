@@ -1,7 +1,6 @@
 import MuiButton from '@mui/material/Button';
 import { red } from '@mui/material/colors';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { oneOf } from 'prop-types';
 import React from 'react';
 
 const dangerTheme = createTheme({
@@ -22,9 +21,4 @@ function Button({ color = 'inherit', ...rest }) {
 
   return <MuiButton color={color} {...rest} />;
 }
-
-Button.propTypes = {
-  color: oneOf(['inherit', 'primary', 'secondary', 'danger']),
-};
-
 export default Button;

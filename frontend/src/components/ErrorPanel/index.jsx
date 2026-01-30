@@ -1,5 +1,4 @@
 import Alert from '@mui/material/Alert';
-import { string } from 'prop-types';
 import React, { useState } from 'react';
 
 export default function ErrorPanel({ error = null }) {
@@ -20,8 +19,3 @@ export default function ErrorPanel({ error = null }) {
     </Alert>
   ) : null;
 }
-
-ErrorPanel.propTypes = {
-  /** Error to display. */
-  error: string,
-};

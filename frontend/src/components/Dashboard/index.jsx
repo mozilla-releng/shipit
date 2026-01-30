@@ -7,7 +7,6 @@ import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { bool, node, string } from 'prop-types';
 import React, { Fragment, useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { makeStyles } from 'tss-react/mui';
@@ -170,10 +169,3 @@ export default function Dashboard(props) {
     </Fragment>
   );
 }
-
-Dashboard.prototype = {
-  children: node.isRequired,
-  // A title for the view.
-  title: string.isRequired,
-  disabled: bool,
-};

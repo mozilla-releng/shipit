@@ -135,12 +135,6 @@ module.exports = (_, { mode }) => {
                   ],
                 ],
                 plugins: [
-                  [
-                    'transform-react-remove-prop-types',
-                    {
-                      removeImport: true,
-                    },
-                  ],
                   ...(mode === 'development' ? ['react-refresh/babel'] : []),
                 ],
               },
