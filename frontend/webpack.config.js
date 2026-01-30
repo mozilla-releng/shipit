@@ -214,7 +214,6 @@ module.exports = (_, { mode }) => {
       runtimeChunk: 'single',
     },
     plugins: [
-      new webpack.ProvidePlugin({ process: 'process/browser' }),
       new webpack.EnvironmentPlugin({
         HOST: host,
         PORT: port,
