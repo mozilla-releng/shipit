@@ -60,7 +60,6 @@ module.exports = (_, { mode }) => {
         Buffer: false,
         fs: false,
         tls: false,
-        assert: 'assert',
       },
     },
     devServer: {
