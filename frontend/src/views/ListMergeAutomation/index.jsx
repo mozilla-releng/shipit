@@ -164,7 +164,7 @@ export default function ListMergeAutomation() {
       )}
 
       {automationsList && automationsList.length < 1 && (
-        <h2>No merge automations found for {product}</h2>
+        <h2>No merge automations found for {prettyProductName(product)}</h2>
       )}
 
       {automationsList?.map((automation) => (
