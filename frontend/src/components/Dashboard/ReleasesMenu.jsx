@@ -1,14 +1,8 @@
 import { withAuth0 } from '@auth0/auth0-react';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
-import Collapse from '@mui/material/Collapse';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import React, { useState } from 'react';
+import React from 'react';
 import DashboardMenu from './DashboardMenu';
-import { LinkMenuItem } from './MenuComponents';
+import { ExpandableSection, LinkMenuItem } from './MenuComponents';
 import menuItems from './menuItems';
 
 export function hasChildren(item) {
@@ -43,27 +37,16 @@ const SingleLevel = withAuth0(({ item, disabled, auth0 }) => {
     />
   );
 });
+
 const MultiLevel = ({ item }) => {
   const { items: children } = item;
-  const [open, setOpen] = useState(false);
-  const handleClick = () => {
-    setOpen((prev) => !prev);
-  };
 
   return (
-    <React.Fragment>
-      <ListItemButton onClick={handleClick}>
-        <ListItemText primary={item.title} />
-        {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      </ListItemButton>
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          {children.map((child) => (
-            <MenuItem key={`${item.title}-${child.title}`} item={child} />
-          ))}
-        </List>
-      </Collapse>
-    </React.Fragment>
+    <ExpandableSection title={item.title}>
+      {children.map((child) => (
+        <MenuItem key={`${item.title}-${child.title}`} item={child} />
+      ))}
+    </ExpandableSection>
   );
 };
 
