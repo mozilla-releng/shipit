@@ -23,6 +23,7 @@ import {
   getMergeBehaviors,
   getMergeInfo,
   getMergeRevisions,
+  prettyProductName,
   submitMergeAutomation,
 } from '../../components/merge_automation';
 import maybeShorten from '../../components/text';
@@ -328,7 +329,10 @@ export default function NewMergeAutomation() {
   };
 
   return (
-    <Dashboard group="Merge automation" title="New">
+    <Dashboard
+      group="Merge automation"
+      title={`New (${prettyProductName(product)})`}
+    >
       <ErrorPanel error={error} />
       <StyledFormControl variant="standard">
         {renderMergeBehaviors()}
