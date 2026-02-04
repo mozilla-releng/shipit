@@ -1,4 +1,5 @@
 import AndroidIcon from '@mui/icons-material/Android';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
 import Box from '@mui/material/Box';
@@ -249,7 +250,27 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
               key={signoff.uid}
               value={signoff.uid}
               control={<Radio />}
-              label={signoff.name}
+              label={
+                signoff.signed ? (
+                  <Box>
+                    <span>{signoff.name}</span>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CheckCircleIcon
+                        sx={{
+                          color: 'success.dark',
+                          fontSize: '0.85rem',
+                          mr: 0.3,
+                        }}
+                      />
+                      <Typography sx={{ color: 'green', fontSize: '0.75rem' }}>
+                        {signoff.completed_by}
+                      </Typography>
+                    </Box>
+                  </Box>
+                ) : (
+                  signoff.name
+                )
+              }
               disabled={signoff.signed}
             />
           ))}
