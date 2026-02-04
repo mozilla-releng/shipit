@@ -159,6 +159,19 @@ paths:
                     type: object
         "404":
           description: Merge automation not found
+  /merge-automation/products:
+    get:
+      summary: Get the list of products that have merge automation behaviors
+      operationId: shipit_api.admin.merge_automation.list_products
+      responses:
+        "200":
+          description: The list of product keys
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
   /merge-automation/behaviors/{product}:
     get:
       summary: Get the list of available merge behaviors for the given product

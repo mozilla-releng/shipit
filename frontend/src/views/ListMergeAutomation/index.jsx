@@ -11,6 +11,7 @@ import {
   cancelMergeAutomation,
   getMergeAutomations,
   getMergeAutomationTaskStatus,
+  prettyProductName,
   startMergeAutomation,
 } from '../../components/merge_automation';
 import useAction from '../../hooks/useAction';
@@ -134,7 +135,7 @@ export default function ListMergeAutomation() {
   };
 
   return (
-    <Dashboard group="Merge Automation" title="Merge Automations">
+    <Dashboard group="Merge Automation" title={prettyProductName(product)}>
       <ErrorPanel error={error} />
       <Box
         sx={{
@@ -163,7 +164,7 @@ export default function ListMergeAutomation() {
       )}
 
       {automationsList && automationsList.length < 1 && (
-        <h2>No merge automations found for {product}</h2>
+        <h2>No merge automations found for {prettyProductName(product)}</h2>
       )}
 
       {automationsList?.map((automation) => (

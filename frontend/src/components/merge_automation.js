@@ -1,4 +1,23 @@
 import axios from 'axios';
+import config from '../config';
+
+const prettyNames = Object.fromEntries(
+  Object.values(config.PRODUCTS)
+    .flat()
+    .map((p) => [p.product, p.prettyName]),
+);
+
+export function prettyProductName(productKey) {
+  return (
+    prettyNames[productKey] ||
+    productKey.charAt(0).toUpperCase() + productKey.slice(1)
+  );
+}
+
+export async function getMergeAutomationProducts() {
+  const req = await axios.get('/merge-automation/products');
+  return req.data;
+}
 
 export async function getMergeBehaviors(product) {
   const url = `/merge-automation/behaviors/${product}`;
