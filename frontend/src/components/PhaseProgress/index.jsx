@@ -1,3 +1,4 @@
+import { useAuth0 } from '@auth0/auth0-react';
 import AndroidIcon from '@mui/icons-material/Android';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -23,7 +24,7 @@ import Typography from '@mui/material/Typography';
 import React, { useContext, useState } from 'react';
 import libUrls from 'taskcluster-lib-urls';
 import { makeStyles } from 'tss-react/mui';
-import config from '../../config';
+import config, { DEPLOYMENT_BRANCH } from '../../config';
 import useAction from '../../hooks/useAction';
 import ReleaseContext from '../../utils/ReleaseContext';
 import { phaseSignOff, schedulePhase } from '../api';
@@ -46,6 +47,7 @@ const useStyles = makeStyles()((theme) => ({
 
 export default function PhaseProgress({ release, readOnly, xpi }) {
   const { classes } = useStyles();
+  const { user } = useAuth0();
   const { fetchReleases, productBranches } = useContext(ReleaseContext);
   const [disableScheduleOrSignoff, setDisableScheduleOrSignoff] =
     useState(false);
@@ -291,6 +293,10 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
     );
   };
 
+  const userAlreadySignedOff = phase.signoffs?.some(
+    (s) => s.completed_by === user?.email,
+  );
+
   return (
     <React.Fragment>
       <Stepper
@@ -319,6 +325,13 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
           {phase.signoffs && phase.signoffs.length > 0
             ? renderSignoffs()
             : renderSchedulePhase()}
+          {userAlreadySignedOff && (
+            <Typography
+              sx={{ color: 'text.secondary', fontSize: '0.85rem', mt: 1 }}
+            >
+              You have already signed off on this phase.
+            </Typography>
+          )}
         </DialogContent>
         <DialogActions>
           {loading && <CircularProgress />}
@@ -326,7 +339,10 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             Close
           </Button>
           <Button
-            disabled={disableScheduleOrSignoff}
+            disabled={
+              disableScheduleOrSignoff ||
+              (DEPLOYMENT_BRANCH === 'production' && userAlreadySignedOff)
+            }
             onClick={() => scheduleOrSignoff(release.name, phase.name)}
             variant="contained"
             color="primary"
