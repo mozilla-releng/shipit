@@ -44,7 +44,6 @@ shipit_trigger_product_details = "shipit_api.admin.cli:trigger_product_details"
 [dependency-groups]
 ccov-upload = ["requests"]
 dev = [
-    "flask-shell-ipython~=0.5.1",
     "aioresponses",
     "black",
     "check-manifest",
