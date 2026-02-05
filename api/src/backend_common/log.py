@@ -8,7 +8,7 @@ import os
 import sys
 
 import sentry_sdk
-from dockerflow.logging import JsonLogFormatter
+from dockerflow.logging import MozlogFormatter
 from sentry_sdk.integrations.logging import LoggingIntegration, ignore_logger
 from sentry_sdk.integrations.starlette import StarletteIntegration
 
@@ -35,7 +35,7 @@ def configure_logging():
         summary_logger = logging.getLogger("request.summary")
         summary_logger.setLevel(logging.ERROR)
     else:
-        handler.setFormatter(JsonLogFormatter())
+        handler.setFormatter(MozlogFormatter())
     logging.root.addHandler(handler)
     logging.root.setLevel(level)
 

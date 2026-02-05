@@ -6,7 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     # Required by both public and admin apps
     "connexion[swagger-ui,flask,uvicorn]>3.0,<4.0",
-    "dockerflow",
+    "dockerflow>=2026.1.26",
     "flask",
     "flask_migrate",
     "flask_talisman",
