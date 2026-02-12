@@ -59,8 +59,6 @@ from shipit_api.admin import auth0
                 "phase_signoff/firefox/ship_firefox",
                 "schedule_phase/firefox/promote_firefox_rc",
                 "phase_signoff/firefox/promote_firefox_rc",
-                "schedule_phase/firefox/ship_firefox_rc",
-                "phase_signoff/firefox/ship_firefox_rc",
                 "schedule_phase/firefox/push_firefox",
                 "phase_signoff/firefox/push_firefox",
                 "schedule_phase/firefox/ship_firefox",

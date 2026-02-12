@@ -12,7 +12,7 @@ from shipit_api.admin import tasks
     "avail_flavors, product, version, partial_updates, product_key, expectation, result",
     (
         (
-            ["promote_firefox", "promote_firefox_rc", "push_firefox", "ship_firefox", "ship_firefox_rc"],
+            ["promote_firefox", "promote_firefox_rc", "push_firefox", "ship_firefox"],
             "firefox",
             "100.0",
             None,
@@ -20,7 +20,6 @@ from shipit_api.admin import tasks
             does_not_raise(),
             [
                 {"name": "promote_firefox_rc", "in_previous_graph_ids": True},
-                {"name": "ship_firefox_rc", "in_previous_graph_ids": False},
                 {"name": "push_firefox", "in_previous_graph_ids": True},
                 {"name": "ship_firefox", "in_previous_graph_ids": True},
             ],
