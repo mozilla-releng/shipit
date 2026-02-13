@@ -63,11 +63,9 @@ FirefoxVersions = TypedDict(
         "LATEST_FIREFOX_OLDER_VERSION": str,
         "LATEST_FIREFOX_RELEASED_DEVEL_VERSION": str,
         "LATEST_FIREFOX_VERSION": str,
-        "LAST_SOFTFREEZE_DATE": str,
         "LAST_STRINGFREEZE_DATE": str,
         "LAST_MERGE_DATE": str,
         "LAST_RELEASE_DATE": str,
-        "NEXT_SOFTFREEZE_DATE": str,
         "NEXT_STRINGFREEZE_DATE": str,
         "NEXT_MERGE_DATE": str,
         "NEXT_RELEASE_DATE": str,
@@ -695,7 +693,6 @@ async def fetch_firefox_release_schedule_data(
     except Exception:
         logger.info("Failed to fetch %s", url)
         raise
-    last_softfreeze_date = iso_to_ymd(previous_nightly_version_schedule["soft_code_freeze"])
     last_merge_date = iso_to_ymd(previous_nightly_version_schedule["merge_day"])
     releases_after_last_merge_date = sorted(
         [
@@ -717,16 +714,13 @@ async def fetch_firefox_release_schedule_data(
         first_release_after_last_merge_date = releases_after_last_merge_date[0]
         last_release_date = dt_to_ymd(first_release_after_last_merge_date.completed)
     last_stringfreeze_date = iso_to_ymd(previous_nightly_version_schedule["string_freeze"])
-    next_softfreeze_date = iso_to_ymd(current_nightly_version_schedule["soft_code_freeze"])
     next_merge_date = iso_to_ymd(current_nightly_version_schedule["merge_day"])
     next_release_date = dt_to_ymd(from_isoformat(current_nightly_version_schedule["merge_day"]) + timedelta(days=1))
     next_stringfreeze_date = iso_to_ymd(current_nightly_version_schedule["string_freeze"])
     return {
-        "LAST_SOFTFREEZE_DATE": last_softfreeze_date,
         "LAST_MERGE_DATE": last_merge_date,
         "LAST_RELEASE_DATE": last_release_date,
         "LAST_STRINGFREEZE_DATE": last_stringfreeze_date,
-        "NEXT_SOFTFREEZE_DATE": next_softfreeze_date,
         "NEXT_MERGE_DATE": next_merge_date,
         "NEXT_RELEASE_DATE": next_release_date,
         "NEXT_STRINGFREEZE_DATE": next_stringfreeze_date,
@@ -750,11 +744,9 @@ async def get_firefox_versions(releases: typing.List[shipit_api.common.models.Re
             "LATEST_FIREFOX_OLDER_VERSION":           "3.6.28",
             "LATEST_FIREFOX_RELEASED_DEVEL_VERSION":  "59.0b14",
             "LATEST_FIREFOX_VERSION":                 "58.0.2",
-            "LAST_SOFTFREEZE_DATE":                   "2019-03-11",
             "LAST_STRINGFREEZE_DATE":                 "2019-03-12",
             "LAST_MERGE_DATE":                        "2019-03-18",
             "LAST_RELEASE_DATE":                      "2019-03-19",
-            "NEXT_SOFTFREEZE_DATE":                   "2019-05-06",
             "NEXT_STRINGFREEZE_DATE":                 "2019-05-07",
             "NEXT_MERGE_DATE":                        "2019-05-13",
             "NEXT_RELEASE_DATE":                      "2019-05-14"
@@ -776,11 +768,9 @@ async def get_firefox_versions(releases: typing.List[shipit_api.common.models.Re
         LATEST_FIREFOX_RELEASED_DEVEL_VERSION=get_latest_version(releases, Product.FIREFOX, shipit_api.common.config.BETA_BRANCH),
         FIREFOX_DEVEDITION=get_latest_version(releases, Product.DEVEDITION, shipit_api.common.config.BETA_BRANCH),
         LATEST_FIREFOX_OLDER_VERSION=shipit_api.common.config.LATEST_FIREFOX_OLDER_VERSION,
-        LAST_SOFTFREEZE_DATE=firefox_release_schedule_data["LAST_SOFTFREEZE_DATE"],
         LAST_STRINGFREEZE_DATE=firefox_release_schedule_data["LAST_STRINGFREEZE_DATE"],
         LAST_MERGE_DATE=firefox_release_schedule_data["LAST_MERGE_DATE"],
         LAST_RELEASE_DATE=firefox_release_schedule_data["LAST_RELEASE_DATE"],
-        NEXT_SOFTFREEZE_DATE=firefox_release_schedule_data["NEXT_SOFTFREEZE_DATE"],
         NEXT_STRINGFREEZE_DATE=firefox_release_schedule_data["NEXT_STRINGFREEZE_DATE"],
         NEXT_MERGE_DATE=firefox_release_schedule_data["NEXT_MERGE_DATE"],
         NEXT_RELEASE_DATE=firefox_release_schedule_data["NEXT_RELEASE_DATE"],
