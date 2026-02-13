@@ -716,19 +716,19 @@ async def fetch_firefox_release_schedule_data(
     else:
         first_release_after_last_merge_date = releases_after_last_merge_date[0]
         last_release_date = dt_to_ymd(first_release_after_last_merge_date.completed)
+    last_stringfreeze_date = iso_to_ymd(previous_nightly_version_schedule["string_freeze"])
     next_softfreeze_date = iso_to_ymd(current_nightly_version_schedule["soft_code_freeze"])
     next_merge_date = iso_to_ymd(current_nightly_version_schedule["merge_day"])
     next_release_date = dt_to_ymd(from_isoformat(current_nightly_version_schedule["merge_day"]) + timedelta(days=1))
-    last_stringfreeze_date = dt_to_ymd(from_ymd_format(last_softfreeze_date) + timedelta(days=1))
-    next_stringfreeze_date = dt_to_ymd(from_ymd_format(next_softfreeze_date) + timedelta(days=1))
+    next_stringfreeze_date = iso_to_ymd(current_nightly_version_schedule["string_freeze"])
     return {
         "LAST_SOFTFREEZE_DATE": last_softfreeze_date,
         "LAST_MERGE_DATE": last_merge_date,
         "LAST_RELEASE_DATE": last_release_date,
+        "LAST_STRINGFREEZE_DATE": last_stringfreeze_date,
         "NEXT_SOFTFREEZE_DATE": next_softfreeze_date,
         "NEXT_MERGE_DATE": next_merge_date,
         "NEXT_RELEASE_DATE": next_release_date,
-        "LAST_STRINGFREEZE_DATE": last_stringfreeze_date,
         "NEXT_STRINGFREEZE_DATE": next_stringfreeze_date,
     }
 
