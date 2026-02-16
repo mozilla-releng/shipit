@@ -21,6 +21,7 @@ def create_merge_automation_with_defaults(**kwargs):
     "product,expected_error",
     (
         pytest.param("firefox", False),
+        pytest.param("firefox-ios", False),
         pytest.param("thunderbird", True),
     ),
 )

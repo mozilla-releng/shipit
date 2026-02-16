@@ -592,6 +592,36 @@ def _fx_merge_behavior(behavior, pretty_name, prod_repo, prod_project):
     }
 
 
+def _fx_ios_merge_behavior(behavior, pretty_name):
+    return {
+        "behavior": behavior,
+        "pretty_name": pretty_name,
+        "by-env": {
+            "local": {
+                "always-target-tip": False,
+                "repo": "https://github.com/mozilla-mobile/staging-firefox-ios",
+                "project": "staging-firefox-ios",
+                "branch": "main",
+                "version_path": "version.txt",
+            },
+            "dev": {
+                "always-target-tip": False,
+                "repo": "https://github.com/mozilla-mobile/staging-firefox-ios",
+                "project": "staging-firefox-ios",
+                "branch": "main",
+                "version_path": "version.txt",
+            },
+            "production": {
+                "always-target-tip": True,
+                "repo": "https://github.com/mozilla-mobile/firefox-ios",
+                "project": "firefox-ios",
+                "branch": "main",
+                "version_path": "version.txt",
+            },
+        },
+    }
+
+
 # NOTE: This duplicates some configuration between the backend and the frontend (mainly the repo names).
 # However, the frontend should never have half of the config it has in the first place and it should get moved at some point.
 # See bug 1879910
@@ -604,7 +634,11 @@ _MERGE_BEHAVIORS_PER_PRODUCT = {
         _fx_merge_behavior("bump-main", "Bump main", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
         _fx_merge_behavior("bump-esr140", "Bump ESR 140", "https://hg.mozilla.org/releases/mozilla-esr140", "mozilla-esr140"),
         _fx_merge_behavior("bump-esr115", "Bump ESR 115", "https://hg.mozilla.org/releases/mozilla-esr115", "mozilla-esr115"),
-    ]
+    ],
+    "firefox-ios": [
+        _fx_ios_merge_behavior("minor", "Minor bump"),
+        _fx_ios_merge_behavior("major", "Major bump"),
+    ],
 }
 
 
