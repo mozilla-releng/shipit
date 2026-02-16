@@ -9,6 +9,7 @@ scopes=('hooks:trigger-hook:project-app-services/in-tree-action-1-generic/*' \
         'hooks:trigger-hook:project-gecko/in-tree-action-1-merge-automation/*' \
         'hooks:trigger-hook:project-gecko/in-tree-action-1-release-promotion/*' \
         'hooks:trigger-hook:project-mobile/in-tree-action-1-generic/*' \
+        'hooks:trigger-hook:project-mobile/in-tree-action-1-merge-automation/*' \
         'hooks:trigger-hook:project-mobile/in-tree-action-1-release-promotion/*' \
         'hooks:trigger-hook:project-mozillavpn/in-tree-action-1-generic/*' \
         'hooks:trigger-hook:project-mozillavpn/in-tree-action-1-release-promotion/*' \
