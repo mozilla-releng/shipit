@@ -310,7 +310,7 @@ export default function NewMergeAutomation() {
                   `Could not submit merge automation: ${result.error.toString()}`,
                 );
               } else {
-                await navigate('/merge-automation', {
+                await navigate(`/merge-automation?product=${product}`, {
                   state: {
                     successMessage: `Successfully created merge automation ${selectedBehavior} for ${product}`,
                   },
