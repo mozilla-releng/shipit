@@ -15,7 +15,7 @@ from mozilla_version.mobile import MobileVersion
 import backend_common.auth
 import backend_common.taskcluster
 from shipit_api.admin.api import get_signoff_emails
-from shipit_api.admin.release import bump_version, is_partner_attribution_enabled, is_partner_repacks_enabled, is_rc, parse_version
+from shipit_api.admin.release import bump_version, is_partner_attribution_enabled, is_partner_repacks_enabled, parse_version
 from shipit_api.common.models import Release, XPISignoff
 from shipit_api.common.product import Product
 
@@ -44,32 +44,6 @@ from shipit_api.common.product import Product
 def test_parse_version(product, version, expectation, result):
     with expectation:
         assert parse_version(product, version) == result
-
-
-@pytest.mark.parametrize(
-    "product, version, partial_updates, result",
-    (
-        ("firefox", "64.0", None, True),
-        ("thunderbird", "64.0", None, False),
-        ("fennec", "64.0", None, False),  # "fennec_rc" does not exist anymore
-        ("firefox", "64.0.1", None, False),
-        ("thunderbird", "64.0.1", None, False),
-        ("fennec", "64.0.1", None, False),
-        ("firefox", "56.0b3", None, False),
-        ("fennec", "56.0b3", None, False),
-        ("firefox", "45.0esr", None, False),
-        ("firefox", "57.0", {"56.0b1": [], "55.0": []}, True),
-        ("firefox", "57.0", {"56.0": [], "55.0": []}, True),
-        ("firefox", "57.0.1", {"57.0": [], "56.0.1": [], "56.0": []}, False),
-        ("thunderbird", "57.0", {"56.0": [], "55.0": []}, False),
-        ("thunderbird", "57.0", {"56.0": [], "56.0b4": [], "55.0": []}, True),
-        ("firefox", "115.8.0esr", None, False),
-        ("firefox", "70.0b4", {"69.0b15": [], "69.0b16": [], "70.0b3": []}, False),
-        ("devedition", "70.0b4", {"70.0b3": [], "70.0b1": [], "70.0b2": []}, False),
-    ),
-)
-def test_is_rc(product, version, partial_updates, result):
-    assert is_rc(product, version, partial_updates) == result
 
 
 @pytest.mark.parametrize(
