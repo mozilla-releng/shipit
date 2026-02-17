@@ -432,13 +432,6 @@ def _get_supported_flavors():
         phase_definitions = _get_phases_definitions(product_config["phases"])
         supported_flavors_per_product[product_name] = phase_definitions
 
-    # We RCs are not a real product per se. That's why we special-case it here.
-    supported_flavors_per_product["firefox_rc"] = [
-        {"name": "promote_firefox_rc", "in_previous_graph_ids": True},
-        {"name": "push_firefox", "in_previous_graph_ids": True},
-        {"name": "ship_firefox", "in_previous_graph_ids": True},
-    ]
-
     return supported_flavors_per_product
 
 

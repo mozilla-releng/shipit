@@ -8,45 +8,10 @@ import logging
 import requests
 from mozilla_version.gecko import FirefoxVersion
 
-from shipit_api.common.config import SUPPORTED_FLAVORS
 from shipit_api.common.product import Product
 from shipit_api.common.version import parse_version
 
 logger = logging.getLogger(__name__)
-
-
-def is_rc(product, version, partial_updates):
-    gecko_version = parse_version(product, version)
-
-    # Release candidates are only expected when the version number matches
-    # the release pattern
-
-    try:
-        if not gecko_version.is_release or gecko_version.patch_number is not None:
-            return False
-    except AttributeError:
-        # some versions (like MavenVersion) don't expose this attribute
-        return False
-
-    if SUPPORTED_FLAVORS.get(f"{product}_rc"):
-        # could hard code "Thunderbird" condition here but
-        # suspect it's better to use SUPPORTED_FLAVORS for a
-        # configuration driven decision.
-        return True
-
-    # RC release types will enable beta-channel testing &
-    # shipping. We need this for all "final" releases
-    # and also any releases that include a beta as a partial.
-    # The assumption that "shipping to beta channel" always
-    # implies other RC behaviour is bound to break at some
-    # point, but this works for now.
-    if partial_updates:
-        for partial_version in partial_updates:
-            partial_gecko_version = parse_version(product, partial_version)
-            if partial_gecko_version.is_beta:
-                return True
-
-    return False
 
 
 def bump_version(product, version):
