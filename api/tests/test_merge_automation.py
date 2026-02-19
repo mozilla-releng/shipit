@@ -40,6 +40,7 @@ def test_list_behaviors(app, product, expected_error):
             assert_key_is("behavior", str, behavior)
             assert_key_is("repo", str, behavior)
             assert_key_is("pretty_name", str, behavior)
+            assert_key_is("branch", str, behavior)
             assert_key_is("always-target-tip", bool, behavior)
 
 

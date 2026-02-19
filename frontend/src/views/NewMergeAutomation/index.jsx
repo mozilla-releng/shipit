@@ -137,6 +137,7 @@ export default function NewMergeAutomation() {
           behaviorConfig,
           selectedRevision,
           abortController.signal,
+          mergeRevisions[selectedRevision],
         );
         setRevisionInfo(info);
       } catch (e) {
@@ -210,8 +211,8 @@ export default function NewMergeAutomation() {
     }
 
     const uniqueRevision = Object.keys(mergeRevisions).length === 1;
-    const revisionPretty = (rev, sha) => {
-      return `${rev.date.toDateString()} - ${sha.substring(0, 8)} - ${
+    const revisionPretty = (rev) => {
+      return `${rev.date.toDateString()} - ${rev.node.substring(0, 8)} - ${
         rev.author
       } - ${maybeShorten(rev.desc)}`;
     };
@@ -221,7 +222,7 @@ export default function NewMergeAutomation() {
         disabled={uniqueRevision}
         freeSolo
         forcePopupIcon
-        options={Object.keys(mergeRevisions)}
+        options={Object.entries(mergeRevisions).map(([_, node]) => node.node)}
         value={selectedRevision}
         renderInput={(params) => (
           <TextField {...params} label="Revision" variant="outlined" />

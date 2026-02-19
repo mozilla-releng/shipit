@@ -4,7 +4,7 @@ function isHgRepo(repo) {
   return repo.startsWith('https://hg.mozilla.org/');
 }
 
-function isGitHubRepo(repo) {
+export function isGitHubRepo(repo) {
   return repo.startsWith('https://github.com/');
 }
 
@@ -14,7 +14,7 @@ function checkRepoIsSupported(repo) {
   }
 }
 
-function extractGithubRepoOwnerAndName(repo) {
+export function extractGithubRepoOwnerAndName(repo) {
   const parsedUrl = new URL(repo);
   const path = parsedUrl.pathname;
   const parts = path.split('/');
@@ -29,9 +29,13 @@ export async function getGithubBranches(repoOwner, repoName) {
   return req.data;
 }
 
-export async function getGithubCommits(repoOwner, repoName, branch) {
+export async function getGithubCommits(repoOwner, repoName, branch, signal) {
   const url = `/github/commits/${repoOwner}/${repoName}`;
-  const req = await axios.get(url, { authRequired: true, params: { branch } });
+  const req = await axios.get(url, {
+    authRequired: true,
+    params: { branch },
+    signal,
+  });
 
   return req.data;
 }
@@ -77,9 +81,9 @@ export async function getXPIVersion(
   return req.data.version;
 }
 
-async function getHgPushes(repo) {
+async function getHgPushes(repo, signal) {
   const url = `${repo}/json-pushes?version=2&full=1&tipsonly=1`;
-  const req = await axios.get(url);
+  const req = await axios.get(url, { signal });
 
   return req.data;
 }
@@ -87,13 +91,13 @@ async function getHgPushes(repo) {
 /**
  * Get latest pushes.
  */
-export async function getPushes(repo, branch) {
+export async function getPushes(repo, branch, signal) {
   checkRepoIsSupported(repo);
 
   let latestPushes;
 
   if (isHgRepo(repo)) {
-    const rawData = await getHgPushes(repo);
+    const rawData = await getHgPushes(repo, signal);
 
     latestPushes = Object.values(rawData.pushes)
       .map((push) => ({
@@ -103,7 +107,7 @@ export async function getPushes(repo, branch) {
       .reverse();
   } else if (isGitHubRepo(repo)) {
     const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
-    const rawData = await getGithubCommits(repoOwner, repoName, branch);
+    const rawData = await getGithubCommits(repoOwner, repoName, branch, signal);
 
     latestPushes = rawData.map((commit) => ({
       author: commit.author,

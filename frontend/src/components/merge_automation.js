@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../config';
+import { extractGithubRepoOwnerAndName, getPushes, isGitHubRepo } from './vcs';
 
 const prettyNames = Object.fromEntries(
   Object.values(config.PRODUCTS)
@@ -27,34 +28,6 @@ export async function getMergeBehaviors(product) {
   return Object.fromEntries(req.data.map((b) => [b.behavior, b]));
 }
 
-async function getHgPushes(repo, alwaysTargetTip, signal) {
-  const url = `${repo}/json-pushes?version=2&full=1&tipsonly=1&branch=default`;
-  const req = await axios.get(url, { signal });
-
-  const commits = {};
-  const pushes = req.data.pushes;
-
-  Object.values(pushes).forEach((push) => {
-    push.changesets.forEach((changeset) => {
-      commits[changeset.node] = {
-        date: new Date(push.date * 1000),
-        desc: changeset.desc,
-        author: changeset.author,
-      };
-    });
-  });
-
-  if (alwaysTargetTip) {
-    const firstKey = Object.keys(commits)[0];
-
-    if (firstKey) {
-      return { [firstKey]: commits[firstKey] };
-    }
-  }
-
-  return commits;
-}
-
 async function getHgCommitInfo(repoUrl, revision, signal) {
   const url = `${repoUrl}/json-log?rev=${revision}`;
   const req = await axios.get(url, { signal });
@@ -79,26 +52,68 @@ async function getHgVersion(repoUrl, revision, versionPath, signal) {
 }
 
 export async function getMergeRevisions(behaviorConfig, signal) {
-  const pushes = await getHgPushes(
+  const pushes = await getPushes(
     behaviorConfig.repo,
-    behaviorConfig['always-target-tip'],
+    behaviorConfig.branch,
     signal,
   );
 
-  return pushes;
+  const commits = Object.fromEntries(pushes.map((push) => [push.node, push]));
+
+  if (behaviorConfig['always-target-tip']) {
+    const firstKey = Object.keys(commits)[0];
+    if (firstKey) {
+      return { [firstKey]: commits[firstKey] };
+    }
+  }
+
+  return commits;
 }
 
-export async function getMergeInfo(behaviorConfig, revision, signal) {
-  const [version, commitInfo] = await Promise.all([
-    getHgVersion(behaviorConfig.repo, revision, behaviorConfig.version_path),
-    getHgCommitInfo(behaviorConfig.repo, revision, signal),
-  ]);
+export async function getMergeInfo(
+  behaviorConfig,
+  revision,
+  signal,
+  commitData,
+) {
+  let version;
+  let commitInfo;
 
-  const commitMessage = commitInfo.desc.split('\n')[0];
+  if (isGitHubRepo(behaviorConfig.repo)) {
+    const { repoOwner, repoName } = extractGithubRepoOwnerAndName(
+      behaviorConfig.repo,
+    );
+
+    const versionRes = await axios.get(
+      `/github/file/${repoOwner}/${repoName}/${revision}`,
+      {
+        authRequired: true,
+        params: { path: behaviorConfig.version_path },
+        transformResponse: [(data) => data],
+        signal,
+      },
+    );
+
+    version = versionRes.data.trim();
+    commitInfo = {
+      desc: commitData ? commitData.desc : '',
+      author: commitData ? commitData.author : '',
+    };
+  } else {
+    [version, commitInfo] = await Promise.all([
+      getHgVersion(
+        behaviorConfig.repo,
+        revision,
+        behaviorConfig.version_path,
+        signal,
+      ),
+      getHgCommitInfo(behaviorConfig.repo, revision, signal),
+    ]);
+  }
 
   return {
     version,
-    commit_message: commitMessage,
+    commit_message: commitInfo.desc.split('\n')[0],
     commit_author: commitInfo.author,
   };
 }
