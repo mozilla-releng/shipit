@@ -168,7 +168,6 @@ export default function NewRelease() {
       const parts = await guessPartialVersionsAction(
         selectedProduct,
         selectedBranch,
-        ver,
       );
 
       setPartialVersions(parts.data);

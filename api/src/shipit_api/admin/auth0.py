@@ -1,7 +1,6 @@
 from deepmerge import merge_or_raise
 
 from backend_common import get_products_config
-from shipit_api.common.config import SUPPORTED_FLAVORS
 
 
 def assign_ldap_groups_to_scopes():
@@ -24,9 +23,7 @@ def _get_auth0_scopes(product_name, product_config):
         f"add_merge_automation/{product_name}",
         f"cancel_merge_automation/{product_name}",
     ]
-    phases = [f["name"] for f in SUPPORTED_FLAVORS.get(product_name, [])]
-    if product_name == "firefox":
-        phases.extend([f["name"] for f in SUPPORTED_FLAVORS["firefox_rc"]])
+    phases = product_config.get("phases", [])
     for phase in phases:
         scopes.extend([f"schedule_phase/{product_name}/{phase}", f"phase_signoff/{product_name}/{phase}"])
 

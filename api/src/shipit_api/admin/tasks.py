@@ -15,7 +15,6 @@ import yaml
 from backend_common import get_trust_domains
 from backend_common.taskcluster import get_service
 from shipit_api.admin.github import extract_github_repo_owner_and_name
-from shipit_api.admin.release import is_rc
 from shipit_api.common.config import SUPPORTED_FLAVORS
 from shipit_api.common.models import XPIRelease
 
@@ -200,9 +199,6 @@ def find_action(name, actions):
 def extract_our_flavors(avail_flavors, product, version, partial_updates, product_key=None):
     if not product_key:
         product_key = product
-
-    if is_rc(product_key, version, partial_updates):
-        product_key = f"{product_key}_rc"
 
     if product_key not in SUPPORTED_FLAVORS:
         raise UnsupportedFlavor(description=f"`{product_key}` is not supported")
