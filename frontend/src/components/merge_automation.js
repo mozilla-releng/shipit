@@ -77,7 +77,7 @@ async function getHgVersion(repoUrl, revision, versionPath) {
   return req.data.trim();
 }
 
-export async function getMergeRevisions(behaviorConfig, signal) {
+export async function getMergeRevisions(behaviorConfig, _signal) {
   const pushes = await getHgPushes(
     behaviorConfig.repo,
     behaviorConfig['always-target-tip'],
@@ -86,7 +86,7 @@ export async function getMergeRevisions(behaviorConfig, signal) {
   return pushes;
 }
 
-export async function getMergeInfo(behaviorConfig, revision, signal) {
+export async function getMergeInfo(behaviorConfig, revision, _signal) {
   const [version, commitInfo] = await Promise.all([
     getHgVersion(behaviorConfig.repo, revision, behaviorConfig.version_path),
     getHgCommitInfo(behaviorConfig.repo, revision),
