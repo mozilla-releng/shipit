@@ -27,9 +27,9 @@ export async function getMergeBehaviors(product) {
   return Object.fromEntries(req.data.map((b) => [b.behavior, b]));
 }
 
-async function getHgPushes(repo, alwaysTargetTip) {
+async function getHgPushes(repo, alwaysTargetTip, signal) {
   const url = `${repo}/json-pushes?version=2&full=1&tipsonly=1&branch=default`;
-  const req = await axios.get(url);
+  const req = await axios.get(url, { signal });
 
   const commits = {};
   const pushes = req.data.pushes;
@@ -55,9 +55,9 @@ async function getHgPushes(repo, alwaysTargetTip) {
   return commits;
 }
 
-async function getHgCommitInfo(repoUrl, revision) {
+async function getHgCommitInfo(repoUrl, revision, signal) {
   const url = `${repoUrl}/json-log?rev=${revision}`;
-  const req = await axios.get(url);
+  const req = await axios.get(url, { signal });
   const commitData = req.data.entries[0];
 
   return {
@@ -68,28 +68,30 @@ async function getHgCommitInfo(repoUrl, revision) {
   };
 }
 
-async function getHgVersion(repoUrl, revision, versionPath) {
+async function getHgVersion(repoUrl, revision, versionPath, signal) {
   const url = `${repoUrl}/raw-file/${revision}/${versionPath}`;
   const req = await axios.get(url, {
     transformResponse: [(data) => data],
+    signal,
   });
 
   return req.data.trim();
 }
 
-export async function getMergeRevisions(behaviorConfig, _signal) {
+export async function getMergeRevisions(behaviorConfig, signal) {
   const pushes = await getHgPushes(
     behaviorConfig.repo,
     behaviorConfig['always-target-tip'],
+    signal,
   );
 
   return pushes;
 }
 
-export async function getMergeInfo(behaviorConfig, revision, _signal) {
+export async function getMergeInfo(behaviorConfig, revision, signal) {
   const [version, commitInfo] = await Promise.all([
     getHgVersion(behaviorConfig.repo, revision, behaviorConfig.version_path),
-    getHgCommitInfo(behaviorConfig.repo, revision),
+    getHgCommitInfo(behaviorConfig.repo, revision, signal),
   ]);
 
   const commitMessage = commitInfo.desc.split('\n')[0];
