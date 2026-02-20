@@ -22,9 +22,9 @@ export function extractGithubRepoOwnerAndName(repo) {
   return { repoOwner: parts[1], repoName: parts[2] };
 }
 
-export async function getGithubBranches(repoOwner, repoName) {
+export async function getGithubBranches(repoOwner, repoName, signal) {
   const url = `/github/branches/${repoOwner}/${repoName}`;
-  const req = await axios.get(url, { authRequired: true });
+  const req = await axios.get(url, { authRequired: true, signal });
 
   return req.data;
 }
@@ -123,14 +123,14 @@ export async function getPushes(repo, branch, signal) {
   return latestPushes;
 }
 
-export async function getBranches(repo) {
+export async function getBranches(repo, signal) {
   if (!isGitHubRepo(repo)) {
     throw new Error('Only GitHub repositories are supported.');
   }
 
   let branches;
   const { repoOwner, repoName } = extractGithubRepoOwnerAndName(repo);
-  const rawData = await getGithubBranches(repoOwner, repoName);
+  const rawData = await getGithubBranches(repoOwner, repoName, signal);
 
   branches = rawData.map((branch) => ({
     branch: branch.name,
@@ -159,7 +159,7 @@ export async function getBranches(repo) {
 /**
  * Get in-tree product "display" version.
  */
-export async function getVersion(repo, revision, appName, versionFile) {
+export async function getVersion(repo, revision, appName, versionFile, signal) {
   checkRepoIsSupported(repo);
 
   let url;
@@ -185,6 +185,7 @@ export async function getVersion(repo, revision, appName, versionFile) {
       path: 'version.txt',
     },
     transformResponse: [(data) => data],
+    signal,
   });
 
   if (res.status === 200) {
