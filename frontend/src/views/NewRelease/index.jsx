@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import TimeAgo from 'react-timeago';
 import { makeStyles } from 'tss-react/mui';
@@ -29,6 +29,7 @@ import {
 } from '../../components/api';
 import Dashboard from '../../components/Dashboard';
 import DecisionTaskStatus from '../../components/DecisionTaskStatus';
+import ErrorPanel from '../../components/ErrorPanel';
 import maybeShorten from '../../components/text';
 import {
   getBranches,
@@ -66,21 +67,13 @@ export default function NewRelease() {
   const [suggestedRevisions, setSuggestedRevisions] = useState(null);
   const [releaseEta, setReleaseEta] = useState(null);
   const [open, setOpen] = useState(false);
-  const [getBranchesState, getBranchesAction] = useAction(getBranches);
-  const [getPushesState, getPushesAction] = useAction(getPushes);
+  const [error, setError] = useState(null);
+  const [branchesLoading, setBranchesLoading] = useState(false);
+  const [pushesLoading, setPushesLoading] = useState(false);
+  const [revisionInfoLoading, setRevisionInfoLoading] = useState(false);
   const [submitReleaseState, submitReleaseAction] = useAction(submitRelease);
-  const [guessPartialVersionsState, guessPartialVersionsAction] =
-    useAction(guessPartialVersions);
-  const [getVersionState, getVersionAction] = useAction(getVersion);
-  const [guessBuildNumberState, guessBuildNumberAction] =
-    useAction(guessBuildNumber);
   const [decisionTaskStatus, setDecisionTaskStatus] = useState(null);
-  const loading =
-    getBranchesState.loading ||
-    getPushesState.loading ||
-    getVersionState.loading ||
-    guessBuildNumberState.loading ||
-    guessPartialVersionsState.loading;
+  const loading = branchesLoading || pushesLoading || revisionInfoLoading;
   const revisionPretty = (rev) => {
     return `${rev.date.toDateString()} - ${rev.node.substring(0, 8)} - ${
       rev.author
@@ -93,7 +86,6 @@ export default function NewRelease() {
     setVersion('');
     setBuildNumber(0);
     setPartialVersions([]);
-    setSuggestedRevisions(null);
     setReleaseEta(null);
     setDecisionTaskStatus(null);
   };
@@ -103,69 +95,149 @@ export default function NewRelease() {
     setSelectedProduct(product);
   };
 
-  const handleRepository = async (repository) => {
+  const handleRepository = (repository) => {
     reset();
-    const repo = { ...repository };
-    const branches = await getBranchesAction(repo.repo);
-
-    repo.branches = branches.data;
-    setSelectedRepository(repo);
+    setSelectedRepository(repository);
   };
 
-  const handleBranch = async (branch) => {
-    reset();
-    setSelectedBranch(branch);
-    const pushes = await getPushesAction(
-      branch.repo,
-      isGitHubRepo(branch.repo) ? branch.branch : null,
-    );
-
-    setSuggestedRevisions(
-      pushes.data.filter((push) => push.desc.indexOf('DONTBUILD') === -1),
-    );
-  };
-
-  const handleRevisionInputChange = async (rev) => {
-    setRevision(rev);
-
-    if (!rev) {
-      setVersion('');
-      setBuildNumber('');
-      setPartialVersions([]);
-      setDecisionTaskStatus(null);
-
+  useEffect(() => {
+    if (!selectedRepository?.repo) {
       return;
     }
 
-    const ver = (
-      await getVersionAction(
-        selectedBranch.repo,
-        rev,
-        selectedProduct.appName,
-        selectedBranch.versionFile,
-      )
-    ).data;
-    const nextBuildNumber = (
-      await guessBuildNumberAction(selectedProduct.product, ver)
-    ).data;
-
-    setVersion(ver);
-    setBuildNumber(nextBuildNumber);
-
-    if (selectedProduct.enablePartials && partialFieldEnabled) {
-      const parts = await guessPartialVersionsAction(
-        selectedProduct,
-        selectedBranch,
-      );
-
-      setPartialVersions(parts.data);
+    async function fetchBranches() {
+      try {
+        setBranchesLoading(true);
+        const data = await getBranches(selectedRepository.repo);
+        setSelectedRepository((prev) => ({ ...prev, branches: data }));
+      } catch (e) {
+        setError(
+          `Failed to fetch branches for ${selectedRepository.repo}: ${e.toString()}`,
+        );
+      } finally {
+        setBranchesLoading(false);
+      }
     }
+
+    setError(null);
+    fetchBranches();
+  }, [selectedRepository?.repo]);
+
+  const handleBranch = (branch) => {
+    reset();
+    setSelectedBranch(branch);
   };
 
-  const handleRevisionChange = async (rev) => {
-    // This will trigger value change and handleRevisionInputChange
-    setRevision(rev);
-  };
+  useEffect(() => {
+    if (!selectedBranch.repo) {
+      return;
+    }
+
+    async function fetchPushes() {
+      try {
+        setPushesLoading(true);
+        const pushes = await getPushes(
+          selectedBranch.repo,
+          isGitHubRepo(selectedBranch.repo) ? selectedBranch.branch : null,
+          abortController.signal,
+        );
+        setSuggestedRevisions(
+          pushes.filter((push) => push.desc.indexOf('DONTBUILD') === -1),
+        );
+      } catch (e) {
+        setError(
+          `Failed to fetch pushes for ${selectedBranch.branch}: ${e.toString()}`,
+        );
+      } finally {
+        setPushesLoading(false);
+      }
+    }
+
+    setSuggestedRevisions(null);
+    setError(null);
+    fetchPushes();
+  }, [selectedBranch.repo, selectedBranch.branch]);
+
+  useEffect(() => {
+    if (revision === '' || !selectedBranch?.repo || !selectedProduct) {
+      setVersion('');
+      setBuildNumber(0);
+      return;
+    }
+
+    async function fetchRevisionInfo() {
+      try {
+        setRevisionInfoLoading(true);
+
+        const ver = await getVersion(
+          selectedBranch.repo,
+          revision,
+          selectedProduct.appName,
+          selectedBranch.versionFile,
+        );
+
+        const nextBuildNumber = await guessBuildNumber(
+          selectedProduct.product,
+          ver,
+        );
+
+        setVersion(ver);
+        setBuildNumber(nextBuildNumber);
+      } catch (e) {
+        setError(
+          `Failed to fetch revision info for ${revision}: ${e.toString()}`,
+        );
+      } finally {
+        setRevisionInfoLoading(false);
+      }
+    }
+
+    setVersion('');
+    setBuildNumber(0);
+    setDecisionTaskStatus(null);
+    setError(null);
+    const timeout = setTimeout(fetchRevisionInfo, 500);
+    return () => clearTimeout(timeout);
+  }, [
+    revision,
+    selectedBranch?.repo,
+    selectedBranch?.branch,
+    selectedBranch?.versionFile,
+    selectedProduct?.product,
+    selectedProduct?.appName,
+  ]);
+
+  useEffect(() => {
+    if (!version || !selectedProduct?.enablePartials || !partialFieldEnabled) {
+      setPartialVersions([]);
+      return;
+    }
+
+    async function fetchPartials() {
+      try {
+        const parts = await guessPartialVersions(
+          selectedProduct,
+          selectedBranch,
+          version,
+        );
+        setPartialVersions(parts);
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    setError(null);
+    fetchPartials();
+  }, [
+    version,
+    selectedProduct?.enablePartials,
+    selectedProduct?.product,
+    selectedBranch?.branch,
+    selectedBranch?.numberOfPartials,
+    selectedBranch?.rcBranch,
+    selectedBranch?.alternativeBranch,
+    partialFieldEnabled,
+  ]);
 
   const handleReleaseEta = (date) => {
     setReleaseEta(date);
@@ -263,7 +335,7 @@ export default function NewRelease() {
     }
 
     return (
-      (getBranchesState.loading && <CircularProgress />) ||
+      (branchesLoading && <CircularProgress />) ||
       (branches && (
         <FormControl variant="standard" className={classes.formControl}>
           <InputLabel>Branch</InputLabel>
@@ -290,12 +362,11 @@ export default function NewRelease() {
           className={classes.formControl}
           freeSolo
           forcePopupIcon
+          loading={suggestedRevisions === null}
           options={suggestedRevisions || []}
           getOptionLabel={(rev) => rev.node}
-          onChange={(_event, value) =>
-            value && handleRevisionChange(value.node)
-          }
-          onInputChange={(_event, value) => handleRevisionInputChange(value)}
+          onChange={(_event, value) => value && setRevision(value.node)}
+          onInputChange={(_event, value) => setRevision(value)}
           renderOption={(props, option, _state) => (
             <div {...props}> {revisionPretty(option)} </div>
           )}
@@ -308,6 +379,7 @@ export default function NewRelease() {
             />
           )}
         />
+        {pushesLoading && <CircularProgress size={24} />}
         {revision !== '' && selectedRepository.enableTreeherder !== false && (
           <a
             href={`${config.TREEHERDER_URL}/jobs?repo=${selectedBranch.project}&revision=${revision}`}
@@ -467,7 +539,7 @@ export default function NewRelease() {
 
   const renderCreateReleaseButton = () => {
     return (
-      <Grid container alignItems="center">
+      <Box sx={{ mt: 3 }}>
         <Button
           color="primary"
           variant="contained"
@@ -476,13 +548,13 @@ export default function NewRelease() {
         >
           Create Release
         </Button>
-        {loading && <CircularProgress />}
-      </Grid>
+      </Box>
     );
   };
 
   return (
     <Dashboard group={groupTitle} title="New Release">
+      <ErrorPanel error={error} />
       {renderProductsSelect()}
       <Collapse
         in={
@@ -494,7 +566,7 @@ export default function NewRelease() {
       </Collapse>
       <Collapse
         in={
-          getBranchesState.loading ||
+          branchesLoading ||
           (selectedRepository?.branches &&
             selectedRepository.branches.length > 0) ||
           (selectedProduct.branches && selectedProduct.branches.length > 0)
@@ -503,14 +575,26 @@ export default function NewRelease() {
         {renderBranchesSelect()}
       </Collapse>
       <Collapse in={selectedBranch.repo && selectedBranch.repo.length > 0}>
-        {renderRevisionInput()}
-        {renderReleaseEta()}
-        {selectedProduct.enablePartials && renderPartials()}
-        <Collapse in={version !== '' && buildNumber !== 0}>
-          {renderReleaseInfo()}
-          {renderDecisionTaskStatus()}
-        </Collapse>
-        {renderCreateReleaseButton()}
+        <Box>
+          {renderRevisionInput()}
+          {revision !== '' && (
+            <React.Fragment>
+              {renderReleaseEta()}
+              {selectedProduct.enablePartials && renderPartials()}
+              {version !== '' && buildNumber !== 0 ? (
+                <Box sx={{ mt: 2 }}>
+                  {renderReleaseInfo()}
+                  {renderDecisionTaskStatus()}
+                  {renderCreateReleaseButton()}
+                </Box>
+              ) : (
+                error === null && (
+                  <CircularProgress sx={{ display: 'block', margin: 'auto' }} />
+                )
+              )}
+            </React.Fragment>
+          )}
+        </Box>
       </Collapse>
       {renderDialog()}
     </Dashboard>
