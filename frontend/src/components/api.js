@@ -11,6 +11,7 @@ export async function checkDecisionTaskStatus(
   branch,
   revision,
   repoUrl,
+  signal,
 ) {
   const req = await axios.post(
     '/decision-task/status',
@@ -22,6 +23,7 @@ export async function checkDecisionTaskStatus(
     },
     {
       authRequired: false,
+      signal,
     },
   );
 
@@ -38,10 +40,12 @@ export async function getReleases(
   params = null,
   url = '/releases',
   usePublicApi = true,
+  signal = null,
 ) {
   const res = await axios.get(url, {
     params,
     usePublicApi,
+    signal,
   });
 
   return res.data.reverse();
@@ -53,12 +57,17 @@ export async function getReleases(
  * This will fetch all release builds including shipped, aborted, and not
  * started yet.
  */
-export async function getBuildNumbers(product, version) {
-  const releases = await getReleases({
-    product,
-    version,
-    status: 'shipped,aborted,scheduled',
-  });
+export async function getBuildNumbers(product, version, signal = null) {
+  const releases = await getReleases(
+    {
+      product,
+      version,
+      status: 'shipped,aborted,scheduled',
+    },
+    '/releases',
+    true,
+    signal,
+  );
 
   return releases.map((release) => release.build_number);
 }
@@ -99,14 +108,20 @@ export async function getShippedReleases(
   branch,
   version = null,
   buildNumber = null,
+  signal = null,
 ) {
-  return getReleases({
-    product,
-    branch,
-    version,
-    build_number: buildNumber,
-    status: 'shipped',
-  });
+  return getReleases(
+    {
+      product,
+      branch,
+      version,
+      build_number: buildNumber,
+      status: 'shipped',
+    },
+    '/releases',
+    true,
+    signal,
+  );
 }
 
 export async function getRecentReleases(productBranches, limit = 4) {
@@ -155,8 +170,8 @@ export async function getRecentXPIReleases(limit = 4) {
   return await getShippedXPIReleases(limit);
 }
 
-export async function guessBuildNumber(product, version) {
-  const buildNumbers = await getBuildNumbers(product, version);
+export async function guessBuildNumber(product, version, signal = null) {
+  const buildNumbers = await getBuildNumbers(product, version, signal);
   const nextBuildNumber =
     buildNumbers.length !== 0 ? Math.max(...buildNumbers) + 1 : 1;
 
@@ -264,11 +279,21 @@ export async function submitRelease(
   return req.data;
 }
 
-export async function guessPartialVersions(selectedProduct, selectedBranch) {
+export async function guessPartialVersions(
+  selectedProduct,
+  selectedBranch,
+  signal = null,
+) {
   const { product } = selectedProduct;
   const { branch, numberOfPartials, alternativeBranch } = selectedBranch;
   const numberOfPartialsOrDefault = numberOfPartials || 3;
-  const shippedReleases = await getShippedReleases(product, branch);
+  const shippedReleases = await getShippedReleases(
+    product,
+    branch,
+    null,
+    null,
+    signal,
+  );
   const shippedBuilds = shippedReleases.map(
     (r) => `${r.version}build${r.build_number}`,
   );
@@ -282,6 +307,9 @@ export async function guessPartialVersions(selectedProduct, selectedBranch) {
     const alternativeReleases = await getShippedReleases(
       product,
       alternativeBranch,
+      null,
+      null,
+      signal,
     );
     const shippedAlternativeBuilds = alternativeReleases.map(
       (r) => `${r.version}build${r.build_number}`,

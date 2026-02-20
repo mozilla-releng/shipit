@@ -105,22 +105,31 @@ export default function NewRelease() {
       return;
     }
 
+    const abortController = new AbortController();
+
     async function fetchBranches() {
       try {
         setBranchesLoading(true);
-        const data = await getBranches(selectedRepository.repo);
+        const data = await getBranches(
+          selectedRepository.repo,
+          abortController.signal,
+        );
         setSelectedRepository((prev) => ({ ...prev, branches: data }));
       } catch (e) {
+        if (abortController.signal.aborted) return;
         setError(
           `Failed to fetch branches for ${selectedRepository.repo}: ${e.toString()}`,
         );
       } finally {
-        setBranchesLoading(false);
+        if (!abortController.signal.aborted) {
+          setBranchesLoading(false);
+        }
       }
     }
 
     setError(null);
     fetchBranches();
+    return () => abortController.abort();
   }, [selectedRepository?.repo]);
 
   const handleBranch = (branch) => {
@@ -132,6 +141,8 @@ export default function NewRelease() {
     if (!selectedBranch.repo) {
       return;
     }
+
+    const abortController = new AbortController();
 
     async function fetchPushes() {
       try {
@@ -145,17 +156,21 @@ export default function NewRelease() {
           pushes.filter((push) => push.desc.indexOf('DONTBUILD') === -1),
         );
       } catch (e) {
+        if (abortController.signal.aborted) return;
         setError(
           `Failed to fetch pushes for ${selectedBranch.branch}: ${e.toString()}`,
         );
       } finally {
-        setPushesLoading(false);
+        if (!abortController.signal.aborted) {
+          setPushesLoading(false);
+        }
       }
     }
 
     setSuggestedRevisions(null);
     setError(null);
     fetchPushes();
+    return () => abortController.abort();
   }, [selectedBranch.repo, selectedBranch.branch]);
 
   useEffect(() => {
@@ -164,6 +179,9 @@ export default function NewRelease() {
       setBuildNumber(0);
       return;
     }
+
+    const abortController = new AbortController();
+    const { signal } = abortController;
 
     async function fetchRevisionInfo() {
       try {
@@ -174,21 +192,28 @@ export default function NewRelease() {
           revision,
           selectedProduct.appName,
           selectedBranch.versionFile,
+          signal,
         );
+        if (signal.aborted) return;
 
         const nextBuildNumber = await guessBuildNumber(
           selectedProduct.product,
           ver,
+          signal,
         );
+        if (signal.aborted) return;
 
         setVersion(ver);
         setBuildNumber(nextBuildNumber);
       } catch (e) {
+        if (signal.aborted) return;
         setError(
           `Failed to fetch revision info for ${revision}: ${e.toString()}`,
         );
       } finally {
-        setRevisionInfoLoading(false);
+        if (!signal.aborted) {
+          setRevisionInfoLoading(false);
+        }
       }
     }
 
@@ -197,7 +222,10 @@ export default function NewRelease() {
     setDecisionTaskStatus(null);
     setError(null);
     const timeout = setTimeout(fetchRevisionInfo, 500);
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout);
+      abortController.abort();
+    };
   }, [
     revision,
     selectedBranch?.repo,
@@ -213,21 +241,27 @@ export default function NewRelease() {
       return;
     }
 
+    const abortController = new AbortController();
+    const { signal } = abortController;
+
     async function fetchPartials() {
       try {
         const parts = await guessPartialVersions(
           selectedProduct,
           selectedBranch,
           version,
+          signal,
         );
+        if (signal.aborted) return;
         setPartialVersions(parts);
-      } catch (e) {
-        // ignore
+      } catch {
+        if (signal.aborted) return;
       }
     }
 
     setError(null);
     fetchPartials();
+    return () => abortController.abort();
   }, [
     version,
     selectedProduct?.enablePartials,
