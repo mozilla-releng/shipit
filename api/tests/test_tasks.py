@@ -137,7 +137,7 @@ def test_extract_our_flavors_warnings(caplog, avail_flavors, expected_records, e
         ("https://hg.mozilla.org/try", "firefox-android", does_not_raise(), "gecko"),
         ("https://hg.mozilla.org/try", "firefox", does_not_raise(), "gecko"),
         ("https://hg.mozilla.org/releases/mozilla-beta", "firefox-android", does_not_raise(), "gecko"),
-        ("https://hg.mozilla.org/mozilla-central", "firefox-android", pytest.raises(KeyError), None),
+        ("https://hg.mozilla.org/mozilla-central", "firefox-android", does_not_raise(), "gecko"),
         ("https://hg.mozilla.org/try-comm-central", "firefox-android", does_not_raise(), "comm"),
         ("https://hg.mozilla.org/try-comm-central", "thunderbird", does_not_raise(), "comm"),
         ("", "xpi", does_not_raise(), "xpi"),
