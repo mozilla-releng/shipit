@@ -9,6 +9,7 @@ comm:
   - https://hg.mozilla.org/releases/comm-esr140
   - https://hg.mozilla.org/try-comm-central
 gecko:
+  - https://hg.mozilla.org/mozilla-central
   - https://hg.mozilla.org/releases/mozilla-beta
   - https://hg.mozilla.org/releases/mozilla-release
   - https://hg.mozilla.org/releases/mozilla-esr115
