@@ -82,7 +82,7 @@ export async function getXPIVersion(
 }
 
 async function getHgPushes(repo, signal) {
-  const url = `${repo}/json-pushes?version=2&full=1&tipsonly=1`;
+  const url = `${repo}/json-pushes?version=2&full=1&tipsonly=1&branch=default`;
   const req = await axios.get(url, { signal });
 
   return req.data;
