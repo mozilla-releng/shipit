@@ -81,8 +81,11 @@ export async function getXPIVersion(
   return req.data.version;
 }
 
-async function getHgPushes(repo, signal) {
-  const url = `${repo}/json-pushes?version=2&full=1&tipsonly=1&branch=default`;
+async function getHgPushes(repo, branch, signal) {
+  let url = `${repo}/json-pushes?version=2&full=1&tipsonly=1`;
+  if (branch) {
+    url += `&branch=${encodeURIComponent(branch)}`;
+  }
   const req = await axios.get(url, { signal });
 
   return req.data;
@@ -97,7 +100,7 @@ export async function getPushes(repo, branch, signal) {
   let latestPushes;
 
   if (isHgRepo(repo)) {
-    const rawData = await getHgPushes(repo, signal);
+    const rawData = await getHgPushes(repo, branch, signal);
 
     latestPushes = Object.values(rawData.pushes)
       .map((push) => ({
