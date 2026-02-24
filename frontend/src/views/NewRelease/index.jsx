@@ -33,7 +33,12 @@ import {
 } from '../../components/api';
 import Dashboard from '../../components/Dashboard';
 import maybeShorten from '../../components/text';
-import { getBranches, getPushes, getVersion } from '../../components/vcs';
+import {
+  getBranches,
+  getPushes,
+  getVersion,
+  isGitHubRepo,
+} from '../../components/vcs';
 import config from '../../config';
 import useAction from '../../hooks/useAction';
 import Link from '../../utils/Link';
@@ -117,7 +122,10 @@ export default function NewRelease() {
   const handleBranch = async (branch) => {
     reset();
     setSelectedBranch(branch);
-    const pushes = await getPushesAction(branch.repo, branch.branch);
+    const pushes = await getPushesAction(
+      branch.repo,
+      isGitHubRepo(branch.repo) ? branch.branch : null,
+    );
 
     setSuggestedRevisions(
       pushes.data.filter((push) => push.desc.indexOf('DONTBUILD') === -1),
