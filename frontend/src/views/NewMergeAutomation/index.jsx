@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import Dashboard from '../../components/Dashboard';
+import DecisionTaskStatus from '../../components/DecisionTaskStatus';
 import ErrorPanel from '../../components/ErrorPanel';
 import {
   getMergeBehaviors,
@@ -58,6 +59,7 @@ export default function NewMergeAutomation() {
   const [submitMergeAutomationState, submitMergeAutomationAction] = useAction(
     submitMergeAutomation,
   );
+  const [decisionTaskStatus, setDecisionTaskStatus] = useState(null);
 
   useEffect(() => {
     async function updateMergeBehaviors() {
@@ -114,6 +116,7 @@ export default function NewMergeAutomation() {
     setSelectedRevision('');
     setDialogOpen(false);
     setRevisionInfo(null);
+    setDecisionTaskStatus(null);
     setError(null);
     updateMergeRevisions();
 
@@ -125,6 +128,7 @@ export default function NewMergeAutomation() {
   useEffect(() => {
     if (selectedRevision === '' || !mergeBehaviors || !selectedBehavior) {
       setRevisionInfo(null);
+      setDecisionTaskStatus(null);
       return;
     }
 
@@ -151,6 +155,7 @@ export default function NewMergeAutomation() {
     }
 
     setRevisionInfo(null);
+    setDecisionTaskStatus(null);
     setError(null);
     updateRevisionInfo();
 
@@ -266,7 +271,13 @@ export default function NewMergeAutomation() {
   }
 
   function okToSubmit() {
-    return product && selectedBehavior && selectedRevision && revisionInfo;
+    return (
+      product &&
+      selectedBehavior &&
+      selectedRevision &&
+      revisionInfo &&
+      decisionTaskStatus?.state === 'ready'
+    );
   }
 
   const renderDialog = () => {
@@ -341,7 +352,20 @@ export default function NewMergeAutomation() {
           <Box sx={{ mt: 2 }}>{renderMergeRevisions()}</Box>
         )}
         {selectedRevision !== '' && (
-          <Box sx={{ mt: 2 }}>{renderRevisionInfo()}</Box>
+          <Box sx={{ mt: 2 }}>
+            {renderRevisionInfo()}
+            {selectedBehavior && mergeBehaviors && (
+              <DecisionTaskStatus
+                product={product}
+                branch={new URL(
+                  mergeBehaviors[selectedBehavior].repo,
+                ).pathname.slice(1)}
+                revision={selectedRevision}
+                repoUrl={mergeBehaviors[selectedBehavior].repo}
+                onStatusChange={setDecisionTaskStatus}
+              />
+            )}
+          </Box>
         )}
 
         <Box sx={{ mt: 3 }}>
