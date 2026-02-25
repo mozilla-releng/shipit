@@ -1,8 +1,6 @@
-import RefreshIcon from '@mui/icons-material/Refresh';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Collapse from '@mui/material/Collapse';
 import Dialog from '@mui/material/Dialog';
@@ -11,7 +9,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -26,12 +23,12 @@ import { useLocation, useNavigate } from 'react-router';
 import TimeAgo from 'react-timeago';
 import { makeStyles } from 'tss-react/mui';
 import {
-  checkDecisionTaskStatus,
   guessBuildNumber,
   guessPartialVersions,
   submitRelease,
 } from '../../components/api';
 import Dashboard from '../../components/Dashboard';
+import DecisionTaskStatus from '../../components/DecisionTaskStatus';
 import maybeShorten from '../../components/text';
 import {
   getBranches,
@@ -41,7 +38,6 @@ import {
 } from '../../components/vcs';
 import config from '../../config';
 import useAction from '../../hooks/useAction';
-import Link from '../../utils/Link';
 
 const useStyles = makeStyles()((theme) => ({
   formControl: {
@@ -78,9 +74,6 @@ export default function NewRelease() {
   const [getVersionState, getVersionAction] = useAction(getVersion);
   const [guessBuildNumberState, guessBuildNumberAction] =
     useAction(guessBuildNumber);
-  const [checkDecisionTaskState, checkDecisionTaskAction] = useAction(
-    checkDecisionTaskStatus,
-  );
   const [decisionTaskStatus, setDecisionTaskStatus] = useState(null);
   const loading =
     getBranchesState.loading ||
@@ -132,17 +125,6 @@ export default function NewRelease() {
     );
   };
 
-  const handleCheckDecisionTask = async (rev) => {
-    setDecisionTaskStatus(null);
-    const status = await checkDecisionTaskAction(
-      selectedProduct.product,
-      selectedBranch.branch,
-      rev,
-      selectedBranch.repo,
-    );
-    setDecisionTaskStatus(status.data);
-  };
-
   const handleRevisionInputChange = async (rev) => {
     setRevision(rev);
 
@@ -169,8 +151,6 @@ export default function NewRelease() {
 
     setVersion(ver);
     setBuildNumber(nextBuildNumber);
-
-    handleCheckDecisionTask(rev);
 
     if (selectedProduct.enablePartials && partialFieldEnabled) {
       const parts = await guessPartialVersionsAction(
@@ -470,45 +450,18 @@ export default function NewRelease() {
   };
 
   const renderDecisionTaskStatus = () => {
-    if (!decisionTaskStatus && !checkDecisionTaskState.loading) {
+    if (!revision || !selectedProduct || !selectedBranch) {
       return null;
     }
 
-    const state = decisionTaskStatus?.state || 'checking...';
-    const colorMap = {
-      ready: 'success',
-      missing: 'error',
-    };
-    const color = colorMap[state] || 'default';
-    const taskUrl = decisionTaskStatus?.task_id
-      ? `${config.TASKCLUSTER_ROOT_URL}/tasks/${decisionTaskStatus.task_id}`
-      : null;
-
     return (
-      <Typography component="h3" variant="h6">
-        Decision task:
-        <Box sx={{ ml: 1, display: 'inline' }}>
-          {taskUrl ? (
-            <Link to={taskUrl} nav={true}>
-              <Chip label={state} color={color} size="small" />
-            </Link>
-          ) : (
-            <Chip label={state} color={color} size="small" />
-          )}
-          <IconButton
-            size="small"
-            onClick={() => handleCheckDecisionTask(revision)}
-            disabled={checkDecisionTaskState.loading}
-            title="Refresh status"
-          >
-            {checkDecisionTaskState.loading ? (
-              <CircularProgress size={16} />
-            ) : (
-              <RefreshIcon fontSize="small" />
-            )}
-          </IconButton>
-        </Box>
-      </Typography>
+      <DecisionTaskStatus
+        product={selectedProduct.product}
+        branch={selectedBranch.branch}
+        revision={revision}
+        repoUrl={selectedBranch.repo}
+        onStatusChange={setDecisionTaskStatus}
+      />
     );
   };
 
