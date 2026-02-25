@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router';
 import { makeStyles } from 'tss-react/mui';
 import { getXPIBuildNumbers, submitXPIRelease } from '../../components/api';
 import Dashboard from '../../components/Dashboard';
+import DecisionTaskStatus from '../../components/DecisionTaskStatus';
 import maybeShorten from '../../components/text';
 import {
   getGithubCommits,
@@ -51,6 +52,7 @@ export default function NewXPIRelease() {
   const [selectedXpi, setSelectedXpi] = useState('');
   const [selectedXpiRevision, setSelectedXpiRevision] = useState('');
   const [buildNumber, setBuildNumber] = useState(0);
+  const [decisionTaskStatus, setDecisionTaskStatus] = useState(null);
   const [open, setOpen] = useState(false);
   const loading =
     xpis.loading ||
@@ -230,7 +232,8 @@ export default function NewXPIRelease() {
       xpiVersion.data !== null &&
       buildNumber !== 0 &&
       submitReleaseState.data === null &&
-      !submitReleaseState.error
+      !submitReleaseState.error &&
+      decisionTaskStatus?.state === 'ready'
     );
   };
 
@@ -320,6 +323,15 @@ export default function NewXPIRelease() {
       <Collapse in={selectedXpi !== ''}>{renderXpiRevisionSelect()}</Collapse>
       <Collapse in={selectedXpiRevision !== ''}>
         {renderReleaseInfo()}
+        {selectedXpiRevision && (
+          <DecisionTaskStatus
+            product="xpi"
+            branch={config.XPI_MANIFEST.project}
+            revision={selectedManifestCommit}
+            repoUrl={config.XPI_MANIFEST.repo}
+            onStatusChange={setDecisionTaskStatus}
+          />
+        )}
         {renderCreateReleaseButton()}
         {renderDialog()}
       </Collapse>
