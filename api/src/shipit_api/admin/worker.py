@@ -3,7 +3,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import asyncio
 import logging
 
 import click
@@ -50,4 +49,4 @@ def cmd():
         rebuild_product_details(git_repo_url, folder_in_repo, app_channel, BREAKPOINT_VERSION),
     )
     logger.info("Listening for new messages on %s %s", exchange, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS)
-    run_consumer(asyncio.gather(*[rebuild_product_details_consumer]))
+    run_consumer(rebuild_product_details_consumer)
