@@ -121,8 +121,13 @@ def abandon_release_xpi(name):
     session = current_app.db.session
     release = session.query(XPIRelease).filter(XPIRelease.name == name).first_or_404()
     # we must require scope which depends on XPI type
-    xpi_type = _xpi_type(release.revision, release.xpi_name)
-    required_permission = f"{SCOPE_PREFIX}/abandon_release/xpi/{xpi_type}"
+    try:
+        xpi_type = _xpi_type(release.revision, release.xpi_name)
+        required_permission = f"{SCOPE_PREFIX}/abandon_release/xpi/{xpi_type}"
+    except Exception:
+        logger.warning("Failed to determine XPI type for %s", release.name)
+        required_permission = f"{SCOPE_PREFIX}/abandon_release/xpi"
+
     if not current_user.has_permissions(required_permission):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
