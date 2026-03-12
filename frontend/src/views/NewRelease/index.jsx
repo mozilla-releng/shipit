@@ -293,8 +293,7 @@ export default function NewRelease() {
         ? partialVersions.filter((x) => x).length > 0
         : true) &&
       !loading &&
-      submitReleaseState.data === null &&
-      !submitReleaseState.error &&
+      !submitReleaseState.loading &&
       decisionTaskStatus?.state === 'ready'
     );
   };
@@ -486,17 +485,9 @@ export default function NewRelease() {
   };
 
   const renderDialogText = () => {
-    if (submitReleaseState.error) {
-      return <p>{submitReleaseState.error.toString()}</p>;
-    }
-
-    if (submitReleaseState.data === null) {
-      return (
-        <p>A new release of {selectedProduct.prettyName} will be submitted.</p>
-      );
-    }
-
-    return <p>{selectedProduct.prettyName} has been submitted.</p>;
+    return (
+      <p>A new release of {selectedProduct.prettyName} will be submitted.</p>
+    );
   };
 
   const renderDialog = () => {
@@ -506,22 +497,12 @@ export default function NewRelease() {
         <DialogContent>{renderDialogText()}</DialogContent>
         <DialogActions>
           {submitReleaseState.loading && <CircularProgress />}
-          <Button
-            onClick={() => {
-              setOpen(false);
-
-              if (!readyToSubmit()) {
-                navigate(`/?group=${group}`);
-              }
-            }}
-            autoFocus
-            variant="contained"
-          >
+          <Button onClick={() => setOpen(false)} autoFocus variant="contained">
             Close
           </Button>
           <Button
-            onClick={() =>
-              submitReleaseAction(
+            onClick={async () => {
+              const result = await submitReleaseAction(
                 selectedProduct,
                 selectedBranch,
                 revision,
@@ -529,8 +510,21 @@ export default function NewRelease() {
                 partialFieldEnabled ? partialVersions : [],
                 version,
                 buildNumber,
-              )
-            }
+              );
+
+              setOpen(false);
+              if (result.error !== null) {
+                setError(
+                  `Could not submit release: ${result.error.toString()}`,
+                );
+              } else {
+                await navigate(`/?group=${group}`, {
+                  state: {
+                    successMessage: `Successfully created ${selectedProduct.prettyName} ${version}-build${buildNumber} release`,
+                  },
+                });
+              }
+            }}
             color="primary"
             disabled={!readyToSubmit()}
             variant="contained"
