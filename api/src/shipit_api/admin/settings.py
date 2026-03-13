@@ -161,6 +161,9 @@ for xpi_type in ["privileged", "mozillaonline-privileged", "normandy-privileged"
         }
     )
 
+# fallback abandon release for xpi of unknown type
+AUTH0_AUTH_SCOPES.update({"abandon_release/xpi": []})
+
 # XPI System Addons
 for addon in SYSTEM_ADDONS:
     # We grant the system addon specific LDAP group the ability to manage and
