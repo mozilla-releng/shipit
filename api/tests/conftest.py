@@ -62,7 +62,7 @@ def app(global_app):
 def mock_generate_phases(release):
     phases = []
     for phase in ["build", "promote", "ship"]:
-        phase_obj = release.phase_class(name=phase, task_id="", task={}, context={}, completed_by=None)
+        phase_obj = release.phase_class(name=phase, task_id="", task={}, context={}, scheduled_by=None)
         phase_obj.signoffs = release.phase_signoffs(phase)
         phases.append(phase_obj)
     return phases

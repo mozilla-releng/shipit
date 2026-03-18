@@ -99,7 +99,7 @@ def test_additional_emails(test_xpi_release):
     # build phase completion
     _phase = filter(lambda _phase: _phase.name == "build", test_xpi_release.phases)
     phase = list(_phase)[0]
-    phase.completed_by = "releng@mozilla.com"
+    phase.scheduled_by = "releng@mozilla.com"
     additional_shipit_emails = get_signoff_emails(test_xpi_release.phases)
     assert len(additional_shipit_emails) == 1
 
@@ -111,7 +111,7 @@ def test_additional_emails(test_xpi_release):
     # promote phase completion and signoffs
     _phase = filter(lambda _phase: _phase.name == "promote", test_xpi_release.phases)
     phase = list(_phase)[0]
-    phase.completed_by = "special-admin@mozilla.com"
+    phase.scheduled_by = "special-admin@mozilla.com"
     XPISignoff(completed="2021-07-15T23:03:10.179036Z", completed_by="addon-team@mozilla.com", signed=True, phase=phase)
     XPISignoff(completed="2021-07-15T23:03:10.179036Z", completed_by="another-team@mozilla.com", signed=True, phase=phase)
     additional_shipit_emails = get_signoff_emails(test_xpi_release.phases)
@@ -126,7 +126,7 @@ def mock_generate_phases(release, *args, **kwargs):
             task_id="",
             task=json.dumps({"hook_group_id": "", "hook_id": "", "hook_payload": {"decision": ""}}),
             context=json.dumps({"input": {"previous_graph_ids": [0]}}),
-            completed_by=None,
+            scheduled_by=None,
         )
         phase_obj.signoffs = release.phase_signoffs(phase)
         phases.append(phase_obj)
