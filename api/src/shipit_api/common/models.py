@@ -77,7 +77,7 @@ class PhaseBase:
             "submitted": self.submitted,
             "actionTaskId": self.task_id or "",
             "created": self.created or "",
-            "completed": self.completed or "",
+            "scheduled_at": self.scheduled_at or "",
             "skipped": self.skipped,
         }
 
@@ -91,8 +91,8 @@ class Phase(db.Model, PhaseBase):
     task = sa.Column(sa.Text, nullable=False)
     context = sa.Column(sa.Text, nullable=False)
     created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
-    completed = sa.Column(sa.DateTime)
-    completed_by = sa.Column(sa.String)
+    scheduled_at = sa.Column(sa.DateTime)
+    scheduled_by = sa.Column(sa.String)
     release_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_releases.id"))
     release = sqlalchemy.orm.relationship("Release", back_populates="phases")
     signoffs = sqlalchemy.orm.relationship("Signoff", order_by=Signoff.id, back_populates="phase")
@@ -260,8 +260,8 @@ class XPIPhase(db.Model, PhaseBase):
     task = sa.Column(sa.Text, nullable=False)
     context = sa.Column(sa.Text, nullable=False)
     created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
-    completed = sa.Column(sa.DateTime)
-    completed_by = sa.Column(sa.String)
+    scheduled_at = sa.Column(sa.DateTime)
+    scheduled_by = sa.Column(sa.String)
     release_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_xpi_releases.id"))
     release = sqlalchemy.orm.relationship("XPIRelease", back_populates="phases")
     signoffs = sqlalchemy.orm.relationship("XPISignoff", order_by=XPISignoff.id, back_populates="phase")

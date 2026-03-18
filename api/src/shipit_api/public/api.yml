@@ -124,7 +124,7 @@ components:
           type: string
           format: dateTime
           example: '2017-12-21T15:10:00-05:00'
-        completed:
+        scheduled_at:
           type: string
           format: dateTime
           example: '2017-12-21T15:10:00-05:00'

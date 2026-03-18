@@ -112,8 +112,8 @@ def schedule_phase(name, phase):
 
     scheduled_phase = do_schedule_phase(session, phase_to_schedule, additional_shipit_emails)
     url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{scheduled_phase.task_id}")
-    logger.info("Phase %s of %s started by %s. - %s", scheduled_phase.name, scheduled_phase.release.name, scheduled_phase.completed_by, url)
-    notify_via_matrix("xpi", f"Phase {scheduled_phase.name} of {scheduled_phase.release.name} started by {scheduled_phase.completed_by}. - {url}")
+    logger.info("Phase %s of %s started by %s. - %s", scheduled_phase.name, scheduled_phase.release.name, scheduled_phase.scheduled_by, url)
+    notify_via_matrix("xpi", f"Phase {scheduled_phase.name} of {scheduled_phase.release.name} started by {scheduled_phase.scheduled_by}. - {url}")
     return scheduled_phase.json
 
 

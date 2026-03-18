@@ -154,9 +154,9 @@ def do_schedule_phase(session, phase, additional_shipit_emails=()):
         abort(400, str(e))
 
     phase.submitted = True
-    completed = datetime.datetime.utcnow()
-    phase.completed_by = current_user.get_id()
-    phase.completed = completed
+    now = datetime.datetime.now(datetime.UTC)
+    phase.scheduled_by = current_user.get_id()
+    phase.scheduled_at = now
     # If the previous phases are not submitted, mark them as submitted and they
     # will be calculated as skipped because they don't have taskId associated
     for ph in phase.release.phases:
@@ -164,8 +164,8 @@ def do_schedule_phase(session, phase, additional_shipit_emails=()):
             break
         if not ph.submitted:
             ph.submitted = True
-            ph.completed_by = current_user.get_id()
-            ph.completed = completed
+            ph.scheduled_by = current_user.get_id()
+            ph.scheduled_at = now
 
     session.commit()
     return phase
@@ -185,7 +185,7 @@ def schedule_phase(name, phase):
 
     phase = do_schedule_phase(session, phase)
     url = taskcluster_urls.ui(get_root_url(), f"/tasks/groups/{phase.task_id}")
-    logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.completed_by, url)
+    logger.info("Phase %s of %s started by %s. - %s", phase.name, phase.release.name, phase.scheduled_by, url)
     notify_via_matrix(phase.release.product, f"Phase {phase.name} was just scheduled for {phase.release.name} - {url}")
 
     return phase.json
@@ -364,8 +364,8 @@ def get_signoff_emails(phases):
     additional_shipit_emails = set()
     if phases:
         for _phase in phases:
-            if _phase.completed_by is not None:
-                additional_shipit_emails.add(_phase.completed_by)
+            if _phase.scheduled_by is not None:
+                additional_shipit_emails.add(_phase.scheduled_by)
             additional_shipit_emails.update({signoff.completed_by for signoff in _phase.signoffs if signoff.completed_by is not None})
 
     return list(additional_shipit_emails)
