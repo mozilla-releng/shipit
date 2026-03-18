@@ -176,7 +176,7 @@ def phase_signoff(name, phase, body):
     if not set(users_ldap).intersection(set(ldap_group)) and not XPI_LAX_SIGN_OFF:
         abort(401, f"User `{users_email}` is not in the `{signoff.permissions}`")
 
-    signoff.completed = datetime.datetime.utcnow()
+    signoff.completed = datetime.datetime.now(datetime.UTC)
     signoff.signed = True
     signoff.completed_by = users_email
 

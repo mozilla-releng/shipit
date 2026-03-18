@@ -90,7 +90,7 @@ class Phase(db.Model, PhaseBase):
     task_id = sa.Column(sa.String, nullable=False)
     task = sa.Column(sa.Text, nullable=False)
     context = sa.Column(sa.Text, nullable=False)
-    created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
+    created = sa.Column(sa.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     scheduled_at = sa.Column(sa.DateTime)
     scheduled_by = sa.Column(sa.String)
     release_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_releases.id"))
@@ -139,7 +139,7 @@ class Release(db.Model, ReleaseBase):
     release_eta = sa.Column(sa.DateTime)
     status = sa.Column(sa.String)  # TODO: move to Enum: shipped, abandoned, scheduled
     phases = sqlalchemy.orm.relationship("Phase", order_by=Phase.id, back_populates="release", lazy="selectin")
-    created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
+    created = sa.Column(sa.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     completed = sa.Column(sa.DateTime)
 
     phase_class = Phase
@@ -259,7 +259,7 @@ class XPIPhase(db.Model, PhaseBase):
     task_id = sa.Column(sa.String, nullable=False)
     task = sa.Column(sa.Text, nullable=False)
     context = sa.Column(sa.Text, nullable=False)
-    created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
+    created = sa.Column(sa.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     scheduled_at = sa.Column(sa.DateTime)
     scheduled_by = sa.Column(sa.String)
     release_id = sa.Column(sa.Integer, sa.ForeignKey("shipit_api_xpi_releases.id"))
@@ -279,7 +279,7 @@ class XPIRelease(db.Model, ReleaseBase):
     revision = sa.Column(sa.String, nullable=False)
     status = sa.Column(sa.String)
     phases = sqlalchemy.orm.relationship("XPIPhase", order_by=XPIPhase.id, back_populates="release", lazy="selectin")
-    created = sa.Column(sa.DateTime, default=datetime.datetime.utcnow)
+    created = sa.Column(sa.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     completed = sa.Column(sa.DateTime)
 
     phase_class = XPIPhase

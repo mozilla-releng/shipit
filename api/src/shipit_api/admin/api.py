@@ -243,7 +243,7 @@ def update_release_status(name, body):
     status = body["status"]
     release.status = status
     if status == "shipped":
-        release.completed = datetime.datetime.utcnow()
+        release.completed = datetime.datetime.now(datetime.UTC)
     session.commit()
 
     logger.info("Status of %s changed to %s", release.name, status)
@@ -283,7 +283,7 @@ def phase_signoff(name, phase, body):
     if not set(users_ldap).intersection(set(ldap_group)):
         abort(401, f"User `{users_email}` is not in the `{signoff.permissions}`")
 
-    signoff.completed = datetime.datetime.utcnow()
+    signoff.completed = datetime.datetime.now(datetime.UTC)
     signoff.signed = True
     signoff.completed_by = users_email
 
