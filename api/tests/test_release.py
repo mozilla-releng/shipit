@@ -192,10 +192,23 @@ def test_add_release(app):
         with app.test_client() as client:
             response = client.post("/releases", json={"branch": "try", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0"})
             assert response.status_code == 201
-            assert response.json()["branch"] == "try"
-            assert response.json()["build_number"] == 1
-            assert response.json()["name"] == "Firefox-69.0-build1"
-            assert len(response.json()["phases"]) == 3
+            release = response.json()
+            assert release["branch"] == "try"
+            assert release["build_number"] == 1
+            assert release["name"] == "Firefox-69.0-build1"
+            assert release["allow_phase_skipping"]
+            assert len(release["phases"]) == 3
+
+            response = client.post(
+                "/releases", json={"branch": "releases/mozilla-beta", "build_number": 1, "product": "firefox", "revision": "123", "version": "169.0"}
+            )
+            assert response.status_code == 201
+            release = response.json()
+            assert release["branch"] == "releases/mozilla-beta"
+            assert release["build_number"] == 1
+            assert release["name"] == "Firefox-169.0-build1"
+            assert release["allow_phase_skipping"]
+            assert len(release["phases"]) == 3
 
             response = client.post("/releases", json={"branch": "try", "build_number": 1, "product": "other", "revision": "123", "version": "69.0"})
             assert response.status_code == 400
@@ -203,10 +216,12 @@ def test_add_release(app):
 
             response = client.post("/releases", json={"branch": "other", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.1"})
             assert response.status_code == 201
-            assert response.json()["branch"] == "other"
-            assert response.json()["build_number"] == 1
-            assert response.json()["name"] == "Firefox-69.0.1-build1"
-            assert len(response.json()["phases"]) == 3
+            release = response.json()
+            assert release["branch"] == "other"
+            assert release["build_number"] == 1
+            assert release["name"] == "Firefox-69.0.1-build1"
+            assert not release["allow_phase_skipping"]
+            assert len(release["phases"]) == 3
 
             # Non taskcluster users are not affected by disabled releases
             response = client.post("/releases", json={"branch": "disabled", "build_number": 1, "product": "firefox", "revision": "123", "version": "69.0.2"})
