@@ -249,7 +249,6 @@ export default function NewRelease() {
         const parts = await guessPartialVersions(
           selectedProduct,
           selectedBranch,
-          version,
           signal,
         );
         if (signal.aborted) return;
