@@ -78,7 +78,7 @@ services:
       - api
 
   db:
-    image: postgres:15@sha256:f30e3de0ac9cc938dac627ef2231099867c694b5f949fadb924c8c977428c399
+    image: postgres:15@sha256:c635fa3e3b7421a659d34abdfd6d492f679cbe8149e261a501237b55c5a94212
     ports:
       - "5432:5432"
     volumes:
