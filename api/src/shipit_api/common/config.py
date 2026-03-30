@@ -519,15 +519,15 @@ for addon in SYSTEM_ADDONS:
 ALLOW_PHASE_SKIPPING = {
     "devedition": {
         "try": True,
-        "beta": True,
+        "mozilla-beta": True,
     },
     "firefox": {
         "try": True,
-        "beta": True,
+        "mozilla-beta": True,
     },
     "firefox-android": {
         "try": True,
-        "beta": True,
+        "mozilla-beta": True,
     },
     "app-services": {
         "default": True,
