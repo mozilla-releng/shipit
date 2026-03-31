@@ -11,6 +11,7 @@ from functools import lru_cache
 import jsone
 import requests
 import yaml
+from taskcluster.exceptions import TaskclusterRestFailure
 
 from backend_common import get_trust_domains
 from backend_common.taskcluster import get_service
@@ -68,8 +69,9 @@ def fetch_group_tasks(task_id):
 
     try:
         queue.listTaskGroup(task_id, paginationHandler=collect_tasks)
-    except Exception as exc:
-        logging.exception(f"task {task_id} exception {exc}")
+    except TaskclusterRestFailure as exc:
+        if exc.status_code != 404:
+            logging.exception(f"task {task_id} exception {exc}")
         raise
     return tasks
 
