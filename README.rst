@@ -80,7 +80,7 @@ To rebuild product-details
 
 product-details rely on a `pulse queue <https://github.com/mozilla-releng/shipit/blob/df379442c32baa7931767b058840bbb293135010/api/src/shipit_api/admin/api.py#L229>`__, which makes local test tricky.
 This pulse queue is then consumed by `worker.py <https://github.com/mozilla-releng/shipit/blob/df379442c32baa7931767b058840bbb293135010/api/src/shipit_api/admin/worker.py#L42>`__. Although, there's a
-way to by-pass the need for a pulse queue.
+way to bypass the need for a pulse queue.
 
 1. Define the container in which the api application is running
 
