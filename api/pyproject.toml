@@ -50,7 +50,7 @@ dev = [
     "coverage",
     "dpath",
     "flake8",
-    "isort",
+    "isort>=5",
     "openapi-spec-validator",
     "oyaml",
     "pytest",
