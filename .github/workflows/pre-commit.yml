@@ -9,4 +9,4 @@ jobs:
     name: Run pre-commit
     runs-on: ubuntu-latest
     steps:
-      - uses: mozilla-releng/actions/pre-commit@main
+      - uses: mozilla-releng/actions/pre-commit@18a2262cf016abc2e14ab3da8cdf6f0f7f5f72e7 # main
