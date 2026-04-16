@@ -68,12 +68,13 @@ Setting up for the Public API:
     export FLASK_APP="shipit_api.public.flask:flask_app"
     uv run flask shell
 
-To provide all required sign offs on staging xpi releases
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To provide all required sign offs on xpi releases
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Set ``XPI_LAX_SIGN_OFF=true``. This will enable you to run xpi releases in the shipit admin app on your own.
-This is useful when testing patches on your local environment and on shipit's dev/staging environment.
-When running locally add ``XPI_LAX_SIGN_OFF=true`` to the docker-compose.yml file in ``services.api.environment``.
+``XPI_LAX_SIGN_OFF=true`` enables a single person to provide all required sign offs on xpi releases.
+It is enabled on the dev and staging environments via the Taskcluster secret ``project/releng/shipit/deploy``.
+When running locally, add ``XPI_LAX_SIGN_OFF=true`` to the docker-compose.yml file in ``services.api.environment``.
+This setting cannot be enabled in production.
 
 To rebuild product-details
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -130,7 +131,7 @@ Deploys in response to pushes to the ``production`` branch, if the ``CloudOps St
 
 - Backend URL: https://shipit-api.mozilla-releng.net
 - Backend Dockerhub Tag: ``shipit_api_dockerflow_production``
-- Taskcluster Secret: project/releng/shipit/config:production
+- Taskcluster Secret: project/releng/shipit/deploy
 - Taskcluster Client ID: project/releng/shipit/production
 - Frontend URL: https://shipit.mozilla-releng.net/
 - Frontend S3 bucket: ``relengstatic-prod-shipitfrontend-static-website``
@@ -145,7 +146,7 @@ Deploys in response to pushes to the ``dev`` branch.
 
 - Backend URL: https://api.shipit.staging.mozilla-releng.net
 - Backend Dockerhub Tag: ``shipit_api_dockerflow_staging``
-- Taskcluster Secret: project/releng/shipit/config:staging
+- Taskcluster Secret: project/releng/shipit/deploy
 - Taskcluster Client ID: project/releng/shipit/production (yes, the same as production)
 - Frontend URL: https://shipit.staging.mozilla-releng.net/
 - Frontend S3 bucket: ``relengstatic-staging-shipitfrontend-static-website``
