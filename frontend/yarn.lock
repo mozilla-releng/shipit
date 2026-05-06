@@ -947,7 +947,7 @@
     "@babel/plugin-transform-react-jsx-development" "^7.27.1"
     "@babel/plugin-transform-react-pure-annotations" "^7.27.1"
 
-"@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3", "@babel/runtime@^7.28.4", "@babel/runtime@^7.28.6", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
+"@babel/runtime@^7.12.5", "@babel/runtime@^7.18.3", "@babel/runtime@^7.28.4", "@babel/runtime@^7.28.6", "@babel/runtime@^7.29.2", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
   version "7.29.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.29.2.tgz#9a6e2d05f4b6692e1801cd4fb176ad823930ed5e"
   integrity sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==
@@ -1679,12 +1679,12 @@
   resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-7.3.10.tgz#f6af0bbfa825f11849f5f190d984d6f8d5c0d961"
   integrity sha512-vrOpWRmPJSuwLo23J62wggEm/jvGdzqctej+UOCtgDUz6nZJQuj3ByPccVyaa7eQmwAzUwKN56FQPMKkqbj1GA==
 
-"@mui/icons-material@7.3.10":
-  version "7.3.10"
-  resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-7.3.10.tgz#f0d232ebe007b3a125a52c5c9e1bece43a83b57c"
-  integrity sha512-Au0ma4NSKGKNiimukj8UT/W1x2Qx6Qwn2RvFGykiSqVLYBNlIOPbjnIMvrwLGLu89EEpTVdu/ys/OduZR+tWqw==
+"@mui/icons-material@9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-9.0.0.tgz#85fb0c59b12e745792c3c6c598bf0550e98968e8"
+  integrity sha512-oDwyvI6LgjWRC9MBcSGvLkPud9S9ELgSBQFYxa1rYcZn6Br55dn22SyvsPDMsn0G8OndFk53iMT45W5mNqrogw==
   dependencies:
-    "@babel/runtime" "^7.28.6"
+    "@babel/runtime" "^7.29.2"
 
 "@mui/lab@7.0.0":
   version "7.0.0"

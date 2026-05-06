@@ -3,7 +3,7 @@
     "@biomejs/biome": "2.4.13",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
-    "@mui/icons-material": "7.3.10",
+    "@mui/icons-material": "9.0.0",
     "@mui/lab": "7.0.0",
     "@mui/material": "7.3.10",
     "@mui/x-date-pickers": "8.28.4",
