@@ -1,6 +1,6 @@
 import { Auth0Context } from '@auth0/auth0-react';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import AppBar from '@mui/material/AppBar';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
@@ -45,7 +45,7 @@ export default function ProductDisabler({
       return <CancelOutlinedIcon style={{ fill: '#fff' }} />;
     }
 
-    return <CheckCircleOutlineIcon style={{ fill: '#fff' }} />;
+    return <CheckCircleOutlinedIcon style={{ fill: '#fff' }} />;
   };
 
   const openModal = (pb) => {
