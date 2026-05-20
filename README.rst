@@ -72,7 +72,7 @@ To provide all required sign offs on xpi releases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``XPI_LAX_SIGN_OFF=true`` enables a single person to provide all required sign offs on xpi releases.
-It is enabled on the dev and staging environments via the Taskcluster secret ``project/releng/shipit/deploy``.
+It is enabled on the dev environment via the ``XPI_LAX_SIGN_OFF`` env var in `cloudops-infra <https://github.com/mozilla-services/cloudops-infra/blob/655be31ecf4db7e42d51884b2300ee296fc49dd7/projects/shipitapi/k8s/values/values.yaml#L26>`_.
 When running locally, add ``XPI_LAX_SIGN_OFF=true`` to the docker-compose.yml file in ``services.api.environment``.
 This setting cannot be enabled in production.
 
