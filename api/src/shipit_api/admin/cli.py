@@ -121,7 +121,7 @@ def shipit_import(api_from):
     session = flask.current_app.db.session
 
     click.echo("Fetching release list...", nl=False)
-    req = requests.get(f"{api_from}/releases?status=shipped,aborted,scheduled")
+    req = requests.get(f"{api_from}/releases?status=shipped")
     req.raise_for_status()
     releases = req.json()
 
