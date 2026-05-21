@@ -120,12 +120,14 @@ def shipit_import(api_from):
     with flask_app.app_context():
         session = flask_app.db.session
 
-        click.echo("Fetching release list...", nl=False)
+        click.echo("Fetching release list...")
         req = requests.get(f"{api_from}/releases?status=shipped")
         req.raise_for_status()
         releases = req.json()
 
         for release in releases:
+            click.echo(f"Importing {release['name']}")
+
             r = Release(
                 product=release["product"],
                 version=release["version"],
