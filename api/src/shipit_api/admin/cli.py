@@ -135,6 +135,10 @@ def shipit_import(api_from, limit_releases):
                 limit_releases = releases.len()
 
             for release in releases[:limit_releases]:
+                if session.query(Release).filter(Release.name == release["name"]).first():
+                    click.echo(f"{release['name']} already exists, skipping...")
+                    continue
+
                 click.echo(f"Importing {release['name']}")
 
                 r = Release(
