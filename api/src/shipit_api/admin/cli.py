@@ -22,7 +22,7 @@ from backend_common.log import configure_logging
 from shipit_api.admin.flask import flask_app
 from shipit_api.admin.product_details import rebuild
 from shipit_api.common.config import BREAKPOINT_VERSION
-from shipit_api.common.models import Release
+from shipit_api.common.models import Release, Version
 
 
 def coroutine(f):
@@ -141,6 +141,23 @@ def shipit_import(api_from):
             r.created = release["created"]
             r.completed = release["completed"] or release["created"]
             session.add(r)
+            session.commit()
+
+        # Import Versions
+        # only import the two entries we need to rebuild product details for now
+        click.echo("Importing Version information...")
+        for product, channel in (("firefox", "nightly"), ("thunderbird", "nightly")):
+            click.echo(f"Importing {product} {channel} Version information")
+            req = requests.get(f"{api_from}/versions/{product}/{channel}")
+            req.raise_for_status()
+            version = req.json()
+
+            if v := session.query(Version).filter(Version.product_name == product, Version.product_channel == channel).first():
+                v.current_version = version
+            else:
+                v = Version(product_name=product, product_channel=channel, current_version=version)
+
+            session.add(v)
             session.commit()
 
 
