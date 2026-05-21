@@ -9,6 +9,7 @@ import io
 import json
 import os
 import typing
+from datetime import datetime
 
 import aiohttp
 import backoff
@@ -114,34 +115,42 @@ def get_taskcluster_headers(request_url, method, content, taskcluster_client_id,
 
 @click.command(name="shipit-import")
 @click.option("--api-from", default="https://shipit-api.mozilla-releng.net")
-def shipit_import(api_from):
+@click.option("--limit-releases", default=100, help="Only import N releases. Use -1 to import all releases, 0 to skip importing releases entirely.")
+def shipit_import(api_from, limit_releases):
     configure_logging()
 
     with flask_app.app_context():
         session = flask_app.db.session
 
-        click.echo("Fetching release list...")
-        req = requests.get(f"{api_from}/releases?status=shipped")
-        req.raise_for_status()
-        releases = req.json()
+        if limit_releases != 0:
+            # Import releases
+            click.echo("Fetching release list...")
+            req = requests.get(f"{api_from}/releases?status=shipped")
+            req.raise_for_status()
+            releases = req.json()
+            # Pull the most recent N releases when limiting; they're more important
+            # for testing in most cases.
+            releases.sort(key=lambda r: datetime.fromisoformat(r["created"]), reverse=True)
+            if limit_releases == -1:
+                limit_releases = releases.len()
 
-        for release in releases:
-            click.echo(f"Importing {release['name']}")
+            for release in releases[:limit_releases]:
+                click.echo(f"Importing {release['name']}")
 
-            r = Release(
-                product=release["product"],
-                version=release["version"],
-                branch=release["branch"],
-                revision=release["revision"],
-                build_number=release["build_number"],
-                release_eta=release.get("release_eta"),
-                partial_updates=release.get("partials"),
-                status=release["status"],
-            )
-            r.created = release["created"]
-            r.completed = release["completed"] or release["created"]
-            session.add(r)
-            session.commit()
+                r = Release(
+                    product=release["product"],
+                    version=release["version"],
+                    branch=release["branch"],
+                    revision=release["revision"],
+                    build_number=release["build_number"],
+                    release_eta=release.get("release_eta"),
+                    partial_updates=release.get("partials"),
+                    status=release["status"],
+                )
+                r.created = release["created"]
+                r.completed = release["completed"] or release["created"]
+                session.add(r)
+                session.commit()
 
         # Import Versions
         # only import the two entries we need to rebuild product details for now
