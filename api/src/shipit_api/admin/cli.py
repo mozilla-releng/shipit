@@ -114,7 +114,7 @@ def get_taskcluster_headers(request_url, method, content, taskcluster_client_id,
 
 
 @click.command(name="shipit-import")
-@click.option("--api-from", default="https://api.shipit.staging.mozilla-releng.net")
+@click.option("--api-from", default="https://shipit-api.mozilla-releng.net")
 @flask.cli.with_appcontext
 def shipit_import(api_from):
     configure_logging()
