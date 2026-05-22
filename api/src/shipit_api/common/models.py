@@ -327,3 +327,24 @@ class Version(db.Model):
     product_channel = sa.Column(sa.String, nullable=False)
     current_version = sa.Column(sa.String, nullable=False)
     __table_args__ = (sa.UniqueConstraint("product_name", "product_channel", name="_product_name_channel_uc"),)
+
+
+class NightlyRelease(db.Model):
+    __tablename__ = "shipit_api_nightly_releases"
+    id = sa.Column(sa.Integer, primary_key=True)
+    product = sa.Column(sa.String, nullable=False)
+    channel = sa.Column(sa.String, nullable=False)
+    version = sa.Column(sa.String, nullable=False)
+    buildid = sa.Column(sa.String, nullable=False)
+    locales = sa.Column(sa.JSON, nullable=False)
+    __table_args__ = (sa.UniqueConstraint("product", "channel", "buildid", name="_nightly_release_uc"),)
+
+    @property
+    def json(self):
+        return {
+            "product": self.product,
+            "channel": self.channel,
+            "version": self.version,
+            "buildid": self.buildid,
+            "locales": self.locales,
+        }
