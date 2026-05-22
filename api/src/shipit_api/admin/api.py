@@ -26,7 +26,7 @@ from shipit_api.admin.release import (
 )
 from shipit_api.admin.tasks import UnsupportedFlavor, cancel_action_task_group, find_decision_task_id, generate_phases, rendered_hook_payload
 from shipit_api.common.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
-from shipit_api.common.models import DisabledProduct, Phase, Release, Signoff, Version, XPIRelease
+from shipit_api.common.models import DisabledProduct, NightlyRelease, Phase, Release, Signoff, Version, XPIRelease
 from shipit_api.public.api import get_disabled_products, list_releases
 
 logger = logging.getLogger(__name__)
@@ -421,6 +421,30 @@ def create_product_channel_version(product, channel, body):
             "product": new_version.product_name,
             "channel": new_version.product_channel,
         }, 201
+
+
+def add_nightly_release(body):
+    product = body["product"]
+    required_permission = f"{SCOPE_PREFIX}/add_release/{product}"
+    if not current_user.has_permissions(required_permission):
+        user_permissions = ", ".join(current_user.get_permissions())
+        abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
+
+    session = current_app.db.session
+    nightly = NightlyRelease(
+        product=product,
+        channel=body["channel"],
+        version=body["version"],
+        buildid=body["buildid"],
+        locales=body["locales"],
+    )
+    try:
+        session.add(nightly)
+        session.commit()
+    except IntegrityError as e:
+        abort(400, str(e))
+
+    return "", 201
 
 
 def check_decision_task(body):
