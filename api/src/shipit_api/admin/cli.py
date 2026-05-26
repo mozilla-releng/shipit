@@ -9,21 +9,21 @@ import io
 import json
 import os
 import typing
+from datetime import datetime
 
 import aiohttp
 import backoff
 import click
-import flask
-import flask.cli
 import mohawk
 import requests
 import sqlalchemy
 import sqlalchemy.orm
 
 from backend_common.log import configure_logging
+from shipit_api.admin.flask import flask_app
 from shipit_api.admin.product_details import rebuild
 from shipit_api.common.config import BREAKPOINT_VERSION
-from shipit_api.common.models import Release
+from shipit_api.common.models import Release, Version
 
 
 def coroutine(f):
@@ -114,32 +114,64 @@ def get_taskcluster_headers(request_url, method, content, taskcluster_client_id,
 
 
 @click.command(name="shipit-import")
-@click.option("--api-from", default="https://api.shipit.staging.mozilla-releng.net")
-@flask.cli.with_appcontext
-def shipit_import(api_from):
+@click.option("--api-from", default="https://shipit-api.mozilla-releng.net")
+@click.option("--limit-releases", default=100, help="Only import N releases. Use -1 to import all releases, 0 to skip importing releases entirely.")
+def shipit_import(api_from, limit_releases):
     configure_logging()
-    session = flask.current_app.db.session
 
-    click.echo("Fetching release list...", nl=False)
-    req = requests.get(f"{api_from}/releases?status=shipped,aborted,scheduled")
-    req.raise_for_status()
-    releases = req.json()
+    with flask_app.app_context():
+        session = flask_app.db.session
 
-    for release in releases:
-        r = Release(
-            product=release["product"],
-            version=release["version"],
-            branch=release["branch"],
-            revision=release["revision"],
-            build_number=release["build_number"],
-            release_eta=release.get("release_eta"),
-            partial_updates=release.get("partials"),
-            status=release["status"],
-        )
-        r.created = release["created"]
-        r.completed = release["completed"] or release["created"]
-        session.add(r)
-        session.commit()
+        if limit_releases != 0:
+            # Import releases
+            click.echo("Fetching release list...")
+            req = requests.get(f"{api_from}/releases?status=shipped")
+            req.raise_for_status()
+            releases = req.json()
+            # Pull the most recent N releases when limiting; they're more important
+            # for testing in most cases.
+            releases.sort(key=lambda r: datetime.fromisoformat(r["created"]), reverse=True)
+            if limit_releases == -1:
+                limit_releases = releases.len()
+
+            for release in releases[:limit_releases]:
+                if session.query(Release).filter(Release.name == release["name"]).first():
+                    click.echo(f"{release['name']} already exists, skipping...")
+                    continue
+
+                click.echo(f"Importing {release['name']}")
+
+                r = Release(
+                    product=release["product"],
+                    version=release["version"],
+                    branch=release["branch"],
+                    revision=release["revision"],
+                    build_number=release["build_number"],
+                    release_eta=release.get("release_eta"),
+                    partial_updates=release.get("partials"),
+                    status=release["status"],
+                )
+                r.created = release["created"]
+                r.completed = release["completed"] or release["created"]
+                session.add(r)
+                session.commit()
+
+        # Import Versions
+        # only import the two entries we need to rebuild product details for now
+        click.echo("Importing Version information...")
+        for product, channel in (("firefox", "nightly"), ("thunderbird", "nightly")):
+            click.echo(f"Importing {product} {channel} Version information")
+            req = requests.get(f"{api_from}/versions/{product}/{channel}")
+            req.raise_for_status()
+            version = req.json()
+
+            if v := session.query(Version).filter(Version.product_name == product, Version.product_channel == channel).first():
+                v.current_version = version
+            else:
+                v = Version(product_name=product, product_channel=channel, current_version=version)
+
+            session.add(v)
+            session.commit()
 
 
 @click.command(name="trigger-product-details")
