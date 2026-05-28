@@ -9,7 +9,7 @@ from collections import defaultdict
 from flask import abort, current_app
 from werkzeug.exceptions import BadRequest
 
-from shipit_api.common.models import DisabledProduct, Phase, Release, XPIRelease
+from shipit_api.common.models import DisabledProduct, NightlyRelease, Phase, Release, XPIRelease
 from shipit_api.common.version import parse_version
 
 logger = logging.getLogger(__name__)
@@ -94,3 +94,23 @@ def get_disabled_products():
     for row in session.query(DisabledProduct).all():
         ret[row.product].append(row.branch)
     return ret
+
+
+def list_nightly_releases(product, channel, version=None, buildid=None, after_buildid=None, before_buildid=None, limit=500, order="desc"):
+    query = NightlyRelease.query.filter(NightlyRelease.product == product).filter(NightlyRelease.channel == channel)
+    if version:
+        query = query.filter(NightlyRelease.version == version)
+    if buildid:
+        query = query.filter(NightlyRelease.buildid == buildid)
+    if after_buildid:
+        query = query.filter(NightlyRelease.buildid > after_buildid)
+    if before_buildid:
+        query = query.filter(NightlyRelease.buildid < before_buildid)
+
+    if order == "asc":
+        query = query.order_by(NightlyRelease.buildid.asc())
+    else:
+        query = query.order_by(NightlyRelease.buildid.desc())
+
+    query = query.limit(limit)
+    return [r.json for r in query.all()]

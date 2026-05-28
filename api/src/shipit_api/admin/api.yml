@@ -825,6 +825,28 @@ paths:
         "409":
           description: Already submitted
           content: {}
+  /nightly-release:
+    # get handler is defined in backend_common
+    post:
+      summary: Add a new nightly release
+      operationId: shipit_api.admin.api.add_nightly_release
+      requestBody:
+        description: Nightly release object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NightlyRelease'
+        required: true
+      responses:
+        "201":
+          description: Nightly release added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NightlyRelease'
+        "400":
+          description: Invalid input
+          content: {}
   /versions/{product}/{channel}:
     get:
       summary: Get the current version for the given product channel

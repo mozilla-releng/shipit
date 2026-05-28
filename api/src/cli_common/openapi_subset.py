@@ -16,6 +16,7 @@ PUBLIC_API_SECTIONS = [
     "paths./releases/{name}.get",
     "paths./releases/{name}/{phase}.get",
     "paths./disabled-products.get",
+    "paths./nightly-release.get",
     "components.schemas.ProductInput",
     "components.schemas.ProductOutput",
     "components.schemas.Phase",
@@ -24,6 +25,7 @@ PUBLIC_API_SECTIONS = [
     "components.schemas.Signoffs",
     "components.schemas.Signoff",
     "components.schemas.DisableProduct",
+    "components.schemas.NightlyRelease",
 ]
 
 
