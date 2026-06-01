@@ -103,6 +103,46 @@ def mock_git_push(branch, secrets):
     return
 
 
+# A representative set of Firefox/Thunderbird locales. The exact contents don't
+# matter, but there must be more than the sanity check's minimum (20) so that
+# sanity_check_firefox_builds passes, and "ach" must be present (asserted below).
+L10N_CHANGESETS = {
+    locale: {"revision": "abcdef123456", "platforms": ["linux", "linux64", "macosx64", "win32", "win64"], "pin": False}
+    for locale in (
+        "ach",
+        "af",
+        "an",
+        "ar",
+        "ast",
+        "az",
+        "be",
+        "bg",
+        "bn",
+        "br",
+        "bs",
+        "ca",
+        "cak",
+        "cs",
+        "cy",
+        "da",
+        "de",
+        "dsb",
+        "el",
+        "en-CA",
+        "en-GB",
+        "eo",
+        "es-AR",
+        "es-CL",
+        "es-ES",
+        "es-MX",
+        "et",
+        "eu",
+        "fa",
+        "ff",
+    )
+}
+
+
 @pytest.mark.asyncio
 @mock.patch("shipit_api.admin.product_details.setup_working_copy", mock_setup_working_copy)
 @mock.patch("shipit_api.admin.product_details.git_push", mock_git_push)
@@ -149,8 +189,22 @@ async def test_rebuild(app, tmp_path):
         mock.patch("shipit_api.common.config.PRODUCT_DETAILS_DIR", tmp_path / "product-details"),
         mock.patch("shipit_api.common.config.PRODUCT_DETAILS_NEW_DIR", tmp_path / "product-details-new"),
         mock.patch("shipit_api.common.config.PRODUCT_DETAILS_CACHE_DIR", tmp_path / "product-details-cache"),
-        aioresponses(passthrough=["https://hg.mozilla.org"]) as m,
+        aioresponses() as m,
     ):
+        hg_l10n_urls = [
+            # devedition 134.0b9
+            "https://hg.mozilla.org/releases/mozilla-beta/raw-file/615791f9752c70ef1757abf68544c8275f219ce3/browser/locales/l10n-changesets.json",
+            # firefox beta 134.0b8
+            "https://hg.mozilla.org/releases/mozilla-beta/raw-file/9fb87e89c26069198ce2a59a0a790a264d225169/browser/locales/l10n-changesets.json",
+            # firefox release 133.0
+            "https://hg.mozilla.org/releases/mozilla-release/raw-file/8141aab3ba856d7cbae6c851dd71f2e0cb69649c/browser/locales/l10n-changesets.json",
+            # firefox nightly 135.0a1
+            "https://hg.mozilla.org/mozilla-central/raw-file/default/browser/locales/l10n-changesets.json",
+            # thunderbird nightly 135.0a1
+            "https://hg.mozilla.org/comm-central/raw-file/default/mail/locales/l10n-changesets.json",
+        ]
+        for url in hg_l10n_urls:
+            m.get(url, repeat=True, payload=L10N_CHANGESETS)
         m.get(
             "https://whattrainisitnow.com/api/release/schedule/?version=135",
             repeat=True,
