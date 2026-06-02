@@ -25,6 +25,7 @@ import backoff
 import click
 import sqlalchemy
 import sqlalchemy.orm
+from deepmerge import merge_or_raise
 from mozilla_version.gecko import FirefoxVersion
 from mozilla_version.mobile import MobileVersion
 
@@ -107,11 +108,25 @@ ThunderbirdVersions = TypedDict(
         "THUNDERBIRD_ESR_NEXT": str,
     },
 )
+FirstRelease = TypedDict("FirstRelease", {"version": str, "buildid": str})
+LocaleFirstReleases = TypedDict("LocaleFirstReleases", {"first_release": typing.Dict[str, FirstRelease]})
+FirefoxLocales = typing.Dict[str, LocaleFirstReleases]
 IndexListing = str
 ProductDetails = typing.Dict[
     File,
     typing.Union[
-        Releases, ReleasesHistory, PrimaryBuilds, FirefoxVersions, MobileVersions, MobileDetails, Region, L10n, Languages, ThunderbirdVersions, IndexListing
+        Releases,
+        ReleasesHistory,
+        PrimaryBuilds,
+        FirefoxVersions,
+        MobileVersions,
+        MobileDetails,
+        Region,
+        L10n,
+        Languages,
+        ThunderbirdVersions,
+        FirefoxLocales,
+        IndexListing,
     ],
 ]
 Products = typing.List[Product]
@@ -287,6 +302,14 @@ def get_releases_from_db(db_session: sqlalchemy.orm.Session, breakpoint_version:
     # Using cast and split_part is postgresql specific
     query = query.filter(Release.status == "shipped")
     query = query.filter(sqlalchemy.cast(sqlalchemy.func.split_part(Release.version, ".", 1), sqlalchemy.Integer) >= breakpoint_version)
+    return query.all()
+
+
+def get_nightly_releases_from_db(db_session: sqlalchemy.orm.Session, product: str, channel: str) -> typing.List[shipit_api.common.models.NightlyRelease]:
+    NightlyRelease = shipit_api.common.models.NightlyRelease
+    query = db_session.query(NightlyRelease)
+    query = query.filter(NightlyRelease.product == product)
+    query = query.filter(NightlyRelease.channel == channel)
     return query.all()
 
 
@@ -1043,6 +1066,77 @@ def get_thunderbird_beta_builds() -> typing.Dict:
     return dict()
 
 
+def get_firefox_nightly_locales(nightly_releases: typing.List[shipit_api.common.models.NightlyRelease]) -> FirefoxLocales:
+    """Generate the first version each locale has been continuously available on
+    for nightly releases.
+    """
+    builds = sorted(nightly_releases, key=lambda nightly: nightly.buildid, reverse=True)
+    if not builds:
+        return {}
+    # locales not present in the latest build are ignored completely, as they do
+    # not meet the definition of "continuously available"; make these easily
+    # available
+    latest_build_locales = builds[0].locales
+
+    last_release: typing.Dict[str, shipit_api.common.models.NightlyRelease] = {}
+    done: typing.Set[str] = set()
+
+    for build in builds:
+        # identify any locales that we've already seen, and are missing from the current
+        # build being checked (ie: the next oldest build)
+        for locale in last_release:
+            # locale has been seen before, but now goes missing; last_release already
+            # contains the oldest continuous release, mark it as done
+            if locale not in build.locales:
+                done.add(locale)
+
+        # update last_release for all locales present in the current build
+        # and the latest build that have not already had their last continuous
+        # release identified
+        for locale in build.locales:
+            if locale in done or locale not in latest_build_locales:
+                continue
+
+            last_release[locale] = build
+
+    result: FirefoxLocales = {}
+    for locale, build in last_release.items():
+        result[locale] = {
+            "first_release": {
+                "nightly": {
+                    "version": build.version,
+                    "buildid": build.buildid,
+                }
+            }
+        }
+
+    return result
+
+
+def get_firefox_release_locales(releases: typing.List[shipit_api.common.models.Release]) -> FirefoxLocales:
+    """Generate the first version each locale has been continuously available
+    on for non-Nightly releases.
+    """
+    # TODO: implement me
+    return {}
+
+
+def get_firefox_locales(
+    releases: typing.List[shipit_api.common.models.Release], nightly_releases: typing.List[shipit_api.common.models.NightlyRelease]
+) -> FirefoxLocales:
+    """Generate the first version each locale has been continuously available on
+    for each Firefox channel (nightly, aurora, beta, release).
+
+    The data returned from this function is in the format required by
+    `firefox_history_locales.json`.
+    """
+
+    nightly_locales = get_firefox_nightly_locales(nightly_releases)
+    release_locales = get_firefox_release_locales(releases)
+
+    return merge_or_raise.merge(nightly_locales, release_locales)
+
+
 def sanity_check_firefox_builds(firefox_versions: FirefoxVersions, firefox_primary_builds: PrimaryBuilds, version_key: str, min_builds: int = 20) -> None:
     version = firefox_versions.get(version_key)
     if not version:
@@ -1159,6 +1253,10 @@ async def rebuild(
     firefox_nightly_version = get_product_channel_version(db_session, "firefox", "nightly")
     thunderbird_nightly_version = get_product_channel_version(db_session, "thunderbird", "nightly")
 
+    # get all firefox nightly builds (with their locales) for firefox_history_locales.json
+    logger.info("Getting firefox nightly releases from the database")
+    firefox_nightly_releases = get_nightly_releases_from_db(db_session, "firefox", "nightly")
+
     # Also fetch latest nightly builds with their L10N info
     nightly_builds = [
         shipit_api.common.models.Release(
@@ -1222,6 +1320,7 @@ async def rebuild(
             breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details, firefox_nightly_version, thunderbird_nightly_version
         ),
         "firefox_versions.json": await get_firefox_versions(releases, firefox_nightly_version),
+        "firefox_history_locales.json": get_firefox_locales(releases, firefox_nightly_releases),
         "languages.json": get_languages(old_product_details),
         "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID], releases, old_product_details),
         "mobile_details.json": get_mobile_details(releases, firefox_nightly_version),
