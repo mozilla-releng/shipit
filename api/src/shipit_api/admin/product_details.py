@@ -1184,7 +1184,8 @@ async def rebuild(
     ]
     logger.info("Getting locales from hg.mozilla.org for each release from database")
     # use limit_per_host=50 since hg.mozilla.org doesn't like too many connections
-    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit_per_host=50), timeout=aiohttp.ClientTimeout(total=30)) as session:
+    headers = {"User-Agent": "ship-it"}
+    async with aiohttp.ClientSession(headers=headers, connector=aiohttp.TCPConnector(limit_per_host=50), timeout=aiohttp.ClientTimeout(total=30)) as session:
         # XXX: for some reason we didn't generate l10n for devedition in old_product_details
         # However, we do need to include devedition releases if there's no corresponding firefox
         # release, to populate firefox_primary_builds.json
