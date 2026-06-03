@@ -132,7 +132,7 @@ def shipit_import(api_from, limit_releases):
             # for testing in most cases.
             releases.sort(key=lambda r: datetime.fromisoformat(r["created"]), reverse=True)
             if limit_releases == -1:
-                limit_releases = releases.len()
+                limit_releases = len(releases)
 
             for release in releases[:limit_releases]:
                 if session.query(Release).filter(Release.name == release["name"]).first():
