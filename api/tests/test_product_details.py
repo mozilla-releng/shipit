@@ -286,11 +286,38 @@ async def test_rebuild(app, tmp_path):
     assert not list(parent.glob("l10n/Devedition-*"))
     assert next(parent.glob("l10n/Firefox-134.0b8-*")).name == "Firefox-134.0b8-build1.json"
 
+    # we do some basic checking of this file; it is too large to do extensive checks of
+    # note that most of its contents come from the `testing` branch of the product-details repo
     with (parent / "firefox_history_locales.json").open() as f:
         locales = json.load(f)
-    assert locales["ach"]["first_release"] == {"nightly": {"version": "134.0a1", "buildid": "20241101093000"}}
-    # "zz" only appears in the newer build
+    assert locales["ach"]["first_release"] == {
+        "nightly": {"version": "134.0a1", "buildid": "20241101093000"},
+        "beta": {"version": "19.0b1", "build_number": 1},
+        "aurora": {"version": "54.0b11", "build_number": 1},
+        "release": {"version": "18.0", "build_number": 1},
+        "esr": {"version": "17.0.2esr", "build_number": 1},
+    }
+    assert locales["de"]["first_release"]["esr"] == {"version": "10.0.12esr", "build_number": 1}
+    # "zz" only appears in the newer nightly build, and in no release channel
     assert locales["zz"]["first_release"] == {"nightly": {"version": "135.0a1", "buildid": "20241225093000"}}
+
+
+def build_old_product_details(l10n_files):
+    return {f"1.0/l10n/{name}.json": {"locales": {locale: {"changeset": "default"} for locale in locales}} for name, locales in l10n_files.items()}
+
+
+def build_firefox_releases(entries):
+    return {
+        "releases": {
+            f"firefox-{version}": {
+                "category": category,
+                "product": "firefox",
+                "build_number": build_number,
+                "version": version.replace("esr", ""),
+            }
+            for version, category, build_number in entries
+        }
+    }
 
 
 def test_get_firefox_locales():
@@ -300,20 +327,61 @@ def test_get_firefox_locales():
         NightlyRelease(product="firefox", channel="nightly", version="40.0a1", buildid="20150100000000", locales=["de", "en-US"]),
         NightlyRelease(product="firefox", channel="nightly", version="6.0a1", buildid="20110100000000", locales=["af", "de", "en-US"]),
     ]
-    releases = []
+    firefox_releases = build_firefox_releases(
+        [
+            ("110.0b1", "dev", 1),
+            ("134.0b8", "dev", 1),
+            ("134.0b9", "dev", 2),
+            ("133.0", "major", 2),
+            ("140.0esr", "major", 1),
+            ("140.2.0esr", "stability", 1),
+            ("128.0esr", "stability", 1),
+            ("52.9.0esr", "esr", 2),
+        ]
+    )
+    old_product_details = build_old_product_details(
+        {
+            "Firefox-110.0b1-build1": ["de"],
+            "Firefox-134.0b8-build1": ["af", "de"],
+            "Firefox-134.0b9-build2": ["af", "de", "fr"],
+            "Firefox-133.0-build2": ["af", "de", "fr"],
+            "Firefox-140.0esr-build1": ["de", "fr"],
+            "Firefox-140.2.0esr-build1": ["de", "fr"],
+            "Firefox-128.0esr-build1": ["de", "fr", "as"],
+            "Firefox-52.9.0esr-build2": ["de", "as"],
+        }
+    )
 
-    result = shipit_api.admin.product_details.get_firefox_locales(releases, nightly_releases)
+    result = shipit_api.admin.product_details.get_firefox_locales(firefox_releases, old_product_details, nightly_releases)
 
-    # "af" had a gap (present in 6.0a1, absent in 40.0a1, back from 55.0a1), so
-    # its first_release is the start of the most recent gap-free run, not 6.0a1.
-    assert result["af"]["first_release"] == {"nightly": {"version": "55.0a1", "buildid": "20170100000000"}}
-    # "de" was never dropped, so its run starts at the oldest build
-    assert result["de"]["first_release"] == {"nightly": {"version": "6.0a1", "buildid": "20110100000000"}}
-    # "fr" only appears in the newest build
-    assert result["fr"]["first_release"] == {"nightly": {"version": "56.0a1", "buildid": "20170200000000"}}
-
+    # dropped after esr128
+    assert "as" not in result
     # en-US should not be included in this file, even though it's part of nightly release metadata
     assert "en-US" not in result
+    assert result["af"]["first_release"] == {
+        # "af" had a gap (present in 6.0a1, absent in 40.0a1, back from 55.0a1), so
+        # its first_release is the start of the most recent gap-free run, not 6.0a1.
+        "nightly": {"version": "55.0a1", "buildid": "20170100000000"},
+        "beta": {"version": "134.0b8", "build_number": 1},
+        "release": {"version": "133.0", "build_number": 2},
+        "aurora": {"version": "134.0b8", "build_number": 1},
+    }
+    assert result["de"]["first_release"] == {
+        # "de" was never dropped, so its run starts at the oldest build
+        "nightly": {"version": "6.0a1", "buildid": "20110100000000"},
+        "beta": {"version": "110.0b1", "build_number": 1},
+        "release": {"version": "133.0", "build_number": 2},
+        "aurora": {"version": "110.0b1", "build_number": 1},
+        "esr": {"version": "52.9.0esr", "build_number": 2},
+    }
+    assert result["fr"]["first_release"] == {
+        # "fr" only appears in the newest build
+        "nightly": {"version": "56.0a1", "buildid": "20170200000000"},
+        "beta": {"version": "134.0b9", "build_number": 2},
+        "release": {"version": "133.0", "build_number": 2},
+        "aurora": {"version": "134.0b9", "build_number": 2},
+        "esr": {"version": "128.0esr", "build_number": 1},
+    }
 
 
 def test_get_firefox_nightly_locales_stops_early():
