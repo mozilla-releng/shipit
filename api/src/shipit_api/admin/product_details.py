@@ -39,6 +39,7 @@ from shipit_api.common.product import Product, ProductCategory
 
 logger = logging.getLogger(__name__)
 
+AURORA_FIRST_VERSION = "54.0b11"
 NIGHTLY_RELEASES_BATCH_SIZE = 1000
 
 File = str
@@ -111,7 +112,7 @@ ThunderbirdVersions = TypedDict(
         "THUNDERBIRD_ESR_NEXT": str,
     },
 )
-FirstRelease = TypedDict("FirstRelease", {"version": str, "buildid": str})
+FirstRelease = TypedDict("FirstRelease", {"version": typing.Required[str], "buildid": str, "build_number": int}, total=False)
 LocaleFirstReleases = TypedDict("LocaleFirstReleases", {"first_release": typing.Dict[str, FirstRelease]})
 FirefoxLocales = typing.Dict[str, LocaleFirstReleases]
 IndexListing = str
@@ -173,6 +174,24 @@ def dt_to_ymd(d: datetime) -> str:
 
 def from_ymd_format(s: str) -> datetime:
     return from_format(s, YMD_DATE_FORMAT)
+
+
+def get_channel(version, product_category):
+    # some ESRs are marked with the "major" category; the only way to
+    # reliably detect them is to look at the version number. this must
+    # be done first to avoid eg: 140.0esr (a "major" release) returning
+    # "release" as the channel
+
+    if version.endswith("esr"):
+        return "esr"
+
+    match product_category:
+        case ProductCategory.DEVELOPMENT.value:
+            return "beta"
+        case ProductCategory.MAJOR.value | ProductCategory.STABILITY.value:
+            return "release"
+
+    raise Exception(f"Can't detect channel for version: {version}, category: {product_category}!")
 
 
 def create_index_listing_html(folder: pathlib.Path, items: typing.Set[pathlib.Path]) -> str:
@@ -1145,16 +1164,81 @@ def get_firefox_nightly_locales(nightly_releases: typing.Iterable[shipit_api.com
     return result
 
 
-def get_firefox_release_locales(releases: typing.List[shipit_api.common.models.Release]) -> FirefoxLocales:
+def get_firefox_release_locales(
+    firefox_releases: Releases, releases_l10n: dict[shipit_api.common.models.Release, ReleaseL10ns], old_product_details: ProductDetails
+) -> FirefoxLocales:
     """Generate the first version each locale has been continuously available
     on for non-Nightly releases.
     """
-    # TODO: implement me
-    return {}
+    channels = {}
+    # Combine release information with locales for each release
+    for product_with_version, details in firefox_releases["releases"].items():
+        version = product_with_version.split("-", 1)[1]
+        build_number = details["build_number"]
+        channel = get_channel(version, details["category"])
+
+        # Find the locale information
+        locales = None
+
+        # Older releases are only present in the old product details
+        l10n_file = f"1.0/l10n/{details['product'].capitalize()}-{version}-build{build_number}.json"
+        if l10n_file in old_product_details:
+            locales = set(old_product_details[l10n_file]["locales"].keys())
+        else:
+            # Newer (ie: ones that are only being published with this product-details rebuild)
+            # are only available in releases_l10n
+            for release, l10n_changesets in releases_l10n.items():
+                if release.product == details["product"] and release.version == version and release.build_number == details["build_number"]:
+                    locales = l10n_changesets.keys()
+
+        if locales is None:
+            # We don't have consistently available l10n information for versions < 40
+            # Don't error out unless we're missing data for newer versions
+            if parse_version(Product.FIREFOX, version).major_number < 40:
+                continue
+
+            raise Exception(f"Couldn't find l10n information for version: {version}")
+
+        release_metadata = {"version": version, "build_number": build_number}
+        channels.setdefault(channel, []).append((parse_version(Product.FIREFOX, version), release_metadata, locales))
+
+    # Find the first continuous release for each locale + channel (except `aurora`)
+    result: FirefoxLocales = {}
+    for channel, release_tuples in channels.items():
+        release_tuples.sort(key=lambda item: item[0], reverse=True)
+        ordered = [(release, locales) for _, release, locales in release_tuples]
+        for locale, release in first_continuous_releases(ordered).items():
+            if locale == "en-US":
+                continue
+
+            result.setdefault(locale, {"first_release": {}})["first_release"][channel] = release
+
+    # Populate `first_release` for the aurora channel, which is a snowflake.
+    # Prior to 54.0b11 it was more like a secondary Nightly channel of Firefox with
+    # a different locale configuration. Post 54.0b11 it turned into DevEdition,
+    # which always ships the same locales as Beta, is a separate product in Ship It,
+    # yet is a shipping channel of Firefox that must be included in the firefox locale metadata.
+    # To simplify things, we ignore the pre-54.0b11 state and simply treat it the same as Beta
+    # with a minimum version of 54.0b11.
+    aurora_floor = parse_version(Product.FIREFOX, AURORA_FIRST_VERSION)
+    for data in result.values():
+        beta = data["first_release"].get("beta")
+        if beta is None:
+            continue
+
+        if parse_version(Product.FIREFOX, beta["version"]) < aurora_floor:
+            data["first_release"]["aurora"] = {"version": AURORA_FIRST_VERSION, "build_number": 1}
+        else:
+            data["first_release"]["aurora"] = beta.copy()
+
+    return result
 
 
 def get_firefox_locales(
-    releases: typing.List[shipit_api.common.models.Release], nightly_releases: typing.List[shipit_api.common.models.NightlyRelease]
+    firefox_releases: Releases,
+    releases_l10n: dict[shipit_api.common.models.Release, ReleaseL10ns],
+    old_product_details: ProductDetails,
+    nightly_releases: typing.List[shipit_api.common.models.NightlyRelease],
 ) -> FirefoxLocales:
     """Generate the first version each locale has been continuously available on
     for each Firefox channel (nightly, aurora, beta, release).
@@ -1164,7 +1248,7 @@ def get_firefox_locales(
     """
 
     nightly_locales = get_firefox_nightly_locales(nightly_releases)
-    release_locales = get_firefox_release_locales(releases)
+    release_locales = get_firefox_release_locales(firefox_releases, releases_l10n, old_product_details)
 
     return merge_or_raise.merge(nightly_locales, release_locales)
 
@@ -1331,6 +1415,13 @@ async def rebuild(
     combined_l10n = releases_l10n.copy()
     combined_l10n.update(nightly_l10n)
 
+    # `firefox_releases` contains all data for both pre and post breakpoint versions
+    # this information is published in `firefox.json` and is also needed to create
+    # `firefox_history_locales.json`, so we pull it into an intermediate variable
+    # (unlike all of the other data below, which is only used for creation of a single
+    # file.)
+    firefox_releases = get_releases(breakpoint_version, [Product.FIREFOX], releases, old_product_details)
+
     # combine old and new data
     product_details: ProductDetails = {
         "all.json": get_releases(
@@ -1340,7 +1431,7 @@ async def rebuild(
             old_product_details,
         ),  # consider adding `android-components` at some point.
         "devedition.json": get_releases(breakpoint_version, [Product.DEVEDITION], releases, old_product_details),
-        "firefox.json": get_releases(breakpoint_version, [Product.FIREFOX], releases, old_product_details),
+        "firefox.json": firefox_releases,
         "firefox_history_development_releases.json": get_release_history(
             breakpoint_version, Product.FIREFOX, ProductCategory.DEVELOPMENT, releases, old_product_details
         ),
@@ -1352,7 +1443,7 @@ async def rebuild(
             breakpoint_version, Product.FIREFOX, combined_releases, combined_l10n, old_product_details, firefox_nightly_version, thunderbird_nightly_version
         ),
         "firefox_versions.json": await get_firefox_versions(releases, firefox_nightly_version),
-        "firefox_history_locales.json": get_firefox_locales(releases, firefox_nightly_releases),
+        "firefox_history_locales.json": get_firefox_locales(firefox_releases, releases_l10n, old_product_details, firefox_nightly_releases),
         "languages.json": get_languages(old_product_details),
         "mobile_android.json": get_releases(breakpoint_version, [Product.FENNEC, Product.FENIX, Product.FIREFOX_ANDROID], releases, old_product_details),
         "mobile_details.json": get_mobile_details(releases, firefox_nightly_version),
