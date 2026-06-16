@@ -449,6 +449,7 @@ SUPPORTED_FLAVORS = _get_supported_flavors()
 
 SYSTEM_ADDONS = (
     "data-leak-blocker",
+    "ipp-activator",
     "newtab",
     "webcompat",
 )
