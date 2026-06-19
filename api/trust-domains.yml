@@ -7,6 +7,7 @@ comm:
   - https://hg.mozilla.org/releases/comm-release
   - https://hg.mozilla.org/releases/comm-esr115
   - https://hg.mozilla.org/releases/comm-esr140
+  - https://hg.mozilla.org/releases/comm-esr153
   - https://hg.mozilla.org/try-comm-central
 gecko:
   - https://hg.mozilla.org/mozilla-central
@@ -14,6 +15,7 @@ gecko:
   - https://hg.mozilla.org/releases/mozilla-release
   - https://hg.mozilla.org/releases/mozilla-esr115
   - https://hg.mozilla.org/releases/mozilla-esr140
+  - https://hg.mozilla.org/releases/mozilla-esr153
   - https://hg.mozilla.org/try
 mobile:
   - https://github.com/mozilla-mobile/firefox-android

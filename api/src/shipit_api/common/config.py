@@ -38,7 +38,7 @@ BREAKPOINT_VERSION = 114
 # should be using the major version of the older release, while ESR_NEXT should
 # be using the major version of the release with greater version.
 CURRENT_ESR = "140"
-ESR_NEXT = ""
+ESR_NEXT = "153"
 # Pre Firefox version
 LATEST_FIREFOX_OLDER_VERSION = "3.6.28"
 # TODO: move the branch configs to secrets
@@ -624,6 +624,7 @@ _MERGE_BEHAVIORS_PER_PRODUCT = {
         _fx_merge_behavior("beta-to-release", "Beta -> release", "https://hg.mozilla.org/releases/mozilla-beta", "mozilla-beta"),
         _fx_merge_behavior("release-to-esr", "Release -> ESR", "https://hg.mozilla.org/releases/mozilla-release", "mozilla-release"),
         _fx_merge_behavior("bump-main", "Bump main", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
+        _fx_merge_behavior("bump-esr153", "Bump ESR 153", "https://hg.mozilla.org/releases/mozilla-esr153", "mozilla-esr153"),
         _fx_merge_behavior("bump-esr140", "Bump ESR 140", "https://hg.mozilla.org/releases/mozilla-esr140", "mozilla-esr140"),
         _fx_merge_behavior("bump-esr115", "Bump ESR 115", "https://hg.mozilla.org/releases/mozilla-esr115", "mozilla-esr115"),
     ],
