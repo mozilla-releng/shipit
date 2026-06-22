@@ -430,6 +430,9 @@ def add_nightly_release(body):
         user_permissions = ", ".join(current_user.get_permissions())
         abort(401, f"required permission: {required_permission}, user permissions: {user_permissions}")
 
+    if any(len(l) == 0 for l in body["locales"]):
+        abort(400, "entry in locales contains empty string")
+
     session = current_app.db.session
     nightly = NightlyRelease(
         product=product,
