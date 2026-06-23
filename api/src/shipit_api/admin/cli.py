@@ -23,7 +23,7 @@ from backend_common.log import configure_logging
 from shipit_api.admin.flask import flask_app
 from shipit_api.admin.product_details import rebuild
 from shipit_api.common.config import BREAKPOINT_VERSION
-from shipit_api.common.models import Release, Version
+from shipit_api.common.models import NightlyRelease, Release, Version
 
 
 def coroutine(f):
@@ -131,10 +131,9 @@ def shipit_import(api_from, limit_releases):
             # Pull the most recent N releases when limiting; they're more important
             # for testing in most cases.
             releases.sort(key=lambda r: datetime.fromisoformat(r["created"]), reverse=True)
-            if limit_releases == -1:
-                limit_releases = len(releases)
+            release_count = len(releases) if limit_releases == -1 else limit_releases
 
-            for release in releases[:limit_releases]:
+            for release in releases[:release_count]:
                 if session.query(Release).filter(Release.name == release["name"]).first():
                     click.echo(f"{release['name']} already exists, skipping...")
                     continue
@@ -155,6 +154,57 @@ def shipit_import(api_from, limit_releases):
                 r.completed = release["completed"] or release["created"]
                 session.add(r)
                 session.commit()
+
+            # Import nightly releases
+            click.echo("Fetching nightly release list...")
+            for product, channel in (("firefox", "nightly"), ("thunderbird", "nightly")):
+                click.echo(f"Importing {product} {channel} nightly releases")
+                before_buildid = None
+                imported = 0
+                while True:
+                    if limit_releases != -1 and imported >= limit_releases:
+                        break
+
+                    params = {"product": product, "channel": channel, "limit": 500, "order": "desc"}
+                    if before_buildid:
+                        params["before_buildid"] = before_buildid
+                    req = requests.get(f"{api_from}/nightly-release", params=params)
+                    req.raise_for_status()
+                    nightlies = req.json()
+                    if not nightlies:
+                        break
+
+                    for nightly in nightlies:
+                        if limit_releases != -1 and imported >= limit_releases:
+                            break
+                        before_buildid = nightly["buildid"]
+                        imported += 1
+
+                        if (
+                            session.query(NightlyRelease)
+                            .filter(
+                                NightlyRelease.product == nightly["product"],
+                                NightlyRelease.channel == nightly["channel"],
+                                NightlyRelease.buildid == nightly["buildid"],
+                            )
+                            .first()
+                        ):
+                            click.echo(f"{product} {channel} {nightly['buildid']} already exists, skipping...")
+                            continue
+
+                        click.echo(f"Importing {product} {channel} {nightly['buildid']}")
+                        n = NightlyRelease(
+                            product=nightly["product"],
+                            channel=nightly["channel"],
+                            version=nightly["version"],
+                            buildid=nightly["buildid"],
+                            locales=nightly["locales"],
+                        )
+                        session.add(n)
+                        session.commit()
+
+                    if len(nightlies) < 500:
+                        break
 
         # Import Versions
         # only import the two entries we need to rebuild product details for now
