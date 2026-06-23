@@ -115,6 +115,24 @@ def test_add_nightly_release_duplicate_buildid_returns_400(mock_user, app):
 
 
 @patch("shipit_api.admin.api.current_user", new_callable=lambda: Mock())
+def test_add_nightly_release_empty_locale_returns_400(mock_user, app):
+    mock_user.has_permissions.return_value = True
+
+    with app.test_client() as client:
+        response = client.post(
+            "/nightly-release",
+            json={
+                "product": "firefox",
+                "channel": "nightly",
+                "version": "140.0a1",
+                "buildid": "20260522093015",
+                "locales": ["de", ""],
+            },
+        )
+        assert response.status_code == 400
+
+
+@patch("shipit_api.admin.api.current_user", new_callable=lambda: Mock())
 def test_add_nightly_release_permission_denied(mock_user, app):
     mock_user.has_permissions.return_value = False
     mock_user.get_permissions.return_value = ["some:other:permission"]
