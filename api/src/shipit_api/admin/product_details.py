@@ -8,6 +8,7 @@ import collections
 import functools
 import hashlib
 import io
+import itertools
 import json
 import logging
 import os
@@ -37,6 +38,8 @@ from shipit_api.admin.release import parse_version
 from shipit_api.common.product import Product, ProductCategory
 
 logger = logging.getLogger(__name__)
+
+NIGHTLY_RELEASES_BATCH_SIZE = 1000
 
 File = str
 ReleaseDetails = TypedDict(
@@ -305,12 +308,16 @@ def get_releases_from_db(db_session: sqlalchemy.orm.Session, breakpoint_version:
     return query.all()
 
 
-def get_nightly_releases_from_db(db_session: sqlalchemy.orm.Session, product: str, channel: str) -> typing.List[shipit_api.common.models.NightlyRelease]:
+def get_nightly_releases_from_db(db_session: sqlalchemy.orm.Session, product: str, channel: str) -> typing.Iterator[shipit_api.common.models.NightlyRelease]:
     NightlyRelease = shipit_api.common.models.NightlyRelease
     query = db_session.query(NightlyRelease)
     query = query.filter(NightlyRelease.product == product)
     query = query.filter(NightlyRelease.channel == channel)
-    return query.all()
+    # batching and ordering avoids loading all objects (which could be 10,000+) at once,
+    # and allows the callers to bail early if it finds all necessary information before
+    # iterating over all rows
+    query = query.order_by(NightlyRelease.buildid.desc())
+    return query.yield_per(NIGHTLY_RELEASES_BATCH_SIZE)
 
 
 def get_product_channel_version(db_session: sqlalchemy.orm.Session, product: str, channel: str):
@@ -1066,24 +1073,28 @@ def get_thunderbird_beta_builds() -> typing.Dict:
     return dict()
 
 
-def get_firefox_nightly_locales(nightly_releases: typing.List[shipit_api.common.models.NightlyRelease]) -> FirefoxLocales:
+def get_firefox_nightly_locales(nightly_releases: typing.Iterable[shipit_api.common.models.NightlyRelease]) -> FirefoxLocales:
     """Generate the first version each locale has been continuously available on
     for nightly releases.
     """
-    builds = sorted(nightly_releases, key=lambda nightly: nightly.buildid, reverse=True)
-    if not builds:
+    builds = iter(nightly_releases)
+    try:
+        latest_build = next(builds)
+    except StopIteration:
         return {}
+
     # locales not present in the latest build are ignored completely, as they do
     # not meet the definition of "continuously available"; make these easily
     # available
-    latest_build_locales = builds[0].locales
+    needed_locales = set(latest_build.locales)
     # en-US is part of nightly metadata, but not part of this file
-    latest_build_locales.remove("en-US")
+    if "en-US" in needed_locales:
+        needed_locales.remove("en-US")
 
     last_release: typing.Dict[str, shipit_api.common.models.NightlyRelease] = {}
     done: typing.Set[str] = set()
 
-    for build in builds:
+    for build in itertools.chain([latest_build], builds):
         # identify any locales that we've already seen, and are missing from the current
         # build being checked (ie: the next oldest build)
         for locale in last_release:
@@ -1096,10 +1107,15 @@ def get_firefox_nightly_locales(nightly_releases: typing.List[shipit_api.common.
         # and the latest build that have not already had their last continuous
         # release identified
         for locale in build.locales:
-            if locale in done or locale not in latest_build_locales:
+            if locale in done or locale not in needed_locales:
                 continue
 
             last_release[locale] = build
+
+        # once every locale of interest has had its oldest continuous release
+        # identified, no older build can change the result; stop fetching
+        if done == needed_locales:
+            break
 
     result: FirefoxLocales = {}
     for locale, build in last_release.items():
