@@ -178,7 +178,6 @@ def shipit_import(api_from, limit_releases):
                         if limit_releases != -1 and imported >= limit_releases:
                             break
                         before_buildid = nightly["buildid"]
-                        imported += 1
 
                         if (
                             session.query(NightlyRelease)
@@ -202,6 +201,8 @@ def shipit_import(api_from, limit_releases):
                         )
                         session.add(n)
                         session.commit()
+
+                        imported += 1
 
                     if len(nightlies) < 500:
                         break
