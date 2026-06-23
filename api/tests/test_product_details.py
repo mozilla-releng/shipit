@@ -16,7 +16,7 @@ from sqlalchemy import engine, event
 
 import shipit_api.admin.product_details
 from shipit_api.admin.product_details import fetch_l10n_data, rebuild
-from shipit_api.common.models import Release, Version
+from shipit_api.common.models import NightlyRelease, Release, Version
 
 
 # product_details uses a postgresql-specific "split_part" sql function
@@ -179,11 +179,21 @@ async def test_rebuild(app, tmp_path):
         status="shipped",
         partial_updates=None,
     )
+    # Two firefox nightly builds. "ach" is in both, so its first appearance is
+    # the earlier buildid; "zz" only appears in the newer one.
+    nightly_build_1 = NightlyRelease(
+        product="firefox", channel="nightly", version="134.0a1", buildid="20241101093000", locales=list(L10N_CHANGESETS.keys()) + ["en-US"]
+    )
+    nightly_build_2 = NightlyRelease(
+        product="firefox", channel="nightly", version="135.0a1", buildid="20241225093000", locales=list(L10N_CHANGESETS.keys()) + ["en-US", "zz"]
+    )
     app.app.db.session.add(fxnightly)
     app.app.db.session.add(tbnightly)
     app.app.db.session.add(deved)
     app.app.db.session.add(beta)
     app.app.db.session.add(release)
+    app.app.db.session.add(nightly_build_1)
+    app.app.db.session.add(nightly_build_2)
     app.app.db.session.commit()
     with (
         mock.patch("shipit_api.common.config.PRODUCT_DETAILS_DIR", tmp_path / "product-details"),
@@ -275,3 +285,57 @@ async def test_rebuild(app, tmp_path):
 
     assert not list(parent.glob("l10n/Devedition-*"))
     assert next(parent.glob("l10n/Firefox-134.0b8-*")).name == "Firefox-134.0b8-build1.json"
+
+    with (parent / "firefox_history_locales.json").open() as f:
+        locales = json.load(f)
+    assert locales["ach"]["first_release"] == {"nightly": {"version": "134.0a1", "buildid": "20241101093000"}}
+    # "zz" only appears in the newer build
+    assert locales["zz"]["first_release"] == {"nightly": {"version": "135.0a1", "buildid": "20241225093000"}}
+
+
+def test_get_firefox_locales():
+    nightly_releases = [
+        NightlyRelease(product="firefox", channel="nightly", version="56.0a1", buildid="20170200000000", locales=["af", "de", "en-US", "fr"]),
+        NightlyRelease(product="firefox", channel="nightly", version="55.0a1", buildid="20170100000000", locales=["af", "de", "en-US"]),
+        NightlyRelease(product="firefox", channel="nightly", version="40.0a1", buildid="20150100000000", locales=["de", "en-US"]),
+        NightlyRelease(product="firefox", channel="nightly", version="6.0a1", buildid="20110100000000", locales=["af", "de", "en-US"]),
+    ]
+    releases = []
+
+    result = shipit_api.admin.product_details.get_firefox_locales(releases, nightly_releases)
+
+    # "af" had a gap (present in 6.0a1, absent in 40.0a1, back from 55.0a1), so
+    # its first_release is the start of the most recent gap-free run, not 6.0a1.
+    assert result["af"]["first_release"] == {"nightly": {"version": "55.0a1", "buildid": "20170100000000"}}
+    # "de" was never dropped, so its run starts at the oldest build
+    assert result["de"]["first_release"] == {"nightly": {"version": "6.0a1", "buildid": "20110100000000"}}
+    # "fr" only appears in the newest build
+    assert result["fr"]["first_release"] == {"nightly": {"version": "56.0a1", "buildid": "20170200000000"}}
+
+    # en-US should not be included in this file, even though it's part of nightly release metadata
+    assert "en-US" not in result
+
+
+def test_get_firefox_nightly_locales_stops_early():
+    # newest-first; "af" (the only locale of interest) is continuous in the two
+    # newest builds, then disappears in 58.0a1. At that point the result is fully
+    # determined and any older build is irrelevant, so it must never be fetched.
+    consumed = []
+
+    def build_stream():
+        builds = [
+            ("60.0a1", "20180300000000", ["af", "en-US"]),
+            ("59.0a1", "20180200000000", ["af", "en-US"]),
+            ("58.0a1", "20180100000000", ["en-US"]),
+            # older than the point where the result is determined; consuming this
+            # would mean we failed to stop early
+            ("57.0a1", "20170100000000", ["af", "en-US"]),
+        ]
+        for version, buildid, locales in builds:
+            consumed.append(buildid)
+            yield NightlyRelease(product="firefox", channel="nightly", version=version, buildid=buildid, locales=locales)
+
+    result = shipit_api.admin.product_details.get_firefox_nightly_locales(build_stream())
+
+    assert result["af"]["first_release"] == {"nightly": {"version": "59.0a1", "buildid": "20180200000000"}}
+    assert consumed == ["20180300000000", "20180200000000", "20180100000000"]
