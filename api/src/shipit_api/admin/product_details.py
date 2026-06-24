@@ -1073,60 +1073,74 @@ def get_thunderbird_beta_builds() -> typing.Dict:
     return dict()
 
 
+def first_continuous_releases(releases: typing.Iterable[tuple[FirstRelease, list[str]]]) -> dict[str, FirstRelease]:
+    """Given an ordered (newest first) list of ``(release, locales)`` pairs, find the
+    oldest release each locale has been continuously available on.
+
+    Locales not present in the newest release are ignored, as they do not meet the
+    definition of "continuously available".
+    """
+    releases = iter(releases)
+    try:
+        latest_release = next(releases)
+    except StopIteration:
+        return {}
+
+    # locales not present in the latest release are ignored completely, as they do
+    # not meet the definition of "continuously available"; make these easily
+    # available
+    needed_locales = set(latest_release[1])
+
+    last_releases: typing.Dict[str, FirstRelease] = {}
+    done: typing.Set[str] = set()
+
+    for release, locales in itertools.chain([latest_release], releases):
+        # identify any locales that we've already seen, and are missing from the current
+        # release being checked (ie: the next oldest release)
+        for locale in last_releases:
+            # locale has been seen before, but now goes missing; last_releases already
+            # contains the oldest continuous release, mark it as done
+            if locale not in locales:
+                done.add(locale)
+
+        # update last_releases for all locales present in the current release
+        # and the latest release that have not already had their last continuous
+        # release identified
+        for locale in locales:
+            if locale in done or locale not in needed_locales:
+                continue
+
+            last_releases[locale] = release
+
+        # once every locale of interest has had its oldest continuous release
+        # identified, no older release can change the result; stop fetching
+        if done == needed_locales:
+            break
+
+    return last_releases
+
+
 def get_firefox_nightly_locales(nightly_releases: typing.Iterable[shipit_api.common.models.NightlyRelease]) -> FirefoxLocales:
     """Generate the first version each locale has been continuously available on
     for nightly releases.
     """
-    builds = iter(nightly_releases)
-    try:
-        latest_build = next(builds)
-    except StopIteration:
-        return {}
-
-    # locales not present in the latest build are ignored completely, as they do
-    # not meet the definition of "continuously available"; make these easily
-    # available
-    needed_locales = set(latest_build.locales)
-    # en-US is part of nightly metadata, but not part of this file
-    if "en-US" in needed_locales:
-        needed_locales.remove("en-US")
-
-    last_release: typing.Dict[str, shipit_api.common.models.NightlyRelease] = {}
-    done: typing.Set[str] = set()
-
-    for build in itertools.chain([latest_build], builds):
-        # identify any locales that we've already seen, and are missing from the current
-        # build being checked (ie: the next oldest build)
-        for locale in last_release:
-            # locale has been seen before, but now goes missing; last_release already
-            # contains the oldest continuous release, mark it as done
-            if locale not in build.locales:
-                done.add(locale)
-
-        # update last_release for all locales present in the current build
-        # and the latest build that have not already had their last continuous
-        # release identified
-        for locale in build.locales:
-            if locale in done or locale not in needed_locales:
-                continue
-
-            last_release[locale] = build
-
-        # once every locale of interest has had its oldest continuous release
-        # identified, no older build can change the result; stop fetching
-        if done == needed_locales:
-            break
-
     result: FirefoxLocales = {}
-    for locale, build in last_release.items():
-        result[locale] = {
-            "first_release": {
-                "nightly": {
-                    "version": build.version,
-                    "buildid": build.buildid,
-                }
-            }
-        }
+
+    def release_yielder() -> typing.Iterable[tuple[FirstRelease, list[str]]]:
+        # `first_continuous_releases` needs to work with these releases (which are NightlyRelease
+        # objects) and non-NightlyReleases (in order to implement `get_firefox_release_locales`);
+        # munge these releases into a generic format to accommodate this
+        for nr in nightly_releases:
+            # copy to avoid mutating the database object
+            locales = nr.locales.copy()
+            # en-US is included in the NightlyRelease metadata, but not in the locale list
+            # that we spit out; remove it upfront
+            if "en-US" in locales:
+                locales.remove("en-US")
+            yield ({"version": nr.version, "buildid": nr.buildid}, locales)
+
+    for locale, release in first_continuous_releases(release_yielder()).items():
+        result[locale] = {"first_release": {"nightly": release}}
 
     return result
 
