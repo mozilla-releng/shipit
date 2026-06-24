@@ -93,7 +93,7 @@ async def test_fetch_l10n_data():
 
 def mock_setup_working_copy(branch, url, secrets):
     subprocess.check_call(["git", "clone", "-n", url, str(shipit_api.common.config.PRODUCT_DETAILS_DIR)])
-    subprocess.check_call(["git", "checkout", "-b", branch, "906b7cd284728a2acec695ddcba9193b44d38982"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR)
+    subprocess.check_call(["git", "checkout", "-b", branch, "26140d3435c386f36a94bd23ded5d08f8a41f080"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR)
     subprocess.check_call(["git", "config", "user.email", "release-services+robot@mozilla.com"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR)
     subprocess.check_call(["git", "config", "user.name", "Release Services Robot"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR)
     subprocess.check_call(["git", "config", "commit.gpgsign", "false"], cwd=shipit_api.common.config.PRODUCT_DETAILS_DIR)
