@@ -1,17 +1,17 @@
 {
   "devDependencies": {
-    "@biomejs/biome": "2.5.0",
+    "@biomejs/biome": "2.5.1",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
     "@mui/icons-material": "9.1.1",
-    "@mui/material": "9.1.1",
-    "@mui/x-date-pickers": "9.5.0",
+    "@mui/material": "9.1.2",
+    "@mui/x-date-pickers": "9.7.0",
     "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",
     "jest": "30.4.2",
     "jest-environment-jsdom": "30.4.1",
     "react-refresh": "0.18.0",
-    "webpack": "5.107.2",
-    "webpack-cli": "7.0.3",
+    "webpack": "5.108.1",
+    "webpack-cli": "7.1.0",
     "webpack-dev-server": "5.2.5"
   },
   "scripts": {
