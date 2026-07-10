@@ -7,7 +7,6 @@ module.exports = {
     redirectUri: new URL('/login', window.location).href,
     scope: 'full-user-credentials openid profile email',
     responseType: 'token id_token',
-    audience: 'https://auth.mozilla.auth0.com/api/v2/',
   },
   PRODUCTS: {
     firefox: [
