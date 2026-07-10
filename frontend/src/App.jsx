@@ -27,7 +27,6 @@ const App = () => {
           clientId={config.AUTH0.clientID}
           authorizationParams={{
             redirect_uri: config.AUTH0.redirectUri,
-            audience: config.AUTH0.audience,
             scope: config.AUTH0.scope,
           }}
           leeway={30}
