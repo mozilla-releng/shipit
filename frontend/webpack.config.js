@@ -236,7 +236,14 @@ module.exports = (_, { mode }) => {
         ignoreOrder: false,
         chunkFilename: 'assets/[name].[contenthash:8].css',
       }),
-      ...(mode === 'development' ? [new ReactRefreshWebpackPlugin()] : []),
+      // overlay:false — react-refresh-webpack-plugin's error overlay pulls in
+      // webpack-dev-server/client/clients/SockJSClient, which was removed in
+      // webpack-dev-server v6. Disabling it avoids a compile error while keeping
+      // Fast Refresh working (WDS's own overlay still reports errors). Revert once
+      // @pmmmwh/react-refresh-webpack-plugin supports WDS v6 (pmmmwh#1014).
+      ...(mode === 'development'
+        ? [new ReactRefreshWebpackPlugin({ overlay: false })]
+        : []),
     ],
     entry: {
       index: [`${__dirname}/src/index`],
