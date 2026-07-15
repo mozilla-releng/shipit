@@ -78,7 +78,7 @@ services:
       - api
 
   db:
-    image: postgres:15@sha256:3b0d656f5fff31c7d8a64f500a703dcf3f35e98ce78f602831a73059a5e6a012
+    image: postgres:15@sha256:c29ef248e25f5282af03e4b2b61ab7fb076d83d6c8625e75eca1c4b7a8c731a4
     ports:
       - "5432:5432"
     volumes:
@@ -95,7 +95,7 @@ services:
       retries: 5
 
   ui:
-    image: node:24@sha256:fdddfb3e688158251943d52eba361de991548f6814007acba4917ae6b512d6be
+    image: node:24@sha256:5711a0d445a1af54af9589066c646df387d1831a608226f4cd694fc59e745059
     ports:
       - "8010:8010"
     volumes:
