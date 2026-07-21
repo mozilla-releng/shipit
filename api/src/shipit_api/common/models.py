@@ -227,6 +227,7 @@ class MergeAutomation(db.Model):
             "commit_author": self.commit_author,
             "repo": self.repo,
             "pretty_name": self.pretty_name,
+            "project": self.project,
         }
 
 
