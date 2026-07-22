@@ -5,6 +5,7 @@ import taskcluster_urls
 from flask import abort, current_app
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import undefer_group
 from taskcluster.exceptions import TaskclusterRestFailure
 from werkzeug.exceptions import BadRequest
 
@@ -93,7 +94,9 @@ def get_phase(name, phase):
 
 def schedule_phase(name, phase):
     session = current_app.db.session
-    phases = session.query(XPIPhase).filter(XPIRelease.id == XPIPhase.release_id).filter(XPIRelease.name == name).all()
+    # do_schedule_phase reads task and context (deferred); undefer the group so
+    # they load with these rows rather than in a follow-up query.
+    phases = session.query(XPIPhase).options(undefer_group("task_context")).filter(XPIRelease.id == XPIPhase.release_id).filter(XPIRelease.name == name).all()
     phase_to_schedule = list(filter(lambda _phase: _phase.name == phase, phases))
 
     # Get email for all signoffs from previous phases and phase scheduler

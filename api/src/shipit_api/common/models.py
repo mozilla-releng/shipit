@@ -88,8 +88,12 @@ class Phase(db.Model, PhaseBase):
     name = sa.Column(sa.String, nullable=False)
     submitted = sa.Column(sa.Boolean, nullable=False, default=False)
     task_id = sa.Column(sa.String, nullable=False)
-    task = sa.Column(sa.Text, nullable=False)
-    context = sa.Column(sa.Text, nullable=False)
+    # task and context hold the rendered action task and its params, which can
+    # be large. Defer them so that listing releases (which never reads them)
+    # doesn't load them into memory; group them so the scheduling code that does
+    # read them can pull both back at once. See bug 2055898.
+    task = sa.orm.deferred(sa.Column(sa.Text, nullable=False), group="task_context")
+    context = sa.orm.deferred(sa.Column(sa.Text, nullable=False), group="task_context")
     created = sa.Column(sa.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     scheduled_at = sa.Column(sa.DateTime)
     scheduled_by = sa.Column(sa.String)
@@ -257,8 +261,9 @@ class XPIPhase(db.Model, PhaseBase):
     name = sa.Column(sa.String, nullable=False)
     submitted = sa.Column(sa.Boolean, nullable=False, default=False)
     task_id = sa.Column(sa.String, nullable=False)
-    task = sa.Column(sa.Text, nullable=False)
-    context = sa.Column(sa.Text, nullable=False)
+    # See the note on Phase.task/context above; same rationale (bug 2055898).
+    task = sa.orm.deferred(sa.Column(sa.Text, nullable=False), group="task_context")
+    context = sa.orm.deferred(sa.Column(sa.Text, nullable=False), group="task_context")
     created = sa.Column(sa.DateTime, default=lambda: datetime.datetime.now(datetime.UTC))
     scheduled_at = sa.Column(sa.DateTime)
     scheduled_by = sa.Column(sa.String)
