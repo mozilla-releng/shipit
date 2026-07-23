@@ -10,6 +10,7 @@ import taskcluster_urls
 from flask import abort, current_app
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import undefer_group
 from taskcluster.exceptions import TaskclusterRestFailure
 from werkzeug.exceptions import BadRequest
 
@@ -174,7 +175,15 @@ def do_schedule_phase(session, phase, additional_shipit_emails=()):
 def schedule_phase(name, phase):
     session = current_app.db.session
     phase = (
-        session.query(Phase).with_for_update().filter(Release.id == Phase.release_id).filter(Release.name == name).filter(Phase.name == phase).first_or_404()
+        session.query(Phase)
+        # do_schedule_phase reads task and context, which are deferred; undefer
+        # the group so they load with this row rather than in a follow-up query.
+        .options(undefer_group("task_context"))
+        .with_for_update()
+        .filter(Release.id == Phase.release_id)
+        .filter(Release.name == name)
+        .filter(Phase.name == phase)
+        .first_or_404()
     )
 
     # we must require scope which depends on product

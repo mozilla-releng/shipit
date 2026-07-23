@@ -4,6 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import json
+from contextlib import contextmanager
 from contextlib import nullcontext as does_not_raise
 from unittest import mock
 
@@ -11,6 +12,7 @@ import pytest
 from mozilla_version.fenix import FenixVersion
 from mozilla_version.gecko import DeveditionVersion, FennecVersion, FirefoxVersion, ThunderbirdVersion
 from mozilla_version.mobile import MobileVersion
+from sqlalchemy import event
 
 import backend_common.auth
 import backend_common.taskcluster
@@ -18,6 +20,31 @@ from shipit_api.admin.api import get_signoff_emails
 from shipit_api.admin.release import bump_version, is_partner_attribution_enabled, is_partner_repacks_enabled, parse_version
 from shipit_api.common.models import Release, XPISignoff
 from shipit_api.common.product import Product
+from shipit_api.public.api import list_releases
+
+
+@contextmanager
+def capture_sql(session):
+    """Record every SQL statement executed on the session's engine."""
+    statements = []
+
+    def listener(conn, cursor, statement, parameters, context, executemany):
+        statements.append(statement)
+
+    engine = session.get_bind()
+    event.listen(engine, "after_cursor_execute", listener)
+    try:
+        yield statements
+    finally:
+        event.remove(engine, "after_cursor_execute", listener)
+
+
+def selects_phase_column(statements, column):
+    # A compiled entity SELECT lists a column as
+    # "shipit_api_phases.<column> AS shipit_api_phases_<column>". The " AS"
+    # suffix keeps "task" from also matching "task_id".
+    marker = f"shipit_api_phases.{column} AS"
+    return [s for s in statements if marker in s]
 
 
 @pytest.mark.parametrize(
@@ -172,13 +199,53 @@ def test_schedule_phase(app):
     with mock.patch(
         "shipit_api.admin.api.current_user", backend_common.auth.Auth0User("", {"email": "admin", "https://sso.mozilla.com/claim/groups": "releng"})
     ):
-        with app.test_client() as client:
-            response = client.put("/releases/Firefox-90.0-build1/promote")
-            assert response.status_code == 200
+        with capture_sql(session) as statements:
+            with app.test_client() as client:
+                response = client.put("/releases/Firefox-90.0-build1/promote")
+                assert response.status_code == 200
     assert [p.name for p in release.phases] == ["build", "promote", "ship"]
     assert [p.submitted for p in release.phases] == [True, True, False]
     assert [p.skipped for p in release.phases] == [True, False, False]
     assert [p.task_id for p in release.phases] == ["", "1", ""]
+
+    # The scheduling path fetches the phase with undefer_group("task_context"),
+    # so task/context are loaded inline with the entity (which also selects
+    # ``name``) rather than in a separate deferred-group query. Without the
+    # undefer, the entity fetch would omit task and a later query would load it,
+    # so no single statement would select both name and task.
+    assert any("shipit_api_phases.name AS" in s and "shipit_api_phases.task AS" in s for s in statements)
+
+
+def test_list_releases_does_not_load_task_context(app):
+    # Listing releases must not pull each phase's large ``task`` and ``context``
+    # columns from the database. Eagerly loading them across ~1400 releases at
+    # several phases each blew past the public app's memory limit and caused OOM
+    # restarts (bug 2055898); the columns are deferred so the list path skips
+    # them. This drives the real endpoint and asserts on the SQL it emits.
+    release = Release(
+        product="firefox",
+        version="90.0",
+        branch="mozilla-release",
+        revision="0" * 40,
+        build_number=1,
+        release_eta=None,
+        partial_updates=None,
+        status="scheduled",
+    )
+    release.phases = mock_generate_phases(release)
+    session = app.app.db.session
+    session.add(release)
+    session.commit()
+    session.expunge_all()
+
+    with capture_sql(session) as statements:
+        result = list_releases(status=["scheduled"])
+
+    assert [r["name"] for r in result] == ["Firefox-90.0-build1"]
+    # The endpoint did query the phases table, but never selected task/context.
+    assert any("shipit_api_phases" in s for s in statements)
+    assert not selects_phase_column(statements, "task")
+    assert not selects_phase_column(statements, "context")
 
 
 @mock.patch("shipit_api.admin.api.generate_phases", mock_generate_phases)
