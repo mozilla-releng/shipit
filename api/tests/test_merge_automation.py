@@ -101,6 +101,7 @@ def test_list_merge_automation_with_data(app):
                 "dry_run": False,
                 "commit_message": None,
                 "commit_author": None,
+                "project": "mozilla-beta",
             },
             {
                 "id": automation1.id,
@@ -117,6 +118,7 @@ def test_list_merge_automation_with_data(app):
                 "dry_run": True,
                 "commit_message": None,
                 "commit_author": None,
+                "project": "try",
             },
             {
                 "id": automation2.id,
@@ -133,6 +135,7 @@ def test_list_merge_automation_with_data(app):
                 "dry_run": False,
                 "commit_message": None,
                 "commit_author": None,
+                "project": "try",
             },
         ]
 
