@@ -10,14 +10,14 @@ import pytest
 from click.testing import CliRunner
 from sqlalchemy import event
 
-from shipit_api.common.models import NightlyRelease, Release, Version
+from shipit_api.common.models import MergeAutomation, NightlyRelease, Release, TaskStatus, Version
 
 API_FROM = "https://shipit-api.mozilla-releng.net"
 
 
-def _coerce_release_datetimes(_, __, target):
+def _coerce_datetimes(_, __, target):
     # Production runs against Postgres, which accepts the ISO strings the import
-    # assigns to Release.created/completed. SQLite (used in tests) requires real
+    # assigns to created/completed columns. SQLite (used in tests) requires real
     # datetime objects, so bridge the difference here.
     for field in ("created", "completed"):
         value = getattr(target, field)
@@ -32,7 +32,8 @@ def cli(app):
     fake_flask = ModuleType("shipit_api.admin.flask")
     fake_flask.app = app
     fake_flask.flask_app = app.app
-    event.listen(Release, "before_insert", _coerce_release_datetimes)
+    event.listen(Release, "before_insert", _coerce_datetimes)
+    event.listen(MergeAutomation, "before_insert", _coerce_datetimes)
     try:
         with patch.dict(sys.modules, {"shipit_api.admin.flask": fake_flask}):
             import shipit_api.admin.cli as cli_module
@@ -40,7 +41,8 @@ def cli(app):
             importlib.reload(cli_module)
             yield cli_module
     finally:
-        event.remove(Release, "before_insert", _coerce_release_datetimes)
+        event.remove(Release, "before_insert", _coerce_datetimes)
+        event.remove(MergeAutomation, "before_insert", _coerce_datetimes)
 
 
 def run_import(cli, *args):
@@ -88,6 +90,48 @@ def register_versions(responses, firefox="140.0a1", thunderbird="140.0a1"):
     responses.add(responses.GET, f"{API_FROM}/versions/thunderbird/nightly", json=thunderbird)
 
 
+def make_merge_automation(
+    product,
+    behavior,
+    revision,
+    version,
+    task_id,
+    created,
+    completed=None,
+    status="completed",
+    dry_run=False,
+    commit_message="",
+    commit_author="",
+    repo="",
+    pretty_name="",
+    project="",
+):
+    return {
+        "id": 1,
+        "product": product,
+        "behavior": behavior,
+        "revision": revision,
+        "dry_run": dry_run,
+        "created": created,
+        "completed": completed,
+        "status": status,
+        "task_id": task_id,
+        "version": version,
+        "commit_message": commit_message,
+        "commit_author": commit_author,
+        "repo": repo,
+        "pretty_name": pretty_name,
+        "project": project,
+    }
+
+
+def register_merge_automations(responses, products=None):
+    products = products or {}
+    responses.add(responses.GET, f"{API_FROM}/merge-automation/products", json=list(products.keys()))
+    for product, merges in products.items():
+        responses.add(responses.GET, f"{API_FROM}/merge-automation?product={product}", json=merges)
+
+
 def register_nightlies(responses, datasets):
     def _callback(request):
         qs = parse_qs(urlparse(request.url).query)
@@ -125,6 +169,7 @@ def test_shipit_import_imports_releases_nightlies_and_versions(cli, responses):
         },
     )
     register_versions(responses)
+    register_merge_automations(responses)
 
     run_import(cli)
 
@@ -140,6 +185,7 @@ def test_shipit_import_imports_releases_nightlies_and_versions(cli, responses):
 
 def test_shipit_import_skips_releases_and_nightlies_when_limit_zero(cli, responses):
     register_versions(responses)
+    register_merge_automations(responses)
 
     run_import(cli, "--limit-releases", "0")
 
@@ -165,6 +211,7 @@ def test_shipit_import_limits_to_most_recent_releases_and_nightlies(cli, respons
         },
     )
     register_versions(responses)
+    register_merge_automations(responses)
 
     run_import(cli, "--limit-releases", "2")
 
@@ -181,6 +228,7 @@ def test_shipit_import_pages_through_all_nightlies(cli, responses):
     firefox_nightlies = [make_nightly("firefox", "nightly", "140.0a1", str(20260000000000 + i)) for i in range(600)]
     register_nightlies(responses, {("firefox", "nightly"): firefox_nightlies})
     register_versions(responses)
+    register_merge_automations(responses)
 
     run_import(cli, "--limit-releases", "-1")
 
@@ -223,8 +271,129 @@ def test_shipit_import_skips_existing_entries(cli, responses):
         },
     )
     register_versions(responses)
+    register_merge_automations(responses)
 
     run_import(cli, "--limit-releases", "-1")
 
     assert Release.query.count() == 2
     assert NightlyRelease.query.filter_by(product="firefox").count() == 2
+
+
+def test_shipit_import_imports_merge_automations(cli, responses):
+    register_versions(responses)
+    register_merge_automations(
+        responses,
+        {
+            "firefox": [
+                make_merge_automation(
+                    "firefox",
+                    "central-to-beta",
+                    "abcdef",
+                    "129.0",
+                    "task1",
+                    "2026-06-01T00:00:00",
+                    completed="2026-06-01T01:00:00",
+                    status="completed",
+                    dry_run=False,
+                    commit_message="Bump version",
+                    commit_author="someone@mozilla.com",
+                    repo="https://hg.mozilla.org/mozilla-central",
+                    pretty_name="mozilla-central",
+                    project="mozilla-central",
+                ),
+                make_merge_automation(
+                    "firefox",
+                    "beta-to-release",
+                    "123456",
+                    "128.0",
+                    "task2",
+                    "2026-06-02T00:00:00",
+                    completed=None,
+                    status="pending",
+                    dry_run=True,
+                    commit_message="Bump version to 128.0",
+                    commit_author="someone-else@mozilla.com",
+                    repo="https://hg.mozilla.org/releases/mozilla-beta",
+                    pretty_name="mozilla-beta",
+                    project="mozilla-beta",
+                ),
+            ],
+            "firefox-ios": [
+                make_merge_automation(
+                    "firefox-ios",
+                    "central-to-beta",
+                    "fedcba",
+                    "129.0",
+                    "task3",
+                    "2026-06-03T00:00:00",
+                    completed=None,
+                    status="running",
+                    dry_run=False,
+                    commit_message="Bump version to 129.0",
+                    commit_author="someone@mozilla.com",
+                    repo="https://github.com/mozilla-mobile/firefox-ios",
+                    pretty_name="firefox-ios",
+                    project="firefox-ios",
+                ),
+            ],
+        },
+    )
+
+    run_import(cli, "--limit-releases", "0")
+
+    assert MergeAutomation.query.count() == 3
+
+    task1 = MergeAutomation.query.filter_by(task_id="task1").one()
+    assert task1.product == "firefox"
+    assert task1.behavior == "central-to-beta"
+    assert task1.revision == "abcdef"
+    assert task1.version == "129.0"
+    assert task1.dry_run is False
+    assert task1.created == datetime(2026, 6, 1, 0, 0, 0)
+    assert task1.completed == datetime(2026, 6, 1, 1, 0, 0)
+    assert task1.status == TaskStatus.Completed
+    assert task1.commit_message == "Bump version"
+    assert task1.commit_author == "someone@mozilla.com"
+    assert task1.repo == "https://hg.mozilla.org/mozilla-central"
+    assert task1.pretty_name == "mozilla-central"
+    assert task1.project == "mozilla-central"
+
+    task2 = MergeAutomation.query.filter_by(task_id="task2").one()
+    assert task2.product == "firefox"
+    assert task2.behavior == "beta-to-release"
+    assert task2.status == TaskStatus.Pending
+
+    task3 = MergeAutomation.query.filter_by(task_id="task3").one()
+    assert task3.product == "firefox-ios"
+    assert task3.behavior == "central-to-beta"
+    assert task3.status == TaskStatus.Running
+
+
+def test_shipit_import_raises_on_unknown_merge_automation_status(cli, responses):
+    register_versions(responses)
+    register_merge_automations(
+        responses,
+        {
+            "firefox": [
+                make_merge_automation(
+                    "firefox",
+                    "central-to-beta",
+                    "abcdef",
+                    "129.0",
+                    "task1",
+                    "2026-06-01T00:00:00",
+                    completed="2026-06-01T01:00:00",
+                    status="bogus",
+                    dry_run=False,
+                    commit_message="Bump version",
+                    commit_author="someone@mozilla.com",
+                    repo="https://hg.mozilla.org/mozilla-central",
+                    pretty_name="mozilla-central",
+                    project="mozilla-central",
+                ),
+            ],
+        },
+    )
+
+    with pytest.raises(Exception, match="Unknown merge automation status: Bogus"):
+        run_import(cli, "--limit-releases", "0")

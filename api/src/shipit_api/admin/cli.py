@@ -23,7 +23,7 @@ from backend_common.log import configure_logging
 from shipit_api.admin.flask import flask_app
 from shipit_api.admin.product_details import rebuild
 from shipit_api.common.config import BREAKPOINT_VERSION
-from shipit_api.common.models import NightlyRelease, Release, Version
+from shipit_api.common.models import MergeAutomation, NightlyRelease, Release, TaskStatus, Version
 
 
 def coroutine(f):
@@ -223,6 +223,40 @@ def shipit_import(api_from, limit_releases):
 
             session.add(v)
             session.commit()
+
+        # Import merge automations
+        req = requests.get(f"{api_from}/merge-automation/products")
+        req.raise_for_status()
+        for product in req.json():
+            req = requests.get(f"{api_from}/merge-automation?product={product}")
+            req.raise_for_status()
+            for merge in req.json():
+                click.echo(f"Importing merge automation: {merge['id']}")
+
+                status_str = merge["status"].title()
+                try:
+                    status = TaskStatus[status_str]
+                except KeyError:
+                    raise Exception(f"Unknown merge automation status: {status_str}")
+
+                m = MergeAutomation(
+                    product=merge["product"],
+                    behavior=merge["behavior"],
+                    revision=merge["revision"],
+                    dry_run=merge["dry_run"],
+                    created=merge["created"],
+                    completed=merge["completed"],
+                    status=status,
+                    task_id=merge["task_id"],
+                    version=merge["version"],
+                    commit_message=merge["commit_message"],
+                    commit_author=merge["commit_author"],
+                    repo=merge["repo"],
+                    pretty_name=merge["pretty_name"],
+                    project=merge["project"],
+                )
+                session.add(m)
+                session.commit()
 
 
 @click.command(name="trigger-product-details")
