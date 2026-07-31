@@ -239,7 +239,7 @@ export default function NewXPIRelease() {
 
   const renderCreateReleaseButton = () => {
     return (
-      <Grid container alignItems="center">
+      <Grid container sx={{ alignItems: 'center' }}>
         <Button
           color="primary"
           variant="contained"

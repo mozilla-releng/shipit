@@ -195,7 +195,7 @@ export default function ReleaseProgress({
         <Typography component="h3" variant="h6">
           {release.name}
         </Typography>
-        <Box typography="caption" display="block">
+        <Box sx={{ typography: 'caption', display: 'block' }}>
           Created on {dateCreated} with {renderReleaseTitle(xpi, release)}
         </Box>
         <Box sx={{ position: 'relative' }}>

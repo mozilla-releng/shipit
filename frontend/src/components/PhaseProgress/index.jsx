@@ -164,7 +164,7 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
                       <Typography
                         key={signoff.name}
                         variant="caption"
-                        display="block"
+                        sx={{ display: 'block' }}
                       >
                         {`${signoff.completed_by}, ${signoff.name}`}
                       </Typography>
@@ -175,10 +175,12 @@ export default function PhaseProgress({ release, readOnly, xpi }) {
             )}
             {!inProgress && phase.xpiUrl && (
               <Box
-                fontSize=".80rem"
-                fontWeight={500}
-                marginTop="1.6rem"
-                position="absolute"
+                sx={{
+                  fontSize: '.80rem',
+                  fontWeight: 500,
+                  marginTop: '1.6rem',
+                  position: 'absolute',
+                }}
               >
                 <Link href={phase.xpiUrl} underline="hover">
                   xpi package

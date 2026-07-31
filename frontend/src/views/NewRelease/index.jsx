@@ -345,7 +345,7 @@ export default function NewRelease() {
       label.push(
         <Box
           component="span"
-          m={1}
+          sx={{ m: 1 }}
           className={classes.lessImportantData}
           key={branch.branch}
         >
@@ -389,7 +389,7 @@ export default function NewRelease() {
 
   const renderRevisionInput = () => {
     return (
-      <Grid container alignItems="center">
+      <Grid container sx={{ alignItems: 'center' }}>
         <Autocomplete
           className={classes.formControl}
           freeSolo
@@ -458,7 +458,7 @@ export default function NewRelease() {
   const renderPartials = () => {
     if (selectedProduct) {
       return (
-        <Grid container alignItems="center">
+        <Grid container sx={{ alignItems: 'center' }}>
           <TextField
             label="Partial updates"
             disabled={!partialFieldEnabled}
