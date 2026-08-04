@@ -91,10 +91,7 @@ export default function Releases({ recent = false, xpi = false }) {
         title={recent ? 'Recent Releases' : 'Pending Releases'}
       >
         <Box
-          display="flex"
-          justifyContent="right"
-          alignItems="right"
-          marginRight="1%"
+          sx={{ display: 'flex', justifyContent: 'right', marginRight: '1%' }}
         >
           <Button
             startIcon={<RefreshIcon />}

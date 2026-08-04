@@ -85,11 +85,11 @@ export default function ProductDisabler({
           </Typography>
           {productBranches.map((pb) => (
             <Typography
-              color="inherit"
               variant="subtitle1"
               noWrap
               className={classes.products}
               key={`${pb.product}-${pb.branch}`}
+              sx={{ color: 'inherit' }}
             >
               {pb.prettyProduct}: {pb.prettyBranch}
               {mutable ? (

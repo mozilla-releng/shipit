@@ -174,7 +174,7 @@ export default function NewMergeAutomation() {
     }
 
     return (
-      <Box display="flex" gap={2}>
+      <Box sx={{ display: 'flex', gap: 2 }}>
         <InputLabel>Behavior</InputLabel>
         <Select
           sx={{ flexGrow: 1 }}
@@ -262,7 +262,7 @@ export default function NewMergeAutomation() {
           <Typography variant="body2" sx={{ fontWeight: 500 }}>
             {revisionInfo.commit_message}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             {revisionInfo.commit_author}
           </Typography>
         </CommitInfoBox>

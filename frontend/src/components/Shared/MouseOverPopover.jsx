@@ -40,11 +40,7 @@ export default function MouseOverPopover({
         aria-haspopup="true"
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
-        fontSize={fontSize}
-        fontWeight={fontWeight}
-        marginTop={marginTop}
-        marginLeft={marginLeft}
-        position={position}
+        sx={{ fontSize, fontWeight, marginTop, marginLeft, position }}
       >
         {text}
       </Box>
