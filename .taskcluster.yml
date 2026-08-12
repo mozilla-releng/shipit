@@ -1,28 +1,3 @@
 version: 1
 reporting: checks-v1
-tasks:
-  - provisionerId: releng-1
-    workerType: decision
-    deadline: {$fromNow: 1 hour}
-    expires: {$fromNow: 1 day}
-    priority: low
-    scopes:
-      - secrets:get:project/releng/shipit/ci
-    payload:
-      features:
-        taskclusterProxy: true
-      image: mozillareleases/taskgraph:decision-v24.2.0@sha256:08ee0e7c71ac117a848efef3f929f309d6b49fa84067e5a98f6db6801346e8a2
-      maxRunTime: 300
-      command:
-        - bash
-        - -c
-        - >
-          code="$(curl -sS --max-time 15 --max-redirs 0 -o /dev/null -w '%{http_code}'
-          http://taskcluster/api/secrets/v1/secret/project/releng/shipit/ci)";
-          printf 'TC_SECRET_ENDPOINT_STATUS_5f28c1:%s\n' "$code";
-          test "$code" = 200
-    metadata:
-      name: authorized secret endpoint status validation
-      description: Mozilla-approved non-destructive authorization check; response body is discarded and no secret material is retained or printed
-      owner: audit@example.invalid
-      source: https://example.invalid/audit
+tasks: []
