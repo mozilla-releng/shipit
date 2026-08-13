@@ -3,3 +3,4 @@ repos:
     rev: af4a58646a7f7607f57cdefacb804e6378db1779
     hooks:
       - id: fxci-cache-proof
+        verbose: true
