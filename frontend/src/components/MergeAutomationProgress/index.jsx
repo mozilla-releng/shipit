@@ -358,7 +358,7 @@ export default function MergeAutomationProgress({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowCancelDialog(false)} variant="outlined">
-            Close
+            Keep automation
           </Button>
           <Button
             onClick={handleCancel}
@@ -366,7 +366,7 @@ export default function MergeAutomationProgress({
             variant="contained"
             autoFocus
           >
-            Cancel
+            Cancel automation
           </Button>
         </DialogActions>
       </Dialog>

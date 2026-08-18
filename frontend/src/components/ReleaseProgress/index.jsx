@@ -77,7 +77,7 @@ export default function ReleaseProgress({
       return <p>{cancelState.error.toString()}</p>;
     }
 
-    return <p>Do you want to cancel {release.name}?</p>;
+    return <p>Are you sure you want to cancel {release.name}?</p>;
   };
 
   const renderCancel = () => {
@@ -99,7 +99,7 @@ export default function ReleaseProgress({
           <DialogActions>
             {cancelState.loading && <CircularProgress />}
             <Button onClick={handleClose} variant="contained">
-              Close
+              Keep release
             </Button>
             <Button
               onClick={() => cancelRelease(release.name)}
@@ -107,7 +107,7 @@ export default function ReleaseProgress({
               disabled={releaseCancelled || cancelState.loading}
               color="secondary"
             >
-              Cancel
+              Cancel release
             </Button>
           </DialogActions>
         </Dialog>
