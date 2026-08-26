@@ -28,7 +28,7 @@ export default function Footer() {
   const init = async () => {
     const disabledProducts = await getDisabledProductsAction();
 
-    setDisabledProducts(disabledProducts.data);
+    setDisabledProducts(disabledProducts.data ?? {});
   };
 
   useEffect(() => {
