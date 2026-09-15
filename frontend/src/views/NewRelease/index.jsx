@@ -191,7 +191,7 @@ export default function NewRelease() {
           selectedBranch.repo,
           revision,
           selectedProduct.appName,
-          selectedBranch.versionFile,
+          selectedBranch.versionFile || selectedRepository.versionFile,
           signal,
         );
         if (signal.aborted) return;
