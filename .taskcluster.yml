@@ -7,7 +7,7 @@ hooks:
     - name: lint/pre-commit-v1
 tasks:
     - $if: >
-          (tasks_for == "github-pull-request" && event.action in ["opened", "reopened", "synchronize"])
+          (tasks_for[:19] == "github-pull-request" && event.action in ["opened", "reopened", "synchronize"])
           || (tasks_for in ["action", "cron"])
           || (tasks_for == "github-push" && event.ref in ["refs/heads/main", "refs/heads/production", "refs/heads/dev"])
       then:
@@ -25,7 +25,7 @@ tasks:
                   then: '${event.pusher.email}'
                   # Assume Pull Request
                   else:
-                      $if: 'tasks_for == "github-pull-request"'
+                      $if: 'tasks_for[:19] == "github-pull-request"'
                       then: '${event.pull_request.user.login}@users.noreply.github.com'
                       else:
                           $if: 'tasks_for in ["cron", "action"]'
@@ -34,7 +34,7 @@ tasks:
                   $if: 'tasks_for == "github-push"'
                   then: '${event.repository.html_url}'
                   else:
-                      $if: 'tasks_for == "github-pull-request"'
+                      $if: 'tasks_for[:19] == "github-pull-request"'
                       then: '${event.pull_request.base.repo.html_url}'
                       else:
                           $if: 'tasks_for in ["cron", "action"]'
@@ -43,7 +43,7 @@ tasks:
                   $if: 'tasks_for == "github-push"'
                   then: '${event.repository.html_url}'
                   else:
-                      $if: 'tasks_for == "github-pull-request"'
+                      $if: 'tasks_for[:19] == "github-pull-request"'
                       then: '${event.pull_request.head.repo.html_url}'
                       else:
                           $if: 'tasks_for in ["cron", "action"]'
@@ -52,13 +52,13 @@ tasks:
                   $if: 'tasks_for == "github-push"'
                   then: '${event.repository.name}'
                   else:
-                      $if: 'tasks_for == "github-pull-request"'
+                      $if: 'tasks_for[:19] == "github-pull-request"'
                       then: '${event.pull_request.head.repo.name}'
                       else:
                           $if: 'tasks_for in ["cron", "action"]'
                           then: '${repository.project}'
               head_branch:
-                  $if: 'tasks_for == "github-pull-request"'
+                  $if: 'tasks_for[:19] == "github-pull-request"'
                   then: ${event.pull_request.head.ref}
                   else:
                       $if: 'tasks_for == "github-push"'
@@ -70,7 +70,7 @@ tasks:
                   $if: 'tasks_for == "github-push"'
                   then: '${event.after}'
                   else:
-                      $if: 'tasks_for == "github-pull-request"'
+                      $if: 'tasks_for[:19] == "github-pull-request"'
                       then: '${event.pull_request.head.sha}'
                       else:
                           $if: 'tasks_for in ["cron", "action"]'
@@ -105,7 +105,7 @@ tasks:
                       $merge:
                           - owner: "${ownerEmail}"
                             source: '${repoUrl}/raw/${head_sha}/.taskcluster.yml'
-                          - $if: 'tasks_for in ["github-push", "github-pull-request"]'
+                          - $if: 'tasks_for in ["github-push", "github-pull-request", "github-pull-request-untrusted"]'
                             then:
                                 name: "Decision Task"
                                 description: 'The task that creates all of the other tasks in the task graph'
@@ -120,7 +120,7 @@ tasks:
                   provisionerId: "${trustDomain}-${level}"
                   workerType: "decision"
                   tags:
-                      $if: 'tasks_for in ["github-push", "github-pull-request"]'
+                      $if: 'tasks_for in ["github-push", "github-pull-request", "github-pull-request-untrusted"]'
                       then:
                           kind: decision-task
                       else:
@@ -154,9 +154,9 @@ tasks:
                               - 'assume:repo:${repoUrl[8:]}:branch:${short_head_branch}'
 
                       else:
-                          $if: 'tasks_for == "github-pull-request"'
+                          $if: 'tasks_for[:19] == "github-pull-request"'
                           then:
-                              - 'assume:repo:github.com/${event.pull_request.base.repo.full_name}:pull-request'
+                              - 'assume:repo:github.com/${event.pull_request.base.repo.full_name}:${tasks_for[7:]}'
                           else:
                               $if: 'tasks_for == "action"'
                               then:
@@ -180,7 +180,7 @@ tasks:
                                 ${repo.prefix}_HEAD_REV: '${head_sha}'
                                 ${repo.prefix}_REPOSITORY_TYPE: git
                                 REPOSITORIES: {$json: {'${repo.name}': '${repo.description}'}}
-                              - $if: 'tasks_for in ["github-pull-request"]'
+                              - $if: 'tasks_for[:19] == "github-pull-request"'
                                 then:
                                     ${repo.prefix}_PULL_REQUEST_NUMBER: '${event.pull_request.number}'
                               - $if: 'tasks_for == "action"'

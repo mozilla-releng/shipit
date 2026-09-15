@@ -22,8 +22,8 @@ extend_parameters_schema(shipit_schema)
 
 def get_decision_parameters(graph_config, parameters):
     """Add repo-specific decision parameters."""
-    if parameters["tasks_for"] == "github-pull-request":
-        parameters["deployment_branch"] = "github-pull-request"
+    if parameters["tasks_for"] in ("github-pull-request", "github-pull-request-untrusted"):
+        parameters["deployment_branch"] = parameters["tasks_for"]
     elif parameters["head_ref"].startswith("refs/heads/"):
         parameters["deployment_branch"] = parameters["head_ref"].replace("refs/heads/", "")
         if parameters["deployment_branch"] in DEPLOYMENT_BRANCHES and parameters["level"] == "3":

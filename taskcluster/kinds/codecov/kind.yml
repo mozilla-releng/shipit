@@ -15,6 +15,7 @@ kind-dependencies:
 jobs:
     upload:
         description: "Upload coverage.xml to codecov.io"
+        run-on-tasks-for: ["action", "github-pull-request", "github-push"]
         worker-type: t-linux
         worker:
             docker-image: {in-tree: python312}
