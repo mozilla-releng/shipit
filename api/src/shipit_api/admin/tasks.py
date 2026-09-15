@@ -49,10 +49,14 @@ def get_trust_domain(repo_url, product):
 @lru_cache(maxsize=2048)
 def find_decision_task_id(repo_url, project, revision, product):
     trust_domain = get_trust_domain(repo_url, product)
-    if trust_domain in ("app-services", "mobile", "mozillavpn"):
+    if trust_domain in ("app-services", "enterprise", "mobile", "mozillavpn"):
         _, project = extract_github_repo_owner_and_name(repo_url)
 
-    decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.decision"
+    decision_name = "decision"
+    if "thunderbird-enterprise" in product:
+        decision_name = "comm-decision"
+
+    decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.{decision_name}"
     index = get_service("index")
     try:
         return index.findTask(decision_task_route)["taskId"]
@@ -300,6 +304,8 @@ def get_parameters(decision_task_id):
 def get_release_promotion_action_name(release):
     if isinstance(release, XPIRelease) and release.xpi_type.startswith("system_"):
         return "release-promotion-system"
+    if "enterprise" in release.product:
+        return "enterprise-release-promotion"
     return "release-promotion"
 
 

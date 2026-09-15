@@ -16,6 +16,7 @@ from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
 from backend_common.taskcluster import get_root_url, get_service
+from shipit_api.admin.github import extract_github_repo_owner_and_name, get_file_from_github
 from shipit_api.admin.release import (
     Product,
     bump_version,
