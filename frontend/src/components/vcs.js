@@ -182,7 +182,7 @@ export async function getVersion(repo, revision, appName, versionFile, signal) {
   const res = await axios.get(url, {
     authRequired,
     params: {
-      path: 'version.txt',
+      path: versionFile || "version.txt",
     },
     transformResponse: [(data) => data],
     signal,
