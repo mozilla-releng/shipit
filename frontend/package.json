@@ -6,7 +6,7 @@
     "@mui/icons-material": "9.4.0",
     "@mui/material": "9.4.0",
     "@mui/x-date-pickers": "9.14.0",
-    "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",
+    "@pmmmwh/react-refresh-webpack-plugin": "0.6.3",
     "jest": "30.5.2",
     "jest-environment-jsdom": "30.5.2",
     "react-refresh": "0.18.0",
