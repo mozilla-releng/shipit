@@ -1977,6 +1977,11 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
+"@remix-run/route-pattern@^0.22.1":
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/@remix-run/route-pattern/-/route-pattern-0.22.1.tgz#4937466528a59a7c9d882f725aac92536d20e010"
+  integrity sha512-czdGJWh09Lapvcqt7Vb09KlrU2PhRJ8xQaI+AItTuD9aDJ5MAgxnS38lnys6Ll+6RJEqPiaUqTwIQhVLwFvv+w==
+
 "@sinclair/typebox@^0.34.0":
   version "0.34.52"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.34.52.tgz#62f8a686e4ab28a8944902e2ad2d648312ef11cb"
@@ -5247,10 +5252,11 @@ react-refresh@0.18.0:
   integrity sha512-QgT5//D3jfjJb6Gsjxv0Slpj23ip+HtOpnNgnb2S5zU3CB26G/IDPGoy4RJB42wzFE46DRsstbW6tKHoKbhAxw==
 
 react-router@8:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-8.2.0.tgz#194809cb06a1b9ed83654882fd549b7fd47a20fd"
-  integrity sha512-uP1LgGNHyilL1u+ZkecQk74DJOKOb6q4NLNYLRJcD/fjoogftNb5/Rj/07o/QBFsY/5MbAKPm1peTCQuVPv9cQ==
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-8.4.0.tgz#fa3c0ba58555cfb120a9ed8042518e374000fb4b"
+  integrity sha512-JtydAkBvU9UTEe5qNC+POhu+ZBNM7rlKY2IegwXc7Idj7xfRG16x5RZrw3mju+XlqBxfvb2ky9P3jUp9WyWC1g==
   dependencies:
+    "@remix-run/route-pattern" "^0.22.1"
     cookie-es "^3.1.1"
 
 react-timeago@8.3.0:
