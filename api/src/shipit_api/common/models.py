@@ -163,6 +163,9 @@ class Release(db.Model, ReleaseBase):
         self.product_key = product_key
         self.repo_url = repo_url
 
+        if "enterprise" in self.product and "try" in repo_url:
+            self.branch = repo_url
+
     def phase_signoffs(self, phase):
         return [
             Signoff(uid=slugid.nice(), name=req["name"], description=req["description"], permissions=req["permissions"])
