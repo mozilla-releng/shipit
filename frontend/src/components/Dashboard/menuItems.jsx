@@ -25,6 +25,26 @@ export default [
     ],
   },
   {
+    title: 'Enterprise',
+    items: [
+      {
+        title: 'New',
+        to: '/new?group=enterprise',
+        Icon: <AddBoxIcon />,
+      },
+      {
+        title: 'Pending',
+        to: '/?group=enterprise',
+        Icon: <AutorenewIcon />,
+      },
+      {
+        title: 'Recent',
+        to: '/recent?group=enterprise',
+        Icon: <CheckCircleIcon />,
+      },
+    ],
+  },
+  {
     title: 'Thunderbird',
     items: [
       {

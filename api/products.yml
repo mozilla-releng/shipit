@@ -98,3 +98,25 @@ thunderbird:
     - push_thunderbird
     - ship_thunderbird
   version-class: "mozilla_version.gecko.ThunderbirdVersion"
+firefox-enterprise:
+  can-be-disabled: true
+  authorized-ldap-groups:
+    - shipit_firefoxenterprise
+    - shipit_relman
+  phases:
+    - promote_firefox_ent
+    - push_firefox_enterprise
+    - ship_firefox_enterprise
+  repo-url: https://github.com/mozilla/enterprise-firefox
+  version-class: "mozilla_version.gecko.FirefoxVersion"
+thunderbird-enterprise:
+  can-be-disabled: true
+  authorized-ldap-groups:
+    - shipit_thunderbirdenterprise
+    - shipit_relman
+  phases:
+    - promote_thunderbird_ent
+    - push_thunderbird_enterprise
+    - ship_thunderbird_enterprise
+  repo-url: https://github.com/thunderbird/thunderbird-desktop
+  version-class: "mozilla_version.gecko.ThunderbirdVersion"

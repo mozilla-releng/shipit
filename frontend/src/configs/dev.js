@@ -124,6 +124,52 @@ module.exports = {
         enablePartials: false,
       },
     ],
+    enterprise: [
+      {
+        product: 'firefox-enterprise',
+        prettyName: 'Firefox Enterprise',
+        appName: 'browser',
+        repositories: [
+          {
+            prettyName: 'Try',
+            project: 'enterprise-firefox-try',
+            repo: 'https://github.com/mozilla/enterprise-firefox-try',
+            enableReleaseEta: false,
+            disableable: true,
+            versionFile: 'browser/config/version_display.txt',
+          },
+        ],
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        enablePartials: false,
+        canTogglePartials: false,
+      },
+      {
+        product: 'thunderbird-enterprise',
+        prettyName: 'Thunderbird Enterprise',
+        appName: 'comm',
+        repositories: [
+          {
+            prettyName: 'Try',
+            project: 'enterprise-firefox-try',
+            repo: 'https://github.com/mozilla/enterprise-firefox-try',
+            enableReleaseEta: false,
+            disableable: true,
+            versionFile: 'comm/config/version_display.txt',
+          },
+        ],
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        enablePartials: false,
+        canTogglePartials: false,
+      },
+    ],
     thunderbird: [
       {
         product: 'thunderbird',
