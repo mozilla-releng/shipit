@@ -14,8 +14,8 @@ dependencies = [
     "python-decouple",
     "sentry-sdk[flask]",
     "slugid",
-    "sqlalchemy",
-    "psycopg2",
+    "sqlalchemy>=2.1",
+    "psycopg[binary]",
     # Required only by the admin app
     "aioamqp",
     "aiohttp[speedups]",
