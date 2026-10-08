@@ -7,6 +7,7 @@ from decouple import config
 
 SQLALCHEMY_DATABASE_URI = config("DATABASE_URL")
 APP_CHANNEL = config("APP_CHANNEL")
+SENTRY_DSN = config("SENTRY_DSN", default=None)
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 # Use pessimistic disconnect handling as described at
 # https://docs.sqlalchemy.org/en/13/core/pooling.html#disconnect-handling-pessimistic
