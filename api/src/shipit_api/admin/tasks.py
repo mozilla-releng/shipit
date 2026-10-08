@@ -49,10 +49,14 @@ def get_trust_domain(repo_url, product):
 @lru_cache(maxsize=2048)
 def find_decision_task_id(repo_url, project, revision, product):
     trust_domain = get_trust_domain(repo_url, product)
-    if trust_domain in ("app-services", "mobile", "mozillavpn"):
+    if trust_domain in ("app-services", "enterprise", "mobile", "mozillavpn"):
         _, project = extract_github_repo_owner_and_name(repo_url)
 
-    decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.decision"
+    decision_name = "decision"
+    if "thunderbird-enterprise" in product:
+        decision_name = "comm-decision"
+
+    decision_task_route = f"{trust_domain}.v2.{project}.revision.{revision}.taskgraph.{decision_name}"
     index = get_service("index")
     try:
         return index.findTask(decision_task_route)["taskId"]
@@ -272,7 +276,7 @@ def generate_phases(release, common_input, verify_supported_flavors):
         input_["release_promotion_flavor"] = phase["name"]
         input_["previous_graph_ids"] = list(previous_graph_ids)
 
-        hook = generate_action_hook(task_group_id=decision_task_id, action_name="release-promotion", actions=actions, parameters=parameters, input_=input_)
+        hook = generate_action_hook(task_group_id=decision_task_id, action_name=get_release_promotion_action_name(release), actions=actions, parameters=parameters, input_=input_)
         hook_no_context = {k: v for k, v in hook.items() if k != "context"}
         phase_obj = release.phase_class(name=phase["name"], task_id="", task=json.dumps(hook_no_context), context=json.dumps(hook["context"]))
         # we need to update input_['previous_graph_ids'] later, because
@@ -298,6 +302,8 @@ def get_parameters(decision_task_id):
 def get_release_promotion_action_name(release):
     if isinstance(release, XPIRelease) and release.xpi_type.startswith("system_"):
         return "release-promotion-system"
+    if "enterprise" in release.product:
+        return "enterprise-release-promotion"
     return "release-promotion"
 
 
