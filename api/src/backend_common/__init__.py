@@ -11,6 +11,7 @@ from pathlib import PosixPath
 
 import connexion
 import flask
+import sentry_sdk
 import yaml
 from a2wsgi import WSGIMiddleware
 from connexion.middleware.main import ConnexionMiddleware, ServerErrorMiddleware
@@ -64,6 +65,23 @@ def create_app(project_name, app_name, root_path, extensions=(), config=None, re
         else:
             flask_app.config.from_mapping(config)
 
+    try:
+        _init_app(app, root_path, extensions, redirect_root_to_api)
+    except Exception:
+        # uvicorn workers are multiprocessing children: an exception raised
+        # while importing the app is printed by multiprocessing and never
+        # reaches sys.excepthook, so report it to sentry explicitly (no-op if
+        # the log extension didn't get to initialize sentry).
+        sentry_sdk.capture_exception()
+        sentry_sdk.flush()
+        raise
+
+    logger.debug("Initialized %s", flask_app.name)
+    return app
+
+
+def _init_app(app, root_path, extensions, redirect_root_to_api):
+    flask_app = app.app
     for extension_name in EXTENSIONS:
         if flask_app.config.get("TESTING") and extension_name == "security":
             continue
@@ -88,8 +106,6 @@ def create_app(project_name, app_name, root_path, extensions=(), config=None, re
         app.add_url_rule("/", "root", lambda: flask.redirect("/ui/"))
 
     app.add_api(build_api_specification(root_path))
-    logger.debug("Initialized %s", flask_app.name)
-    return app
 
 
 def build_api_specification(root_path):
