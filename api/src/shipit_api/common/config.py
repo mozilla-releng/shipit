@@ -450,6 +450,7 @@ SUPPORTED_FLAVORS = _get_supported_flavors()
 SYSTEM_ADDONS = (
     "ipp-activator",
     "newtab",
+    "thundermail",
     "webcompat",
 )
 
