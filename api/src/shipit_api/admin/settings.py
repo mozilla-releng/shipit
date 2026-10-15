@@ -63,6 +63,9 @@ OIDC_CLIENT_SECRETS = create_auth0_secrets_file(AUTH_CLIENT_ID, AUTH_CLIENT_SECR
 
 # XXX: scopes/groups are hardcoded for now
 ADMIN_LDAP_GROUP = ["releng"]
+if APP_CHANNEL == "dev":
+    # On stage, anyone who can reach the admin API through the VPN is an admin
+    ADMIN_LDAP_GROUP.append("vpn_cloudops_shipit")
 
 # Please ping awagner before making changes to this group
 XPI_PRIVILEGED_BUILD_LDAP_GROUP = ["xpi_privileged_build"]

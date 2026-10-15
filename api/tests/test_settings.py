@@ -1,13 +1,14 @@
 import os
+import sys
 
 
 def flatten(lst):
     return [item for sublist in lst for item in sublist]
 
 
-def test_scopes(monkeypatch):
-    FAKE_ENV = dict(
-        APP_CHANNEL="local",
+def _fake_env(app_channel):
+    return dict(
+        APP_CHANNEL=app_channel,
         TASKCLUSTER_ROOT_URL="fake",
         TASKCLUSTER_CLIENT_ID="fake",
         TASKCLUSTER_ACCESS_TOKEN="fake",
@@ -17,8 +18,12 @@ def test_scopes(monkeypatch):
         SECRET_KEY_BASE64="fake",
         DATABASE_URL="fake",
     )
+
+
+def test_scopes(monkeypatch):
     # mock the environment in order to import settings
-    monkeypatch.setattr(os, "environ", FAKE_ENV)
+    monkeypatch.setattr(os, "environ", _fake_env("local"))
+    monkeypatch.delitem(sys.modules, "shipit_api.admin.settings", raising=False)
 
     from shipit_api.admin.settings import (
         AUTH0_AUTH_SCOPES,
@@ -90,3 +95,14 @@ def test_scopes(monkeypatch):
     )
 
     assert scopes == expected_scopes
+
+
+def test_vpn_group_is_admin_only_on_stage(monkeypatch):
+    for app_channel, expected in (("local", False), ("dev", True), ("production", False)):
+        monkeypatch.setattr(os, "environ", _fake_env(app_channel))
+        monkeypatch.delitem(sys.modules, "shipit_api.admin.settings", raising=False)
+
+        from shipit_api.admin.settings import AUTH0_AUTH_SCOPES, LDAP_GROUPS
+
+        assert ("vpn_cloudops_shipit" in LDAP_GROUPS["admin"]) is expected
+        assert all(("vpn_cloudops_shipit" in ldap_groups) is expected for ldap_groups in AUTH0_AUTH_SCOPES.values())
