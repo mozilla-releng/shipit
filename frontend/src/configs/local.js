@@ -123,6 +123,111 @@ module.exports = {
         enablePartials: false,
       },
     ],
+    enterprise: [
+      {
+        product: 'firefox-enterprise',
+        prettyName: 'Firefox Enterprise',
+        appName: 'browser',
+        repositories: [
+          {
+            prettyName: 'Try',
+            project: 'enterprise-firefox-try',
+            repo: 'https://github.com/mozilla/enterprise-firefox-try',
+            enableReleaseEta: false,
+            disableable: true,
+            versionFile: 'browser/config/version_display.txt',
+          },
+        ],
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        /* branches: [
+          {
+            prettyName: 'Main',
+            project: 'enterprise-main',
+            branch: 'enterprise-main',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: false,
+            disableable: true,
+            versionFile: 'browser/config/version_display.txt',
+          },
+          {
+            prettyName: 'Beta',
+            project: 'enterprise-beta',
+            branch: 'enterprise-beta',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: false,
+            disableable: true,
+            versionFile: 'browser/config/version_display.txt',
+          },
+          {
+            prettyName: 'Release',
+            project: 'enterprise-release',
+            branch: 'enterprise-release',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: true,
+            disableable: false,
+            versionFile: 'browser/config/version_display.txt',
+          },
+        ], */
+        enablePartials: false,
+        canTogglePartials: false,
+      },
+      {
+        product: 'thunderbird-enterprise',
+        prettyName: 'Thunderbird Enterprise',
+        appName: 'comm',
+        versionFromCommDecisionTask: true,
+        repositories: [
+          {
+            prettyName: 'Try',
+            project: 'enterprise-firefox-try',
+            repo: 'https://github.com/mozilla/enterprise-firefox-try',
+            enableReleaseEta: false,
+            disableable: true,
+            versionFile: 'mail/config/version_display.txt',
+          },
+        ],
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        /* branches: [
+          {
+            prettyName: 'Enterprise Main',
+            project: 'enterprise-main',
+            branch: 'enterprise-main',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: false,
+            disableable: true,
+            versionFile: 'mail/config/version_display.txt',
+          },
+          {
+            prettyName: 'Enterprise Beta',
+            project: 'enterprise-beta',
+            branch: 'enterprise-beta',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: false,
+            disableable: true,
+            versionFile: 'mail/config/version_display.txt',
+          },
+          {
+            prettyName: 'Enterprise Release',
+            project: 'enterprise-release',
+            branch: 'enterprise-release',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: true,
+            disableable: false,
+            versionFile: 'mail/config/version_display.txt',
+          },
+        ], */
+        enablePartials: false,
+        canTogglePartials: false,
+      },
+    ],
     thunderbird: [
       {
         product: 'thunderbird',
