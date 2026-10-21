@@ -23,6 +23,7 @@ import { useLocation, useNavigate } from 'react-router';
 import TimeAgo from 'react-timeago';
 import { makeStyles } from 'tss-react/mui';
 import {
+  getCommVersion,
   guessBuildNumber,
   guessPartialVersions,
   submitRelease,
@@ -187,13 +188,24 @@ export default function NewRelease() {
       try {
         setRevisionInfoLoading(true);
 
-        const ver = await getVersion(
-          selectedBranch.repo,
-          revision,
-          selectedProduct.appName,
-          selectedBranch.versionFile,
-          signal,
-        );
+        const versionFile =
+          selectedBranch.versionFile || selectedRepository.versionFile;
+        const ver = selectedProduct.versionFromCommDecisionTask
+          ? await getCommVersion(
+              selectedProduct.product,
+              selectedBranch.branch,
+              revision,
+              selectedBranch.repo,
+              versionFile,
+              signal,
+            )
+          : await getVersion(
+              selectedBranch.repo,
+              revision,
+              selectedProduct.appName,
+              versionFile,
+              signal,
+            );
         if (signal.aborted) return;
 
         const nextBuildNumber = await guessBuildNumber(
