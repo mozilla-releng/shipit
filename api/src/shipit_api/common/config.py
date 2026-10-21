@@ -551,6 +551,8 @@ def get_allowed_github_files(owner: str, repo: str) -> set[re.Pattern]:
             allowed_paths.add(r"package.json")
         case ("mozilla-releng", "staging-xpi-public"):
             allowed_paths.add(r"one/package.json")
+        case ("thunderbird", "tbpro-add-on"):
+            allowed_paths.add(r"packages/addon/package.json")
 
     return {re.compile(s) for s in allowed_paths}
 
