@@ -6,7 +6,6 @@ comm:
   - https://hg.mozilla.org/releases/comm-beta
   - https://hg.mozilla.org/releases/comm-release
   - https://hg.mozilla.org/releases/comm-esr115
-  - https://hg.mozilla.org/releases/comm-esr140
   - https://hg.mozilla.org/releases/comm-esr153
   - https://hg.mozilla.org/try-comm-central
 gecko:
@@ -14,7 +13,6 @@ gecko:
   - https://hg.mozilla.org/releases/mozilla-beta
   - https://hg.mozilla.org/releases/mozilla-release
   - https://hg.mozilla.org/releases/mozilla-esr115
-  - https://hg.mozilla.org/releases/mozilla-esr140
   - https://hg.mozilla.org/releases/mozilla-esr153
   - https://hg.mozilla.org/try
 mobile:

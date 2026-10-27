@@ -628,7 +628,6 @@ _MERGE_BEHAVIORS_PER_PRODUCT = {
         _fx_merge_behavior("release-to-esr", "Release -> ESR", "https://hg.mozilla.org/releases/mozilla-release", "mozilla-release"),
         _fx_merge_behavior("bump-main", "Bump main", "https://hg.mozilla.org/mozilla-central", "mozilla-central"),
         _fx_merge_behavior("bump-esr153", "Bump ESR 153", "https://hg.mozilla.org/releases/mozilla-esr153", "mozilla-esr153"),
-        _fx_merge_behavior("bump-esr140", "Bump ESR 140", "https://hg.mozilla.org/releases/mozilla-esr140", "mozilla-esr140"),
         _fx_merge_behavior("bump-esr115", "Bump ESR 115", "https://hg.mozilla.org/releases/mozilla-esr115", "mozilla-esr115"),
     ],
     "firefox-ios": [
