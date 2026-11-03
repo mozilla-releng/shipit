@@ -44,6 +44,11 @@ def configure_sentry(environment, sentry_dsn):
     # dockerflow logs exceptions as error, including those that turn into a 4xx
     # Tell sentry to not create alert from those, we'll get one for actual errors
     ignore_logger("request.summary")
+    # connexion logs at error level when a request carries a query parameter or
+    # body property that matches a function argument but isn't in the spec for
+    # that operation (e.g. `GET /releases/foo?name=bar`).  That's client input,
+    # not a server bug, and the request is still handled normally.
+    ignore_logger("connexion.decorators.parameter")
     sentry_sdk.init(
         dsn=sentry_dsn,
         environment=environment,
