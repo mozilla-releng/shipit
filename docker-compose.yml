@@ -95,7 +95,7 @@ services:
       retries: 5
 
   ui:
-    image: node:24@sha256:64af3819f9275802414d7cdc38c27e9d82bd564dec4d4da87d008255d36c63b4
+    image: node:24@sha256:e7add2a490bb17d97b485b8641bd88455fff7839ade0f5eba493c3508124d413
     ports:
       - "8010:8010"
     volumes:
