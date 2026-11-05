@@ -73,3 +73,17 @@ def test_sentry_captures_only_5xx_errors(app, sentry_events, status_code, expect
         assert len(exception_events) > 0, f"Expected {status_code} errors to be captured by sentry"
     else:
         assert len(exception_events) == 0, f"Unexpected {status_code} error captured by sentry"
+
+
+def test_routing_redirect_is_not_captured(app, sentry_events):
+    events, capture_event = sentry_events
+
+    client = TestClient(app)
+
+    # werkzeug merges the duplicate slashes with a permanent redirect
+    response = client.get("/static//home/user/.env", follow_redirects=False)
+    assert response.status_code == 308
+    assert response.headers["location"].endswith("/static/home/user/.env")
+    sentry_sdk.flush(timeout=1)
+
+    assert events == []
