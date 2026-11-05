@@ -44,6 +44,26 @@ assert middlewares[0] is ServerErrorMiddleware
 middlewares[0] = ShipitServerErrorMiddleware
 
 
+def _contains_nul(value):
+    if isinstance(value, str):
+        return "\x00" in value
+    if isinstance(value, dict):
+        return any(_contains_nul(k) or _contains_nul(v) for k, v in value.items())
+    if isinstance(value, list):
+        return any(_contains_nul(v) for v in value)
+    return False
+
+
+def _reject_nul_bytes():
+    # postgres text columns can't store NUL bytes, reject them instead of
+    # failing with a 500 when they reach the database
+    request = flask.request
+    if _contains_nul(request.path) or _contains_nul(request.args.to_dict(flat=False)):
+        flask.abort(400, "URL must not contain NUL bytes")
+    if request.is_json and _contains_nul(request.get_json(silent=True)):
+        flask.abort(400, "Request body must not contain NUL bytes")
+
+
 def create_app(project_name, app_name, root_path, extensions=(), config=None, redirect_root_to_api=True, **kwargs):
     """
     Create a new Flask backend application
@@ -101,6 +121,8 @@ def _init_app(app, root_path, extensions, redirect_root_to_api):
             setattr(flask_app, extension_name, extension)
 
         logger.debug("Extension %s initialized", extension_name)
+
+    flask_app.before_request(_reject_nul_bytes)
 
     if redirect_root_to_api:
         app.add_url_rule("/", "root", lambda: flask.redirect("/ui/"))
