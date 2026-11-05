@@ -547,6 +547,10 @@ def get_allowed_github_files(owner: str, repo: str) -> set[re.Pattern]:
     match (owner, repo):
         case ("mozilla-firefox", "firefox") | ("mozilla-releng", "staging-firefox"):
             allowed_paths.add(r"browser/extensions/[^/]+(?:/extension)?/manifest.json")
+        case ("mozilla", "enterprise-firefox") | ("mozilla", "enterprise-firefox-try"):
+            allowed_paths.add(r"browser/config/version_display.txt")
+        case ("thunderbird", "thunderbird-desktop") | ("mozilla", "enterprise-firefox-try"):
+            allowed_paths.add(r"mail/config/version_display.txt")
         case ("mozilla-extensions", _):
             allowed_paths.add(r"package.json")
         case ("mozilla-releng", "staging-xpi-public"):

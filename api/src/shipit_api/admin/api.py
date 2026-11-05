@@ -16,6 +16,7 @@ from werkzeug.exceptions import BadRequest
 
 from backend_common.auth import AuthType, auth
 from backend_common.taskcluster import get_root_url, get_service
+from shipit_api.admin.github import extract_github_repo_owner_and_name, get_file_from_github
 from shipit_api.admin.release import (
     Product,
     bump_version,
@@ -25,7 +26,7 @@ from shipit_api.admin.release import (
     is_partner_repacks_enabled,
     product_to_appname,
 )
-from shipit_api.admin.tasks import UnsupportedFlavor, cancel_action_task_group, find_decision_task_id, generate_phases, rendered_hook_payload
+from shipit_api.admin.tasks import UnsupportedFlavor, cancel_action_task_group, find_decision_task_id, generate_phases, get_parameters, rendered_hook_payload
 from shipit_api.common.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
 from shipit_api.common.models import DisabledProduct, NightlyRelease, Phase, Release, Signoff, Version, XPIRelease
 from shipit_api.public.api import get_disabled_products, list_releases
@@ -477,3 +478,37 @@ def check_decision_task(body):
         return {
             "state": "missing",
         }
+
+
+def get_comm_version(body):
+    # Thunderbird Enterprise releases are keyed on a gecko revision, but the
+    # version lives in the comm repository. Read the comm repo/revision the
+    # comm decision task actually used from its parameters.
+    product = body["product"]
+    revision = body["revision"]
+    project = body["branch"].split("/")[-1]
+    repo_url = body.get("repo_url", "")
+    version_file = body["version_file"]
+
+    try:
+        task_id = find_decision_task_id(repo_url, project, revision, product)
+        parameters = get_parameters(task_id)
+    except Exception as exc:
+        abort(404, f"Failed to find comm decision task parameters: {exc}")
+
+    comm_repo = parameters.get("comm_head_repository")
+    comm_rev = parameters.get("comm_head_rev")
+    if not comm_repo or not comm_rev:
+        abort(404, f"comm_head_repository/comm_head_rev missing from parameters of {task_id}")
+
+    owner, repo = extract_github_repo_owner_and_name(comm_repo)
+    try:
+        version = get_file_from_github(owner, repo, comm_rev, version_file)
+    except ValueError as exc:
+        abort(400, str(exc))
+
+    return {
+        "comm_repository": comm_repo,
+        "comm_revision": comm_rev,
+        "version": version.strip(),
+    }
