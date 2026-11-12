@@ -87,6 +87,8 @@ paths:
           required: true
           schema:
             type: integer
+            minimum: 1
+            maximum: 2147483647
       responses:
         "200":
           description: Merge automation cancelled successfully
@@ -102,6 +104,8 @@ paths:
           required: true
           schema:
             type: integer
+            minimum: 1
+            maximum: 2147483647
       responses:
         "200":
           description: Merge automation marked as completed
@@ -120,6 +124,8 @@ paths:
           required: true
           schema:
             type: integer
+            minimum: 1
+            maximum: 2147483647
       responses:
         "200":
           description: Merge automation started successfully
@@ -138,6 +144,8 @@ paths:
           required: true
           schema:
             type: integer
+            minimum: 1
+            maximum: 2147483647
       responses:
         "200":
           description: Task status retrieved successfully
@@ -240,6 +248,8 @@ paths:
           in: query
           schema:
             type: integer
+            minimum: 1
+            maximum: 2147483647
         - name: status
           in: query
           style: form
@@ -648,6 +658,8 @@ paths:
           in: query
           schema:
             type: integer
+            minimum: 1
+            maximum: 2147483647
         - name: status
           in: query
           style: form
@@ -1050,6 +1062,8 @@ components:
           example: abcd1234
         build_number:
           type: integer
+          minimum: 1
+          maximum: 2147483647
           example: 12
         release_eta:
           type: string
@@ -1267,6 +1281,8 @@ components:
           description: Manifest revision
         build_number:
           type: integer
+          minimum: 1
+          maximum: 2147483647
     XPIRelease:
       type: object
       required:
