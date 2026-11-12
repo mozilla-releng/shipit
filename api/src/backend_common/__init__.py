@@ -16,6 +16,7 @@ import yaml
 from a2wsgi import WSGIMiddleware
 from connexion.middleware.main import ConnexionMiddleware, ServerErrorMiddleware
 from deepmerge import merge_or_raise
+from werkzeug.routing import RequestRedirect
 
 # WSGIMiddleware has a default value of 10 workers that we cannot override through connexion
 # 10 threads is absolutely overkill since the GIL is still a thing and we have very little I/O bound requests
@@ -56,6 +57,10 @@ def create_app(project_name, app_name, root_path, extensions=(), config=None, re
     flask_app = app.app
     flask_app.name = project_name
     flask_app.__extensions = extensions
+    # connexion turns every werkzeug HTTPException into a starlette one, which
+    # drops the Location header of routing redirects (e.g. merging duplicate
+    # slashes) and logs them as errors. Let werkzeug build the redirect itself.
+    flask_app.register_error_handler(RequestRedirect, lambda exc: exc.get_response())
 
     if config:
         if isinstance(config, str):
