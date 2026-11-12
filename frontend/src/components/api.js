@@ -31,6 +31,35 @@ export async function checkDecisionTaskStatus(
 }
 
 /**
+ * Get the comm version used by the comm decision task of a gecko revision
+ */
+export async function getCommVersion(
+  product,
+  branch,
+  revision,
+  repoUrl,
+  versionFile,
+  signal,
+) {
+  const req = await axios.post(
+    '/decision-task/comm-version',
+    {
+      product,
+      branch,
+      revision,
+      repo_url: repoUrl,
+      version_file: versionFile,
+    },
+    {
+      authRequired: true,
+      signal,
+    },
+  );
+
+  return req.data.version;
+}
+
+/**
  * Get releases
  *
  * This will fetch releases for the given params. Params may optionally include
