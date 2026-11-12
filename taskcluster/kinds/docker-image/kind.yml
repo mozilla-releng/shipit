@@ -22,3 +22,15 @@ tasks:
             NODE_VERSION: "24"
     fetch: {}
     skopeo: {}
+    shipit-admin:
+        definition: shipit
+        args:
+            PYTHON_VERSION: "3.12"
+            UV_VERSION: "0.7.9"
+            APP_TYPE: admin
+    shipit-public:
+        definition: shipit
+        args:
+            PYTHON_VERSION: "3.12"
+            UV_VERSION: "0.7.9"
+            APP_TYPE: public
