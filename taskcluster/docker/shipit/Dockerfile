@@ -48,14 +48,10 @@ WORKDIR /app
 USER app
 
 ARG APP_TYPE
-ARG APP_VERSION
-ARG TASK_ID
-ARG TASKCLUSTER_ROOT_URL
-ARG VCS_HEAD_REPOSITORY
-ARG VCS_HEAD_REV
 
 COPY --from=builder --chown=app:app /app /app
-RUN echo "{\"commit\": \"$VCS_HEAD_REV\", \"version\": \"$APP_VERSION\", \"source\": \"$VCS_HEAD_REPOSITORY\", \"build\": \"$TASKCLUSTER_ROOT_URL/tasks/$TASK_ID\"}" > /app/version.json
+# /app/version.json is inserted by the push-image task (see
+# taskcluster/docker/skopeo/push_image.sh)
 
 ENV WEB_CONCURRENCY 3
 ENV APP_TYPE ${APP_TYPE}
