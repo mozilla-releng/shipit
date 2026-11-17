@@ -272,7 +272,9 @@ def generate_phases(release, common_input, verify_supported_flavors):
         input_["release_promotion_flavor"] = phase["name"]
         input_["previous_graph_ids"] = list(previous_graph_ids)
 
-        hook = generate_action_hook(task_group_id=decision_task_id, action_name="release-promotion", actions=actions, parameters=parameters, input_=input_)
+        hook = generate_action_hook(
+            task_group_id=decision_task_id, action_name=get_release_promotion_action_name(release), actions=actions, parameters=parameters, input_=input_
+        )
         hook_no_context = {k: v for k, v in hook.items() if k != "context"}
         phase_obj = release.phase_class(name=phase["name"], task_id="", task=json.dumps(hook_no_context), context=json.dumps(hook["context"]))
         # we need to update input_['previous_graph_ids'] later, because
