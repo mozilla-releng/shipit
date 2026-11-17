@@ -40,9 +40,7 @@ def is_partner_repacks_enabled(product, version, min_version=60):
         return False
 
     firefox_version = FirefoxVersion.parse(version)
-    return firefox_version.major_number >= min_version and any(
-        (firefox_version.is_beta and firefox_version.beta_number >= 5, firefox_version.is_release, firefox_version.is_esr)
-    )
+    return firefox_version.major_number >= min_version and any((firefox_version.is_beta, firefox_version.is_release, firefox_version.is_esr))
 
 
 def is_partner_attribution_enabled(product, version, min_version=60):
@@ -56,7 +54,7 @@ def is_partner_attribution_enabled(product, version, min_version=60):
 def is_eme_free_enabled(product, version):
     if product == "firefox":
         firefox_version = FirefoxVersion.parse(version)
-        return any((firefox_version.is_beta and firefox_version.beta_number >= 8, firefox_version.is_release))
+        return any((firefox_version.is_beta, firefox_version.is_release))
 
     return False
 
