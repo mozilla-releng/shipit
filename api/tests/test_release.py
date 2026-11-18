@@ -101,7 +101,8 @@ def test_bump_version(product, version, result):
     "product, version, repacks_result, attribution_result",
     (
         ("firefox", "59.0", False, False),
-        ("firefox", "65.0b3", False, False),
+        ("firefox", "65.0b1", True, True),
+        ("firefox", "65.0b3", True, True),
         ("firefox", "65.0b8", True, True),
         ("firefox", "65.0", True, True),
         ("firefox", "65.0.1", True, True),
