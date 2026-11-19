@@ -25,7 +25,7 @@ from shipit_api.admin.release import (
     is_partner_repacks_enabled,
     product_to_appname,
 )
-from shipit_api.admin.tasks import UnsupportedFlavor, cancel_action_task_group, find_decision_task_id, generate_phases, rendered_hook_payload
+from shipit_api.admin.tasks import UnsupportedFlavor, cancel_action_task_group, find_decision_task_id, generate_phases, get_parameters, rendered_hook_payload
 from shipit_api.common.config import HG_PREFIX, PROJECT_NAME, PULSE_ROUTE_REBUILD_PRODUCT_DETAILS, SCOPE_PREFIX
 from shipit_api.common.models import DisabledProduct, NightlyRelease, Phase, Release, Signoff, Version, XPIRelease
 from shipit_api.public.api import get_disabled_products, list_releases
@@ -468,12 +468,27 @@ def check_decision_task(body):
 
     try:
         task_id = find_decision_task_id(repo_url, project, revision, product)
-        return {
-            "task_id": task_id,
-            "state": "ready",
-        }
     except Exception as exc:
         logger.debug("Failed to get decision task: %s", exc)
         return {
             "state": "missing",
         }
+
+    result = {
+        "task_id": task_id,
+        "state": "ready",
+    }
+    # The decision task computes the in-tree display version (e.g. from
+    # browser/config/version_display.txt, or mail/config/version_display.txt
+    # for comm), which saves the frontend from reading it from the repo.
+    # Not every taskgraph project sets it, so this is best effort.
+    try:
+        version = get_parameters(task_id).get("version")
+    except Exception as exc:
+        logger.debug("Failed to get parameters of decision task %s: %s", task_id, exc)
+    else:
+        # Only accept strings: an unquoted YAML value like 161.10 would be
+        # parsed as a float and lose information.
+        if isinstance(version, str) and version:
+            result["version"] = version
+    return result

@@ -43,6 +43,9 @@ paths:
                   state:
                     type: string
                     enum: [ready, missing]
+                  version:
+                    type: string
+                    description: In-tree display version from the decision task parameters, if available
   /merge-automation:
     get:
       summary: Get the list of merge automations for the given product
