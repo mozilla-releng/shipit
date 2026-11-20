@@ -84,6 +84,12 @@ export default function NewRelease() {
   const decisionTaskReady =
     !!selectedProduct?.versionFromDecisionTask &&
     currentDecisionTaskStatus?.state === 'ready';
+  // The version can't be fetched until the decision task exists: don't show a
+  // spinner while the status says it's not ready (it has a refresh button).
+  const waitingForMissingDecisionTask =
+    !!selectedProduct?.versionFromDecisionTask &&
+    !!currentDecisionTaskStatus &&
+    currentDecisionTaskStatus.state !== 'ready';
   const decisionTaskVersion = decisionTaskReady
     ? currentDecisionTaskStatus.version || null
     : null;
@@ -635,14 +641,18 @@ export default function NewRelease() {
             <React.Fragment>
               {renderReleaseEta()}
               {selectedProduct.enablePartials && renderPartials()}
+              {/* Always rendered: it's what fetches the decision task status,
+                  which products with versionFromDecisionTask need before the
+                  version is known. */}
+              <Box sx={{ mt: 2 }}>{renderDecisionTaskStatus()}</Box>
               {version !== '' && buildNumber !== 0 ? (
                 <Box sx={{ mt: 2 }}>
                   {renderReleaseInfo()}
-                  {renderDecisionTaskStatus()}
                   {renderCreateReleaseButton()}
                 </Box>
               ) : (
-                error === null && (
+                error === null &&
+                !waitingForMissingDecisionTask && (
                   <CircularProgress sx={{ display: 'block', margin: 'auto' }} />
                 )
               )}
