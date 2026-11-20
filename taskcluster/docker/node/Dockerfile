@@ -16,6 +16,9 @@ RUN apt-get update -qq \
     && apt-get install -y awscli jq \
     && apt-get clean
 
+# The node images no longer ship yarn as of node 26
+RUN npm install --global yarn@1
+
 # %include-run-task
 
 ENV SHELL=/bin/bash \
