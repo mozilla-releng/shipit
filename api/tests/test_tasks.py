@@ -232,3 +232,21 @@ def test_cancel_action_task_group(app, test_case):
             mocked_queue.sealTaskGroup.assert_called_once_with("abc")
         else:
             mocked_queue.sealTaskGroup.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "status, expectation",
+    (
+        (200, does_not_raise()),
+        (404, pytest.raises(tasks.ArtifactNotFound)),
+        (410, pytest.raises(tasks.ArtifactNotFound)),
+        (500, pytest.raises(tasks.requests.exceptions.HTTPError)),
+    ),
+)
+def test_fetch_artifact(responses, status, expectation):
+    queue = taskcluster.Queue({"rootUrl": "https://tc.example.com"})
+    url = queue.buildUrl("getLatestArtifact", "abc", "public/actions.json")
+    responses.get(url, status=status, body="foo: bar")
+
+    with mock.patch("shipit_api.admin.tasks.get_service", return_value=queue), expectation:
+        assert tasks.fetch_artifact("abc", "public/actions.json") == {"foo": "bar"}
