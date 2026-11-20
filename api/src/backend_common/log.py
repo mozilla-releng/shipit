@@ -25,7 +25,24 @@ def init_app(app):
         configure_sentry(environment, sentry_dsn)
 
 
+HEARTBEAT_PATHS = ("/__heartbeat__", "/__lbheartbeat__")
+
+
+class HeartbeatFilter(logging.Filter):
+    """Drop uvicorn access log entries for the dockerflow heartbeat endpoints"""
+
+    def filter(self, record):
+        # uvicorn.access records have args (client_addr, method, path, http_version, status)
+        args = record.args
+        if isinstance(args, tuple) and len(args) >= 3 and isinstance(args[2], str):
+            return args[2].split("?", 1)[0] not in HEARTBEAT_PATHS
+        return True
+
+
 def configure_logging():
+    if os.environ.get("APP_CHANNEL") == "local":
+        # The docker-compose healthcheck hits the heartbeat every few seconds
+        logging.getLogger("uvicorn.access").addFilter(HeartbeatFilter())
     handler = logging.StreamHandler(sys.stdout)
     level = logging.DEBUG if os.environ.get("DEBUG") else logging.INFO
     if os.environ.get("LOG_FORMAT") == "plain":
