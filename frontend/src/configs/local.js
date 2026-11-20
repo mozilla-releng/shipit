@@ -14,6 +14,7 @@ module.exports = {
         product: 'firefox',
         prettyName: 'Firefox Desktop',
         appName: 'browser',
+        versionFromDecisionTask: true,
         branches: [
           {
             prettyName: 'Try',
@@ -31,6 +32,7 @@ module.exports = {
         product: 'devedition',
         prettyName: 'Firefox Developer Edition',
         appName: 'browser',
+        versionFromDecisionTask: true,
         branches: [
           {
             prettyName: 'Try',
@@ -47,6 +49,7 @@ module.exports = {
         product: 'firefox-android',
         prettyName: 'Firefox Android (Android-Components, Fenix, Focus)',
         appName: 'firefox-android',
+        versionFromDecisionTask: true,
         branches: [
           {
             prettyName: 'Try',
@@ -64,6 +67,7 @@ module.exports = {
         product: 'firefox-ios',
         prettyName: 'Firefox iOS',
         appName: 'firefox-ios',
+        versionFromDecisionTask: true,
         branches: [
           {
             prettyName: 'Try',
@@ -86,6 +90,7 @@ module.exports = {
         product: 'focus-ios',
         prettyName: 'Focus iOS',
         appName: 'focus-ios',
+        versionFromDecisionTask: true,
         branches: [
           {
             branch: '',
@@ -106,6 +111,7 @@ module.exports = {
         product: 'app-services',
         prettyName: 'Application Services',
         appName: 'app-services',
+        versionFromDecisionTask: true,
         branches: [
           {
             branch: '',
@@ -128,6 +134,7 @@ module.exports = {
         product: 'thunderbird',
         prettyName: 'Thunderbird',
         appName: 'mail',
+        versionFromDecisionTask: true,
         branches: [
           {
             prettyName: 'Try',

@@ -74,6 +74,19 @@ export default function NewRelease() {
   const [submitReleaseState, submitReleaseAction] = useAction(submitRelease);
   const [decisionTaskStatus, setDecisionTaskStatus] = useState(null);
   const loading = branchesLoading || pushesLoading || revisionInfoLoading;
+  // Only trust a decision task status that was fetched for this revision.
+  const currentDecisionTaskStatus =
+    decisionTaskStatus?.revision === revision ? decisionTaskStatus : null;
+  // For products that opt in, the version only comes from the decision task
+  // parameters: without a decision task the release can't be created anyway.
+  // Both are left unset for other products, so that decision task status
+  // changes don't make them fetch the version again.
+  const decisionTaskReady =
+    !!selectedProduct?.versionFromDecisionTask &&
+    currentDecisionTaskStatus?.state === 'ready';
+  const decisionTaskVersion = decisionTaskReady
+    ? currentDecisionTaskStatus.version || null
+    : null;
   const revisionPretty = (rev) => {
     return `${rev.date.toDateString()} - ${rev.node.substring(0, 8)} - ${
       rev.author
@@ -187,13 +200,15 @@ export default function NewRelease() {
       try {
         setRevisionInfoLoading(true);
 
-        const ver = await getVersion(
-          selectedBranch.repo,
-          revision,
-          selectedProduct.appName,
-          selectedBranch.versionFile,
-          signal,
-        );
+        const ver = selectedProduct.versionFromDecisionTask
+          ? decisionTaskVersion
+          : await getVersion(
+              selectedBranch.repo,
+              revision,
+              selectedProduct.appName,
+              selectedBranch.versionFile,
+              signal,
+            );
         if (signal.aborted) return;
 
         const nextBuildNumber = await guessBuildNumber(
@@ -219,8 +234,17 @@ export default function NewRelease() {
 
     setVersion('');
     setBuildNumber(0);
-    setDecisionTaskStatus(null);
     setError(null);
+    if (selectedProduct.versionFromDecisionTask) {
+      if (!decisionTaskReady) {
+        // Wait until the decision task for this revision is ready
+        return;
+      }
+      if (!decisionTaskVersion) {
+        setError(`The decision task for ${revision} doesn't provide a version`);
+        return;
+      }
+    }
     const timeout = setTimeout(fetchRevisionInfo, 500);
     return () => {
       clearTimeout(timeout);
@@ -233,6 +257,9 @@ export default function NewRelease() {
     selectedBranch?.versionFile,
     selectedProduct?.product,
     selectedProduct?.appName,
+    selectedProduct?.versionFromDecisionTask,
+    decisionTaskReady,
+    decisionTaskVersion,
   ]);
 
   useEffect(() => {
@@ -293,7 +320,7 @@ export default function NewRelease() {
         : true) &&
       !loading &&
       !submitReleaseState.loading &&
-      decisionTaskStatus?.state === 'ready'
+      currentDecisionTaskStatus?.state === 'ready'
     );
   };
 

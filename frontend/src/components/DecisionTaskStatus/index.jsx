@@ -23,7 +23,9 @@ export default function DecisionTaskStatus({
   async function check() {
     setStatus(null);
     const result = await checkAction(product, branch, revision, repoUrl);
-    setStatus(result.data);
+    // Record which revision this status is for, so consumers can tell a
+    // stale status apart from one for the current revision.
+    setStatus(result.data && { ...result.data, revision });
   }
 
   useEffect(() => {
