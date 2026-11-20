@@ -129,6 +129,104 @@ module.exports = {
         enablePartials: false,
       },
     ],
+    enterprise: [
+      {
+        product: 'firefox-enterprise',
+        prettyName: 'Firefox Enterprise',
+        appName: 'browser',
+        versionFromDecisionTask: true,
+        repositories: [
+          {
+            prettyName: 'Try',
+            project: 'enterprise-firefox-try',
+            repo: 'https://github.com/mozilla/enterprise-firefox-try',
+            enableReleaseEta: false,
+            disableable: true,
+          },
+        ],
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        /* branches: [
+          {
+            prettyName: 'Enterprise Main',
+            project: 'enterprise-main',
+            branch: 'enterprise-main',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: false,
+            disableable: true,
+          },
+          {
+            prettyName: 'Enterprise Beta',
+            project: 'enterprise-beta',
+            branch: 'enterprise-beta',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: false,
+            disableable: true,
+          },
+          {
+            prettyName: 'Enterprise Release',
+            project: 'enterprise-release',
+            branch: 'enterprise-release',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: true,
+            disableable: false,
+          },
+        ], */
+        enablePartials: false,
+        canTogglePartials: false,
+      },
+      {
+        product: 'thunderbird-enterprise',
+        prettyName: 'Thunderbird Enterprise',
+        appName: 'comm',
+        versionFromDecisionTask: true,
+        repositories: [
+          {
+            prettyName: 'Try',
+            project: 'enterprise-firefox-try',
+            repo: 'https://github.com/mozilla/enterprise-firefox-try',
+            enableReleaseEta: false,
+            disableable: true,
+          },
+        ],
+        branches: [
+          {
+            branch: '',
+          },
+        ],
+        /* branches: [
+          {
+            prettyName: 'Enterprise Main',
+            project: 'enterprise-main',
+            branch: 'enterprise-main',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: false,
+            disableable: true,
+          },
+          {
+            prettyName: 'Enterprise Beta',
+            project: 'enterprise-beta',
+            branch: 'enterprise-beta',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: false,
+            disableable: true,
+          },
+          {
+            prettyName: 'Enterprise Release',
+            project: 'enterprise-release',
+            branch: 'enterprise-release',
+            repo: 'https://github.com/mozilla/enterprise-firefox',
+            enableReleaseEta: true,
+            disableable: false,
+          },
+        ], */
+        enablePartials: false,
+        canTogglePartials: false,
+      },
+    ],
     thunderbird: [
       {
         product: 'thunderbird',
