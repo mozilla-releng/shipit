@@ -120,7 +120,7 @@ def cancel_action_task_group(action_task_id):
             logger.info("Task with ID %s does not have `cancel-all` action. Skipping...", action_task_id)
             return
     except ArtifactNotFound:
-        logger.info("Task with ID %s does not have actions yet. Skipping...", action_task_id, exc_info=True)
+        logger.info("Task with ID %s does not have actions. Skipping...", action_task_id, exc_info=True)
         return
 
     hooks = get_service("hooks")
@@ -185,8 +185,9 @@ def fetch_artifact(task_id, artifact):
         q.raise_for_status()
         return yaml.safe_load(q.content)
     except requests.exceptions.HTTPError as e:
-        if e.response.status_code == 404:
-            raise ArtifactNotFound
+        # 404: the artifact doesn't exist (yet); 410: the artifact has expired
+        if e.response.status_code in (404, 410):
+            raise ArtifactNotFound from e
         raise
 
 
