@@ -18,7 +18,11 @@ import { useLocation } from 'react-router';
 import { makeStyles } from 'tss-react/mui';
 import config from '../../config';
 import useAction from '../../hooks/useAction';
-import { repoUrlBuilder } from '../../utils/helpers';
+import {
+  findProductBranch,
+  repoUrlBuilder,
+  treeherderProject,
+} from '../../utils/helpers';
 import ReleaseContext from '../../utils/ReleaseContext';
 import { cancelRelease as cancelReleaseAPI } from '../api';
 import PhaseProgress from '../PhaseProgress';
@@ -117,27 +121,13 @@ export default function ReleaseProgress({
 
   const renderReleaseTitle = (isXPI, release) => {
     let url = null;
-    let productBranch = null;
     let enableTreeherder = true;
     const { PRODUCTS, TREEHERDER_URL } = config;
     let trimmedRevision = release.revision.substring(0, 13);
     const product = PRODUCTS?.[group].find(
       (product) => product.product === release.product,
     );
-
-    if (product?.branches) {
-      productBranch = product.branches.find(
-        (item) =>
-          item.branch === release.branch && item.project === release.project,
-      );
-    }
-
-    // non-hg or firefox projects are formatted differently in the config files
-    if (!productBranch && product && product.repositories) {
-      productBranch = product.repositories.find(
-        (item) => item.project === release.product,
-      );
-    }
+    const productBranch = findProductBranch(product, release);
 
     if (isXPI) {
       enableTreeherder = false;
@@ -176,7 +166,7 @@ export default function ReleaseProgress({
             .{' '}
             <Link
               target="_blank"
-              href={`${TREEHERDER_URL}/jobs?repo=${release.project}&revision=${release.revision}`}
+              href={`${TREEHERDER_URL}/jobs?repo=${treeherderProject(productBranch, release)}&revision=${release.revision}`}
               underline="hover"
             >
               View in Treeherder
